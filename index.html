@@ -841,6 +841,9 @@ body.admin-on .chat-head .linebtn, body.line-public .chat-head .linebtn { displa
 .adm-pin{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .adm-pin input{flex:1;min-width:100px}
 .adm-shared{margin-bottom:12px}
+.adm-url{margin:14px 0 6px}
+.adm-url .code{font-size:13px;word-break:break-all;user-select:all;margin-bottom:8px}
+.adm-url .send{width:100%}
 .adm-shared select{font:inherit;font-size:13px;padding:7px 8px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:inherit}
 #pinInput{text-align:center;font-size:22px;letter-spacing:.4em}
 #adminPanel .welcome,#kicked .welcome{max-height:86dvh;overflow-y:auto}
@@ -1713,7 +1716,23 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       });
     });
     pb.appendChild(pc); pb.appendChild(pn); pb.appendChild(pbtn); box.appendChild(pb); box.appendChild(pmsg);
-    box.appendChild(el('h3', null, '会員'));
+    // 「会員」の見出しの場所に、お客さんに送るアドレスとコピーボタン
+    var roomUrl = location.origin + location.pathname.replace(/index\.html$/, '');
+    var ur = el('div', 'adm-url');
+    ur.appendChild(el('div', 'code', roomUrl));
+    var ub = el('button', 'send', 'このアドレスをコピー'); ub.type = 'button';
+    ub.addEventListener('click', function () {
+      function done() { toast('コピーしたで。そのまま貼って送ってな'); }
+      function fallback() {
+        var ta = document.createElement('textarea'); ta.value = roomUrl; ta.style.position = 'fixed'; ta.style.opacity = '0';
+        document.body.appendChild(ta); ta.select();
+        var ok = false; try { ok = document.execCommand('copy'); } catch (e) {}
+        document.body.removeChild(ta);
+        if (ok) done(); else toast('コピーできへんかった。アドレスを長押ししてな');
+      }
+      if (navigator.clipboard && navigator.clipboard.writeText) navigator.clipboard.writeText(roomUrl).then(done, fallback); else fallback();
+    });
+    ur.appendChild(ub); box.appendChild(ur);
     var list = el('div', 'adm-list'); box.appendChild(list);
     $('adminPanel').hidden = false;
     function load() {
