@@ -840,6 +840,8 @@ body.admin-on .chat-head .linebtn, body.line-public .chat-head .linebtn { displa
 #wErr{color:#c0392b;min-height:18px}
 .adm-pin{display:flex;gap:6px;flex-wrap:wrap;align-items:center}
 .adm-pin input{flex:1;min-width:100px}
+.adm-shared{margin-bottom:12px}
+.adm-shared select{font:inherit;font-size:13px;padding:7px 8px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:inherit}
 #pinInput{text-align:center;font-size:22px;letter-spacing:.4em}
 #adminPanel .welcome,#kicked .welcome{max-height:86dvh;overflow-y:auto}
 /* 写真・公式LINE・歌 */
@@ -1657,6 +1659,40 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
   $('adminBtn').addEventListener('click', openAdmin);
   function openAdmin() {
     var box = $('adminBody'); box.textContent = '';
+    // 共通コード（募集用）：オンの間だけ入れる。オンにする時に、自動で切れる時間と人数の上限を決める
+    box.appendChild(el('h3', null, '共通コード（募集用）'));
+    var sc = el('div', 'adm-shared'); box.appendChild(sc);
+    function paintShared(j) {
+      sc.textContent = '';
+      if (!j || !j.code) { sc.appendChild(el('p', 'fine', '読み込めへんかった。もう一回開いてな')); return; }
+      sc.appendChild(el('div', 'code', j.code));
+      var st = el('p', 'fine');
+      if (j.on) {
+        var mn = Math.max(0, Math.round((new Date(j.expires_at).getTime() - Date.now()) / 60000));
+        st.textContent = '🟢 募集中。あと' + (mn >= 60 ? Math.floor(mn / 60) + '時間' + (mn % 60) + '分' : mn + '分') + 'で自動オフ／' + j.count + '人入室（上限' + j.max + '人）';
+      } else st.textContent = '⚪ オフ。このコードでは、いま入れません。';
+      sc.appendChild(st);
+      var row = el('div', 'adm-pin');
+      var hs = el('select'); [['1', '1時間'], ['6', '6時間'], ['24', '24時間']].forEach(function (o) { var op = el('option', null, o[1]); op.value = o[0]; if (o[0] === '6') op.selected = true; hs.appendChild(op); });
+      var ms = el('select'); [['10', '10人まで'], ['20', '20人まで'], ['30', '30人まで'], ['50', '50人まで']].forEach(function (o) { var op = el('option', null, o[1]); op.value = o[0]; if (o[0] === '30') op.selected = true; ms.appendChild(op); });
+      var tg = el('button', 'chip', j.on ? '募集をオフにする' : '募集をオンにする'); tg.type = 'button';
+      tg.addEventListener('click', function () {
+        api({ action: 'admin_shared_set', token: token, on: !j.on, hours: Number(hs.value), max: Number(ms.value) }).then(function (x) {
+          if (x && x.code) { paintShared(x); toast(x.on ? '募集をオンにしたで' : '募集をオフにしたで'); } else toast('変えられへんかった');
+        }).catch(function () { toast('つながらへんかった。もう一回な'); });
+      });
+      if (!j.on) { row.appendChild(hs); row.appendChild(ms); }
+      row.appendChild(tg);
+      var rg = el('button', 'chip', 'コードを作り直す'); rg.type = 'button'; var rgArm = false;
+      rg.addEventListener('click', function () {
+        if (!rgArm) { rgArm = true; rg.textContent = 'もう一回押すと作り直す'; setTimeout(function () { rgArm = false; rg.textContent = 'コードを作り直す'; }, 4000); return; }
+        api({ action: 'admin_shared_regen', token: token }).then(function (x) { if (x && x.code) { paintShared(x); toast('新しいコードにしたで（オフの状態）'); } });
+      });
+      row.appendChild(rg);
+      sc.appendChild(row);
+      sc.appendChild(el('p', 'fine', 'コードは長押しでコピー。作り直すと、古いコードは使えんようになるで。'));
+    }
+    api({ action: 'admin_shared_get', token: token }).then(paintShared).catch(function () { paintShared(null); });
     var b1 = el('button', 'send', '新しい招待コードを発行（使い捨て・7日間）'); b1.type = 'button';
     var out = el('div', 'adm-out');
     b1.addEventListener('click', function () {
