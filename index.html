@@ -1756,6 +1756,13 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
               var t = el('button', 'chip', '引き継ぎコード'); t.type = 'button';
               t.addEventListener('click', function () { api({ action: 'admin_invite', token: token, kind: 'transfer', member_id: m.id, label: m.nickname }).then(function (x) { if (x.code) { out.textContent = ''; out.appendChild(el('p', 'fine', m.nickname + 'さん用の引き継ぎコード（1回だけ使える）')); out.appendChild(el('div', 'code', x.code)); } }); });
               r.appendChild(t);
+              // 管理画面の会員一覧から強制退場（チャット画面には何も足さない）。うっかり防止で2回押し
+              var kk = el('button', 'chip', '強制退場'); kk.type = 'button'; var kkArm = false;
+              kk.addEventListener('click', function () {
+                if (!kkArm) { kkArm = true; kk.textContent = 'もう一回で退場'; setTimeout(function () { kkArm = false; kk.textContent = '強制退場'; }, 4000); return; }
+                api({ action: 'admin_kick', token: token, member_id: m.id }).then(function () { toast(m.nickname + 'さんを強制退場にしたで'); load(); poll(); });
+              });
+              r.appendChild(kk);
             }
           }
           list.appendChild(r);
