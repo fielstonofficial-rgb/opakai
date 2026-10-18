@@ -847,6 +847,7 @@ body.admin-on .chat-head .linebtn, body.line-public .chat-head .linebtn { displa
 .adm-shared select{font:inherit;font-size:13px;padding:7px 8px;border-radius:10px;border:1px solid var(--line);background:var(--surface-2);color:inherit}
 #pinInput{text-align:center;font-size:22px;letter-spacing:.4em}
 #adminPanel .welcome,#kicked .welcome{max-height:86dvh;overflow-y:auto}
+#kicked .ring,#kicked .ring .face{animation:none}
 /* 写真・公式LINE・歌 */
 .chat-head .linebtn.songbtn{display:inline-flex}
 .chat-head .songbtn svg{background:linear-gradient(135deg,#a78bfa,#6d5bd0)}
@@ -1028,7 +1029,7 @@ body.admin-on .tools .adminbtn{display:inline-flex}
 <div class="overlay" id="kicked" role="dialog" aria-modal="true" hidden>
   <div class="welcome frame-vivid" style="text-align:center">
     <span class="ring"><span class="face"><img data-cat="aron" alt="アロン"></span></span>
-    <h2 id="kMsg">この部屋にふさわしくない発言キーワードがありました、一旦退場となります😺</h2>
+    <h2 id="kMsg">いまは、この部屋に入れません😺</h2>
     <p class="fine">またの機会に、お待ちしています。</p>
   </div>
 </div>
@@ -1423,7 +1424,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     busy = true;
     return api({ action: 'poll', token: token, stealth: stealthNow() }).then(function (j) {
       busy = false;
-      if (j.kicked) { stop(); mode('kick'); return; }
+      if (j.kicked) { stop(); if ($('kicked').hidden) $('kMsg').textContent = 'いまは、この部屋に入れません😺'; mode('kick'); return; }
       if (j._s === 401) { stop(); LS.del('opa_token'); token = null; mode('join'); openJoin(); return; }
       if (!j.msgs) return;
       var wasAdmin = isAdmin();
