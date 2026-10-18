@@ -865,9 +865,13 @@ body.admin-on .chat-head .linebtn, body.line-public .chat-head .linebtn { displa
 .ytwrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .song a.chip{display:inline-block;text-decoration:none}
 .chat-head .linebtn .lx{font-style:normal}
+.boost-one{gap:6px;border-bottom:0!important}
+.boost-sel{flex:1;min-width:0;border:1px solid var(--line);background:var(--surface-2);color:var(--fg);border-radius:10px;padding:6px 8px;font-size:13px;font-family:inherit}
+.boost-n{min-width:22px;text-align:center;font-weight:700}
 .tools .adminbtn{display:none}
 body.admin-on .tools .adminbtn{display:inline-flex}
-@media (max-width:420px){.chat-head .linebtn .lx{display:none}.chat-head .songbtn span{display:none}.chat-head .songbtn{padding:0 5px 0 5px}}
+@media (max-width:420px){.chat-head .songbtn span{display:none}.chat-head .songbtn{padding:0 5px 0 5px}}
+@media (max-width:399px){.chat-head .linebtn .lx{display:none}}
 @media (max-width:380px){#setBtn span{display:none}}
 </style>
 </head>
@@ -1253,7 +1257,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
   });
 
   /* ---- アンケート（5択。内容を変えられるのは管理人だけ。集計はサーバー） ---- */
-  var sv = null, svKey = '';
+  var sv = null, svKey = '', boostSel = 0;
   function renderSurvey(p) {
     if (!p) return;
     var key = JSON.stringify(p); if (key === svKey) return; svKey = key; sv = p;
@@ -1275,18 +1279,23 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     if (p.boost) {
       var used = p.boost.reduce(function (a, n) { return a + n; }, 0);
       bb.appendChild(el('p', 'by', '運営の票（お客さんには「みんなの票」として出ます）　' + used + ' / ' + p.boostMax));
+      if (!p.opts[boostSel]) boostSel = p.opts.findIndex(function (x) { return !!x; });
+      var r = el('div', 'adm-row boost-one');
+      var sel = document.createElement('select'); sel.className = 'boost-sel'; sel.setAttribute('aria-label', '票を足す項目');
       p.opts.forEach(function (label, i) {
         if (!label) return;
-        var r = el('div', 'adm-row'); r.appendChild(el('b', null, label));
-        function step(d) {
-          var c = p.boost.slice(); c[i] = Math.max(0, c[i] + d);
-          if (c.reduce(function (a, n) { return a + n; }, 0) > p.boostMax) { toast('運営の票は、合計' + p.boostMax + '票までや'); return; }
-          api({ action: 'admin_poll_boost', token: token, c: c }).then(function (j) { if (j.error) toast(j.message || 'できへんかった'); poll(); });
-        }
-        var mi = el('button', 'chip', '−'); mi.type = 'button'; mi.addEventListener('click', function () { step(-1); });
-        var pl = el('button', 'chip', '＋'); pl.type = 'button'; pl.addEventListener('click', function () { step(1); });
-        r.appendChild(mi); r.appendChild(el('span', null, String(p.boost[i]))); r.appendChild(pl); bb.appendChild(r);
+        var o = document.createElement('option'); o.value = String(i); o.textContent = label + '（' + p.boost[i] + '）'; if (i === boostSel) o.selected = true; sel.appendChild(o);
       });
+      var cnt = el('span', 'boost-n', String(p.boost[boostSel]));
+      sel.addEventListener('change', function () { boostSel = Number(sel.value); cnt.textContent = String(p.boost[boostSel]); });
+      function step(d) {
+        var c = p.boost.slice(); c[boostSel] = Math.max(0, c[boostSel] + d);
+        if (c.reduce(function (a, n) { return a + n; }, 0) > p.boostMax) { toast('運営の票は、合計' + p.boostMax + '票までや'); return; }
+        api({ action: 'admin_poll_boost', token: token, c: c }).then(function (j) { if (j.error) toast(j.message || 'できへんかった'); poll(); });
+      }
+      var mi = el('button', 'chip', '−'); mi.type = 'button'; mi.setAttribute('aria-label', '1票へらす'); mi.addEventListener('click', function () { step(-1); });
+      var pl = el('button', 'chip', '＋'); pl.type = 'button'; pl.setAttribute('aria-label', '1票ふやす'); pl.addEventListener('click', function () { step(1); });
+      r.appendChild(sel); r.appendChild(mi); r.appendChild(cnt); r.appendChild(pl); bb.appendChild(r);
     }
     $('svPill').classList.toggle('new', p.mine < 0);
     $('surveyMeta').textContent = (p.counts ? '合計 ' + p.total + '票　' : '投票すると結果が見えます　') + 'ひとり1票・あとから変えられます';
