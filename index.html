@@ -865,6 +865,8 @@ body.admin-on .chat-head .linebtn, body.line-public .chat-head .linebtn { displa
 .ytwrap iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
 .song a.chip{display:inline-block;text-decoration:none}
 .chat-head .linebtn .lx{font-style:normal}
+.tools .adminbtn{display:none}
+body.admin-on .tools .adminbtn{display:inline-flex}
 @media (max-width:420px){.chat-head .linebtn .lx{display:none}.chat-head .songbtn span{display:none}.chat-head .songbtn{padding:0 5px 0 5px}}
 @media (max-width:380px){#setBtn span{display:none}}
 </style>
@@ -899,7 +901,7 @@ body.admin-on .chat-head .linebtn, body.line-public .chat-head .linebtn { displa
       <h1><span class="amon">AMON</span><span class="room">オパール会議室</span><span class="short">（オパ会）</span></h1>
       <p>フランとアロンのいる、おしゃべりの部屋</p>
     </div>
-    <div class="tools" id="tools"><button class="tbtn delmodebtn" type="button" id="delModeBtn" aria-pressed="false" aria-label="コメントを消すモード" title="コメントを消す"><span>🗑️</span></button><button class="tbtn loginbtn" type="button" id="loginBtn" aria-label="管理（招待コード・会員）" title="管理（招待コード・会員）"><span>🔑</span></button><button class="tbtn unkbtn" type="button" id="unkBtn" aria-expanded="false" aria-controls="unkPop">❓<span>わからん <b id="unkCount">0</b></span></button></div>
+    <div class="tools" id="tools"><button class="tbtn delmodebtn" type="button" id="delModeBtn" aria-pressed="false" aria-label="コメントを消すモード" title="コメントを消す"><span>🗑️</span></button><button class="tbtn loginbtn" type="button" id="loginBtn" aria-pressed="false" aria-label="ログインする" title="ログインする"><span>🔓</span></button><button class="tbtn adminbtn" type="button" id="adminBtn" aria-label="管理（招待コード・会員）" title="管理（招待コード・会員）"><span>👥</span></button><button class="tbtn unkbtn" type="button" id="unkBtn" aria-expanded="false" aria-controls="unkPop">❓<span>わからん <b id="unkCount">0</b></span></button></div>
     <div class="cats-head" aria-label="部屋にいる猫">
       <button class="cathead" type="button" data-call="フラン" title="フラン（8歳・メス・標準語）。押すと呼びかけが入るよ"><span class="ring"><span class="face"><img data-cat="furan" alt="フラン"></span></span><span class="cn furan-c">フラン</span></button>
       <button class="cathead" type="button" data-call="アロン" title="アロン（8歳・オス・関西弁）。押すと呼びかけが入るよ"><span class="ring"><span class="face"><img data-cat="aron" alt="アロン"></span></span><span class="cn aron-c">アロン</span></button>
@@ -967,6 +969,7 @@ body.admin-on .chat-head .linebtn, body.line-public .chat-head .linebtn { displa
       <div class="float-layer" id="floatLayer" aria-hidden="true"></div>
       <div class="toast" id="toast" role="status" hidden></div>
       <form class="composer" id="composer" autocomplete="off">
+        <div class="offbar" id="offBar" hidden><span>ログインしていません：みんなの会話を、見るだけ</span><button class="chip" type="button" id="backOnline">ログインする</button></div>
         <div class="qk"><span class="qk-title">💬 猫に質問</span><button class="qk-chip" type="button" id="qkChip" aria-label="この質問を猫に送る"><span class="qt"></span><span class="qgo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>送る</span></button><button class="qk-shuffle" type="button" id="qkShuffle" aria-label="別の質問にかえる" title="質問をかえる"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.5-4.5L4 8M4 4v4h4M4 13a8 8 0 0 0 14.5 4.5L20 16M20 20v-4h-4"/></svg></button></div>
         <div class="row">
           <button class="attach" type="button" id="attachBtn" aria-label="写真を送る" title="写真を送る">📷</button><input type="file" id="fileInput" accept="image/*" hidden><input type="text" id="msgInput" maxlength="200" placeholder="チャット入力画面" aria-label="メッセージ">
@@ -1104,6 +1107,28 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       .then(function (r) { return r.json().then(function (j) { j._s = r.status; return j; }); });
   }
   function isAdmin() { return !!(me && me.isAdmin); }
+  /* ---- 店主のステルス：ログインしてない間は、みんなには見えへん ---- */
+  var online = false;
+  try { online = sessionStorage.getItem('opa_online') === '1'; } catch (e) {}
+  function setOnline(v) { online = v; try { if (v) sessionStorage.setItem('opa_online', '1'); else sessionStorage.removeItem('opa_online'); } catch (e) {} }
+  function adminOff() { return isAdmin() && !online; }
+  function stealthNow() { return (isAdmin() || LS.get('opa_adm') === '1') && !online; }
+  function applyStealth() {
+    var off = adminOff();
+    form.classList.toggle('off', off); $('offBar').hidden = !off; input.disabled = off;
+    var lb = $('loginBtn'); lb.setAttribute('aria-pressed', String(!off)); lb.classList.toggle('on', !off);
+    lb.title = off ? 'ログインする' : 'ログイン中（押すとログアウト）'; lb.setAttribute('aria-label', lb.title);
+    lb.firstChild.textContent = off ? '🔓' : '🔐';
+  }
+  function adminEnter() {
+    api({ action: 'admin_enter', token: token }).then(function (j) {
+      if (j.error) { toast('ログインできへんかった'); return; }
+      setOnline(true); applyStealth(); fast = 4; poll().then(loop); input.focus();
+    }).catch(function () { toast('つながらへんかった。もう一回な'); });
+  }
+  function adminLeave() { setOnline(false); applyStealth(); toast('ログアウトしたで。いまは、見るだけや'); }
+  $('loginBtn').addEventListener('click', function () { if (adminOff()) adminEnter(); else adminLeave(); });
+  $('backOnline').addEventListener('click', adminEnter);
   function fmt(t) { try { return new Date(t).toLocaleTimeString('ja-JP', { hour: '2-digit', minute: '2-digit' }); } catch (e) { return ''; } }
 
   /* ---- 画面の出し分け ---- */
@@ -1368,7 +1393,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
   function poll() {
     if (!token || busy) return Promise.resolve();
     busy = true;
-    return api({ action: 'poll', token: token }).then(function (j) {
+    return api({ action: 'poll', token: token, stealth: stealthNow() }).then(function (j) {
       busy = false;
       if (j.kicked) { stop(); mode('kick'); return; }
       if (j._s === 401) { stop(); LS.del('opa_token'); token = null; mode('join'); openJoin(); return; }
@@ -1377,6 +1402,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       me = j.me;
       if (appEl.hidden) mode('chat');
       document.body.classList.toggle('admin-on', isAdmin());
+      LS.set('opa_adm', isAdmin() ? '1' : '0'); applyStealth();
       $('whoName').textContent = me.nickname; $('whoami').hidden = false;
       render(j.msgs); renderPresence(j.people || []); renderTheme(j.theme, j.themeBy); renderSurvey(j.poll);
       if (typingNode && Date.now() > typingUntil) { typingNode.remove(); typingNode = null; }
@@ -1499,6 +1525,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
   /* ---- 発言 ---- */
   function say(text) {
     text = (text || '').trim(); if (!text) return;
+    if (adminOff()) { toast('ログインしたら、話せるで（上のカギのマーク）'); return; }
     var mention = /アロン|あろん|aron|フラン|ふらん|furan/i.test(text);
     if (mention) showTyping(/フラン|ふらん|furan/i.test(text) && !/アロン|あろん|aron/i.test(text) ? 'furan' : 'aron');
     api({ action: 'say', token: token, text: text }).then(function (j) {
@@ -1576,7 +1603,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     $('wGo').disabled = true;
     api({ action: 'join', code: code, nickname: nickInput.value.trim(), icon: draft.icon, color: draft.color, bio: bioInput.value.trim() }).then(function (j) {
       $('wGo').disabled = false;
-      if (j.token) { token = j.token; LS.set('opa_token', token); begin(); }
+      if (j.token) { token = j.token; LS.set('opa_token', token); LS.set('opa_adm', j.isAdmin ? '1' : '0'); begin(); }
       else $('wErr').textContent = j.message || '入室できませんでした';
     }).catch(function () { $('wGo').disabled = false; $('wErr').textContent = 'つながらへんかった。電波を確認してもう一回な'; });
   });
@@ -1593,7 +1620,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     $('pinGo').disabled = true; $('pinErr').textContent = '';
     api({ action: 'owner_login', pin: pin }).then(function (j) {
       $('pinGo').disabled = false; $('pinInput').value = '';
-      if (j.token) { token = j.token; LS.set('opa_token', token); $('ownerLogin').hidden = true; begin(); }
+      if (j.token) { token = j.token; LS.set('opa_token', token); LS.set('opa_adm', '1'); setOnline(false); $('ownerLogin').hidden = true; begin(); }
       else $('pinErr').textContent = j.message || '入れませんでした';
     }).catch(function () { $('pinGo').disabled = false; $('pinErr').textContent = 'つながらへんかった。電波を確認してもう一回な'; });
   });
@@ -1604,7 +1631,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     $('delModeBtn').classList.toggle('on', on); $('delModeBtn').setAttribute('aria-pressed', String(on));
     toast(on ? '消す・強制退場ボタンが出たで' : '消すモードをやめたで');
   });
-  $('loginBtn').addEventListener('click', openAdmin);
+  $('adminBtn').addEventListener('click', openAdmin);
   function openAdmin() {
     var box = $('adminBody'); box.textContent = '';
     var b1 = el('button', 'send', '新しい招待コードを発行（使い捨て・7日間）'); b1.type = 'button';
