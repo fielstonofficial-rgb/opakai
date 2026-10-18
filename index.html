@@ -996,15 +996,15 @@ body.admin-on .chat-head .linebtn, body.line-public .chat-head .linebtn { displa
     <p class="fine" id="wErr" role="alert"></p>
     <div class="wbtns"><button class="send go" type="submit" id="wGo">入室する</button><button class="wback" type="button" id="wBack" hidden>戻る</button></div>
     <p class="fine" id="xfer">機種変更のときは、「引き継ぎコード」を招待コードの欄に入れてな（ニックネームは空でOK）。</p>
-    <p class="fine" id="ownerRow"><button class="chip" type="button" id="ownerLink">🔑 店主ログイン（6桁の番号）</button></p>
+    <p class="fine" id="ownerRow"><button class="chip" type="button" id="ownerLink">🔑 店主ログイン（番号）</button></p>
     <p class="note fine">お金や住所などの個人情報は、書かないでね。</p>
   </form>
 </div>
 <div class="overlay" id="ownerLogin" role="dialog" aria-modal="true" aria-labelledby="oTitle" hidden>
   <form class="welcome frame-vivid" id="ownerForm" autocomplete="off">
     <h2 id="oTitle">店主ログイン</h2>
-    <p>6桁の番号を入れてな。</p>
-    <input type="password" id="pinInput" inputmode="numeric" maxlength="6" autocomplete="off" placeholder="●●●●●●" aria-label="6桁の番号">
+    <p>店主の番号（6〜10桁）を入れてな。</p>
+    <input type="password" id="pinInput" inputmode="numeric" maxlength="10" autocomplete="off" placeholder="●●●●●●" aria-label="店主の番号">
     <p class="fine" id="pinErr" role="alert" style="color:#c0392b;min-height:18px"></p>
     <div class="wbtns"><button class="send go" type="submit" id="pinGo">入る</button><button class="wback" type="button" id="pinBack">戻る</button></div>
   </form>
@@ -1557,7 +1557,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     settingsMode = true;
     $('wTitle').textContent = '設定';
     $('wLead').textContent = 'アイコン、色、ひとことを変えられます。ニックネームは変えられません。';
-    $('codeRow').hidden = true; nickInput.disabled = true; nickInput.value = me.nickname; $('xfer').hidden = true; $('ownerRow').hidden = true; $('wErr').textContent = '';
+    $('codeRow').hidden = true; nickInput.disabled = true; nickInput.value = me.nickname; $('xfer').hidden = true; $('ownerRow').hidden = isAdmin(); $('wErr').textContent = '';
     draft = { icon: me.icon || ICONS[1], color: me.color || COLORS[0][0] }; bioInput.value = me.bio || '';
     $('wGo').textContent = '保存する'; $('wBack').hidden = false; paintPrev();
     $('welcome').hidden = false;
@@ -1581,7 +1581,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     }).catch(function () { $('wGo').disabled = false; $('wErr').textContent = 'つながらへんかった。電波を確認してもう一回な'; });
   });
 
-  /* ---- 店主ログイン（6桁の番号） ---- */
+  /* ---- 店主ログイン（6〜10桁の番号） ---- */
   $('ownerLink').addEventListener('click', function () {
     $('welcome').hidden = true; $('ownerLogin').hidden = false; $('pinInput').value = ''; $('pinErr').textContent = ''; $('pinInput').focus();
   });
@@ -1589,7 +1589,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
   $('ownerForm').addEventListener('submit', function (e) {
     e.preventDefault();
     var pin = $('pinInput').value.trim();
-    if (!/^\d{6}$/.test(pin)) { $('pinErr').textContent = '6桁の数字で入れてな'; return; }
+    if (!/^\d{6,10}$/.test(pin)) { $('pinErr').textContent = '6〜10桁の数字で入れてな'; return; }
     $('pinGo').disabled = true; $('pinErr').textContent = '';
     api({ action: 'owner_login', pin: pin }).then(function (j) {
       $('pinGo').disabled = false; $('pinInput').value = '';
@@ -1614,13 +1614,13 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     });
     box.appendChild(b1); box.appendChild(out);
     // 店主ログインの番号（設定・変更は、店主アカウントだけ）
-    box.appendChild(el('h3', null, '店主ログイン（6桁の番号）'));
+    box.appendChild(el('h3', null, '店主ログイン（6〜10桁の番号）'));
     var pb = el('div', 'adm-pin'), pmsg = el('p', 'fine', me && me.pinSet ? '設定ずみ。変えるときは、いまの番号も入れてな。' : 'まだ未設定。決めた番号で、どの端末からも店主として入れるようになります。');
-    var pc = el('input'); pc.type = 'password'; pc.inputMode = 'numeric'; pc.maxLength = 6; pc.placeholder = 'いまの番号'; pc.autocomplete = 'off'; pc.hidden = !(me && me.pinSet);
-    var pn = el('input'); pn.type = 'password'; pn.inputMode = 'numeric'; pn.maxLength = 6; pn.placeholder = '新しい6桁'; pn.autocomplete = 'off';
+    var pc = el('input'); pc.type = 'password'; pc.inputMode = 'numeric'; pc.maxLength = 10; pc.placeholder = 'いまの番号'; pc.autocomplete = 'off'; pc.hidden = !(me && me.pinSet);
+    var pn = el('input'); pn.type = 'password'; pn.inputMode = 'numeric'; pn.maxLength = 10; pn.placeholder = '新しい番号（6〜10桁）'; pn.autocomplete = 'off';
     var pbtn = el('button', 'chip', me && me.pinSet ? '番号を変更' : '番号を設定'); pbtn.type = 'button';
     pbtn.addEventListener('click', function () {
-      if (!/^\d{6}$/.test(pn.value.trim())) { pmsg.textContent = '新しい番号は、6桁の数字で入れてな'; return; }
+      if (!/^\d{6,10}$/.test(pn.value.trim())) { pmsg.textContent = '新しい番号は、6〜10桁の数字で入れてな'; return; }
       api({ action: 'admin_set_pin', token: token, pin: pn.value.trim(), current: pc.value.trim() }).then(function (j) {
         if (j.ok) { pn.value = ''; pc.value = ''; pc.hidden = false; pbtn.textContent = '番号を変更'; pmsg.textContent = '設定したで。ほかの端末は、「店主ログイン」で入り直してな。'; poll(); }
         else pmsg.textContent = j.error === 'forbidden' ? 'この番号は、店主アカウントでしか変えられへん' : (j.message || '設定できへんかった');
