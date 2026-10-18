@@ -1726,6 +1726,13 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
               var u = el('button', 'chip', '退場を解除'); u.type = 'button';
               u.addEventListener('click', function () { api({ action: 'admin_unkick', token: token, member_id: m.id }).then(function () { load(); poll(); }); });
               r.appendChild(u);
+              // 一覧から消す（データは消さず、隠すだけ）。うっかり防止で2回押し
+              var dl = el('button', 'chip', '削除'); dl.type = 'button'; var dlArm = false;
+              dl.addEventListener('click', function () {
+                if (!dlArm) { dlArm = true; dl.textContent = 'もう一回で削除'; setTimeout(function () { dlArm = false; dl.textContent = '削除'; }, 4000); return; }
+                api({ action: 'admin_archive_member', token: token, member_id: m.id }).then(function (x) { if (x && x.ok) { toast('一覧から消したで'); load(); } else toast('消せへんかった'); });
+              });
+              r.appendChild(dl);
             } else {
               var t = el('button', 'chip', '引き継ぎコード'); t.type = 'button';
               t.addEventListener('click', function () { api({ action: 'admin_invite', token: token, kind: 'transfer', member_id: m.id, label: m.nickname }).then(function (x) { if (x.code) { out.textContent = ''; out.appendChild(el('p', 'fine', m.nickname + 'さん用の引き継ぎコード（1回だけ使える）')); out.appendChild(el('div', 'code', x.code)); } }); });
