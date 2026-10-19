@@ -882,12 +882,12 @@ body.admin-on .chat-head .linebtn, body.line-public .chat-head .linebtn { displa
 body.admin-on .tools .adminbtn{display:inline-flex}
 /* 上段ボタン：スマホでも文字を全部出す（余白を詰める） */
 @media (max-width:480px){
-.chat-head{gap:3px;padding:8px 6px}
+.chat-head{gap:3px;padding:8px 4px}
 .chat-head .presence{padding:3px 8px 3px 8px;gap:5px;font-size:12.5px;flex:none}
 .chat-head .head-actions{gap:3px}
-.chat-head .linebtn,.head-actions .fsbtn{height:30px;padding:0 7px 0 3px;gap:3px;font-size:12px;letter-spacing:0;flex:none}
+.chat-head .linebtn,.head-actions .fsbtn{height:30px;padding:0 6px 0 3px;gap:3px;font-size:12px;letter-spacing:0;flex:none}
 .chat-head .linebtn svg,.head-actions .fsbtn svg{width:20px;height:20px;padding:3px}
-.chat-head .songbtn{padding:0 7px 0 3px}
+.chat-head .songbtn{padding:0 6px 0 3px}
 }
 @media (max-width:350px){
 .chat-head{flex-wrap:wrap;row-gap:4px}
@@ -971,7 +971,7 @@ body.admin-on .tools .adminbtn{display:inline-flex}
     <div class="chat-in">
       <div class="chat-head">
         <button class="presence" type="button" id="presenceBtn" aria-expanded="false" aria-controls="pop"><span class="pdot" aria-hidden="true"></span><span><b id="pCount">0</b>人</span><span class="more">詳細</span></button>
-        <button class="fsbtn linebtn" type="button" id="lineBtn" aria-label="公式LINE（友だち追加）" title="公式LINE（友だち追加）"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5c-4.4 0-8 2.8-8 6.3 0 2.2 1.4 4.1 3.6 5.3-.1.7-.4 1.9-.7 2.6 0 0 1.9-.5 3.1-1.6.6.1 1.3.2 2 .2 4.4 0 8-2.8 8-6.3S16.4 4.5 12 4.5z" fill="currentColor"/></svg><span><i class="lx">公式</i>LINE</span></button><button class="fsbtn linebtn songbtn" type="button" id="songBtn" aria-label="オパールの歌" title="オパールの歌"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17V6l9-2v11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7" cy="17" r="2.6" fill="currentColor"/><circle cx="16" cy="15" r="2.6" fill="currentColor"/></svg><span>歌</span></button>
+        <button class="fsbtn linebtn" type="button" id="lineBtn" aria-label="公式LINE（友だち追加）" title="公式LINE（友だち追加）"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5c-4.4 0-8 2.8-8 6.3 0 2.2 1.4 4.1 3.6 5.3-.1.7-.4 1.9-.7 2.6 0 0 1.9-.5 3.1-1.6.6.1 1.3.2 2 .2 4.4 0 8-2.8 8-6.3S16.4 4.5 12 4.5z" fill="currentColor"/></svg><span><i class="lx">公式</i>LINE</span></button><button class="fsbtn linebtn songbtn" type="button" id="songBtn" aria-label="オパールの歌（音楽）" title="オパールの歌（音楽）"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17V6l9-2v11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7" cy="17" r="2.6" fill="currentColor"/><circle cx="16" cy="15" r="2.6" fill="currentColor"/></svg><span>音楽</span></button>
         <span class="chat-title">AMON オパ会</span>
         <div class="head-actions"><button class="fsbtn" type="button" id="setBtn"><svg aria-hidden="true"><use href="#gear"/></svg><span>設定</span></button><button class="fsbtn" type="button" id="fsBtn" aria-pressed="false"><svg aria-hidden="true"><use href="#expand" id="fsIcon"/></svg><span id="fsLabel">全画面</span></button></div>
         <div class="pop frame unkpop" id="unkPop" role="dialog" aria-label="わからん質問" hidden>
