@@ -892,6 +892,11 @@ body.admin-on .tools .adminbtn{display:inline-flex}
 @media (max-width:350px){
 .chat-head{flex-wrap:wrap;row-gap:4px}
 }
+/* 本日のテーマ：ボタンに見せる（押すとアンケートが開く） */
+@media (max-width:820px){
+.topic .theme .q::before{content:"本日のテーマ \25BE";display:inline-block;vertical-align:middle;margin-right:6px;padding:3px 8px;border-radius:999px;border:1px solid color-mix(in srgb,var(--gold) 55%,var(--line));background:linear-gradient(180deg,var(--surface),var(--surface-2));color:var(--fg);font-size:12px;font-weight:700;letter-spacing:0;line-height:1.4;box-shadow:0 5px 12px -8px rgba(0,0,0,.35)}
+.topic.open .theme .q::before{content:"本日のテーマ \25B4"}
+}
 </style>
 </head>
 <body>
