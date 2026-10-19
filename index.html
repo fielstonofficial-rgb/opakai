@@ -880,9 +880,18 @@ body.admin-on .chat-head .linebtn, body.line-public .chat-head .linebtn { displa
 .boost-n{min-width:48px;text-align:center;font-weight:700;font-size:15px}
 .tools .adminbtn{display:none}
 body.admin-on .tools .adminbtn{display:inline-flex}
-@media (max-width:420px){.chat-head .songbtn span{display:none}.chat-head .songbtn{padding:0 5px 0 5px}}
-@media (max-width:339px){.chat-head .linebtn .lx{display:none}}
-@media (max-width:380px){#setBtn span{display:none}}
+/* 上段ボタン：スマホでも文字を全部出す（余白を詰める） */
+@media (max-width:480px){
+.chat-head{gap:3px;padding:8px 6px}
+.chat-head .presence{padding:3px 8px 3px 8px;gap:5px;font-size:12.5px;flex:none}
+.chat-head .head-actions{gap:3px}
+.chat-head .linebtn,.head-actions .fsbtn{height:30px;padding:0 7px 0 3px;gap:3px;font-size:12px;letter-spacing:0;flex:none}
+.chat-head .linebtn svg,.head-actions .fsbtn svg{width:20px;height:20px;padding:3px}
+.chat-head .songbtn{padding:0 7px 0 3px}
+}
+@media (max-width:350px){
+.chat-head{flex-wrap:wrap;row-gap:4px}
+}
 </style>
 </head>
 <body>
