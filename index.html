@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!-- build 2026-10-23 guest-entry -->
+<!-- build 2026-10-23 guest-entry2 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -900,6 +900,14 @@ body.admin-on .tools .adminbtn{display:inline-flex}
 .topic .theme .q::before{content:"本日のテーマ \25BE";display:inline-block;vertical-align:middle;margin-right:6px;padding:3px 8px;border-radius:999px;border:1px solid color-mix(in srgb,var(--gold) 55%,var(--line));background:linear-gradient(180deg,var(--surface),var(--surface-2));color:var(--fg);font-size:12px;font-weight:700;letter-spacing:0;line-height:1.4;box-shadow:0 5px 12px -8px rgba(0,0,0,.35)}
 .topic.open .theme .q::before{content:"本日のテーマ \25B4"}
 }
+/* ゲストで入るボタン（玄関） */
+#guestRow{margin:14px 0 4px}
+#guestRow .gdiv{display:flex;align-items:center;gap:10px;color:var(--muted);font-size:12px;margin-bottom:8px}
+#guestRow .gdiv::before,#guestRow .gdiv::after{content:"";flex:1;height:1px;background:var(--line)}
+.guestbtn{display:flex;flex-direction:column;align-items:center;gap:2px;width:100%;padding:11px 14px;border-radius:999px;cursor:pointer;font:inherit;color:var(--fg);background:linear-gradient(180deg,var(--surface),var(--surface-2));border:2px solid color-mix(in srgb,var(--gold) 70%,var(--line));box-shadow:0 8px 18px -12px rgba(0,0,0,.45)}
+.guestbtn b{font-size:16px;letter-spacing:.02em}
+.guestbtn small{font-size:12px;opacity:.75}
+.guestbtn:disabled{opacity:.6}
 </style>
 </head>
 <body>
@@ -1029,7 +1037,10 @@ body.admin-on .tools .adminbtn{display:inline-flex}
     <input type="text" id="bioInput" maxlength="20" placeholder="例：ブラックオパール集めてます">
     <p class="fine" id="wErr" role="alert"></p>
     <div class="wbtns"><button class="send go" type="submit" id="wGo">入室する</button><button class="wback" type="button" id="wBack" hidden>戻る</button></div>
-    <p class="fine" id="guestRow" hidden><button class="chip" type="button" id="guestBtn">👤 ゲストで入る（コード不要・6時間）</button><br><span id="guestNote">いま、ゲスト入場を開放中です。ニックネームを入れて押してな。</span></p>
+    <div id="guestRow" hidden>
+      <div class="gdiv"><span>招待コードがない方は</span></div>
+      <button class="guestbtn" type="button" id="guestBtn"><b>👤 ゲストで入る</b><small id="guestBtnS">コード不要・ニックネームだけ・6時間入れます</small></button>
+    </div>
     <p class="fine" id="xfer">機種変更のときは、「引き継ぎコード」を招待コードの欄に入れてな（ニックネームは空でOK）。</p>
     <p class="fine" id="ownerRow"><button class="chip" type="button" id="ownerLink">🔑 店主ログイン（番号）</button></p>
     <p class="note fine">お金や住所などの個人情報は、書かないでね。</p>
@@ -1634,7 +1645,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     draft = { icon: ICONS[1], color: COLORS[0][0] }; bioInput.value = ''; paintPrev(); mode('join');
     // ゲスト入場：店主が開放している間だけ、ボタンを出す
     $('guestRow').hidden = true;
-    api({ action: 'guest_status' }).then(function (j) { if (j && j.open && !token && !settingsMode) $('guestRow').hidden = false; }).catch(function () {});
+    api({ action: 'guest_status' }).then(function (j) { if (j && j.open && !token && !settingsMode) { $('guestBtnS').textContent = 'コード不要・ニックネームだけ・' + (j.hours || 6) + '時間入れます'; $('guestRow').hidden = false; } }).catch(function () {});
   }
   function openSettings() {
     settingsMode = true;
