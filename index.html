@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!-- build 2026-10-23 guest-entry13-btn2 -->
+<!-- build 2026-10-23 guest-entry14-live -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1002,6 +1002,20 @@ body.admin-on .tools .adminbtn{display:inline-flex}
 #welcome.entry .guestbtn{color:#f6e7b8;background:rgba(255,255,255,.06)}
 #welcome.entry .chip{background:rgba(255,255,255,.08);color:var(--fg);border-color:rgba(180,195,255,.28)}
 #welcome.entry{background:var(--stars1) 0 0/700px 700px,var(--stars2) 230px 310px/620px 620px,linear-gradient(rgba(4,7,18,.5),rgba(4,7,18,.68)),var(--deep) center/cover no-repeat}
+
+/* ライブ配信（YouTube埋め込み）：チャットの上に映像を出す */
+.live{margin:0 0 8px;border-radius:14px;overflow:hidden;background:#05070f;border:1px solid color-mix(in srgb,var(--gold) 60%,var(--line));box-shadow:0 10px 24px -16px rgba(0,0,0,.7)}
+.live-bar{display:flex;align-items:center;gap:8px;padding:6px 10px;color:#eef1ff;font-size:12px}
+.live-badge{background:#e11d48;color:#fff;font-weight:700;letter-spacing:.08em;padding:2px 8px;border-radius:999px;font-size:11px;animation:livepulse 1.6s ease-in-out infinite}
+@keyframes livepulse{50%{opacity:.6}}
+.live-t{flex:1;min-width:0;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.live-fold{border:1px solid rgba(255,255,255,.3);background:transparent;color:#eef1ff;border-radius:999px;font-size:11px;padding:3px 10px;cursor:pointer}
+.live-frame{position:relative;width:100%;aspect-ratio:16/9;background:#000}
+.live.v .live-frame{aspect-ratio:9/16;max-height:56vh;width:auto;margin:0 auto}
+.live-frame iframe{position:absolute;inset:0;width:100%;height:100%;border:0}
+.live-hint{margin:0;padding:4px 10px 6px;font-size:10.5px;color:#a9b4d8}
+.live.off .live-frame,.live.off .live-hint{display:none}
+@media (max-height:640px){.live-frame{max-height:36vh;width:auto;margin:0 auto}}
 </style>
 </head>
 <body>
@@ -1094,6 +1108,11 @@ body.admin-on .tools .adminbtn{display:inline-flex}
           <ul id="popList"></ul>
           <p class="fine">いま、部屋にいる人です（90秒以内に動きがあった人）。</p>
         </div>
+      </div>
+      <div class="live" id="liveBox" hidden>
+        <div class="live-bar"><span class="live-badge">● LIVE</span><span class="live-t" id="liveT">ライブ配信中</span><button type="button" class="live-fold" id="liveFold">映像を閉じる</button></div>
+        <div class="live-frame" id="liveFrame"></div>
+        <p class="live-hint" id="liveHint">音が出ないときは、映像の🔊をタップしてな。</p>
       </div>
       <div class="stream-wrap">
         <div class="stream" id="stream" role="log" aria-live="polite"></div>
@@ -1602,10 +1621,29 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       document.body.classList.toggle('admin-on', isAdmin());
       LS.set('opa_adm', isAdmin() ? '1' : '0'); applyStealth();
       $('whoName').textContent = me.nickname; $('whoami').hidden = false;
-      render(j.msgs); renderPresence(j.people || []); renderTheme(j.theme, j.themeBy); renderSurvey(j.poll);
+      render(j.msgs); renderPresence(j.people || []); renderTheme(j.theme, j.themeBy); renderSurvey(j.poll); renderLive(j.live);
       if (typingNode && Date.now() > typingUntil) { typingNode.remove(); typingNode = null; }
     }).catch(function () { busy = false; });
   }
+  // ライブ配信：店主がオンにしている間だけ、チャットの上に映像を出す（映像は、動画IDが変わった時だけ作り直す）
+  var liveVid = '', liveHidden = false, liveLast = null;
+  function mountLive() {
+    var fr = $('liveFrame'); fr.textContent = '';
+    if (!liveVid || liveHidden) return;
+    var f = document.createElement('iframe');
+    f.src = 'https://www.youtube-nocookie.com/embed/' + liveVid + '?autoplay=1&mute=1&playsinline=1&rel=0&modestbranding=1';
+    f.allow = 'autoplay; encrypted-media; picture-in-picture; fullscreen'; f.setAttribute('allowfullscreen', ''); f.title = 'ライブ配信';
+    f.referrerPolicy = 'strict-origin-when-cross-origin'; fr.appendChild(f);
+  }
+  function renderLive(l) {
+    var box = $('liveBox'); liveLast = l;
+    if (!l || !l.on || !l.vid) { if (liveVid) { $('liveFrame').textContent = ''; liveVid = ''; } box.hidden = true; return; }
+    box.classList.toggle('v', l.ratio === '9:16');
+    if (liveVid !== l.vid) { liveVid = l.vid; liveHidden = false; mountLive(); }
+    box.classList.toggle('off', liveHidden); $('liveFold').textContent = liveHidden ? '映像を見る' : '映像を閉じる';
+    box.hidden = false;
+  }
+  $('liveFold').addEventListener('click', function () { liveHidden = !liveHidden; mountLive(); renderLive(liveLast); });
   function loop() {
     clearTimeout(timer);
     if (!token) return;
@@ -1932,6 +1970,28 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
   $('adminBtn').addEventListener('click', openAdmin);
   function openAdmin() {
     var box = $('adminBody'); box.textContent = '';
+    // ライブ配信（YouTube）：URLを入れてオンにすると、全員のチャットの上に映像が出る
+    box.appendChild(el('h3', null, 'ライブ配信（YouTube限定公開）'));
+    var lv = el('div', 'adm-shared'); box.appendChild(lv);
+    function paintLiveAdm(j) {
+      lv.textContent = '';
+      if (!j || j.on === undefined) { lv.appendChild(el('p', 'fine', '読み込めへんかった。もう一回開いてな')); return; }
+      lv.appendChild(el('p', 'fine', j.on ? '🔴 配信中（全員の画面の上に映像が出てます）' : '⚪ オフ。YouTubeのライブのURLを入れて、オンにしてな。'));
+      var inp = el('input'); inp.type = 'text'; inp.placeholder = 'YouTubeライブのURL（https://youtube.com/live/…）'; inp.setAttribute('aria-label', '配信のURL'); inp.style.width = '100%';
+      if (j.vid) inp.value = 'https://youtu.be/' + j.vid;
+      lv.appendChild(inp);
+      var row = el('div', 'adm-pin');
+      var rs = el('select'); [['16:9', '横向き（16:9）'], ['9:16', '縦向き（9:16）']].forEach(function (o) { var op = el('option', null, o[1]); op.value = o[0]; if (o[0] === j.ratio) op.selected = true; rs.appendChild(op); });
+      var tg = el('button', 'chip', j.on ? '配信をオフにする' : '配信をオンにする'); tg.type = 'button';
+      tg.addEventListener('click', function () {
+        api({ action: 'admin_live_set', token: token, on: !j.on, url: inp.value, ratio: rs.value }).then(function (x) {
+          if (x && x.on !== undefined) { paintLiveAdm(x); renderLive(x); toast(x.on ? '配信をオンにしたで' : '配信をオフにしたで'); } else toast('URLを確かめてな（YouTubeのURL）');
+        }).catch(function () { toast('YouTubeのURLか、つながりを確かめてな'); });
+      });
+      row.appendChild(rs); row.appendChild(tg); lv.appendChild(row);
+      lv.appendChild(el('p', 'fine', '映像は、YouTube側の遅れ（数秒〜十数秒）があります。チャットは、少し先の話になります。'));
+    }
+    api({ action: 'admin_live_get', token: token }).then(paintLiveAdm).catch(function () { paintLiveAdm(null); });
     // 共通コード（募集用）：オンの間だけ入れる。オンにする時に、自動で切れる時間と人数の上限を決める
     box.appendChild(el('h3', null, 'ゲスト入場（コード不要・鍵は6時間）'));
     var gs = el('div', 'adm-shared'); box.appendChild(gs);
