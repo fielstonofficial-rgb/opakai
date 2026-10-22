@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!-- build 2026-10-23 guest-entry14-live -->
+<!-- build 2026-10-23 guest-entry15-yt -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1016,6 +1016,13 @@ body.admin-on .tools .adminbtn{display:inline-flex}
 .live-hint{margin:0;padding:4px 10px 6px;font-size:10.5px;color:#a9b4d8}
 .live.off .live-frame,.live.off .live-hint{display:none}
 @media (max-height:640px){.live-frame{max-height:36vh;width:auto;margin:0 auto}}
+
+.chat-head a.ytbtn{text-decoration:none;color:var(--fg)}
+.chat-head .linebtn.ytbtn svg{background:linear-gradient(135deg,#ff4b4b,#d90000);width:26px;height:20px;border-radius:7px;padding:0}
+.chat-head .linebtn.ytbtn{padding:0 5px 0 4px}
+
+@media (max-width:430px){.chat-head .linebtn .lx{display:none}}
+@media (max-width:370px){#fsLabel{display:none}}
 </style>
 </head>
 <body>
@@ -1095,7 +1102,7 @@ body.admin-on .tools .adminbtn{display:inline-flex}
     <div class="chat-in">
       <div class="chat-head">
         <button class="presence" type="button" id="presenceBtn" aria-expanded="false" aria-controls="pop"><span class="pdot" aria-hidden="true"></span><span><b id="pCount">0</b>人</span><span class="more">詳細</span></button>
-        <button class="fsbtn linebtn" type="button" id="lineBtn" aria-label="公式LINE（友だち追加）" title="公式LINE（友だち追加）"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5c-4.4 0-8 2.8-8 6.3 0 2.2 1.4 4.1 3.6 5.3-.1.7-.4 1.9-.7 2.6 0 0 1.9-.5 3.1-1.6.6.1 1.3.2 2 .2 4.4 0 8-2.8 8-6.3S16.4 4.5 12 4.5z" fill="currentColor"/></svg><span><i class="lx">公式</i>LINE</span></button><button class="fsbtn linebtn songbtn" type="button" id="songBtn" aria-label="オパールの歌（音楽）" title="オパールの歌（音楽）"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17V6l9-2v11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7" cy="17" r="2.6" fill="currentColor"/><circle cx="16" cy="15" r="2.6" fill="currentColor"/></svg><span>音楽</span></button>
+        <button class="fsbtn linebtn" type="button" id="lineBtn" aria-label="公式LINE（友だち追加）" title="公式LINE（友だち追加）"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5c-4.4 0-8 2.8-8 6.3 0 2.2 1.4 4.1 3.6 5.3-.1.7-.4 1.9-.7 2.6 0 0 1.9-.5 3.1-1.6.6.1 1.3.2 2 .2 4.4 0 8-2.8 8-6.3S16.4 4.5 12 4.5z" fill="currentColor"/></svg><span><i class="lx">公式</i>LINE</span></button><a class="fsbtn linebtn songbtn ytbtn" id="ytBtn" href="https://www.youtube.com/@AMONOPAL?sub_confirmation=1" target="_blank" rel="noopener" aria-label="YouTubeチャンネル登録" title="YouTubeチャンネル登録"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 8.6v6.8l5.8-3.4z" fill="currentColor"/></svg></a><button class="fsbtn linebtn songbtn" type="button" id="songBtn" aria-label="オパールの歌（音楽）" title="オパールの歌（音楽）"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17V6l9-2v11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7" cy="17" r="2.6" fill="currentColor"/><circle cx="16" cy="15" r="2.6" fill="currentColor"/></svg><span>音楽</span></button>
         <span class="chat-title">AMON オパ会</span>
         <div class="head-actions"><button class="fsbtn" type="button" id="setBtn"><svg aria-hidden="true"><use href="#gear"/></svg><span>設定</span></button><button class="fsbtn" type="button" id="fsBtn" aria-pressed="false"><svg aria-hidden="true"><use href="#expand" id="fsIcon"/></svg><span id="fsLabel">全画面</span></button></div>
         <div class="pop frame unkpop" id="unkPop" role="dialog" aria-label="わからん質問" hidden>
