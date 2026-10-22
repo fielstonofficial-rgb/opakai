@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!-- build 2026-10-20 00:45 survey-pill-small -->
+<!-- build 2026-10-23 guest-entry -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1029,6 +1029,7 @@ body.admin-on .tools .adminbtn{display:inline-flex}
     <input type="text" id="bioInput" maxlength="20" placeholder="例：ブラックオパール集めてます">
     <p class="fine" id="wErr" role="alert"></p>
     <div class="wbtns"><button class="send go" type="submit" id="wGo">入室する</button><button class="wback" type="button" id="wBack" hidden>戻る</button></div>
+    <p class="fine" id="guestRow" hidden><button class="chip" type="button" id="guestBtn">👤 ゲストで入る（コード不要・6時間）</button><br><span id="guestNote">いま、ゲスト入場を開放中です。ニックネームを入れて押してな。</span></p>
     <p class="fine" id="xfer">機種変更のときは、「引き継ぎコード」を招待コードの欄に入れてな（ニックネームは空でOK）。</p>
     <p class="fine" id="ownerRow"><button class="chip" type="button" id="ownerLink">🔑 店主ログイン（番号）</button></p>
     <p class="note fine">お金や住所などの個人情報は、書かないでね。</p>
@@ -1442,10 +1443,16 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     return api({ action: 'poll', token: token, stealth: stealthNow() }).then(function (j) {
       busy = false;
       if (j.kicked) { stop(); if ($('kicked').hidden) $('kMsg').textContent = 'いまは、この部屋に入れません😺'; mode('kick'); return; }
-      if (j._s === 401) { stop(); LS.del('opa_token'); token = null; mode('join'); openJoin(); return; }
+      if (j._s === 401) {
+        var wasGuest = LS.get('opa_guest') === '1';
+        stop(); LS.del('opa_token'); token = null; mode('join'); openJoin();
+        if (wasGuest) { LS.set('opa_guest', '0'); $('wErr').textContent = 'ゲストの時間（6時間）が終わりました。ゲスト入場が開いていれば、もう一度入れます。'; }
+        return;
+      }
       if (!j.msgs) return;
       var wasAdmin = isAdmin();
       me = j.me;
+      $('attachBtn').hidden = !!me.guest;
       if (appEl.hidden) mode('chat');
       document.body.classList.toggle('admin-on', isAdmin());
       LS.set('opa_adm', isAdmin() ? '1' : '0'); applyStealth();
@@ -1625,11 +1632,15 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     $('codeRow').hidden = false; nickInput.disabled = false; nickInput.value = ''; codeInput.value = '';
     $('wGo').textContent = '入室する'; $('wBack').hidden = true; $('xfer').hidden = false; $('ownerRow').hidden = false; $('wErr').textContent = '';
     draft = { icon: ICONS[1], color: COLORS[0][0] }; bioInput.value = ''; paintPrev(); mode('join');
+    // ゲスト入場：店主が開放している間だけ、ボタンを出す
+    $('guestRow').hidden = true;
+    api({ action: 'guest_status' }).then(function (j) { if (j && j.open && !token && !settingsMode) $('guestRow').hidden = false; }).catch(function () {});
   }
   function openSettings() {
     settingsMode = true;
     $('wTitle').textContent = '設定';
     $('wLead').textContent = 'アイコン、色、ひとことを変えられます。ニックネームは変えられません。';
+    $('guestRow').hidden = true;
     $('codeRow').hidden = true; nickInput.disabled = true; nickInput.value = me.nickname; $('xfer').hidden = true; $('ownerRow').hidden = isAdmin(); $('wErr').textContent = '';
     draft = { icon: me.icon || ICONS[1], color: me.color || COLORS[0][0] }; bioInput.value = me.bio || '';
     $('wGo').textContent = '保存する'; $('wBack').hidden = false; paintPrev();
@@ -1649,9 +1660,21 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     $('wGo').disabled = true;
     api({ action: 'join', code: code, nickname: nickInput.value.trim(), icon: draft.icon, color: draft.color, bio: bioInput.value.trim() }).then(function (j) {
       $('wGo').disabled = false;
-      if (j.token) { token = j.token; LS.set('opa_token', token); LS.set('opa_adm', j.isAdmin ? '1' : '0'); begin(); }
+      if (j.token) { token = j.token; LS.set('opa_token', token); LS.set('opa_adm', j.isAdmin ? '1' : '0'); LS.set('opa_guest', '0'); begin(); }
       else $('wErr').textContent = j.message || '入室できませんでした';
     }).catch(function () { $('wGo').disabled = false; $('wErr').textContent = 'つながらへんかった。電波を確認してもう一回な'; });
+  });
+
+  /* ---- ゲスト入場（コード不要。店主が開放している間だけ。鍵は6時間） ---- */
+  $('guestBtn').addEventListener('click', function () {
+    var nick = nickInput.value.trim();
+    if (!nick) { $('wErr').textContent = 'ニックネームを入れてな'; nickInput.focus(); return; }
+    $('wErr').textContent = ''; $('guestBtn').disabled = true;
+    api({ action: 'join_guest', nickname: nick, icon: draft.icon, color: draft.color, bio: bioInput.value.trim() }).then(function (j) {
+      $('guestBtn').disabled = false;
+      if (j.token) { token = j.token; LS.set('opa_token', token); LS.set('opa_adm', '0'); LS.set('opa_guest', '1'); begin(); toast('ゲストで入ったで。6時間、楽しんでな'); }
+      else { $('wErr').textContent = j.message || '入れませんでした'; if (j.error === 'guest_closed') $('guestRow').hidden = true; }
+    }).catch(function () { $('guestBtn').disabled = false; $('wErr').textContent = 'つながらへんかった。電波を確認してもう一回な'; });
   });
 
   /* ---- 店主ログイン（6〜10桁の番号） ---- */
@@ -1681,6 +1704,38 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
   function openAdmin() {
     var box = $('adminBody'); box.textContent = '';
     // 共通コード（募集用）：オンの間だけ入れる。オンにする時に、自動で切れる時間と人数の上限を決める
+    box.appendChild(el('h3', null, 'ゲスト入場（コード不要・鍵は6時間）'));
+    var gs = el('div', 'adm-shared'); box.appendChild(gs);
+    function paintGuest(j) {
+      gs.textContent = '';
+      if (!j || j.on === undefined) { gs.appendChild(el('p', 'fine', '読み込めへんかった。もう一回開いてな')); return; }
+      var st = el('p', 'fine');
+      if (j.on) {
+        var mn = Math.max(0, Math.round((new Date(j.until).getTime() - Date.now()) / 60000));
+        st.textContent = '🟢 開放中。あと' + (mn >= 60 ? Math.floor(mn / 60) + '時間' + (mn % 60) + '分' : mn + '分') + 'で自動オフ／いまのゲスト' + j.count + '人（上限' + j.max + '人）';
+      } else st.textContent = '⚪ オフ。いまゲストは入れません。（入っているゲスト：' + j.count + '人は、鍵の期限まで居られます）';
+      gs.appendChild(st);
+      var grow = el('div', 'adm-pin');
+      var ghs = el('select'); [['1', '1時間開放'], ['3', '3時間開放'], ['6', '6時間開放'], ['12', '12時間開放'], ['24', '24時間開放']].forEach(function (o) { var op = el('option', null, o[1]); op.value = o[0]; if (o[0] === '6') op.selected = true; ghs.appendChild(op); });
+      var gms = el('select'); [['30', '30人まで'], ['50', '50人まで'], ['100', '100人まで']].forEach(function (o) { var op = el('option', null, o[1]); op.value = o[0]; if (o[0] === '50') op.selected = true; gms.appendChild(op); });
+      var gtg = el('button', 'chip', j.on ? 'ゲスト開放をオフにする' : 'ゲスト開放をオンにする'); gtg.type = 'button';
+      gtg.addEventListener('click', function () {
+        api({ action: 'admin_guest_set', token: token, on: !j.on, hours: Number(ghs.value), max: Number(gms.value) }).then(function (x) {
+          if (x && x.on !== undefined) { paintGuest(x); toast(x.on ? 'ゲスト開放をオンにしたで' : 'ゲスト開放をオフにしたで（入ってる人は期限まで居れる）'); } else toast('変えられへんかった');
+        }).catch(function () { toast('つながらへんかった。もう一回な'); });
+      });
+      if (!j.on) { grow.appendChild(ghs); grow.appendChild(gms); }
+      grow.appendChild(gtg);
+      var gk = el('button', 'chip', 'ゲスト全員を退場'); gk.type = 'button'; var gkArm = false;
+      gk.addEventListener('click', function () {
+        if (!gkArm) { gkArm = true; gk.textContent = 'もう一回押すと全員退場'; setTimeout(function () { gkArm = false; gk.textContent = 'ゲスト全員を退場'; }, 4000); return; }
+        api({ action: 'admin_guest_kick_all', token: token }).then(function (x) { toast((x && x.removed != null ? x.removed : 0) + '人のゲストに退場してもらったで'); api({ action: 'admin_guest_get', token: token }).then(paintGuest); poll(); });
+      });
+      grow.appendChild(gk);
+      gs.appendChild(grow);
+      gs.appendChild(el('p', 'fine', 'ゲストは、文字のチャットと投票ができます（写真は送れません）。開放中は、入り直せば、またそこから6時間使えます。'));
+    }
+    api({ action: 'admin_guest_get', token: token }).then(paintGuest).catch(function () { paintGuest(null); });
     box.appendChild(el('h3', null, '共通コード（募集用）'));
     var sc = el('div', 'adm-shared'); box.appendChild(sc);
     function paintShared(j) {
