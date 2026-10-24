@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!-- build 2026-10-23 guest-entry17-head2 -->
+<!-- build 2026-10-25 guest-entry18-final -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1631,7 +1631,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       if (!j.msgs) return;
       var wasAdmin = isAdmin();
       me = j.me;
-      $('attachBtn').hidden = !!me.guest;
+      $('attachBtn').hidden = !!me.guest && !me.guestImg;
       if (appEl.hidden) mode('chat');
       document.body.classList.toggle('admin-on', isAdmin());
       LS.set('opa_adm', isAdmin() ? '1' : '0'); applyStealth();
@@ -2038,7 +2038,15 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       });
       grow.appendChild(gk);
       gs.appendChild(grow);
-      gs.appendChild(el('p', 'fine', 'ゲストは、文字のチャットと投票ができます（写真は送れません）。開放中は、入り直せば、またそこから6時間使えます。'));
+      var irow = el('div', 'adm-pin');
+      var gi = el('button', 'chip', j.img ? '📷 ゲストの写真：オン（押すとオフ）' : '📷 ゲストの写真：オフ（押すとオン）'); gi.type = 'button';
+      gi.addEventListener('click', function () {
+        api({ action: 'admin_guest_set', token: token, img: !j.img }).then(function (x) {
+          if (x && x.img !== undefined) { paintGuest(x); toast(x.img ? 'ゲストの写真をオンにしたで' : 'ゲストの写真をオフにしたで'); } else toast('変えられへんかった');
+        }).catch(function () { toast('つながらへんかった。もう一回な'); });
+      });
+      irow.appendChild(gi); gs.appendChild(irow);
+      gs.appendChild(el('p', 'fine', 'ゲストは、文字のチャットと投票ができます。写真は、上のスイッチでオン・オフ（ゲストは10分に5枚まで）。開放中は、入り直せば、またそこから6時間使えます。'));
     }
     api({ action: 'admin_guest_get', token: token }).then(paintGuest).catch(function () { paintGuest(null); });
     box.appendChild(el('h3', null, '共通コード（募集用）'));
