@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!-- build 2026-10-25 guest-entry18-final -->
+<!-- build 2026-10-25 help-noqk-index -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -866,6 +866,15 @@ body.admin-on .chat-head .linebtn, body.line-public .chat-head .linebtn { displa
 #lbMsg{position:absolute;color:#fff;font-size:14px}
 #lbClose{position:fixed;top:12px;right:12px;z-index:2;width:40px;height:40px;border-radius:50%;border:0;background:rgba(255,255,255,.18);color:#fff;font-size:20px}
 #songPanel .welcome{max-height:92dvh;overflow-y:auto}
+/* 使い方（？）ボタンと説明パネル */
+#helpBtn{padding:0 5px !important}
+#helpBtn svg{background:linear-gradient(135deg,#b07be8,#6a7cf0)}
+#helpPanel .welcome{max-height:92dvh;overflow-y:auto}
+#helpPanel[hidden]{display:none}
+.help h3{margin:14px 0 4px;font-size:14px}
+.help ul{margin:0 0 6px;padding-left:1.2em}
+.help li{margin:3px 0;font-size:13.5px;line-height:1.6}
+
 .song{margin:10px 0 14px}
 .song h3{margin:0 0 6px;font-size:14px}
 .ytwrap{position:relative;width:100%;aspect-ratio:16/9;border-radius:12px;overflow:hidden;background:#000;margin-bottom:6px}
@@ -1112,7 +1121,7 @@ body.admin-on .tools .adminbtn{display:inline-flex}
         <button class="presence" type="button" id="presenceBtn" aria-expanded="false" aria-controls="pop"><span class="pdot" aria-hidden="true"></span><span><b id="pCount">0</b>人</span><span class="more">詳細</span></button>
         <button class="fsbtn linebtn" type="button" id="lineBtn" aria-label="公式LINE（友だち追加）" title="公式LINE（友だち追加）"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5c-4.4 0-8 2.8-8 6.3 0 2.2 1.4 4.1 3.6 5.3-.1.7-.4 1.9-.7 2.6 0 0 1.9-.5 3.1-1.6.6.1 1.3.2 2 .2 4.4 0 8-2.8 8-6.3S16.4 4.5 12 4.5z" fill="currentColor"/></svg><span><i class="lx">公式</i>LINE</span></button><a class="fsbtn linebtn songbtn ytbtn" id="ytBtn" href="https://www.youtube.com/@AMONOPAL?sub_confirmation=1" target="_blank" rel="noopener" aria-label="YouTubeチャンネル登録" title="YouTubeチャンネル登録"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 8.6v6.8l5.8-3.4z" fill="currentColor"/></svg></a><button class="fsbtn linebtn songbtn" type="button" id="songBtn" aria-label="オパールの歌（音楽）" title="オパールの歌（音楽）"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17V6l9-2v11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7" cy="17" r="2.6" fill="currentColor"/><circle cx="16" cy="15" r="2.6" fill="currentColor"/></svg><span>音楽</span></button>
         <span class="chat-title">AMON オパ会</span>
-        <div class="head-actions"><button class="fsbtn" type="button" id="setBtn"><svg aria-hidden="true"><use href="#gear"/></svg><span>設定</span></button><button class="fsbtn" type="button" id="fsBtn" aria-pressed="false"><svg aria-hidden="true"><use href="#expand" id="fsIcon"/></svg><span id="fsLabel">全画面</span></button></div>
+        <div class="head-actions"><button class="fsbtn" type="button" id="setBtn"><svg aria-hidden="true"><use href="#gear"/></svg><span>設定</span></button><button class="fsbtn" type="button" id="helpBtn" aria-label="使い方" title="使い方"><svg viewBox="0 0 24 24" aria-hidden="true"><text x="12" y="17.5" text-anchor="middle" font-size="17" font-weight="700" fill="currentColor">?</text></svg></button><button class="fsbtn" type="button" id="fsBtn" aria-pressed="false"><svg aria-hidden="true"><use href="#expand" id="fsIcon"/></svg><span id="fsLabel">全画面</span></button></div>
         <div class="pop frame unkpop" id="unkPop" role="dialog" aria-label="わからん質問" hidden>
           <h3>猫が答えられんかった質問</h3>
           <ul class="unk-list" id="unkList"></ul>
@@ -1137,7 +1146,6 @@ body.admin-on .tools .adminbtn{display:inline-flex}
       <div class="toast" id="toast" role="status" hidden></div>
       <form class="composer" id="composer" autocomplete="off">
         <div class="offbar" id="offBar" hidden><span>ログインしていません：みんなの会話を、見るだけ</span><button class="chip" type="button" id="backOnline">ログインする</button></div>
-        <div class="qk"><span class="qk-title">💬 猫に質問</span><button class="qk-chip" type="button" id="qkChip" aria-label="この質問を猫に送る"><span class="qt"></span><span class="qgo"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M22 2 11 13M22 2l-7 20-4-9-9-4z"/></svg>送る</span></button><button class="qk-shuffle" type="button" id="qkShuffle" aria-label="別の質問にかえる" title="質問をかえる"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M20 11a8 8 0 0 0-14.5-4.5L4 8M4 4v4h4M4 13a8 8 0 0 0 14.5 4.5L20 16M20 20v-4h-4"/></svg></button></div>
         <div class="row">
           <button class="attach" type="button" id="attachBtn" aria-label="写真を送る" title="写真を送る">📷</button><input type="file" id="fileInput" accept="image/*" hidden><input type="text" id="msgInput" maxlength="200" placeholder="チャット入力画面" aria-label="メッセージ">
           <button class="send" type="submit">送る</button>
@@ -1233,6 +1241,50 @@ body.admin-on .tools .adminbtn{display:inline-flex}
 <div class="overlay" id="lightbox" role="dialog" aria-modal="true" aria-label="写真" hidden>
   <button id="lbClose" type="button" aria-label="閉じる">✕</button>
   <div id="lbBox"><span id="lbMsg"></span><img id="lbImg" alt="大きい写真"></div>
+</div>
+<div class="overlay" id="helpPanel" role="dialog" aria-modal="true" aria-labelledby="helpTitle" hidden>
+  <div class="welcome frame-vivid">
+    <h2 id="helpTitle">この会議室の使い方</h2>
+    <div class="help">
+      <h3>💬 話す</h3>
+      <ul>
+        <li>下の入力欄に書いて、「送る」を押すと、みんなに届きます。</li>
+        <li>お金や住所などの個人情報は、書かないでね。</li>
+        <li>「📷」を押すと、写真を送れます（ライブ中などは、ゲストの写真をお休みすることがあります）。</li>
+      </ul>
+      <h3>🐱 猫に話しかける</h3>
+      <ul>
+        <li>メッセージに「アロン」か「フラン」と入れると、その猫が答えます。例：「アロン、おすすめのオパールは？」</li>
+        <li>猫にわからんことは、ご主人（店主）に聞いておきます。</li>
+        <li>話しすぎると、猫が眠くなって、少しお休みします。</li>
+      </ul>
+      <h3>📊 アンケート・今日のテーマ</h3>
+      <ul>
+        <li>上の「アンケート」で、投票できます。投票すると、みんなの結果が見られます。</li>
+        <li>「本日のテーマ」は、いまの話題です。</li>
+      </ul>
+      <h3>🔘 上のボタン</h3>
+      <ul>
+        <li>「○人」：いま、部屋にいる人の一覧です。</li>
+        <li>「公式LINE」：友だち追加のページが開きます。</li>
+        <li>「▶」：YouTubeチャンネルの登録ページが開きます。</li>
+        <li>「音楽」：オパールの歌が聴けます。</li>
+        <li>「設定」：名前の横のアイコンや色を変えられます。</li>
+        <li>「全画面」：チャットを大きく表示します。もう一度押すと戻ります。</li>
+      </ul>
+      <h3>🔴 ライブ</h3>
+      <ul>
+        <li>ライブ中は、チャットの上に映像が出ます。音が出ないときは、映像の🔊を押してください。</li>
+        <li>映像が邪魔なときは、「映像を閉じる」で隠せます。</li>
+      </ul>
+      <h3>🙏 お願い</h3>
+      <ul>
+        <li>みんなが気持ちよく使えるように、不適切な発言があった場合は、退場となることがあります。</li>
+        <li>ゲストで入った場合、入れる時間は6時間までです。</li>
+      </ul>
+    </div>
+    <div class="wbtns"><button class="send" type="button" id="helpClose">閉じる</button></div>
+  </div>
 </div>
 <div class="overlay" id="songPanel" role="dialog" aria-modal="true" aria-labelledby="songTitle" hidden>
   <div class="welcome frame-vivid">
@@ -1769,6 +1821,10 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       songBox.appendChild(sec);
     });
   }
+  $('helpBtn').addEventListener('click', function () { $('helpPanel').hidden = false; });
+  $('helpClose').addEventListener('click', function () { $('helpPanel').hidden = true; });
+  $('helpPanel').addEventListener('click', function (e) { if (e.target === $('helpPanel')) $('helpPanel').hidden = true; });
+  document.addEventListener('keydown', function (e) { if (e.key === 'Escape' && !$('helpPanel').hidden) $('helpPanel').hidden = true; });
   $('songBtn').addEventListener('click', function () { songOpen(true); });
   $('songClose').addEventListener('click', function () { songOpen(false); });
   $('songPanel').addEventListener('click', function (e) { if (e.target === $('songPanel')) songOpen(false); });
@@ -1793,16 +1849,6 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
   Array.prototype.forEach.call(document.querySelectorAll('.cathead'), function (b) {
     b.addEventListener('click', function () { input.value = b.getAttribute('data-call') + '、'; input.focus(); });
   });
-  var qkCur = '', qkBtn = $('qkChip'), qkText = qkBtn.querySelector('.qt');
-  function pickQ() {
-    var n, tries = 0;
-    do { n = QALL[Math.floor(Math.random() * QALL.length)]; tries++; } while (n === qkCur && tries < 12);
-    qkCur = n; return n;
-  }
-  function swapQ() { qkBtn.classList.add('swap'); setTimeout(function () { qkText.textContent = pickQ(); qkBtn.classList.remove('swap'); }, 160); }
-  qkText.textContent = pickQ();
-  qkBtn.addEventListener('click', function () { var who = Math.random() < 0.5 ? 'フラン' : 'アロン'; say(who + '、' + qkCur); swapQ(); });
-  $('qkShuffle').addEventListener('click', swapQ);
 
   /* ---- 入室・設定 ---- */
   var wform = $('welcomeForm'), nickInput = $('nickInput'), codeInput = $('codeInput'), bioInput = $('bioInput'), sw = $('swatches'), iconsEl = $('icons'), iconPrev = $('iconPrev');
