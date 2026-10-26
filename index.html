@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!-- build 2026-10-25 tight-v3 -->
+<!-- build 2026-10-26 align-v5 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1048,6 +1048,16 @@ body.admin-on .tools .adminbtn{display:inline-flex}
 .stream .notice { margin: 1px 0 !important; }
 /* ？ボタンを足して上の列がはみ出したのを戻す（細い画面だけ、ボタンの余白を少し詰める） */
 @media (max-width: 430px) { .chat-head { gap: 1px !important; padding-left: 2px !important; padding-right: 2px !important; } .chat-head .head-actions { gap: 1px !important; } .chat-head .presence { padding: 3px 4px !important; } .chat-head .linebtn, .head-actions .fsbtn { padding: 0 3px 0 1px !important; } #helpBtn { padding: 0 1px !important; } }
+/* 上段ボタン：スマホでは、全部のボタンを同じ間隔で並べる。？は少し大きく丸く */
+@media (max-width: 820px) {
+  .chat-head { justify-content: space-between !important; }
+  .chat-head .head-actions { display: contents !important; }
+  .chat-head .presence, .chat-head .linebtn, .chat-head .fsbtn { flex: none !important; margin-left: 0 !important; }
+  #helpBtn { width: 32px !important; height: 32px !important; padding: 0 !important; justify-content: center !important; }
+  #helpBtn svg { width: 26px !important; height: 26px !important; padding: 2px !important; }
+  #helpBtn svg text { font-size: 20px !important; }
+}
+@media (max-width: 350px) { #fsBtn { margin-left: auto !important; } }
 </style>
 </head>
 <body>
@@ -2053,11 +2063,24 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       var row = el('div', 'adm-pin');
       var rs = el('select'); [['16:9', '横向き（16:9）'], ['9:16', '縦向き（9:16）']].forEach(function (o) { var op = el('option', null, o[1]); op.value = o[0]; if (o[0] === j.ratio) op.selected = true; rs.appendChild(op); });
       var tg = el('button', 'chip', j.on ? '配信をオフにする' : '配信をオンにする'); tg.type = 'button';
-      tg.addEventListener('click', function () {
-        api({ action: 'admin_live_set', token: token, on: !j.on, url: inp.value, ratio: rs.value }).then(function (x) {
+      function sendLive(on) {
+        return api({ action: 'admin_live_set', token: token, on: on, url: inp.value, ratio: rs.value }).then(function (x) {
           if (x && x.on !== undefined) { paintLiveAdm(x); renderLive(x); toast(x.on ? '配信をオンにしたで' : '配信をオフにしたで'); } else toast('URLを確かめてな（YouTubeのURL）');
         }).catch(function () { toast('YouTubeのURLか、つながりを確かめてな'); });
+      }
+      tg.addEventListener('click', function () { sendLive(!j.on); });
+      // 貼り付けボタン：コピーしたYouTubeのURLを、1回押すだけで入れて、そのままオンにする
+      var pb = el('button', 'chip', '📋 貼り付けて配信オン'); pb.type = 'button';
+      pb.addEventListener('click', function () {
+        var fail = function () { inp.focus(); toast('貼り付けできへんかった。上の入力欄を長押しして貼り付けてな'); };
+        if (!navigator.clipboard || !navigator.clipboard.readText) { fail(); return; }
+        navigator.clipboard.readText().then(function (t) {
+          t = (t || '').trim();
+          if (!/(?:youtu\.be\/|youtube\.com\/(?:watch\?(?:[^#]*&)?v=|live\/|embed\/|shorts\/|v\/))[\w-]{11}/.test(t)) { toast('コピーしたものが、YouTubeのURLと違うみたい。YouTubeのURLをコピーしてから押してな'); return; }
+          inp.value = t; sendLive(true);
+        }).catch(fail);
       });
+      lv.appendChild(pb);
       row.appendChild(rs); row.appendChild(tg); lv.appendChild(row);
       lv.appendChild(el('p', 'fine', '映像は、YouTube側の遅れ（数秒〜十数秒）があります。チャットは、少し先の話になります。'));
     }
