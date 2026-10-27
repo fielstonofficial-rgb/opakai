@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!-- build 2026-10-27 shop-v6 -->
+<!-- build 2026-10-27 shop-v7 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1717,7 +1717,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     var tl = $('tools'), dest = on ? document.querySelector('.head-actions') : document.querySelector('header.top');
     if (on) dest.insertBefore(tl, dest.firstChild); else dest.insertBefore(tl, document.querySelector('.cats-head'));
     $('fsBtn').setAttribute('aria-pressed', on ? 'true' : 'false');
-    $('fsLabel').textContent = on ? 'もどる' : (window.matchMedia('(max-width:355px)').matches ? '全面' : '全画面');
+    var nw = window.matchMedia('(max-width:430px)').matches; $('fsLabel').textContent = on ? (nw ? '戻る' : 'もどる') : (nw ? '全面' : '全画面');
     $('fsIcon').setAttribute('href', on ? '#shrink' : '#expand');
     setTimeout(toBottom, 50);
   }
@@ -1820,7 +1820,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     box.classList.toggle('off', liveHidden); $('liveFold').textContent = liveHidden ? '映像を見る' : '映像を閉じる';
     box.hidden = false;
   }
-  (function () { var mq = window.matchMedia('(max-width:355px)'); function f() { var l = $('fsLabel'); if (l && l.textContent !== 'もどる') l.textContent = mq.matches ? '全面' : '全画面'; } f(); if (mq.addEventListener) mq.addEventListener('change', f); })();
+  (function () { var mq = window.matchMedia('(max-width:430px)'); function f() { var l = $('fsLabel'); if (l && l.textContent !== 'もどる' && l.textContent !== '戻る') l.textContent = mq.matches ? '全面' : '全画面'; } f(); if (mq.addEventListener) mq.addEventListener('change', f); })();
   $('liveFold').addEventListener('click', function () { liveHidden = !liveHidden; mountLive(); renderLive(liveLast); });
   function loop() {
     clearTimeout(timer);
