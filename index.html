@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!-- build 2026-10-27 shop-v8 -->
+<!-- build 2026-10-27 shop-v9 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1117,7 +1117,8 @@ body.admin-on .tools .adminbtn{display:inline-flex}
 .ord .st.s-cancelled { color: var(--muted); text-decoration: line-through; }
 .ord .om { color: var(--muted); font-size: 12px; white-space: pre-wrap; word-break: break-all; }
 .shop-row { display: flex; justify-content: space-between; align-items: center; gap: 8px; border: 1px solid var(--line); border-radius: 12px; background: var(--surface-2); padding: 8px 10px; margin: 0 0 8px; font-size: 13px; }
-.shop-row .t { min-width: 0; }
+.shop-row { flex-wrap: wrap; -webkit-user-select: none; user-select: none; -webkit-touch-callout: none; }
+.shop-row .t { min-width: 0; flex: 1; }
 .shop-row .chip { white-space: nowrap; flex: none; }
 .shop-row .t b { display: block; overflow-wrap: anywhere; }
 .shop-row .t small { color: var(--muted); }
@@ -2378,11 +2379,33 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     box.appendChild(tc);
     // 商品
     box.appendChild(el('h3', null, '商品'));
+    if (j.items.length) box.appendChild(el('p', 'fine', '消したい商品は、長押しすると「削除」ボタンが出ます。'));
     j.items.forEach(function (it) {
       var r = el('div', 'shop-row'), t = el('div', 't');
       t.appendChild(el('b', null, it.name)); t.appendChild(el('small', null, yen(it.price) + '／在庫' + it.qty + '／' + (it.status === 'on' ? '公開中' : '非公開') + (it.start && new Date(it.start).getTime() > Date.now() ? '／開始 ' + fmtStart(new Date(it.start).getTime()).replace(' から販売', '') : '')));
       var e = el('button', 'chip', '編集'); e.type = 'button'; e.addEventListener('click', function () { itemEdit(j, it); });
-      r.appendChild(t); r.appendChild(e); box.appendChild(r);
+      r.appendChild(t); r.appendChild(e);
+      // 長押し（0.6秒）で、削除ボタンが出る。押したあと、もう一回押すと削除（消した商品は一覧と店から外れる。注文の記録は残る）
+      var delBtn = null, lpT = null, lpX = 0, lpY = 0;
+      function showDel() {
+        if (delBtn) { delBtn.remove(); delBtn = null; return; }
+        delBtn = el('button', 'shop-btn warn', '削除'); delBtn.type = 'button'; var arm = false;
+        delBtn.addEventListener('click', function () {
+          if (!arm) { arm = true; delBtn.textContent = 'もう一回押すと削除'; setTimeout(function () { arm = false; if (delBtn) delBtn.textContent = '削除'; }, 4000); return; }
+          delBtn.disabled = true;
+          api({ action: 'admin_shop_item_delete', token: token, id: it.id }).then(function (x) {
+            if (x && x.ok) { toast('「' + it.name + '」を消したで'); shopAdmOpen(); } else { toast('消せへんかった'); delBtn.disabled = false; }
+          }).catch(function () { toast('つながらへんかった'); delBtn.disabled = false; });
+        });
+        r.appendChild(delBtn);
+        if (navigator.vibrate) { try { navigator.vibrate(30); } catch (er) {} }
+      }
+      function lpCancel() { clearTimeout(lpT); lpT = null; }
+      r.addEventListener('pointerdown', function (ev) { if (ev.target === e) return; lpX = ev.clientX; lpY = ev.clientY; lpCancel(); lpT = setTimeout(function () { lpT = null; showDel(); }, 600); });
+      r.addEventListener('pointermove', function (ev) { if (lpT && (Math.abs(ev.clientX - lpX) > 10 || Math.abs(ev.clientY - lpY) > 10)) lpCancel(); });
+      ['pointerup', 'pointercancel', 'pointerleave'].forEach(function (n) { r.addEventListener(n, lpCancel); });
+      r.addEventListener('contextmenu', function (ev) { ev.preventDefault(); });
+      box.appendChild(r);
     });
     var nb = el('button', 'chip', '＋ 新しい商品'); nb.type = 'button'; nb.addEventListener('click', function () { itemEdit(j, null); });
     box.appendChild(nb);
