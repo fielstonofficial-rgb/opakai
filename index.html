@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!-- build 2026-10-27 shop-v7 -->
+<!-- build 2026-10-27 shop-v8 -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
 <meta name="robots" content="noindex,nofollow">
@@ -1085,6 +1085,10 @@ body.admin-on .tools .adminbtn{display:inline-flex}
 .shop-buy { flex: 1; min-width: 140px; background: linear-gradient(135deg, #1f9d8b, #2b6fd6); color: #fff; border-color: transparent; }
 .shop-buy[disabled] { background: var(--surface-2); color: var(--muted); border-color: var(--line); }
 .shop-btn.warn { color: #c0392b; }
+.shop-cd { margin: 8px 0; padding: 10px 12px; border-radius: 14px; text-align: center; background: color-mix(in srgb, #2b6fd6 10%, var(--surface)); border: 1px solid color-mix(in srgb, #2b6fd6 35%, var(--line)); }
+.shop-cd .at { font-size: 12px; color: var(--muted); font-weight: 700; }
+.shop-cd .tm { font-size: 22px; font-weight: 800; letter-spacing: .02em; font-variant-numeric: tabular-nums; margin-top: 2px; }
+.shop-cd .go { font-size: 12px; color: var(--muted); margin-top: 2px; }
 .shop-tk { margin: 6px 0 0; font-size: 12px; }
 .shop-tk summary { cursor: pointer; font-weight: 700; color: var(--muted); }
 .shop-tk-body { white-space: pre-wrap; line-height: 1.7; margin-top: 6px; color: var(--fg); }
@@ -2166,14 +2170,38 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     else toast('コピーできへんかった。長押しでコピーしてな');
   }
   var shopData = null;
-  function shopClose() { $('shopPanel').hidden = true; }
+  var shopOff = 0, shopTimer = null;
+  function fmtStart(ms) { var d = new Date(ms); return (d.getMonth() + 1) + '月' + d.getDate() + '日 ' + d.getHours() + ':' + String(d.getMinutes()).padStart(2, '0') + ' から販売'; }
+  function fmtLeft(ms) {
+    var t = Math.max(0, Math.floor(ms / 1000)), d = Math.floor(t / 86400), h = Math.floor(t % 86400 / 3600), m = Math.floor(t % 3600 / 60), s2 = t % 60;
+    var z = function (n) { return String(n).padStart(2, '0'); };
+    return (d > 0 ? d + '日 ' : '') + z(h) + ':' + z(m) + ':' + z(s2);
+  }
+  function shopStopTick() { if (shopTimer) { clearInterval(shopTimer); shopTimer = null; } }
+  function shopClose() { $('shopPanel').hidden = true; shopStopTick(); }
+  function shopTick() {
+    var nodes = $('shopBody').querySelectorAll('.shop-cd[data-t]');
+    if (!nodes.length) { shopStopTick(); return; }
+    var now = Date.now() + shopOff, fire = false;
+    Array.prototype.forEach.call(nodes, function (n) {
+      var left = Number(n.getAttribute('data-t')) - now;
+      if (left <= 0) { n.querySelector('.tm').textContent = '00:00:00'; fire = true; } else n.querySelector('.tm').textContent = fmtLeft(left);
+    });
+    if (fire) {
+      shopStopTick();
+      // 時間になったら、サーバーに聞き直す（ボタンを押せるかどうかは、サーバーが決める）
+      api({ action: 'shop_get', token: token }).then(function (j) {
+        if (j && j.items) { shopData = j; shopOff = (Number(j.now) || Date.now()) - Date.now(); shopPaint(); if (!$('shopPanel').hidden) toast('販売が始まったで'); }
+      }).catch(function () { shopTimer = setInterval(shopTick, 3000); });
+    }
+  }
   function shopOpen() {
     $('shopPanel').hidden = false;
     var body = $('shopBody'); body.textContent = ''; $('shopTabs').hidden = true;
     body.appendChild(el('p', 'fine', '読み込み中…'));
     api({ action: 'shop_get', token: token }).then(function (j) {
       if (!j || !j.items) { body.textContent = ''; body.appendChild(el('p', 'fine', '読み込めへんかった。もう一回開いてな')); return; }
-      shopData = j; shopPaint();
+      shopData = j; shopOff = (Number(j.now) || Date.now()) - Date.now(); shopPaint();
     }).catch(function () { body.textContent = ''; body.appendChild(el('p', 'fine', 'つながらへんかった。もう一回開いてな')); });
   }
   function shopPaint() {
@@ -2197,6 +2225,14 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       if (it.soldout) pr.appendChild(el('span', 'shop-stock', '売り切れ')); else if (it.qty <= 3) pr.appendChild(el('span', 'shop-stock', '残り' + it.qty));
       c.appendChild(pr);
       if (it.desc) c.appendChild(el('div', 'shop-desc', it.desc));
+      var stMs = it.start ? new Date(it.start).getTime() : 0, waiting = stMs > Date.now() + shopOff;
+      if (waiting) {
+        var cd = el('div', 'shop-cd'); cd.setAttribute('data-t', String(stMs));
+        cd.appendChild(el('div', 'at', fmtStart(stMs)));
+        cd.appendChild(el('div', 'tm', fmtLeft(stMs - Date.now() - shopOff)));
+        cd.appendChild(el('div', 'go', 'この時間になったら、購入ボタンが押せるようになります'));
+        c.appendChild(cd);
+      }
       if (it.video) {
         var w = el('div', 'shop-yt'), fr = document.createElement('iframe');
         fr.src = 'https://www.youtube-nocookie.com/embed/' + it.video + '?rel=0&playsinline=1';
@@ -2205,8 +2241,8 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
         var ya = el('a', 'chip', 'YouTubeで開く'); ya.href = 'https://youtu.be/' + it.video; ya.target = '_blank'; ya.rel = 'noopener noreferrer'; c.appendChild(ya);
       }
       var act = el('div', 'shop-act');
-      var buy = el('button', 'shop-buy', it.soldout ? '売り切れです' : (j.bankReady ? '購入を希望する（銀行振込）' : 'ご注文の準備中です')); buy.type = 'button';
-      if (it.soldout || !j.bankReady) buy.disabled = true;
+      var buy = el('button', 'shop-buy', it.soldout ? '売り切れです' : (waiting ? '販売開始まで、お待ちください' : (j.bankReady ? '購入を希望する（銀行振込）' : 'ご注文の準備中です'))); buy.type = 'button';
+      if (it.soldout || !j.bankReady || waiting) buy.disabled = true;
       buy.addEventListener('click', function () { orderOpen(it); });
       act.appendChild(buy); c.appendChild(act);
       body.appendChild(c);
@@ -2216,6 +2252,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       d.appendChild(el('div', 'shop-tk-body', j.tokusho)); body.appendChild(d);
     }
     body.appendChild(el('p', 'fine', 'お支払いは銀行振込のみです（振込手数料はお客様のご負担）。ご入金の確認後に、発送のご連絡をします。'));
+    shopStopTick(); if (body.querySelector('.shop-cd[data-t]')) shopTimer = setInterval(shopTick, 1000);
   }
   $('shopBtn').addEventListener('click', shopOpen);
   $('shopClose').addEventListener('click', shopClose);
@@ -2343,7 +2380,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     box.appendChild(el('h3', null, '商品'));
     j.items.forEach(function (it) {
       var r = el('div', 'shop-row'), t = el('div', 't');
-      t.appendChild(el('b', null, it.name)); t.appendChild(el('small', null, yen(it.price) + '／在庫' + it.qty + '／' + (it.status === 'on' ? '公開中' : '非公開')));
+      t.appendChild(el('b', null, it.name)); t.appendChild(el('small', null, yen(it.price) + '／在庫' + it.qty + '／' + (it.status === 'on' ? '公開中' : '非公開') + (it.start && new Date(it.start).getTime() > Date.now() ? '／開始 ' + fmtStart(new Date(it.start).getTime()).replace(' から販売', '') : '')));
       var e = el('button', 'chip', '編集'); e.type = 'button'; e.addEventListener('click', function () { itemEdit(j, it); });
       r.appendChild(t); r.appendChild(e); box.appendChild(r);
     });
@@ -2382,6 +2419,10 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     fld('qty', '在庫の数', 'input', 'number', it ? it.qty : 1);
     fld('desc', '説明', 'textarea', null, it && it.desc);
     fld('video', 'YouTubeのURL（なくてもOK）', 'input', 'text', it && it.video ? 'https://youtu.be/' + it.video : '', 'https://youtu.be/…');
+    var stLocal = '';
+    if (it && it.start) { var sd = new Date(it.start), zz = function (n) { return String(n).padStart(2, '0'); }; stLocal = sd.getFullYear() + '-' + zz(sd.getMonth() + 1) + '-' + zz(sd.getDate()) + 'T' + zz(sd.getHours()) + ':' + zz(sd.getMinutes()); }
+    fld('start', '販売開始の日時（空なら、すぐ販売。あなたの端末の時刻で入れてな）', 'input', 'datetime-local', stLocal);
+    var clr = el('button', 'chip', '開始時刻をなくす（すぐ販売）'); clr.type = 'button'; clr.addEventListener('click', function () { F.start.value = ''; }); f.appendChild(clr);
     fld('sort', '並び順（小さい数が先）', 'input', 'number', it ? it.sort : 0);
     f.appendChild(el('label', null, '公開'));
     var ss = el('select'); [['on', '公開する'], ['off', '非公開']].forEach(function (o) { var op = el('option', null, o[1]); op.value = o[0]; if (it && it.status === o[0]) op.selected = true; ss.appendChild(op); }); f.appendChild(ss);
@@ -2413,7 +2454,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     back.addEventListener('click', shopAdmOpen);
     sv.addEventListener('click', function () {
       sv.disabled = true;
-      var body = { action: 'admin_shop_item', token: token, name: F.name.value, price: F.price.value, qty: F.qty.value, desc: F.desc.value, video: F.video.value, sort: F.sort.value, status: ss.value, imgs: imgs };
+      var body = { action: 'admin_shop_item', token: token, name: F.name.value, price: F.price.value, qty: F.qty.value, desc: F.desc.value, video: F.video.value, start: F.start.value ? new Date(F.start.value).toISOString() : '', sort: F.sort.value, status: ss.value, imgs: imgs };
       if (it) body.id = it.id;
       api(body).then(function (x) { if (x && x.item) { toast('保存したで'); shopAdmOpen(); } else { toast((x && x.message) || '保存できへんかった'); sv.disabled = false; } })
         .catch(function () { toast('つながらへんかった'); sv.disabled = false; });
