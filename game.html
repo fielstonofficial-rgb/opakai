@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:38-->
+<!--GV:39-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -392,11 +392,19 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 #fBack.wide{width:auto;height:42px;border-radius:999px;padding:0 13px;font-size:12px;font-weight:800;white-space:nowrap}
 #fBack.wide small{display:none}
-#field.plaza #tchat{display:block}
-#field.plaza #fTools{bottom:134px}
+#field.plaza #tchat{display:none}
+#field.plaza.chat #tchat{display:block;bottom:6px}
+#field.plaza #tlog{display:none}
+#field.plaza #fTools{bottom:6px}
+#field.plaza.chat #fTools{bottom:62px}
+#field.plaza.chat #qcPanel{bottom:100px}
+#fTools #plChat{display:none;border:1.5px solid rgba(255,255,255,.6);background:rgba(20,20,28,.82);color:#fff}
+#field.plaza #fTools #plChat{display:block}
+#field.plaza.chat #fTools #plChat{background:#ffd36a;color:#3a2a08;border-color:#ffd36a}
 #field.arena #tchat{display:none}
-#plDown{position:absolute;left:10px;right:10px;bottom:178px;z-index:30;display:none;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-radius:14px;background:rgba(30,10,18,.94);border:1px solid #ff6a8a;color:#fff;font-weight:800;font-size:13px}
+#plDown{position:absolute;left:10px;right:10px;bottom:48px;z-index:30;display:none;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-radius:14px;background:rgba(30,10,18,.94);border:1px solid #ff6a8a;color:#fff;font-weight:800;font-size:13px}
 #plDown.on{display:flex}
+#field.plaza.chat #plDown{bottom:112px}
 #npc{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px}
 #npc.on{display:flex}
 #npc .nc{width:100%;max-width:420px;max-height:86vh;overflow:auto;background:#1b2230;color:#fff;border-radius:18px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.6)}
@@ -509,7 +517,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 </head>
 <body>
 <div id="app">
-  <section class="scr on" id="load"><div class="spin"></div><div id="loadMsg">ほりだし中…</div></section>
+  <section class="scr on" id="load"><div class="spin"></div><div id="loadMsg">ロード中…</div></section>
 
   <section class="scr" id="open">
     <button id="skip" type="button">スキップ</button>
@@ -536,7 +544,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v38（闘技場ひろく）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v39（闘技場の操作）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所や（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -544,7 +552,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   <div id="cfm"><div class="gc"><h3>ゲームをとじる？</h3><p class="tiny">とじても、ここまでの記録は残るで。</p><div class="rw" style="display:flex;gap:8px;margin-top:12px"><button id="cfmNo" type="button" class="gbtn" style="flex:1">つづける</button><button id="cfmYes" type="button" class="gbtn dim" style="flex:1;margin-top:0">とじる</button></div></div></div>
   <section class="scr" id="field">
     <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="装備・もちもの">🎒<small>装備・持物</small></button><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
-    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="plDown"><span>やられた…（このままチャットもできるで）</span><button type="button" class="gbtn" id="plDownGo">🏥 病院へ向かう</button></div><div id="fTools"><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">💬</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしもた…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
+    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="plDown"><span>やられた…（このままチャットもできるで）</span><button type="button" class="gbtn" id="plDownGo">🏥 病院へ向かう</button></div><div id="fTools"><button id="plChat" type="button">💬 チャット</button><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">💬</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしもた…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
         <div id="gld"><div class="gc"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="tiny">ギルドの部屋</span><button id="gClose" type="button" class="gbtn" style="padding:6px 12px">とじる</button></div><div id="gBody"></div></div></div>
         <div id="npc"><div class="nc"><div class="nh"><b id="npcN"></b><button type="button" class="gbtn" id="npcX" style="padding:6px 12px">とじる</button></div><div id="npcSay"></div><div id="npcQs"></div><div class="nin"><input id="npcIn" maxlength="30" placeholder="聞きたいこと（例：HP、闘技場、売る）" autocomplete="off"><button type="button" class="gbtn" id="npcGo">きく</button></div><div id="npcAct"></div></div></div><div id="arInv"><b id="arInvT"></b><div><button type="button" class="abtn" id="arInvY">受ける</button><button type="button" class="gbtn" id="arInvN">ことわる</button></div></div><div id="updBar" role="button">🔄 新しい版があるで。ここをタップして更新</div>
         <div id="arBig"></div>
@@ -1998,7 +2006,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var now = Date.now(); if (now - tChatAt < 1800) { toast('ちょっと待ってな'); return; } tChatAt = now;
     inp.value = ''; tlogAdd(player.avatar.name, t); bubble($('hero2'), t);
     if (rtOn) rtSend({ t: 'chat', x: t });
+    $('field').classList.remove('chat');
   }
+  $('plChat').addEventListener('click', function () { var f = $('field'); f.classList.toggle('chat'); if (f.classList.contains('chat')) { $('qcPanel').classList.remove('on'); setTimeout(function () { try { $('tin').focus(); } catch (e) {} }, 50); } else $('tin').blur(); });
   $('toTown').addEventListener('click', function () { actx(); sfx(0); openTown(); });
   $('tsend').addEventListener('click', sendChat);
   $('tin').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); sendChat(); } });
@@ -2044,7 +2054,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     w.innerHTML = plazaSVG() + '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     spots = []; spotSeq = 0; foes = []; fgen++; curSpot = null; guard = false; peers = {};
     hero.x = 450; hero.y = 120; hero.dir = 1; ftarget = null; $('hb').innerHTML = heroHTML(); applyAura(); updHero();
-    var f = $('field'); f.classList.remove('town', 'arena'); f.classList.add('plaza', 'safe'); $('fTtl').textContent = '闘技場'; $('fCancel').textContent = '町へ出る';
+    var f = $('field'); f.classList.remove('town', 'arena', 'chat'); f.classList.add('plaza', 'safe'); $('fTtl').textContent = '闘技場'; $('fCancel').textContent = '町へ出る';
     fz = zoomT = .6; $('ftip').dataset.shown = 1; $('ftip').style.opacity = 0; arena.zs = 0;
   }
   function plZoneTick() {
@@ -2157,7 +2167,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     Object.keys(peers).forEach(function (id) { var q = peers[id]; if (!q.el || q.el.style.display === 'none') return; var d = Math.hypot(wx - q.x, wy - (q.y - 32)); if (d < bd) { bd = d; tg = q; } });
     if (tg) { if (hero.y >= FLOOR_Y && plInFloor(tg)) { if (!tg.dn) plAttack(tg); return; } openProfile(tg); return; }
     var pg = document.createElement('i'); pg.className = 'ping'; pg.style.left = wx + 'px'; pg.style.top = wy + 'px'; $('world').appendChild(pg); setTimeout(function () { pg.remove(); }, 520);
-    ftarget = { x: clamp(wx, 40, WW - 40), y: clamp(wy, 230, WH - 50), spot: null };
+    ftarget = { x: clamp(wx, 40, WW - 40), y: clamp(wy, 70, WH - 50), spot: null };
   }
   function arChallenge(pr) {
     if (!inPlaza || hp.down || !pr) return;
@@ -2300,7 +2310,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 38;
+  var GV = 39;
   (function () {
     var last = Date.now();
     function chk() {
