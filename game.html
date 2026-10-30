@@ -38,9 +38,12 @@ button{font:inherit;color:inherit;cursor:pointer}
 .ib{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.06);display:grid;place-items:center;font-size:19px;line-height:1}
 .ib:active{transform:scale(.94)}
 /* キャラ作り */
-#make .body{flex:1;overflow:auto;padding:4px 16px 20px}
-.prev{display:grid;place-items:center;padding:6px 0 2px}
-.prev svg{width:170px;height:204px;filter:drop-shadow(0 10px 14px rgba(0,0,0,.4))}
+#make .body{flex:1;overflow:auto;padding:2px 16px 16px}
+.prev{display:grid;place-items:center;padding:0;height:min(34vh,270px);flex:none;background:radial-gradient(60% 70% at 50% 60%,rgba(120,200,220,.18),transparent)}
+.prev svg{height:100%;width:auto;filter:drop-shadow(0 10px 14px rgba(0,0,0,.4))}
+.tabs{display:flex;gap:6px;padding:6px 14px;flex:none}
+.tabs button{flex:1;padding:9px 0;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.05);font-size:14px}
+.tabs button.on{border-color:var(--gold);background:rgba(232,196,106,.18);font-weight:700}
 .fld{margin:12px 0 6px;font-size:13px;color:var(--mut)}
 input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--ink);font-size:17px}
 .opts{display:flex;flex-wrap:wrap;gap:8px}
@@ -60,9 +63,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 .rockwrap svg{width:100%;height:100%;display:block;filter:drop-shadow(0 14px 14px rgba(0,0,0,.5))}
 .rockwrap.hit{animation:shake .18s}
 @keyframes shake{25%{transform:translate(-5px,2px) rotate(-1.5deg)}75%{transform:translate(5px,-2px) rotate(1.5deg)}}
-.hero{position:absolute;left:3%;bottom:5%;width:34%;max-width:150px;pointer-events:none}
-.hero svg{width:100%;display:block;filter:drop-shadow(0 8px 10px rgba(0,0,0,.45))}
-.pick{position:absolute;left:24%;bottom:30%;width:22%;max-width:100px;transform-origin:20% 90%;pointer-events:none}
+.hero{position:absolute;left:3%;bottom:3%;height:66%;max-height:330px;pointer-events:none}
+.hero svg{height:100%;width:auto;display:block;filter:drop-shadow(0 8px 10px rgba(0,0,0,.45))}
+.pick{position:absolute;left:23%;bottom:34%;width:22%;max-width:100px;transform-origin:20% 90%;pointer-events:none}
 .pick.sw1{animation:swing .26s ease-out}
 @keyframes swing{0%{transform:rotate(-8deg)}45%{transform:rotate(-62deg)}100%{transform:rotate(-8deg)}}
 .dust{position:absolute;width:7px;height:7px;border-radius:50%;background:#d8e4ea;pointer-events:none;animation:dust .55s ease-out forwards}
@@ -136,18 +139,10 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   </section>
 
   <section class="scr" id="make">
-    <div class="bar"><button class="ib" id="makeBack" type="button" aria-label="もどる" hidden>←</button><h1 id="makeTtl">キャラをつくろう</h1><span style="width:42px"></span></div>
-    <div class="body">
-      <div class="prev" id="prev"></div>
-      <div class="fld">なまえ（12文字まで）</div>
-      <input class="nm" id="nameIn" maxlength="12" autocomplete="off" placeholder="なまえ">
-      <div class="fld">髪型</div><div class="opts" id="oHair"></div>
-      <div class="fld">髪の色</div><div class="opts" id="oHairC"></div>
-      <div class="fld">服</div><div class="opts" id="oOut"></div>
-      <div class="fld">服の色</div><div class="opts" id="oOutC"></div>
-      <div class="fld">肌の色</div><div class="opts" id="oSkin"></div>
-      <p class="tiny">あとから、ゲームの中の「せってい」でいつでも変えられるで。</p>
-    </div>
+    <div class="bar"><button class="ib" id="makeBack" type="button" aria-label="もどる" hidden>←</button><h1 id="makeTtl">キャラをつくろう</h1><button class="ib" id="rnd" type="button" aria-label="おまかせ" title="おまかせ">🎲</button></div>
+    <div class="prev" id="prev"></div>
+    <div class="tabs" id="mkTabs"><button type="button" data-t="0" class="on">基本</button><button type="button" data-t="1">髪</button><button type="button" data-t="2">服</button><button type="button" data-t="3">下・小物</button></div>
+    <div class="body" id="mkBody"></div>
     <div class="foot"><button class="big" id="makeOk" type="button">この子で決定！</button></div>
   </section>
 
@@ -230,10 +225,24 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   ];
   var BY = {}; STONES.forEach(function (s) { BY[s.id] = s; });
   var SKIN = ['#fde3d0', '#f6cfb0', '#ecb98f', '#d9a27a', '#b57a56', '#8a5a3c'];
-  var HAIRC = ['#2b2320', '#5a3a26', '#8b5a2b', '#c49a4a', '#d9d4cc', '#b04a4a', '#3a5a9a', '#7a4a9a'];
-  var OUTC = ['#d94f6b', '#e08a3c', '#e0c040', '#4fa36a', '#3f8ac4', '#7b5cc4', '#c4c4c4', '#2e3a4a'];
-  var HAIRN = ['ショート', 'ボブ', 'ロング', 'お団子', 'ポニーテール', 'パーマ'];
-  var OUTN = ['エプロン', 'ジャケット', 'ワンピース', 'つなぎ', 'カーディガン', 'ローブ'];
+  /* 髪色：s=単色 / g=グラデーション（上→下 or 左→右の色） */
+  var HAIRC = [
+    { n: 'くろ', s: '#1f1a1a' }, { n: 'こげ茶', s: '#4a2e1e' }, { n: '茶', s: '#8b5a2b' }, { n: 'ブロンド', s: '#e0bd5c' },
+    { n: 'シルバー', s: '#cfd6dc' }, { n: 'あか', s: '#c0392b' }, { n: 'あお', s: '#2f6fd8' }, { n: 'むらさき', s: '#7a3fc0' },
+    { n: 'ピンク', s: '#ff7ab0' },
+    { n: 'ピンク→むらさき', g: ['#ff8ac0', '#a35cf0'] }, { n: 'あお→ティール', g: ['#3a7bff', '#2fe0c8'] },
+    { n: 'レインボー', g: ['#ff4b6a', '#ffb02e', '#ffe14a', '#3fd16a', '#33b5ff', '#9a5cff'] },
+    { n: 'サンセット', g: ['#ffd36a', '#ff7a3c', '#e83a7a'] }, { n: 'ミント→ラベンダー', g: ['#7ff0c8', '#b79cff'] }
+  ];
+  var OUTC = ['#e0405f', '#f08a3c', '#f2cf3c', '#3fae6a', '#2f8ad8', '#7b5cc4', '#f4f1ea', '#c9ced3', '#8a6a4a', '#2e3a4a', '#16181d', '#ff8fb5'];
+  var BOTC = ['#2e3a4a', '#16181d', '#5b7fb5', '#8a6a4a', '#d8d1c4', '#7a2a3a', '#4a6a4a', '#c9ced3'];
+  var FACEN = ['まる目', 'きれ長', 'たれ目', 'ぱっちり', 'ウィンク'];
+  var HAIRN = [['ショート', 'マッシュ', 'ツーブロック', 'オールバック', 'ウルフ', '長髪'], ['ボブ', 'ロング', 'ポニーテール', 'お団子', 'ツインテール', 'ショート', 'ゆるふわ']];
+  var OUTN = ['半袖Ｔ', 'Ｖネック', 'パーカー', 'ブルゾン', '革ジャン', 'ロングコート', 'ジャケット', 'カーディガン', 'ワンピース', 'ローブ'];
+  var PATN = ['無地', 'ストライプ', 'ボーダー', 'ドット', 'チェック'];
+  var BOTN = ['スラックス', 'ジーンズ', 'スカート', 'ショートパンツ'];
+  var ACCN = ['なし', 'メガネ', 'サングラス', 'ニット帽', 'キャップ', 'ピアス', 'ヘッドホン', 'カチューシャ'];
+  var DEFAV = { name: '', gender: 1, skin: 1, face: 0, hair: 0, hairColor: 0, outfit: 0, outfitColor: 4, pattern: 0, patColor: 6, bottom: 0, bottomColor: 0, acc: 0 };
 
   function $(id) { return document.getElementById(id); }
   function LSget(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
@@ -291,28 +300,169 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function gemEl(id, cls) { return '<span class="gem ' + (cls || '') + '" style="width:100%;height:100%">' + gemHTML(id) + '</span>'; }
 
-  /* ---------- キャラのイラスト ---------- */
-  function avatarSVG(a) {
-    var skin = SKIN[a.skin] || SKIN[1], hc = HAIRC[a.hairColor] || HAIRC[0], oc = OUTC[a.outfitColor] || OUTC[0];
-    var back = '', front = '', body = '';
-    var cap = '<path d="M27 50Q25 20 50 19Q75 20 73 50Q66 35 50 34Q34 35 27 50Z" fill="' + hc + '"/>';
-    if (a.hair === 0) { front = cap; }
-    else if (a.hair === 1) { back = '<path d="M26 46Q24 24 50 22Q76 24 74 46L76 72Q50 78 24 72Z" fill="' + hc + '"/>'; front = cap; }
-    else if (a.hair === 2) { back = '<path d="M25 46Q23 22 50 20Q77 22 75 46L80 104Q50 110 20 104Z" fill="' + hc + '"/>'; front = cap; }
-    else if (a.hair === 3) { back = '<circle cx="50" cy="15" r="11" fill="' + hc + '"/>'; front = cap; }
-    else if (a.hair === 4) { back = '<path d="M70 34Q92 40 88 76Q84 62 72 52Z" fill="' + hc + '"/>'; front = cap; }
-    else { back = '<circle cx="30" cy="40" r="11" fill="' + hc + '"/><circle cx="70" cy="40" r="11" fill="' + hc + '"/>'; front = '<circle cx="36" cy="28" r="12" fill="' + hc + '"/><circle cx="50" cy="23" r="13" fill="' + hc + '"/><circle cx="64" cy="28" r="12" fill="' + hc + '"/>'; }
-    var torso = '<path d="M20 120Q20 76 50 72Q80 76 80 120Z" fill="' + oc + '"/>';
-    var o = a.outfit;
-    if (o === 0) body = '<path d="M20 120Q20 76 50 72Q80 76 80 120Z" fill="#f4efe6"/><path d="M34 80L66 80L70 120L30 120Z" fill="' + oc + '"/><path d="M36 80L40 72M64 80L60 72" stroke="' + oc + '" stroke-width="3"/>';
-    else if (o === 1) body = torso + '<path d="M50 74L40 100L50 120L60 100Z" fill="#f4efe6"/><path d="M50 74L38 98M50 74L62 98" stroke="rgba(0,0,0,.28)" stroke-width="2" fill="none"/><circle cx="50" cy="104" r="1.8" fill="#222"/>';
-    else if (o === 2) body = '<path d="M26 120L33 76Q50 70 67 76L74 120Z" fill="' + oc + '"/><path d="M33 92Q50 98 67 92" stroke="rgba(255,255,255,.55)" stroke-width="3" fill="none"/>';
-    else if (o === 3) body = torso + '<rect x="40" y="92" width="20" height="14" rx="2" fill="rgba(0,0,0,.18)"/><circle cx="40" cy="80" r="2.2" fill="#f2d46a"/><circle cx="60" cy="80" r="2.2" fill="#f2d46a"/>';
-    else if (o === 4) body = '<path d="M20 120Q20 76 50 72Q80 76 80 120Z" fill="#f4efe6"/><path d="M20 120Q20 76 42 73L44 120Z M80 120Q80 76 58 73L56 120Z" fill="' + oc + '"/><circle cx="43" cy="92" r="1.6" fill="rgba(0,0,0,.4)"/><circle cx="43" cy="104" r="1.6" fill="rgba(0,0,0,.4)"/>';
-    else body = '<path d="M14 120Q16 76 50 72Q84 76 86 120Z" fill="' + oc + '"/><path d="M40 74L50 120L60 74" stroke="#f2d46a" stroke-width="3.5" fill="none"/><path d="M50 90l2.6 5.4 5.9.8-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z" fill="#f2d46a"/>';
-    return '<svg viewBox="0 0 100 120" aria-hidden="true">' + back + body +
-      '<rect x="44" y="62" width="12" height="14" rx="5" fill="' + skin + '"/><circle cx="50" cy="48" r="22" fill="' + skin + '"/>' + front +
-      '<circle cx="42" cy="50" r="2.3" fill="#2a2018"/><circle cx="58" cy="50" r="2.3" fill="#2a2018"/><circle cx="36" cy="57" r="4" fill="#ff8aa0" opacity=".35"/><circle cx="64" cy="57" r="4" fill="#ff8aa0" opacity=".35"/><path d="M44 58Q50 64 56 58" stroke="#8a4a3a" stroke-width="2" fill="none" stroke-linecap="round"/></svg>';
+  /* ---------- キャラのイラスト（全身・シュッとした等身） ---------- */
+  var avN = 0;
+  function normAv(a) {
+    a = a || {};
+    var o = {}; for (var k in DEFAV) o[k] = (a[k] === undefined || a[k] === null) ? DEFAV[k] : a[k];
+    o.gender = o.gender === 0 ? 0 : 1;
+    o.hair = ((o.hair | 0) % HAIRN[o.gender].length + HAIRN[o.gender].length) % HAIRN[o.gender].length;
+    o.hairColor = Math.min(HAIRC.length - 1, Math.max(0, o.hairColor | 0));
+    o.skin = Math.min(5, Math.max(0, o.skin | 0));
+    o.outfitColor = Math.min(OUTC.length - 1, Math.max(0, o.outfitColor | 0));
+    o.patColor = Math.min(OUTC.length - 1, Math.max(0, o.patColor | 0));
+    o.bottomColor = Math.min(BOTC.length - 1, Math.max(0, o.bottomColor | 0));
+    o.outfit = Math.min(OUTN.length - 1, Math.max(0, o.outfit | 0));
+    o.pattern = Math.min(4, Math.max(0, o.pattern | 0)); o.bottom = Math.min(3, Math.max(0, o.bottom | 0));
+    o.face = Math.min(4, Math.max(0, o.face | 0)); o.acc = Math.min(7, Math.max(0, o.acc | 0));
+    return o;
+  }
+  function shade(hex, k) { // k>0 明るく / k<0 暗く
+    var n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
+    function f(v) { return Math.max(0, Math.min(255, Math.round(k >= 0 ? v + (255 - v) * k : v * (1 + k)))); }
+    return '#' + ((1 << 24) + (f(r) << 16) + (f(g) << 8) + f(b)).toString(16).slice(1);
+  }
+  function avatarSVG(raw) {
+    var a = normAv(raw), id = 'av' + (++avN), F = a.gender === 1; // gender: 0=男性 1=女性
+    var skin = SKIN[a.skin], skinD = shade(skin, -.12);
+    var oc = OUTC[a.outfitColor], pc = OUTC[a.patColor], bc = BOTC[a.bottomColor];
+    var defs = '';
+    // 髪の塗り
+    var hc = HAIRC[a.hairColor], hf;
+    if (hc.g) {
+      var st = ''; hc.g.forEach(function (c, i) { st += '<stop offset="' + (i / (hc.g.length - 1)) + '" stop-color="' + c + '"/>'; });
+      defs += '<linearGradient id="' + id + 'h" x1="0" y1="0" x2="1" y2="1">' + st + '</linearGradient>'; hf = 'url(#' + id + 'h)';
+    } else hf = hc.s;
+    var hlt = hc.g ? 'rgba(255,255,255,.35)' : shade(hc.s, .35), hdk = hc.g ? 'rgba(0,0,0,.18)' : shade(hc.s, -.3);
+    // 服の塗り（柄）
+    var fill = oc;
+    if (a.pattern === 1) defs += '<pattern id="' + id + 'p" patternUnits="userSpaceOnUse" width="7" height="7"><rect width="7" height="7" fill="' + oc + '"/><rect width="2.6" height="7" fill="' + pc + '"/></pattern>';
+    if (a.pattern === 2) defs += '<pattern id="' + id + 'p" patternUnits="userSpaceOnUse" width="8" height="7"><rect width="8" height="7" fill="' + oc + '"/><rect y="2.4" width="8" height="2.4" fill="' + pc + '"/></pattern>';
+    if (a.pattern === 3) defs += '<pattern id="' + id + 'p" patternUnits="userSpaceOnUse" width="8" height="8"><rect width="8" height="8" fill="' + oc + '"/><circle cx="2" cy="2" r="1.5" fill="' + pc + '"/><circle cx="6" cy="6" r="1.5" fill="' + pc + '"/></pattern>';
+    if (a.pattern === 4) defs += '<pattern id="' + id + 'p" patternUnits="userSpaceOnUse" width="10" height="10"><rect width="10" height="10" fill="' + oc + '"/><rect width="4" height="10" fill="' + pc + '" opacity=".55"/><rect width="10" height="4" fill="' + pc + '" opacity=".55"/></pattern>';
+    if (a.pattern > 0) fill = 'url(#' + id + 'p)';
+    var edge = 'stroke="rgba(0,0,0,.22)" stroke-width="1" stroke-linejoin="round"';
+    var sw = F ? 22 : 27, ch = F ? 21 : 25, wa = F ? 16 : 21, wy = F ? 120 : 126, hm = F ? 21 : 22;
+    var L = 60 - sw, R = 60 + sw;
+    var back = '', legs = '', arms = '', top = '', sleeves = '', hands = '', head = '', hairF = '', acc = '';
+    /* --- 後ろ髪 --- */
+    var hs = a.hair;
+    if (!F) {
+      if (hs === 4) back = '<path d="M42 40L33 78L49 68ZM78 40L87 78L71 68Z" fill="' + hf + '"/>';
+      if (hs === 5) back = '<path d="M40 38C32 62 33 92 38 104L52 82L68 82L82 104C87 92 88 62 80 38Z" fill="' + hf + '"/>';
+    } else {
+      if (hs === 0) back = '<path d="M39 38C32 66 38 84 46 82L74 82C82 84 88 66 81 38Z" fill="' + hf + '"/>';
+      if (hs === 1) back = '<path d="M38 38C28 80 32 120 42 128L78 128C88 120 92 80 82 38Z" fill="' + hf + '"/>';
+      if (hs === 2) back = '<path d="M70 28C100 22 104 68 92 104C90 78 82 54 70 40Z" fill="' + hf + '"/><rect x="68" y="30" width="8" height="5" rx="2" fill="' + shade(oc, 0) + '"/>';
+      if (hs === 3) back = '<circle cx="60" cy="13" r="11" fill="' + hf + '"/><ellipse cx="60" cy="22" rx="9" ry="3" fill="' + oc + '"/>';
+      if (hs === 4) back = '<path d="M42 32C16 42 16 86 26 108C32 84 38 62 46 46Z" fill="' + hf + '"/><path d="M78 32C104 42 104 86 94 108C88 84 82 62 74 46Z" fill="' + hf + '"/>';
+      if (hs === 6) back = '<path d="M38 34C22 56 30 82 26 102C40 96 44 80 44 60ZM82 34C98 56 90 82 94 102C80 96 76 80 76 60Z" fill="' + hf + '"/><path d="M38 40C30 70 38 96 46 100L74 100C82 96 90 70 82 40Z" fill="' + hf + '"/>';
+    }
+    /* --- ボトムス・脚 --- */
+    var legY0 = 134, ankle = 216;
+    var bot = a.bottom;
+    function legPath(x0, x1, y0, y1, w, col) { return '<path d="M' + x0 + ' ' + y0 + 'L' + x1 + ' ' + y1 + '" stroke="' + col + '" stroke-width="' + w + '" stroke-linecap="round"/>'; }
+    var lx0 = F ? 52 : 51, rx0 = F ? 68 : 69;
+    if (bot === 0 || bot === 1) { // スラックス／ジーンズ
+      var w = F ? 14 : 16;
+      legs = legPath(lx0, 49, legY0, ankle, w, bc) + legPath(rx0, 71, legY0, ankle, w, bc);
+      legs += '<path d="M60 ' + (legY0 + 2) + 'L60 190" stroke="rgba(0,0,0,.25)" stroke-width="1"/>';
+      if (bot === 1) legs += '<path d="M41 204L57 204M63 204L79 204" stroke="rgba(255,255,255,.35)" stroke-width="1.5"/><path d="M50 ' + legY0 + 'L50 160M70 ' + legY0 + 'L70 160" stroke="rgba(255,255,255,.18)" stroke-width="2"/>';
+      legs += '<rect x="' + (60 - hm) + '" y="128" width="' + (hm * 2) + '" height="14" fill="' + bc + '"/>';
+    } else if (bot === 3) { // ショートパンツ
+      var w2 = F ? 14 : 16;
+      legs = '<path d="M' + lx0 + ' 150L49 214M' + rx0 + ' 150L71 214" stroke="' + skin + '" stroke-width="' + (F ? 11 : 12) + '" stroke-linecap="round"/>' + legPath(lx0, 50, legY0, 166, w2 + 2, bc) + legPath(rx0, 70, legY0, 166, w2 + 2, bc) + '<rect x="' + (60 - hm) + '" y="128" width="' + (hm * 2) + '" height="14" fill="' + bc + '"/>';
+    } else { // スカート
+      legs = '<path d="M' + lx0 + ' 160L49 214M' + rx0 + ' 160L71 214" stroke="' + skin + '" stroke-width="11" stroke-linecap="round"/><path d="M' + (60 - hm) + ' 128L' + (60 + hm) + ' 128L' + (60 + hm + 12) + ' 176L' + (60 - hm - 12) + ' 176Z" fill="' + bc + '" ' + edge + '/><path d="M52 132L48 174M60 132L60 176M68 132L72 174" stroke="rgba(0,0,0,.12)" stroke-width="1"/>';
+    }
+    var shoes = '<path d="M38 216Q36 228 48 228L58 228Q58 218 54 216ZM82 216Q84 228 72 228L62 228Q62 218 66 216Z" fill="#f4f1ea" stroke="rgba(0,0,0,.35)" stroke-width="1"/><path d="M38 225L58 225M62 225L82 225" stroke="#2b2b30" stroke-width="2.4" stroke-linecap="round"/>';
+    /* --- 腕（素肌） --- */
+    var ax = F ? 3 : 2;
+    function arm(x0, x1, x2, col, w, yEnd) { return '<path d="M' + x0 + ' 90L' + x1 + ' 114L' + x2 + ' ' + yEnd + '" stroke="' + col + '" stroke-width="' + w + '" stroke-linecap="round" stroke-linejoin="round" fill="none"/>'; }
+    var aw = F ? 9 : 11;
+    arms = arm(L + 3, L - ax, L - 1, skin, aw, 138) + arm(R - 3, R + ax, R + 1, skin, aw, 138);
+    hands = '<circle cx="' + (L - 1) + '" cy="141" r="' + (F ? 4.6 : 5.4) + '" fill="' + skin + '"/><circle cx="' + (R + 1) + '" cy="141" r="' + (F ? 4.6 : 5.4) + '" fill="' + skin + '"/>';
+    /* --- 服 --- */
+    var o = a.outfit, sleeveFull = true, sleeveLen = 138, sleeveCol = fill, hem = 134, hood = '', trim = '', torso = '', inner = '';
+    function torsoPath(y2, flare) {
+      var hw = hm + (flare || 0);
+      return 'M' + L + ' 86Q' + (L - 1) + ' 82 ' + (L + 8) + ' 80L' + (R - 8) + ' 80Q' + (R + 1) + ' 82 ' + R + ' 86L' + (60 + ch) + ' 104L' + (60 + wa) + ' ' + wy + 'L' + (60 + hw) + ' ' + y2 + 'L' + (60 - hw) + ' ' + y2 + 'L' + (60 - wa) + ' ' + wy + 'L' + (60 - ch) + ' 104Z';
+    }
+    if (o === 0) { sleeveLen = 106; hem = 136; torso = '<path d="' + torsoPath(hem) + '" fill="' + fill + '" ' + edge + '/><path d="M50 80Q60 90 70 80" fill="' + skin + '" stroke="rgba(0,0,0,.2)"/>'; }
+    else if (o === 1) { hem = 138; torso = '<path d="' + torsoPath(hem) + '" fill="' + fill + '" ' + edge + '/><path d="M47 80L60 104L73 80Z" fill="' + skin + '"/><path d="M47 80L60 104L73 80" fill="none" stroke="rgba(0,0,0,.28)" stroke-width="1.6"/><rect x="' + (60 - hm) + '" y="' + (hem - 5) + '" width="' + (hm * 2) + '" height="5" fill="' + shade(oc, -.18) + '"/>'; }
+    else if (o === 2) { hem = 146; hood = '<path d="M44 60Q40 82 48 84L72 84Q80 82 76 60Q60 52 44 60Z" fill="' + shade(oc, -.12) + '" ' + edge + '/>'; torso = '<path d="' + torsoPath(hem, 1) + '" fill="' + fill + '" ' + edge + '/><path d="M46 84Q60 98 74 84" fill="' + shade(oc, -.25) + '"/><path d="M54 88L53 106M66 88L67 106" stroke="#f4f1ea" stroke-width="1.6"/><path d="M' + (60 - hm + 4) + ' 124L' + (60 - hm + 8) + ' ' + (hem - 6) + 'L' + (60 + hm - 8) + ' ' + (hem - 6) + 'L' + (60 + hm - 4) + ' 124Z" fill="rgba(0,0,0,.14)" stroke="rgba(0,0,0,.22)"/>'; }
+    else if (o === 3) { hem = 132; torso = '<path d="' + torsoPath(hem) + '" fill="' + fill + '" ' + edge + '/><rect x="' + (60 - hm) + '" y="' + (hem - 6) + '" width="' + (hm * 2) + '" height="6" fill="' + shade(oc, -.25) + '"/><path d="M60 84L60 ' + (hem - 6) + '" stroke="rgba(0,0,0,.4)" stroke-width="1.6"/><path d="M46 80L60 92L74 80" fill="' + shade(oc, -.2) + '" stroke="rgba(0,0,0,.25)"/>'; trim = 'cuff'; }
+    else if (o === 4) { hem = 136; sleeveCol = oc; torso = '<path d="' + torsoPath(hem) + '" fill="' + oc + '" ' + edge + '/><path d="M60 84L66 ' + hem + '" stroke="#d8dde2" stroke-width="1.8"/><path d="M46 80L56 104L50 112ZM74 80L66 98L72 112Z" fill="' + shade(oc, -.25) + '" stroke="rgba(0,0,0,.3)"/><path d="M' + (L + 4) + ' 92L' + (L + 12) + ' 100" stroke="rgba(255,255,255,.35)" stroke-width="2.4" stroke-linecap="round"/>'; fill = oc; trim = 'cuff'; }
+    else if (o === 5) { hem = 192; torso = '<path d="' + torsoPath(hem, 6) + '" fill="' + fill + '" ' + edge + '/><path d="M54 80L60 192L66 80Z" fill="#f4f1ea" opacity=".95"/><path d="M60 80L60 192" stroke="rgba(0,0,0,.35)" stroke-width="1.4"/><path d="M44 80L58 112L52 122ZM76 80L62 112L68 122Z" fill="' + shade(oc, -.22) + '" stroke="rgba(0,0,0,.3)"/><circle cx="56" cy="130" r="1.6" fill="#222"/><circle cx="64" cy="130" r="1.6" fill="#222"/>'; }
+    else if (o === 6) { hem = 150; torso = '<path d="' + torsoPath(hem, 2) + '" fill="' + fill + '" ' + edge + '/><path d="M52 80L60 150L68 80Z" fill="#f7f4ee"/><path d="M60 98L60 150" stroke="rgba(0,0,0,.35)" stroke-width="1.2"/><path d="M45 80L58 106L52 118ZM75 80L62 106L68 118Z" fill="' + shade(oc, -.2) + '" stroke="rgba(0,0,0,.3)"/><circle cx="60" cy="126" r="1.5" fill="#222"/>'; }
+    else if (o === 7) { hem = 148; torso = '<path d="' + torsoPath(hem, 2) + '" fill="' + fill + '" ' + edge + '/><path d="M52 80Q60 92 68 80L66 ' + hem + 'L54 ' + hem + 'Z" fill="#f4f1ea"/><path d="M52 80L54 ' + hem + 'M68 80L66 ' + hem + '" stroke="rgba(0,0,0,.3)" stroke-width="1.2"/><circle cx="53" cy="106" r="1.4" fill="rgba(0,0,0,.4)"/><circle cx="53" cy="122" r="1.4" fill="rgba(0,0,0,.4)"/>'; }
+    else if (o === 8) { hem = 178; sleeveLen = 100; torso = '<path d="M' + L + ' 86Q' + (L - 1) + ' 82 ' + (L + 8) + ' 80L' + (R - 8) + ' 80Q' + (R + 1) + ' 82 ' + R + ' 86L' + (60 + ch) + ' 104L' + (60 + wa) + ' ' + wy + 'L' + (60 + hm + 16) + ' ' + hem + 'L' + (60 - hm - 16) + ' ' + hem + 'L' + (60 - wa) + ' ' + wy + 'L' + (60 - ch) + ' 104Z" fill="' + fill + '" ' + edge + '/><path d="M47 80Q60 94 73 80" fill="' + skin + '"/><rect x="' + (60 - wa) + '" y="' + (wy - 4) + '" width="' + (wa * 2) + '" height="6" fill="' + shade(oc, -.3) + '"/>'; }
+    else { hem = 204; sleeveCol = oc; torso = '<path d="M' + (L - 4) + ' 88Q' + (L - 4) + ' 82 ' + (L + 8) + ' 80L' + (R - 8) + ' 80Q' + (R + 4) + ' 82 ' + (R + 4) + ' 88L' + (R + 6) + ' ' + hem + 'L' + (L - 6) + ' ' + hem + 'Z" fill="' + fill + '" ' + edge + '/><path d="M50 80L60 ' + hem + 'L70 80" fill="none" stroke="#f2d46a" stroke-width="3"/><path d="M60 118l3.4 7 7.6 1.1-5.5 5.3 1.3 7.6-6.8-3.6-6.8 3.6 1.3-7.6-5.5-5.3 7.6-1.1z" fill="#f2d46a"/><path d="M' + (L - 6) + ' ' + (hem - 4) + 'L' + (R + 6) + ' ' + (hem - 4) + '" stroke="#f2d46a" stroke-width="3"/>'; }
+    var swCol = (o === 4 || o === 9) ? oc : fill;
+    var slW = F ? 11 : 13;
+    var sl = function (x0, x1, x2) { return '<path d="M' + x0 + ' 90L' + x1 + ' 114L' + x2 + ' ' + sleeveLen + '" stroke="' + swCol + '" stroke-width="' + slW + '" stroke-linecap="' + (sleeveLen >= 130 ? 'butt' : 'round') + '" stroke-linejoin="round" fill="none"/>'; };
+    var slLeft, slRight;
+    if (sleeveLen >= 130) { slLeft = sl(L + 3, L - ax, L - 1); slRight = sl(R - 3, R + ax, R + 1); }
+    else { // 半袖：肩〜肘の手前まで
+      slLeft = '<path d="M' + (L + 3) + ' 90L' + (L - 1) + ' ' + sleeveLen + '" stroke="' + swCol + '" stroke-width="' + slW + '" stroke-linecap="round" fill="none"/>';
+      slRight = '<path d="M' + (R - 3) + ' 90L' + (R + 1) + ' ' + sleeveLen + '" stroke="' + swCol + '" stroke-width="' + slW + '" stroke-linecap="round" fill="none"/>';
+    }
+    sleeves = slLeft + slRight;
+    if (trim === 'cuff') sleeves += '<path d="M' + (L - 6) + ' 134L' + (L + 4) + ' 134M' + (R - 4) + ' 134L' + (R + 6) + ' 134" stroke="' + shade(oc, -.3) + '" stroke-width="4"/>';
+    // 長いコート・ローブは脚の上に重ねる
+    var longTop = (o === 5 || o === 9);
+    /* --- 首・頭 --- */
+    var nk = '<rect x="' + (F ? 55 : 53.5) + '" y="62" width="' + (F ? 10 : 13) + '" height="22" rx="4" fill="' + skinD + '"/>';
+    var face = F
+      ? 'M42 38C42 18 78 18 78 38C78 54 70 68 60 70C50 68 42 54 42 38Z'
+      : 'M41 38C41 17 79 17 79 38L78 52C75 64 68 70 60 70C52 70 45 64 42 52Z';
+    head = '<path d="M41 44Q38 44 38 48Q38 54 42 54ZM79 44Q82 44 82 48Q82 54 78 54Z" fill="' + skin + '"/><path d="' + face + '" fill="' + skin + '"/>';
+    if (!F) head += '<path d="M44 58Q60 72 76 58" fill="none" stroke="rgba(0,0,0,.08)" stroke-width="5"/>';
+    // 顔のパーツ
+    var ex1 = 50, ex2 = 70, ey = 46, ink = '#2a2018', fe = '';
+    var brow = '<path d="M' + (ex1 - 5) + ' ' + (ey - 8) + (F ? 'Q' + ex1 + ' ' + (ey - 11) + ' ' + (ex1 + 4) + ' ' + (ey - 8) : 'L' + (ex1 + 5) + ' ' + (ey - 9.5)) + '" stroke="' + shade(hc.s || '#4a2e1e', -.2) + '" stroke-width="' + (F ? 1.4 : 2.2) + '" fill="none" stroke-linecap="round"/><path d="M' + (ex2 + 5) + ' ' + (ey - 8) + (F ? 'Q' + ex2 + ' ' + (ey - 11) + ' ' + (ex2 - 4) + ' ' + (ey - 8) : 'L' + (ex2 - 5) + ' ' + (ey - 9.5)) + '" stroke="' + shade(hc.s || '#4a2e1e', -.2) + '" stroke-width="' + (F ? 1.4 : 2.2) + '" fill="none" stroke-linecap="round"/>';
+    function eye(cx, wink) {
+      if (wink) return '<path d="M' + (cx - 4.5) + ' ' + ey + 'Q' + cx + ' ' + (ey - 4) + ' ' + (cx + 4.5) + ' ' + ey + '" stroke="' + ink + '" stroke-width="2" fill="none" stroke-linecap="round"/>';
+      if (a.face === 0) return '<ellipse cx="' + cx + '" cy="' + ey + '" rx="3.2" ry="3.6" fill="' + ink + '"/><circle cx="' + (cx - 1) + '" cy="' + (ey - 1.3) + '" r="1.1" fill="#fff"/>';
+      if (a.face === 1) return '<path d="M' + (cx - 5.5) + ' ' + (ey + 1) + 'Q' + cx + ' ' + (ey - 5) + ' ' + (cx + 5.5) + ' ' + (ey - 1) + 'Q' + cx + ' ' + (ey + 3) + ' ' + (cx - 5.5) + ' ' + (ey + 1) + 'Z" fill="' + ink + '"/><circle cx="' + (cx - .5) + '" cy="' + (ey - 1) + '" r="1" fill="#fff"/>';
+      if (a.face === 2) return '<path d="M' + (cx - 5) + ' ' + (ey - 1.5) + 'Q' + cx + ' ' + (ey - 4.5) + ' ' + (cx + 5) + ' ' + (ey + 1.5) + 'L' + (cx + 4) + ' ' + (ey + 3) + 'Q' + cx + ' ' + (ey + 1) + ' ' + (cx - 5) + ' ' + (ey + 1) + 'Z" fill="' + ink + '"/><circle cx="' + cx + '" cy="' + (ey + .2) + '" r="1" fill="#fff"/>';
+      return '<ellipse cx="' + cx + '" cy="' + ey + '" rx="4.2" ry="5" fill="' + ink + '"/><circle cx="' + (cx - 1.4) + '" cy="' + (ey - 1.8) + '" r="1.6" fill="#fff"/><circle cx="' + (cx + 1.2) + '" cy="' + (ey + 1.6) + '" r=".8" fill="#fff"/><path d="M' + (cx - 5) + ' ' + (ey - 3) + 'Q' + (cx - 3) + ' ' + (ey - 6) + ' ' + (cx + 1) + ' ' + (ey - 5.5) + '" stroke="' + ink + '" stroke-width="1.3" fill="none"/>';
+    }
+    fe = brow + eye(ex1, a.face === 4) + eye(ex2, false);
+    fe += '<path d="M60 52L58.4 57.5Q60 58.6 61.6 57.5" fill="none" stroke="rgba(120,60,40,.45)" stroke-width="1.2" stroke-linecap="round"/>';
+    fe += F ? '<path d="M54.5 61.5Q60 66 65.5 61.5Q60 63 54.5 61.5Z" fill="#e0556f" stroke="#e0556f" stroke-width="1.4" stroke-linejoin="round"/><circle cx="46" cy="57" r="4" fill="#ff8aa0" opacity=".28"/><circle cx="74" cy="57" r="4" fill="#ff8aa0" opacity=".28"/>'
+      : '<path d="M54 61.5Q60 65 66 61.5" fill="none" stroke="#8a4a3a" stroke-width="1.8" stroke-linecap="round"/>';
+    head += fe;
+    /* --- 前髪・上の髪 --- */
+    var cap = 'M40 42C37 14 83 14 80 42C76 31 70 27 60 27C50 27 44 31 40 42Z';
+    if (!F) {
+      if (hs === 0) hairF = '<path d="M40 42C37 14 83 14 80 42C76 32 70 28 60 28C50 28 44 32 40 42Z" fill="' + hf + '"/><path d="M44 26L48 12L55 24L61 10L66 24L74 14L74 28Z" fill="' + hf + '"/>';
+      else if (hs === 1) hairF = '<path d="M38 50C34 10 86 10 82 50L79 38C70 36 50 36 41 38Z" fill="' + hf + '"/><path d="M44 30Q60 22 76 30" stroke="' + hlt + '" stroke-width="2" fill="none" opacity=".7"/>';
+      else if (hs === 2) hairF = '<path d="M41 42C36 12 84 10 80 38C76 28 66 20 48 26Z" fill="' + hf + '"/><path d="M41 40L42 52L45 40ZM79 40L78 52L75 40Z" fill="' + hdk + '"/><path d="M52 20Q64 16 74 26" stroke="' + hlt + '" stroke-width="2" fill="none"/>';
+      else if (hs === 3) hairF = '<path d="M40 42C37 12 83 12 80 42C76 28 50 24 40 42Z" fill="' + hf + '"/><path d="M48 24L72 22M46 30L74 28" stroke="' + hlt + '" stroke-width="1.4" opacity=".7"/>';
+      else if (hs === 4) hairF = '<path d="M40 44C37 14 83 14 80 44L76 34L70 40L64 30L56 40L50 32L44 40Z" fill="' + hf + '"/>';
+      else hairF = '<path d="M40 44C37 14 83 14 80 44C74 28 66 24 60 24L56 40C50 30 44 34 40 44Z" fill="' + hf + '"/>';
+    } else {
+      if (hs === 0) hairF = '<path d="M39 46C34 12 86 12 81 46C76 34 66 30 60 30C54 30 44 34 39 46Z" fill="' + hf + '"/><path d="M42 36Q60 28 78 36" stroke="' + hlt + '" stroke-width="2" fill="none" opacity=".6"/>';
+      else if (hs === 1) hairF = '<path d="M39 46C34 12 86 12 81 46C76 32 70 26 58 26C48 28 42 36 39 46Z" fill="' + hf + '"/><path d="M58 26C50 34 46 40 44 46" stroke="' + hdk + '" stroke-width="1.4" fill="none"/>';
+      else if (hs === 2 || hs === 3) hairF = '<path d="' + cap + '" fill="' + hf + '"/><path d="M44 34Q60 26 76 34" stroke="' + hlt + '" stroke-width="2" fill="none" opacity=".6"/>';
+      else if (hs === 4) hairF = '<path d="M40 44C36 12 84 12 80 44C74 30 62 24 60 24C58 24 46 30 40 44Z" fill="' + hf + '"/><path d="M60 24L56 36M60 24L64 36" stroke="' + hdk + '" stroke-width="1.2"/>';
+      else if (hs === 5) hairF = '<path d="M40 46C34 12 86 12 80 46C78 36 72 30 62 28L52 40C48 34 44 38 40 46Z" fill="' + hf + '"/>';
+      else hairF = '<path d="M38 44C32 8 88 8 82 44C76 28 66 24 60 24C54 24 44 28 38 44Z" fill="' + hf + '"/><circle cx="40" cy="30" r="6" fill="' + hf + '"/><circle cx="80" cy="30" r="6" fill="' + hf + '"/>';
+    }
+    /* --- 小物 --- */
+    var ac = a.acc;
+    if (ac === 1) acc = '<g fill="rgba(180,220,255,.18)" stroke="#2a2a30" stroke-width="1.6"><rect x="43" y="40" width="14" height="11" rx="4"/><rect x="63" y="40" width="14" height="11" rx="4"/></g><path d="M57 44L63 44M43 44L40 42M77 44L80 42" stroke="#2a2a30" stroke-width="1.5"/>';
+    else if (ac === 2) acc = '<g fill="#14161a" stroke="#14161a" stroke-width="1.4"><path d="M42 40L58 40L56 51Q50 54 45 51Z"/><path d="M62 40L78 40L75 51Q70 54 64 51Z"/></g><path d="M58 42L62 42M42 41L39 40M78 41L81 40" stroke="#14161a" stroke-width="1.6"/><path d="M45 42L50 42" stroke="rgba(255,255,255,.5)" stroke-width="1.4"/>';
+    else if (ac === 3) acc = '<path d="M38 40C36 8 84 8 82 40L82 34L38 34Z" fill="' + shade(oc, -.1) + '" stroke="rgba(0,0,0,.3)"/><rect x="37" y="30" width="46" height="9" rx="4" fill="' + shade(oc, -.3) + '"/><circle cx="60" cy="8" r="5" fill="' + shade(oc, .2) + '"/>';
+    else if (ac === 4) acc = '<path d="M39 36C38 14 82 14 81 36Z" fill="' + shade(oc, -.05) + '" stroke="rgba(0,0,0,.3)"/><path d="M60 34L88 36Q90 42 80 40L60 38Z" fill="' + shade(oc, -.3) + '" stroke="rgba(0,0,0,.3)"/>';
+    else if (ac === 5) acc = '<circle cx="41" cy="58" r="2.6" fill="#f2d46a" stroke="#b98a2e"/><circle cx="79" cy="58" r="2.6" fill="#f2d46a" stroke="#b98a2e"/><path d="M41 60L41 66M79 60L79 66" stroke="#f2d46a" stroke-width="1.4"/><circle cx="41" cy="68" r="2.4" fill="#7fd6ff" stroke="#fff" stroke-width=".6"/><circle cx="79" cy="68" r="2.4" fill="#7fd6ff" stroke="#fff" stroke-width=".6"/>';
+    else if (ac === 6) acc = '<path d="M37 48C34 8 86 8 83 48" fill="none" stroke="#2a2a30" stroke-width="3.4"/><rect x="33" y="42" width="8" height="16" rx="4" fill="#e0405f" stroke="#2a2a30" stroke-width="1.4"/><rect x="79" y="42" width="8" height="16" rx="4" fill="#e0405f" stroke="#2a2a30" stroke-width="1.4"/>';
+    else if (ac === 7) acc = '<path d="M38 34C40 8 80 8 82 34" fill="none" stroke="' + shade(oc, 0) + '" stroke-width="4" stroke-linecap="round"/><circle cx="76" cy="16" r="4" fill="' + shade(oc, .25) + '"/>';
+    var bodyLayers = legs + shoes;
+    var svg = '<svg viewBox="0 0 120 236" aria-hidden="true"><defs>' + defs + '</defs>' + back + hood +
+      (longTop ? bodyLayers + arms + torso : bodyLayers + arms + torso) + sleeves + hands + nk + head + hairF + acc + '</svg>';
+    return svg;
   }
   var PICK = '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M20 84L74 30" stroke="#8a5a2b" stroke-width="8" stroke-linecap="round"/><path d="M42 16Q82 14 92 52Q70 34 42 16Z" fill="#cfd8dc" stroke="#78909c" stroke-width="2.5" stroke-linejoin="round"/></svg>';
 
@@ -412,38 +562,68 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   });
 
   /* ---------- キャラ作り ---------- */
-  var draft = { name: '', skin: 1, hair: 0, hairColor: 0, outfit: 0, outfitColor: 0 };
-  var makeMode = 'create';
-  function swatches(host, arr, key) {
-    var h = ''; arr.forEach(function (c, i) { h += '<button type="button" class="sw' + (draft[key] === i ? ' sel' : '') + '" data-i="' + i + '" style="background:' + c + '" aria-label="' + (i + 1) + '番"></button>'; });
-    host.innerHTML = h;
-    host.onclick = function (e) { var b = e.target.closest('.sw'); if (!b) return; draft[key] = +b.dataset.i; drawMake(); };
+  var draft = normAv(DEFAV);
+  var makeMode = 'create', mkTab = 0;
+  function swBg(c) { return c.g ? 'linear-gradient(135deg,' + c.g.join(',') + ')' : (c.s || c); }
+  function pillsH(label, key, arr, cur) {
+    var h = '<div class="fld">' + label + '</div><div class="opts" data-k="' + key + '">';
+    arr.forEach(function (n, i) { h += '<button type="button" class="opt' + (cur === i ? ' sel' : '') + '" data-i="' + i + '">' + n + '</button>'; });
+    return h + '</div>';
   }
-  function pills(host, arr, key) {
-    var h = ''; arr.forEach(function (n, i) { h += '<button type="button" class="opt' + (draft[key] === i ? ' sel' : '') + '" data-i="' + i + '">' + n + '</button>'; });
-    host.innerHTML = h;
-    host.onclick = function (e) { var b = e.target.closest('.opt'); if (!b) return; draft[key] = +b.dataset.i; drawMake(); };
+  function swH(label, key, arr, cur) {
+    var h = '<div class="fld">' + label + '</div><div class="opts" data-k="' + key + '">';
+    arr.forEach(function (c, i) { h += '<button type="button" class="sw' + (cur === i ? ' sel' : '') + '" data-i="' + i + '" style="background:' + swBg(c) + '" aria-label="' + (c.n || (i + 1) + '番') + '"></button>'; });
+    return h + '</div>';
   }
-  function drawMake() {
-    $('prev').innerHTML = avatarSVG(draft);
-    pills($('oHair'), HAIRN, 'hair'); swatches($('oHairC'), HAIRC, 'hairColor');
-    pills($('oOut'), OUTN, 'outfit'); swatches($('oOutC'), OUTC, 'outfitColor'); swatches($('oSkin'), SKIN, 'skin');
+  function panelHTML() {
+    var h = '';
+    if (mkTab === 0) {
+      h += '<div class="fld">なまえ（12文字まで）</div><input class="nm" id="nameIn" maxlength="12" autocomplete="off" placeholder="なまえ" value="">';
+      h += pillsH('性別', 'gender', ['男性', '女性'], draft.gender) + swH('肌の色', 'skin', SKIN, draft.skin) + pillsH('目もと', 'face', FACEN, draft.face);
+    } else if (mkTab === 1) {
+      h += pillsH('髪型', 'hair', HAIRN[draft.gender], draft.hair) + swH('髪の色（グラデーションもあるで）', 'hairColor', HAIRC, draft.hairColor);
+    } else if (mkTab === 2) {
+      h += pillsH('トップス', 'outfit', OUTN, draft.outfit) + swH('色', 'outfitColor', OUTC, draft.outfitColor) + pillsH('柄', 'pattern', PATN, draft.pattern) + swH('柄の色', 'patColor', OUTC, draft.patColor);
+    } else {
+      h += pillsH('ボトムス', 'bottom', BOTN, draft.bottom) + swH('ボトムスの色', 'bottomColor', BOTC, draft.bottomColor) + pillsH('小物', 'acc', ACCN, draft.acc);
+    }
+    return h + '<p class="tiny">あとから、ゲームの中の「せってい」でいつでも変えられるで。</p>';
   }
+  function drawPanel() {
+    $('mkBody').innerHTML = panelHTML();
+    var ni = $('nameIn'); if (ni) { ni.value = draft.name; ni.addEventListener('input', function () { draft.name = this.value; }); }
+    var ts = $('mkTabs').querySelectorAll('button'); for (var i = 0; i < ts.length; i++) ts[i].classList.toggle('on', +ts[i].dataset.t === mkTab);
+  }
+  function drawPrev() { $('prev').innerHTML = avatarSVG(draft); }
+  $('mkTabs').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; mkTab = +b.dataset.t; drawPanel(); $('mkBody').scrollTop = 0; });
+  $('mkBody').addEventListener('click', function (e) {
+    var b = e.target.closest('[data-i]'); if (!b) return;
+    var g = b.parentNode, k = g.dataset.k, i = +b.dataset.i; if (!k) return;
+    draft[k] = i;
+    if (k === 'gender') { draft.hair = 0; drawPanel(); }
+    else { var s = g.children; for (var j = 0; j < s.length; j++) s[j].classList.toggle('sel', s[j] === b); }
+    drawPrev();
+  });
+  $('rnd').addEventListener('click', function () {
+    var r = function (n) { return Math.floor(Math.random() * n); };
+    var keep = draft.name, gnd = r(2);
+    draft = normAv({ name: keep, gender: gnd, skin: r(6), face: r(5), hair: r(HAIRN[gnd].length), hairColor: r(HAIRC.length), outfit: r(OUTN.length), outfitColor: r(OUTC.length), pattern: r(5), patColor: r(OUTC.length), bottom: gnd === 1 ? r(4) : r(2) + (r(3) === 0 ? 3 : 0), bottomColor: r(BOTC.length), acc: r(8) });
+    drawPanel(); drawPrev(); sfx(0);
+  });
   function openMake(mode) {
-    makeMode = mode;
-    if (mode === 'edit' && player) { var a = player.avatar; draft = { name: a.name, skin: a.skin, hair: a.hair, hairColor: a.hairColor, outfit: a.outfit, outfitColor: a.outfitColor }; }
-    else { draft = { name: nick || '', skin: 1, hair: 0, hairColor: 0, outfit: 0, outfitColor: 0 }; }
-    $('nameIn').value = draft.name;
+    makeMode = mode; mkTab = 0;
+    if (mode === 'edit' && player) { draft = normAv(player.avatar); draft.name = player.avatar.name; }
+    else { draft = normAv(DEFAV); draft.name = nick || ''; }
     $('makeTtl').textContent = mode === 'edit' ? 'キャラを変える' : 'キャラをつくろう';
     $('makeOk').textContent = mode === 'edit' ? '変更を保存' : 'この子で決定！';
     $('makeBack').hidden = mode !== 'edit';
-    drawMake(); show('make');
+    drawPanel(); drawPrev(); show('make');
   }
-  $('nameIn').addEventListener('input', function () { draft.name = this.value; });
   $('makeBack').addEventListener('click', function () { show('play'); });
   $('makeOk').addEventListener('click', function () {
     var btn = this; btn.disabled = true;
-    var av = { name: ($('nameIn').value || '').trim() || nick, skin: draft.skin, hair: draft.hair, hairColor: draft.hairColor, outfit: draft.outfit, outfitColor: draft.outfitColor };
+    var av = {}; for (var k in DEFAV) av[k] = draft[k];
+    av.name = (draft.name || '').trim() || nick;
     api({ action: makeMode === 'edit' ? 'game_avatar' : 'game_create', avatar: av }).then(function (j) {
       btn.disabled = false;
       if (!j.player) { toast(j.message || 'うまく保存できへんかった。もう一回な'); return; }
