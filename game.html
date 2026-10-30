@@ -268,6 +268,17 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #field.digging #fview .hint{display:block}
 #field.digging #ftip{display:none}
 .monw{position:absolute;width:92px;transform:translate(-50%,-100%);pointer-events:none}
+.gh{position:absolute;width:78px;height:124px;transform:translate(-50%,-100%);pointer-events:none}
+.gh .hb{width:100%;height:100%;transform-origin:50% 100%;position:relative}
+.gh .hb svg{height:100%;width:auto;display:block;margin:0 auto}
+.gh.walk .hb{animation:bob .32s ease-in-out infinite}
+.gh .hs{position:absolute;left:50%;bottom:-3px;width:44px;height:12px;margin-left:-22px;border-radius:50%;background:rgba(0,0,0,.35);z-index:-1}
+.gh .hb .fpk{position:absolute;width:58px;height:58px;transform-origin:28% 76%;transform:rotate(-6deg);pointer-events:none}
+.gh .hb .fpk svg{width:100%;height:100%;display:block}
+.gh .hb .fpk.sw1{animation:swing .3s ease-in-out}
+.gh .gname{position:absolute;left:50%;top:-16px;transform:translateX(-50%);white-space:nowrap;font-size:11px;font-weight:700;color:#fff;text-shadow:0 1px 3px #000,0 0 2px #000}
+.spot.taken{opacity:.55}
+.spot .by{position:absolute;left:50%;top:-30px;transform:translateX(-50%);white-space:nowrap;font-size:10px;font-weight:700;color:#fff;background:rgba(8,16,20,.75);border-radius:8px;padding:2px 7px}
 .ping{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;border:3px solid rgba(255,255,255,.85);pointer-events:none;animation:pg .5s ease-out forwards;z-index:99998}
 @keyframes pg{from{transform:scale(.3);opacity:1}to{transform:scale(1.5);opacity:0}}
 #ftip{position:absolute;left:12px;right:12px;top:10px;padding:8px 12px;border-radius:12px;background:rgba(8,16,20,.78);border:1px solid var(--line);font-size:13px;text-align:center;pointer-events:none;transition:opacity .6s;z-index:5}
@@ -921,6 +932,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     taps++; sfx('hit'); vib(18);
     var el = curSpot.el; el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit');
     swingAnim(); dustW(curSpot.x, curSpot.y - 18); setProg();
+    if (shared && curSpot.i != null) rtSend({ t: 'tap', i: curSpot.i, g: curSpot.g, p: +(taps / TAPS).toFixed(2) });
     var left = TAPS - taps;
     $('hint').textContent = left > 0 ? 'あと ' + left + ' 回！' : 'なにか出てきた…！';
     if (!monTried && taps >= Math.ceil(TAPS / 2) && taps < TAPS) { monTried = true; if (monFirst() || Math.random() < .55) { monMark(); spawnMon(); return; } }
@@ -1209,11 +1221,106 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function pollParty() {
     if (!room) { clearInterval(partyTimer); return; }
     api({ action: 'room_state', room: room.id }).then(function (j) {
-      if (!j.room || j.room.status === 'closed') { room = null; partyN = 1; clearInterval(partyTimer); if ($('field').classList.contains('on')) fieldHud(); toast('パーティはおわったで'); return; }
+      if (!j.room || j.room.status === 'closed') { rtStop(); room = null; partyN = 1; clearInterval(partyTimer); if ($('field').classList.contains('on')) fieldHud(); toast('パーティはおわったで'); return; }
       room = j.room; var n = room.members.length; if (n !== partyN) { partyN = n; if ($('field').classList.contains('on')) fieldHud(); }
     });
   }
-  $('fhud').addEventListener('click', function (e) { if (e.target.closest('#fLeave') && room) { api({ action: 'room_leave', room: room.id }); room = null; partyN = 1; clearInterval(partyTimer); fieldHud(); toast('パーティをぬけたで'); } });
+  $('fhud').addEventListener('click', function (e) { if (e.target.closest('#fLeave') && room) { api({ action: 'room_leave', room: room.id }); rtStop(); room = null; partyN = 1; clearInterval(partyTimer); fieldHud(); toast('パーティをぬけたで'); } });
+
+  /* ---------- 協力プレイ：フィールドで仲間と一緒に動く（Supabase Realtime） ----------
+     通信するのは「位置・向き・いま掘ってる場所・叩いた進み具合」だけ。石の抽選や記録は、今までどおりサーバーがやる。 */
+  var RT = (function () {
+    var SB_URL = 'https://fxkahiastkklxduecrhq.supabase.co', SB_KEY = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6ImZ4a2FoaWFzdGtrbHhkdWVjcmhxIiwicm9sZSI6ImFub24iLCJpYXQiOjE3OTAwNDYwMDYsImV4cCI6MjEwNTYyMjAwNn0.-_pBtx2lDYiEpWQTgIl61Ek3zomHBOdHhSAJUvVmqxA', LIB = 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2.45.4/dist/umd/supabase.min.js';
+    var cur = null;
+    function loadLib(cb) {
+      if (window.supabase && window.supabase.createClient) return cb(true);
+      var sc = document.createElement('script'); sc.src = LIB; sc.onload = function () { cb(!!(window.supabase && window.supabase.createClient)); }; sc.onerror = function () { cb(false); }; document.head.appendChild(sc);
+    }
+    function join(roomId, me, h, done) {
+      leave();
+      if (window.__RT_MOCK) { // テスト用：同じブラウザ内の別タブと通信
+        var bc = new BroadcastChannel('opa_rt_' + roomId), pm = {}, c = { send: function (p) { bc.postMessage({ k: 'm', p: p }); }, leave: function () { bc.postMessage({ k: 'bye', id: me.id }); bc.close(); } };
+        var pub = function () { bc.postMessage({ k: 'hello', me: me }); }, vals = function () { return Object.keys(pm).map(function (k) { return pm[k]; }); };
+        bc.onmessage = function (e) { var d = e.data; if (d.k === 'hello') { var nw = !pm[d.me.id]; pm[d.me.id] = d.me; if (nw) pub(); h.onPeers(vals()); } else if (d.k === 'bye') { delete pm[d.id]; h.onPeers(vals()); } else if (d.k === 'm') h.onMsg(d.p); };
+        cur = c; pub(); if (done) done(true); return;
+      }
+      loadLib(function (ok) {
+        if (!ok) { if (done) done(false); return; }
+        try {
+          var cl = window.supabase.createClient(SB_URL, SB_KEY, { realtime: { params: { eventsPerSecond: 20 } }, auth: { persistSession: false, autoRefreshToken: false, detectSessionInUrl: false } });
+          var ch = cl.channel('opagame:' + roomId, { config: { broadcast: { self: false }, presence: { key: me.id } } });
+          ch.on('broadcast', { event: 'm' }, function (e) { h.onMsg(e.payload); });
+          ch.on('presence', { event: 'sync' }, function () { var st = ch.presenceState(), out = []; Object.keys(st).forEach(function (k) { var m = st[k][0]; if (m && m.id !== me.id) out.push(m); }); h.onPeers(out); });
+          ch.subscribe(function (status) { if (status === 'SUBSCRIBED') { ch.track(me); if (done) { done(true); done = null; } } });
+          cur = { send: function (p) { ch.send({ type: 'broadcast', event: 'm', payload: p }); }, leave: function () { try { cl.removeChannel(ch); } catch (e) {} } };
+        } catch (e) { if (done) done(false); }
+      });
+    }
+    function leave() { if (cur) { try { cur.leave(); } catch (e) {} cur = null; } }
+    return { join: join, leave: leave, send: function (p) { if (cur) cur.send(p); }, on: function () { return !!cur; } };
+  })();
+  var rtOn = false, peers = {}, rtLast = 0, rtWas = false, shared = false;
+  function rtSend(m) { if (rtOn) { m.f = myMid; RT.send(m); } }
+  function ghostEl(pr) {
+    if (pr.el || !pr.av) return;
+    var e = document.createElement('div'); e.className = 'gh'; e.innerHTML = '<div class="hs"></div><div class="hb">' + charHTML(pr.av) + '</div><div class="gname"></div>';
+    e.querySelector('.gname').textContent = pr.n || ''; $('world').appendChild(e); pr.el = e; pr.hb = e.querySelector('.hb'); pr.pk = e.querySelector('.fpk');
+    placeEl(e, pr.x, pr.y);
+  }
+  function rtPeers(list) {
+    var seen = {};
+    list.forEach(function (m) { if (!m || !m.id || m.id === myMid) return; seen[m.id] = 1; var pr = peers[m.id]; if (!pr) { pr = peers[m.id] = { id: m.id, x: 380, y: 900, tx: 380, ty: 900, dir: 1, got: false }; if (rtOn) rtSend({ t: 'pos', x: Math.round(hero.x), y: Math.round(hero.y), d: hero.dir }); } pr.n = m.n; pr.av = m.av; ghostEl(pr); });
+    Object.keys(peers).forEach(function (id) { if (!seen[id]) { if (peers[id].el) peers[id].el.remove(); delete peers[id]; spots.forEach(function (sp) { if (sp.by === id) rtFree(sp); }); } });
+    partyShown();
+  }
+  function partyShown() { var n = Object.keys(peers).length; var t = $('ftip'); if (t && !curSpot && n > 0 && !t.dataset.shown) { t.dataset.shown = 1; t.style.opacity = 1; t.textContent = '仲間が ' + n + ' 人、ここにおるで！'; clearTimeout(tipT); tipT = setTimeout(function () { t.style.opacity = 0; }, 4000); } }
+  function findSpot(i, g) { for (var k = 0; k < spots.length; k++) if (spots[k].i === i && (spots[k].g || 0) === g) return spots[k]; return null; }
+  function rtFree(sp) { sp.by = null; sp.el.classList.remove('taken'); var b = sp.el.querySelector('.by'); if (b) b.remove(); }
+  function rtMsg(m) {
+    if (!m || m.f === myMid) return;
+    var pr = peers[m.f];
+    if (m.t === 'pos') { if (!pr) pr = peers[m.f] = { id: m.f, x: m.x, y: m.y, tx: m.x, ty: m.y, dir: m.d || 1, got: false }; if (!pr.got) { pr.x = m.x; pr.y = m.y; pr.got = true; } pr.tx = m.x; pr.ty = m.y; pr.dir = m.d || 1; ghostEl(pr); return; }
+    var sp = findSpot(m.i, m.g || 0);
+    if (m.t === 'claim' && sp && !sp.used) { if (curSpot === sp) return; sp.by = m.f; sp.el.classList.add('taken'); if (!sp.el.querySelector('.by')) { var b = document.createElement('div'); b.className = 'by'; b.textContent = ((pr && pr.n) || '仲間') + ' が掘り中'; sp.el.appendChild(b); } }
+    else if (m.t === 'free' && sp && sp.by === m.f) rtFree(sp);
+    else if (m.t === 'tap' && sp) {
+      var cks = sp.el.querySelectorAll('.ck'), gk = sp.el.querySelectorAll('.ckg'), sh = Math.floor((m.p || 0) * cks.length);
+      for (var q = 0; q < cks.length; q++) { cks[q].setAttribute('opacity', q < sh ? '1' : '0'); gk[q].setAttribute('opacity', q < sh ? '.95' : '0'); }
+      sp.el.style.setProperty('--g', String(m.p || 0)); sp.el.classList.add('dg'); sp.el.classList.remove('hit'); void sp.el.offsetWidth; sp.el.classList.add('hit');
+      if (pr && pr.pk) { pr.pk.classList.remove('sw1'); void pr.pk.offsetWidth; pr.pk.classList.add('sw1'); }
+      dustW(sp.x, sp.y - 18);
+    }
+    else if (m.t === 'used') {
+      var u = findSpot(m.i, m.g || 0); if (!u) return; if (curSpot === u) return;
+      rtFree(u); u.el.classList.remove('dg', 'hit'); u.used = true; u.el.classList.add('used');
+      var ks = u.el.querySelectorAll('.ck,.ckg'); for (var z = 0; z < ks.length; z++) ks[z].setAttribute('opacity', '0');
+      setTimeout(function () { var ix = spots.indexOf(u); if (ix < 0) return; spots.splice(ix, 1); u.el.remove(); addSpot(u.kind, u.i, (u.g || 0) + 1); }, 14000);
+    }
+  }
+  function ghostsTick(dt, moved) {
+    if (!rtOn) return;
+    var now = performance.now();
+    if ((moved && now - rtLast > 110) || (!moved && rtWas) || now - rtLast > 1500) { rtLast = now; rtSend({ t: 'pos', x: Math.round(hero.x), y: Math.round(hero.y), d: hero.dir }); }
+    rtWas = moved;
+    var k = Math.min(1, dt * 10);
+    Object.keys(peers).forEach(function (id) {
+      var pr = peers[id]; if (!pr.el) return;
+      var dx = pr.tx - pr.x, dy = pr.ty - pr.y; pr.x += dx * k; pr.y += dy * k;
+      var mv = Math.hypot(dx, dy) > 3; pr.el.classList.toggle('walk', mv);
+      pr.hb.style.transform = pr.dir < 0 ? 'scaleX(-1)' : ''; placeEl(pr.el, pr.x, pr.y);
+    });
+  }
+  function rtStart() {
+    rtStop(); if (!room || !myMid) return; shared = true;
+    var me = { id: myMid, n: (player.avatar && player.avatar.name) || '', av: player.avatar };
+    RT.join(room.id, me, { onMsg: rtMsg, onPeers: rtPeers }, function (ok) { if (ok) { rtOn = true; rtLast = 0; rtSend({ t: 'pos', x: Math.round(hero.x), y: Math.round(hero.y), d: hero.dir }); } else toast('仲間の動きは、つながらへんかった（一人で掘れるで）'); });
+  }
+  if (window.__RT_MOCK) window.__rtTest = function (r) { room = r; partyN = r.members.length; enterMine(r.mine); };
+  function rtStop() {
+    rtOn = false; RT.leave(); Object.keys(peers).forEach(function (id) { if (peers[id].el) peers[id].el.remove(); }); peers = {}; shared = false;
+    spots.forEach(function (sp) { if (sp.by) rtFree(sp); });
+  }
+
   /* 招待の受け取り（ゲームを開いている間、15秒ごとに確認） */
   function startInvPoll() {
     if (invStarted) return; invStarted = true;
@@ -1579,11 +1686,16 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     }
     return { x: 100 + Math.random() * 560, y: 300 + Math.random() * 500 };
   }
-  function addSpot(kind) {
-    var m = MBY[curMine], p = randSpot(kind), el = document.createElement('div');
+  function sspot(i, g) {
+    var rr = rng(hash((room ? room.id : '') + ':' + i + ':' + g)), x = 70, y = 400;
+    for (var n = 0; n < 8; n++) { x = 70 + rr() * (WW - 140); y = 250 + rr() * (WH - 420); if (Math.hypot(x - 380, y - 900) > 130) break; }
+    return { x: x, y: y };
+  }
+  function addSpot(kind, si, sg) {
+    var m = MBY[curMine], p = (shared && si != null) ? sspot(si, sg || 0) : randSpot(kind), el = document.createElement('div');
     el.className = 'spot k-' + kind; el.innerHTML = spotSVG(kind, m.rk) + (kind !== 'a' ? '<i class="sp" style="left:12%;top:8%"></i><i class="sp" style="left:70%;top:20%;animation-delay:.5s"></i><i class="sp" style="left:44%;top:-6%;animation-delay:.9s"></i>' : '');
     placeEl(el, p.x, p.y); $('world').appendChild(el);
-    var sp = { id: ++spotSeq, kind: kind, x: p.x, y: p.y, used: false, el: el }; spots.push(sp); return sp;
+    var sp = { id: ++spotSeq, kind: kind, x: p.x, y: p.y, used: false, el: el, i: si, g: sg || 0 }; spots.push(sp); return sp;
   }
   function buildField() {
     var m = MBY[curMine], w = $('world'), rr = rng(hash(m.id)), html = '';
@@ -1602,15 +1714,16 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     html += '<div class="dc" style="left:380px;top:200px;width:200px;height:158px;z-index:200">' + entranceSVG(m.nm.length > 8 ? m.nm.slice(0, 8) : m.nm) + '</div>';
     html += '<div id="hero2"><div class="hs"></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0;
-    ['a', 'a', 'a', 'a', 'b', 'b', 'c'].forEach(function (k) { addSpot(k); });
+    ['a', 'a', 'a', 'a', 'b', 'b', 'c'].forEach(function (k, i) { addSpot(k, i, 0); });
     hero.x = 380; hero.y = 900; hero.dir = 1; ftarget = null;
     $('hb').innerHTML = heroHTML(); applyAura();
     updHero();
   }
-  function heroHTML() {
-    var pa = normAv(player.avatar), hx = pa.gender === 0 ? 53.7 : 51.1;
-    return avatarSVG(player.avatar) + '<div class="fpk" id="fpick" style="left:' + (hx - 16.2).toFixed(1) + 'px;top:30px">' + pickHTML(SKIN[pa.skin]) + '</div>';
+  function charHTML(av, pid) {
+    var pa = normAv(av), hx = pa.gender === 0 ? 53.7 : 51.1;
+    return avatarSVG(av) + '<div class="fpk"' + (pid ? ' id="' + pid + '"' : '') + ' style="left:' + (hx - 16.2).toFixed(1) + 'px;top:30px">' + pickHTML(SKIN[pa.skin]) + '</div>';
   }
+  function heroHTML() { return charHTML(player.avatar, 'fpick'); }
   function updHero() {
     var h = $('hero2'); if (!h) return; placeEl(h, hero.x, hero.y);
     $('hb').style.transform = hero.dir < 0 ? 'scaleX(-1)' : '';
@@ -1622,7 +1735,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function openField(id) {
     curMine = id; var m = MBY[id];
     $('fTtl').textContent = m.nm;
-    buildField(); fieldHud(); show('field'); closeSheets();
+    shared = !!(room && room.mine === id); buildField(); fieldHud(); show('field'); closeSheets(); if (shared) rtStart();
     var tip = $('ftip'); tip.style.opacity = 1; tip.textContent = '掘る場所をタップ！ ✨光ってる場所ほど、いい石が出やすいで';
     clearTimeout(tipT); tipT = setTimeout(function () { tip.style.opacity = 0; }, 6500);
   }
@@ -1636,6 +1749,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       if (d <= step) { hero.x = ftarget.x; hero.y = ftarget.y; var sp = ftarget.spot; ftarget = null; if (hh) hh.classList.remove('walk'); updHero(); if (sp && !sp.used) { startDig(sp); } }
       else { hero.x += dx / d * step; hero.y += dy / d * step; if (Math.abs(dx) > 3) hero.dir = dx > 0 ? 1 : -1; moved = true; if (hh) hh.classList.add('walk'); updHero(); }
     }
+    ghostsTick(dt, moved);
     var fv = $('fview'), vw = fv.clientWidth, vh = fv.clientHeight;
     fz += (zoomT - fz) * Math.min(1, dt * 6);
     var vwz = vw / fz, vhz = vh / fz, fx = hero.x, fy = hero.y;
@@ -1650,7 +1764,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (e.target.closest && e.target.closest('#fDigBar')) return;
     if (curSpot) { swing(e); return; }
     var r = this.getBoundingClientRect(), wx = (e.clientX - r.left) / fz + camX, wy = (e.clientY - r.top) / fz + camY, hit = null, best = 58;
-    spots.forEach(function (s) { if (s.used) return; var d = Math.hypot(wx - s.x, wy - (s.y - 12)); if (d < best) { best = d; hit = s; } });
+    spots.forEach(function (s) { if (s.used || (s.by && s.by !== myMid)) return; var d = Math.hypot(wx - s.x, wy - (s.y - 12)); if (d < best) { best = d; hit = s; } });
     var pg = document.createElement('i'); pg.className = 'ping'; pg.style.left = wx + 'px'; pg.style.top = wy + 'px'; $('world').appendChild(pg); setTimeout(function () { pg.remove(); }, 520);
     if (hit) ftarget = { x: hit.x - 58, y: hit.y + 26, spot: hit };
     else ftarget = { x: clamp(wx, 30, WW - 30), y: clamp(wy, 200, WH - 40), spot: null };
@@ -1664,7 +1778,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     removeMon(); monTried = false; curSpot = sp; spotKind = sp.kind; TAPS = Math.max(3, Math.round(SPOTTAPS[sp.kind] * (1 - toolCut()) / (MULT[Math.min(partyN, 5) - 1] || 1))); taps = 0; busy = false;
     hero.dir = 1; updHero(); $('dig').disabled = false; $('dig').innerHTML = '⛏️ 掘る！';
     sp.el.classList.add('dg'); var pr = document.createElement('div'); pr.className = 'dprog'; pr.innerHTML = '<i></i>'; sp.el.appendChild(pr);
-    setProg(); digUI(true); BGM.set('dig');
+    setProg(); digUI(true); BGM.set('dig'); if (shared && sp.i != null) rtSend({ t: 'claim', i: sp.i, g: sp.g });
     $('hint').textContent = sp.kind === 'c' ? '深い穴…なにかが眠ってるで。画面をたたいてな' : (sp.kind === 'b' ? '光ってる！いい石の気配や。たたいてな' : '岩をたたいてな！');
   }
   function endDigVisual(sp) {
@@ -1672,18 +1786,19 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     digUI(false);
   }
   function cancelDig() {
-    removeMon(); var sp = curSpot; curSpot = null; taps = 0; endDigVisual(sp); BGM.set('field');
+    removeMon(); var sp = curSpot; curSpot = null; taps = 0; endDigVisual(sp); BGM.set('field'); if (shared && sp && sp.i != null) rtSend({ t: 'free', i: sp.i, g: sp.g });
   }
   function leaveDig() {
     removeMon(); var sp = curSpot; curSpot = null;
     if (sp) {
       endDigVisual(sp); sp.used = true; sp.el.classList.add('used');
-      setTimeout(function () { var i = spots.indexOf(sp); if (i < 0) return; spots.splice(i, 1); sp.el.remove(); addSpot(sp.kind); }, 14000);
+      if (shared && sp.i != null) rtSend({ t: 'used', i: sp.i, g: sp.g });
+      setTimeout(function () { var i = spots.indexOf(sp); if (i < 0) return; spots.splice(i, 1); sp.el.remove(); addSpot(sp.kind, sp.i, (sp.g || 0) + 1); }, 14000);
     }
     taps = 0; fieldHud(); show('field');
   }
   $('fCancel').addEventListener('click', function () { if (!busy) cancelDig(); });
-  $('fBack').addEventListener('click', function () { if (curSpot) cancelDig(); openMap(curMine); });
+  $('fBack').addEventListener('click', function () { if (curSpot) cancelDig(); rtStop(); openMap(curMine); });
   $('fBook').addEventListener('click', function () { renderBook(); $('book').classList.add('on'); });
   $('fSet').addEventListener('click', function () { $('setName').textContent = player.avatar.name + ' さん'; $('set').classList.add('on'); });
 
