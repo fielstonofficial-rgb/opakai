@@ -308,11 +308,22 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #downov.on{display:block}
 #downov b{display:block;font-size:18px;margin-bottom:4px}
 #downov p{margin:0 0 10px;font-size:13px;color:#e8d6dc}
-#guardBtn{position:absolute;right:12px;bottom:96px;z-index:25;display:none;padding:10px 14px;border-radius:999px;border:2px solid #7fd6ff;background:rgba(8,20,30,.85);color:#bfe9ff;font-weight:800;font-size:13px}
-#swBtn{position:absolute;right:12px;bottom:144px;z-index:25;display:none;padding:10px 14px;border-radius:999px;border:2px solid #ffd36a;background:rgba(30,22,6,.88);color:#ffe9a8;font-weight:800;font-size:13px}
-#qcBtn{position:absolute;right:12px;bottom:192px;z-index:40;display:none;padding:10px 14px;border-radius:999px;border:2px solid #9ff0c0;background:rgba(6,30,20,.88);color:#c9ffe0;font-weight:800;font-size:13px}
-#qcPanel{position:absolute;right:12px;bottom:240px;z-index:41;display:none;grid-template-columns:1fr 1fr;gap:6px;padding:8px;border-radius:16px;background:rgba(8,16,22,.94);border:1px solid rgba(159,240,192,.5);width:226px}
+
+
+
+#qcPanel{position:absolute;right:8px;bottom:44px;z-index:41;display:none;grid-template-columns:1fr 1fr;gap:6px;padding:8px;border-radius:16px;background:rgba(8,16,22,.94);border:1px solid rgba(159,240,192,.5);width:226px}
 #qcPanel.on{display:grid}
+
+#fTools{position:absolute;left:8px;right:8px;bottom:6px;z-index:60;display:flex;gap:6px;justify-content:flex-end;align-items:center;pointer-events:none}
+#fTools button{pointer-events:auto;display:none;padding:5px 10px;border-radius:999px;font-weight:800;font-size:11px;line-height:1.2;white-space:nowrap}
+#fTools #guardBtn{border:1.5px solid #7fd6ff;background:rgba(8,20,30,.8);color:#bfe9ff}
+#fTools #swBtn{border:1.5px solid #ffd36a;background:rgba(30,22,6,.82);color:#ffe9a8}
+#fTools #qcBtn{border:1.5px solid #9ff0c0;background:rgba(6,30,20,.82);color:#c9ffe0}
+#fTools #gmTog{position:static;margin-right:auto;border:1.5px solid rgba(255,255,255,.3);background:rgba(10,18,24,.82);color:#fff}
+#fTools #gmTog.on{border-color:#ffd36a;color:#ffe9a8;background:rgba(40,30,6,.88)}
+#field.digging #fTools,#field.arena #fTools{bottom:70px}
+#field.digging #qcPanel,#field.arena #qcPanel{bottom:108px}
+#field.town #fTools{bottom:134px}
 #qcPanel button{padding:11px 4px;border-radius:12px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff;font-weight:800;font-size:13px}
 #qcPanel button.hl{border-color:#ff7a8a;background:rgba(255,80,100,.22)}
 .gh.gmg .hb{filter:drop-shadow(0 0 7px #ffd36a) drop-shadow(0 0 16px #ffd36a)}
@@ -499,7 +510,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v34（闘技場）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v35（ボタン整理）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所や（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -507,7 +518,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   <div id="cfm"><div class="gc"><h3>ゲームをとじる？</h3><p class="tiny">とじても、ここまでの記録は残るで。</p><div class="rw" style="display:flex;gap:8px;margin-top:12px"><button id="cfmNo" type="button" class="gbtn" style="flex:1">つづける</button><button id="cfmYes" type="button" class="gbtn dim" style="flex:1;margin-top:0">とじる</button></div></div></div>
   <section class="scr" id="field">
     <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="装備・もちもの">🎒<small>装備・持物</small></button><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
-    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><button id="guardBtn" type="button">🛡 ガード</button><button id="swBtn" type="button">🔁 持ちかえ</button><button id="qcBtn" type="button">💬 ひとこと</button><div id="qcPanel"></div><div id="downov"><b>たおれてしもた…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
+    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="fTools"><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">💬</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしもた…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
         <div id="gld"><div class="gc"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="tiny">ギルドの部屋</span><button id="gClose" type="button" class="gbtn" style="padding:6px 12px">とじる</button></div><div id="gBody"></div></div></div>
         <div id="arn"><div class="arh"><b>⚔ 闘技場</b><span class="tiny" id="arRec"></span><button id="arClose" type="button" class="gbtn" style="padding:8px 12px">町にもどる</button></div><div id="arBody"></div></div>
         <div id="arBig"></div>
@@ -1379,7 +1390,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     helm: { id: 'gm_h', slot: 'helm', nm: '黄金の兜', def: .05, ic: '⛑️' }
   };
   function isGM() { return !!(player && player.gm); }
-  function gmTogUi() { var b = $('gmTog'); if (!b) return; var on = $('map').classList.contains('on') || $('field').classList.contains('on'); b.style.display = (player && player.gmReal && on) ? 'block' : 'none'; b.className = gmOn ? 'on' : ''; b.textContent = gmOn ? '👑 マスター中（タップで一般に変身）' : '🙂 一般中（タップでマスターに変身）'; }
+  function gmTogUi() { var b = $('gmTog'); if (!b) return; var on = $('map').classList.contains('on') || $('field').classList.contains('on'); var inF = $('field').classList.contains('on'), tl = $('fTools'); if (!b._home) b._home = b.parentNode; var host = inF ? tl : b._home; if (host && b.parentNode !== host) { if (inF) host.insertBefore(b, host.firstChild); else host.appendChild(b); } b.style.display = (player && player.gmReal && on) ? 'block' : 'none'; b.className = gmOn ? 'on' : ''; b.textContent = inF ? (gmOn ? '👑 マスター' : '🙂 一般') : (gmOn ? '👑 マスター中（タップで一般に変身）' : '🙂 一般中（タップでマスターに変身）'); }
   function applyGmMode() {
     if (!player || !player.gmReal) return;
     player.gm = gmOn; player.lv = gmOn ? 999 : (player.lvReal || 1); hp.ready = false; guard = false;
@@ -2698,9 +2709,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('gmTog').addEventListener('pointerdown', function (e) { e.stopPropagation(); });
   function gearUi() {
     var g = $('guardBtn'); if (!g) return; var has = !!eqItem('shield');
-    g.style.display = (has && fieldOn) ? 'block' : 'none'; g.classList.toggle('on', guard); g.textContent = guard ? '🛡 ガード中（もう一度でやめる）' : '🛡 ガード';
+    g.style.display = (has && fieldOn) ? 'block' : 'none'; g.classList.toggle('on', guard); g.textContent = guard ? '🛡 ガード中' : '🛡 ガード';
     var hh = $('hero2'); if (hh) hh.classList.toggle('guard', guard);
-    var sw = $('swBtn'); if (sw) { sw.style.display = (fieldOn && !inTown && eqItem('weapon')) ? 'block' : 'none'; sw.textContent = handW() ? '🔁 つるはしに持ちかえ' : '🔁 武器に持ちかえ'; }
+    var sw = $('swBtn'); if (sw) { sw.style.display = (fieldOn && !inTown && eqItem('weapon')) ? 'block' : 'none'; sw.textContent = handW() ? '🔁 つるはし' : '🔁 武器'; }
     var qb = $('qcBtn'); if (qb) { var qs = fieldOn && !inTown && rtOn; qb.style.display = qs ? 'block' : 'none'; if (!qs) $('qcPanel').classList.remove('on'); }
     handUi();
   }
