@@ -408,6 +408,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #fDigBar{position:absolute;left:14px;right:14px;bottom:12px;z-index:100000;display:none;gap:8px;align-items:center}
 #field.digging #fDigBar{display:flex}
 #fDigBar .big{flex:1}
+#atkBtn{flex:none;padding:15px 12px;border-radius:16px;border:2px solid #ff7a8a;background:rgba(60,12,20,.88);color:#ffd3da;font-size:15px;font-weight:800}
 #fCancel{flex:none;padding:15px 14px;border-radius:16px;border:1px solid var(--line);background:rgba(8,16,20,.82);color:var(--ink);font-size:15px}
 #fview .hint{position:absolute;left:12px;right:12px;top:44px;margin:0;padding:8px 12px;border-radius:12px;background:rgba(8,16,20,.78);border:1px solid var(--line);color:var(--ink);text-align:center;z-index:5;display:none;pointer-events:none;font-size:13px}
 #field.digging #fview .hint{display:block}
@@ -466,7 +467,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v31（プロフィール・マスター変身）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v32（アップなし・掘りながら戦う）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所や（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -474,7 +475,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   <div id="cfm"><div class="gc"><h3>ゲームをとじる？</h3><p class="tiny">とじても、ここまでの記録は残るで。</p><div class="rw" style="display:flex;gap:8px;margin-top:12px"><button id="cfmNo" type="button" class="gbtn" style="flex:1">つづける</button><button id="cfmYes" type="button" class="gbtn dim" style="flex:1;margin-top:0">とじる</button></div></div></div>
   <section class="scr" id="field">
     <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="装備・もちもの">🎒<small>装備・持物</small></button><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
-    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><button id="guardBtn" type="button">🛡 ガード</button><button id="swBtn" type="button">🔁 持ちかえ</button><button id="qcBtn" type="button">💬 ひとこと</button><div id="qcPanel"></div><div id="downov"><b>たおれてしもた…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="fCancel" type="button">やめる</button></div></div>
+    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><button id="guardBtn" type="button">🛡 ガード</button><button id="swBtn" type="button">🔁 持ちかえ</button><button id="qcBtn" type="button">💬 ひとこと</button><div id="qcPanel"></div><div id="downov"><b>たおれてしもた…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
         <div id="gld"><div class="gc"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="tiny">ギルドの部屋</span><button id="gClose" type="button" class="gbtn" style="padding:6px 12px">とじる</button></div><div id="gBody"></div></div></div>
     <div id="tchat"><div id="tlog"></div><div id="trow"><input id="tin" type="text" maxlength="40" placeholder="ひとこと話す（40字まで）" autocomplete="off"><button id="tsend" type="button">送る</button></div></div>
     <div class="fhud" id="fhud"></div>
@@ -1142,15 +1143,21 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function swing(ev) {
     if (busy || !curSpot || hp.down) return;
     actx();
-    if (monster) { hitMon(); return; }
     taps++; sfx('hit'); vib(18);
     var el = curSpot.el; el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit');
     swingAnim(); dustW(curSpot.x, curSpot.y - 18); setProg();
     if (shared && curSpot.i != null) rtSend({ t: 'tap', i: curSpot.i, g: curSpot.g, p: +(taps / TAPS).toFixed(2) });
     var left = TAPS - taps;
     $('hint').textContent = left > 0 ? 'あと ' + left + ' 回！' : 'なにか出てきた…！';
-    if (!monTried && taps >= Math.ceil(TAPS / 2) && taps < TAPS) { monTried = true; var dg = diffN(); if (monFirst() || Math.random() < .55 + .4 * dg) { monMark(); monWaves = (dg > .3 ? 1 : 0) + (dg > .65 ? 1 : 0) + (dg > .9 && Math.random() < .5 ? 1 : 0); spawnMon(); return; } }
+    if (!monTried && taps >= Math.ceil(TAPS / 2) && taps < TAPS) { monTried = true; ambush(); }
     if (taps >= TAPS) doDig(0);
+  }
+  function ambush() {
+    if (inTown || !amFoeHost()) return;
+    var dg = diffN(); if (Math.random() > .5 + .45 * dg) return;
+    var n = 1 + (dg > .3 ? 1 : 0) + (dg > .65 ? 1 : 0) + (dg > .9 && Math.random() < .5 ? 1 : 0), ox = curSpot ? curSpot.x : hero.x, oy = curSpot ? curSpot.y : hero.y;
+    for (var i = 0; i < n; i++) { var a = Math.random() * 6.283, dd = 170 + Math.random() * 90; addFoe(clamp(ox + Math.cos(a) * dd, 40, WW - 40), clamp(oy + Math.sin(a) * dd * .7, 260, WH - 40)); }
+    toast('モンスターが ' + n + ' 体、寄ってきた！ ⚔ こうげき で追いはらえ'); sfx(1); vib([30, 30, 30]);
   }
   function doDig(retry) {
     busy = true; $('dig').disabled = true;
@@ -1348,7 +1355,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var GMLIST = ['weapon', 'helm', 'armor', 'shield', 'outfit', 'tool'];
   function eqItem(slot) { if (isGM() && GMI[slot]) return GMI[slot]; var id = ((player || {}).equip || {})[slot]; return id ? IBY[id] : null; }
   var wHand = 'weapon';
-  function handW() { return !!eqItem('weapon') && (!!monster || (wHand === 'weapon' && !curSpot)); }
+  function handW() { return !!eqItem('weapon') && wHand === 'weapon'; }
   function curW() { return handW() ? eqItem('weapon') : null; }
   function toolCut() { var t = eqItem('tool'); return t ? t.cut : 0; }
   function aura() { var o = eqItem('outfit'); return o ? 'drop-shadow(0 0 10px ' + AURA[o.tier] + ') drop-shadow(0 0 22px ' + AURA[o.tier] + ')' : ''; }
@@ -2414,7 +2421,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (guard) { toast('ガード中は、たたけへんで'); return false; }
     return atkReady();
   }
-  $('swBtn').addEventListener('click', function () { wHand = (wHand === 'weapon' && !curSpot) ? 'pick' : 'weapon'; if (curSpot && !monster) toast('掘るときは つるはし やで。モンスターが来たら 武器に持ちかえるで'); else toast(wHand === 'weapon' ? '武器に持ちかえた！' : 'つるはしに持ちかえた（敵にはほとんど効かへんで）'); gearUi(); sfx(2); });
+  $('swBtn').addEventListener('click', function () { wHand = wHand === 'weapon' ? 'pick' : 'weapon'; toast(wHand === 'weapon' ? '武器に持ちかえた！' : 'つるはしに持ちかえた（敵にはほとんど効かへんで）'); gearUi(); sfx(2); });
   var QC = [['🆘 たすけて！', 'たすけて！', 1], ['❗ ヘルプ！', 'ヘルプ！', 1], ['👍 ナイス！', 'ナイス！'], ['🙌 グッジョブ！', 'グッジョブ！'], ['👉 こっち！', 'こっち来て！'], ['🙏 ありがとう', 'ありがとう！'], ['🆗 りょうかい', 'りょうかい！'], ['⚠️ きをつけて', '気をつけて！']];
   $('qcPanel').innerHTML = QC.map(function (q, i) { return '<button type="button" data-q="' + i + '"' + (q[2] ? ' class="hl"' : '') + '>' + q[0] + '</button>'; }).join('');
   $('qcBtn').addEventListener('click', function () { $('qcPanel').classList.toggle('on'); });
@@ -2478,8 +2485,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         sp = (f.d.nm === 'コウモリ' ? 125 : (f.d.tier === 2 ? 78 : 96)) * (f.big ? .85 : 1); ux = dx / dist; uy = dy / dist;
         if (dist < (f.big ? 58 : 36)) {
           if (best.me) {
-            if (curSpot && !monster && !netFoes()) { var d0 = f.d; f.noDrop = true; killFoe(f, 22000); spawnMon(d0, f.big); return; }
-            if (f.cd <= 0 && (!curSpot || netFoes())) {
+            if (f.cd <= 0) {
               f.cd = 1.4; hurtMe(f.st.atk);
               if (!curSpot) { hero.x = clamp(hero.x + ux * 60, 30, WW - 30); hero.y = clamp(hero.y + uy * 60, 230, WH - 30); ftarget = null; updHero(); }
               f.mode = 'stun'; f.t = 1.0; f.el.classList.remove('alert');
@@ -2687,7 +2693,13 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!fieldOn) return; actx();
     if (e.target.closest && (e.target.closest('#fDigBar') || e.target.closest('#downov'))) return;
     if (hp.down) return;
-    if (curSpot) { swing(e); return; }
+    if (curSpot) {
+      var r0 = this.getBoundingClientRect(), wx0 = (e.clientX - r0.left) / fz + camX, wy0 = (e.clientY - r0.top) / fz + camY;
+      if (hitFoeAt(wx0, wy0)) return;
+      var tp0 = peerAt(wx0, wy0); if (tp0 && !tp0.dn) { openProfile(tp0); return; }
+      if (Math.hypot(wx0 - curSpot.x, wy0 - (curSpot.y - 12)) < 90) swing(e);
+      return;
+    }
     var r = this.getBoundingClientRect(), wx = (e.clientX - r.left) / fz + camX, wy = (e.clientY - r.top) / fz + camY, hit = null, best = 58;
     if (hitFoeAt(wx, wy)) return;
     var tpr = peerAt(wx, wy); if (tpr && !tpr.dn) { openProfile(tpr); return; }
@@ -2701,15 +2713,15 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     $('ftip').style.opacity = 0;
   });
   function digUI(on) {
-    $('field').classList.toggle('digging', !!on); zoomT = on ? 1.25 : (inTown ? .62 : ZW);
+    $('field').classList.toggle('digging', !!on); zoomT = inTown ? .62 : ZW;
     if (!on) { $('hint').textContent = ''; }
   }
   function startDig(sp) {
-    removeMon(); monWaves = 0; monTried = true; curSpot = sp; spotKind = sp.kind; TAPS = Math.max(3, Math.round(SPOTTAPS[sp.kind] * (1 - toolCut()) / (MULT[Math.min(partyN, 5) - 1] || 1))); taps = 0; busy = false;
+    removeMon(); monWaves = 0; monTried = false; curSpot = sp; spotKind = sp.kind; TAPS = Math.max(3, Math.round(SPOTTAPS[sp.kind] * (1 - toolCut()) / (MULT[Math.min(partyN, 5) - 1] || 1))); taps = 0; busy = false;
     hero.dir = 1; updHero(); $('dig').disabled = false; $('dig').innerHTML = '⛏️ 掘る！';
     sp.el.classList.add('dg'); var pr = document.createElement('div'); pr.className = 'dprog'; pr.innerHTML = '<i></i>'; sp.el.appendChild(pr);
     setProg(); digUI(true); BGM.set('dig'); if (shared && sp.i != null) rtSend({ t: 'claim', i: sp.i, g: sp.g });
-    $('hint').textContent = sp.kind === 'c' ? '深い穴…なにかが眠ってるで。画面をたたいてな' : (sp.kind === 'b' ? '金色に光る鉱脈や！いい石の気配。たたいてな' : '鉱脈をたたいてな！');
+    $('hint').textContent = (sp.kind === 'c' ? '深い穴…なにかが眠ってるで。' : (sp.kind === 'b' ? '金色の鉱脈や！いい石の気配。' : '鉱脈や！')) + '⛏ 掘る（鉱脈タップ）／⚔ 敵はタップかボタンで';
   }
   function endDigVisual(sp) {
     if (sp && sp.el) { sp.el.classList.remove('dg', 'hit'); var pr = sp.el.querySelector('.dprog'); if (pr) pr.remove(); var ks = sp.el.querySelectorAll('.ck,.ckg'); for (var i = 0; i < ks.length; i++) ks[i].setAttribute('opacity', '0'); sp.el.style.removeProperty('--g'); }
@@ -2727,6 +2739,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     }
     taps = 0; fieldHud(); show('field');
   }
+  function attackNearest() {
+    if (hp.down || busy) return; actx();
+    var best = null, bd = 1e9; foes.forEach(function (f) { if (f.mode === 'dead') return; var d = Math.hypot(hero.x - f.x, hero.y - f.y); if (d < bd) { bd = d; best = f; } });
+    if (!best) { toast('ちかくに敵はおらんで'); return; }
+    var yo = best.boss ? 70 : (best.big ? 50 : 26);
+    if (!hitFoeAt(best.x, best.y - yo)) toast('もうちょっと近づいてな（とどくのは ' + Math.round(atkRange() / 75) + ' マス）');
+  }
+  $('atkBtn').addEventListener('click', attackNearest);
   $('fCancel').addEventListener('click', function () { if (!busy) cancelDig(); });
   $('fBack').addEventListener('click', function () { if (curSpot) cancelDig(); var wasTown = inTown; leaveTown(); openMap(wasTown ? null : curMine); });
   $('fBook').addEventListener('click', function () { renderBook(); $('book').classList.add('on'); });
