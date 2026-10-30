@@ -467,7 +467,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v32（アップなし・掘りながら戦う）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v33（地獄ステージ）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所や（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -2325,7 +2325,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function atkReady() { var w = curW(), n = performance.now(); if (n < atkAt) return false; atkAt = n + (w && w.cd ? w.cd : 0); return true; }
   function atkRange() { var w = curW(); return w && w.rng ? w.rng : 150; }
   function diffN() { var m = (curMine && MBY[curMine]) ? MBY[curMine].lv : 1; return Math.max(0, Math.min(1, (m - 1) / 60)); }
-  function foeCap() { return 5 + Math.round(diffN() * 7); }
+  function foeCap() { return 5 + Math.round(Math.pow(diffN(), 1.15) * 31); }
+  function waveGap() { var d = diffN(); return 26 * Math.pow(1 - d, 1.5) + 1.2; }
   function foeAlive() { return foes.filter(function (x) { return x.mode !== 'dead' && !x.boss; }).length; }
   function isAus() { var m = curMine && MBY[curMine]; return !!(m && /^オーストラリア/.test(m.ct)); }
   function bigChance() { if (!isAus()) return 0; return .35 + .3 * diffN(); }
@@ -2464,11 +2465,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (amFoeHost() && netFoes()) { if (f.boss) { rtSend({ t: 'bk' }); claimBoss(); } else { kills++; if (kills >= 6 && Object.keys(peers).length >= 1 && !foes.some(function (x) { return x.boss && x.mode !== 'dead'; })) { kills = 0; setTimeout(spawnBoss, 3000); } } }
     setTimeout(function () { if (f.el) f.el.remove(); var i = foes.indexOf(f); if (i >= 0) foes.splice(i, 1); }, 620);
     f.el.classList.add('flee');
-    if (amFoeHost() && !f.boss) { var dd = diffN(), dl = Math.round((delay || 25000) * (1 - .75 * dd)); setTimeout(function () { if (g === fgen && fieldOn && amFoeHost() && !inTown) { if (foeAlive() < foeCap()) addFoe(); if (Math.random() < dd * .8 && foeAlive() < foeCap()) addFoe(); } }, dl); }
+    if (amFoeHost() && !f.boss) { var dd = diffN(), dl = Math.round((delay || 25000) * (1 - .9 * dd)); setTimeout(function () { if (g === fgen && fieldOn && amFoeHost() && !inTown) { var kn = 1 + (Math.random() < dd ? 1 : 0) + (Math.random() < dd * .5 ? 1 : 0); for (var ki = 0; ki < kn; ki++) if (foeAlive() < foeCap()) addFoe(); } }, dl); }
   }
   function foesTick(dt) {
     if (!amFoeHost()) { netFoesTick(dt); return; }
-    if (!inTown && fieldOn) { var dw = diffN(); if (dw > .03) { waveT -= dt; if (waveT <= 0) { waveT = Math.max(5, 26 - 21 * dw) * (.8 + Math.random() * .4); if (foeAlive() < foeCap()) addFoe(); } } }
+    if (!inTown && fieldOn) { var dw = diffN(); if (dw > .03) { waveT -= dt; if (waveT <= 0) { waveT = waveGap() * (.8 + Math.random() * .4); for (var wn = 0, wk = 1 + Math.floor(dw * 2.5); wn < wk; wn++) if (foeAlive() < foeCap()) addFoe(); } } }
     if (busy && !netFoes()) return;
     var tg = [];
     if (!hp.down) tg.push({ id: myMid, x: hero.x, y: hero.y, me: true });
@@ -2643,7 +2644,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     ['a', 'a', 'a', 'a', 'b', 'b', 'c'].forEach(function (k, i) { addSpot(k, i, 0); });
     hero.x = 380; hero.y = 900; hero.dir = 1; ftarget = null;
     $('hb').innerHTML = heroHTML(); applyAura();
-    waveT = 12; if (!shared || amHost()) for (var q = 0, q9 = 5 + Math.round(diffN() * 3); q < q9; q++) addFoe();
+    waveT = 12; if (!shared || amHost()) for (var q = 0, q9 = 5 + Math.round(diffN() * 12); q < q9; q++) addFoe();
     updHero(); hpUi();
   }
   var FLDT = { crop: 222, T: { HT: 'translate(60 74) scale(.8) translate(-60 -74)', LT: 'translate(0 0)', TT: 'translate(0 0)', AT: 'translate(0 0)', ST: 'translate(0 0)', HAT: 'translate(0 0)' } };
