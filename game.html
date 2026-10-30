@@ -102,6 +102,24 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 .card.t2{border-color:rgba(181,131,255,.5)}
 .card.t1{border-color:rgba(88,166,255,.45)}
 .tN{color:var(--n)}.tR{color:var(--r)}.tS{color:var(--sr)}.tU{color:var(--ur)}
+#invBar{position:absolute;left:10px;right:10px;top:calc(8px + env(safe-area-inset-top));z-index:60;display:none;padding:12px 14px;border-radius:16px;border:1px solid var(--gold);background:rgba(16,34,43,.97);box-shadow:0 8px 24px rgba(0,0,0,.5);font-size:14px}
+#invBar.on{display:block}
+#invBar .rw{display:flex;gap:8px;margin-top:10px}
+#invBar button{flex:1;padding:10px;border-radius:12px;border:1px solid var(--gold);background:rgba(232,196,106,.16);font-size:14px;font-weight:700}
+.chip{display:inline-block;padding:2px 8px;border-radius:999px;font-size:11px;font-weight:700;margin-left:6px;border:1px solid var(--line)}
+.chip.ok{border-color:#6fd98f;color:#6fd98f}
+.srch{display:flex;gap:8px;margin:6px 0}
+.srch input{flex:1}
+.coinbar{margin:0 16px 8px;padding:10px 14px;border-radius:14px;border:1px solid var(--gold);background:rgba(232,196,106,.12);display:flex;justify-content:space-between;align-items:center;font-size:14px}
+.coinbar b{font-size:20px;color:var(--gold)}
+.it{display:flex;gap:12px;align-items:center;padding:12px;border:1px solid var(--line);border-radius:16px;background:rgba(255,255,255,.04);margin-bottom:10px}
+.it .ic{width:52px;height:52px;border-radius:14px;display:grid;place-items:center;font-size:28px;flex:none;background:rgba(255,255,255,.06)}
+.it .tx{flex:1;min-width:0;font-size:12px;color:var(--mut)}
+.it .tx b{display:block;font-size:15px;color:var(--ink)}
+.it .tx .rt{font-size:11px;font-weight:700}
+.it button{flex:none;min-width:84px;padding:10px 8px;border-radius:12px;border:1px solid var(--gold);background:rgba(232,196,106,.16);font-size:13px;font-weight:700}
+.it button[disabled]{opacity:.45;border-color:var(--line);background:none}
+.it button.eq{background:linear-gradient(180deg,#ffe9a8,#e8c46a);color:#2a1f05}
 .sec{margin:16px 0 6px;font-size:13px;color:var(--mut)}
 .row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid var(--line)}
 .tg{width:52px;height:30px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.1);position:relative}
@@ -249,7 +267,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     <div id="mapList"></div>
   </section>
   <section class="scr" id="field">
-    <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
+    <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="もちもの・ショップ">🎒</button><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
     <div id="fview"><div id="world"></div><div id="ftip"></div></div>
     <div class="fhud" id="fhud"></div>
   </section>
@@ -258,6 +276,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     <div class="bar">
       <button class="ib" id="backMap" type="button" aria-label="地図へ">←</button>
       <h1 id="playTtl">オパール採掘</h1>
+      <button class="ib" id="bagBtn" type="button" aria-label="もちもの・ショップ">🎒</button>
       <button class="ib" id="bookBtn" type="button" aria-label="図鑑">📖</button>
       <button class="ib" id="setBtn" type="button" aria-label="せってい">⚙️</button>
     </div>
@@ -279,6 +298,17 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     <div class="sheet" id="book">
       <div class="bar"><span style="width:42px"></span><h1 id="bookTtl">図鑑</h1><button class="ib" data-close="book" type="button" aria-label="とじる">✕</button></div>
       <div class="body"><div class="grid" id="bookGrid"></div></div>
+    </div>
+    <div class="sheet" id="lobby">
+      <div class="bar"><span style="width:42px"></span><h1 id="lbTtl">待合室</h1><button class="ib" id="lbClose" type="button" aria-label="とじる">✕</button></div>
+      <div class="body"><div id="lbMem"></div><div id="lbHost"></div><div id="lbBtns"></div></div>
+    </div>
+    <div id="invBar"></div>
+    <div class="sheet" id="bag">
+      <div class="bar"><span style="width:42px"></span><h1>もちもの・ショップ</h1><button class="ib" data-close="bag" type="button" aria-label="とじる">✕</button></div>
+      <div class="coinbar" id="coinBar"></div>
+      <div class="tabs" id="bagTabs"><button type="button" data-t="0" class="on">🎒 もちもの</button><button type="button" data-t="1">🛍️ ショップ</button></div>
+      <div class="body" id="bagBody"></div>
     </div>
     <div class="sheet" id="set">
       <div class="bar"><span style="width:42px"></span><h1>せってい</h1><button class="ib" data-close="set" type="button" aria-label="とじる">✕</button></div>
@@ -302,7 +332,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button class="big" id="revOk" type="button" style="max-width:320px">つぎも掘る！</button>
     </div>
 
-  <div id="mineSheet"><div class="pn"><div id="mineBody"></div><button class="big" id="mineGo" type="button">⛏️ 掘りに行く</button><button class="ghost" id="mineCancel" type="button">やめる</button></div></div>
+  <div id="mineSheet"><div class="pn"><div id="mineBody"></div><button class="big" id="mineGo" type="button">⛏️ 掘りに行く</button><button class="ghost" id="minePty" type="button">👥 みんなで掘る（2〜5人）</button><button class="ghost" id="mineCancel" type="button">やめる</button></div></div>
   <div id="story"><div class="bgx"></div><button class="skp" id="stSkip" type="button">スキップ</button><div class="gm" id="stGem"></div><div class="ttl" id="stTtl"></div>
     <div class="stage"><div class="cat" id="stCat"></div></div>
     <div class="box" id="stBox"><span class="who" id="stWho"></span><div class="tx" id="stTx"></div><span class="nx" id="stNx" hidden>▼ タップ</span></div></div>
@@ -409,18 +439,18 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     function fr(n) { var x = /^([A-G])(#|b)?(\d)$/.exec(n); var v = NT[x[1]] + (x[2] === '#' ? 1 : x[2] === 'b' ? -1 : 0); return 440 * Math.pow(2, (12 * (+x[3] + 1) + v - 69) / 12); }
     function seq(s) { var out = [], t = 0; s.trim().split(/\s+/).forEach(function (k) { var p = k.split(':'), d = parseFloat(p[1]); if (p[0] !== '-') out.push({ t: t, d: d, f: fr(p[0]) }); t += d; }); return { ev: out, len: t }; }
     var TR = {
-      map: { bpm: 112, dr: 'k.h.s.h.', vl: 0.075, lead: 'C5:1 E5:1 G5:1 E5:1 A4:1 C5:1 E5:2 F5:1 A5:1 G5:1 E5:1 D5:2 G4:2 C5:1 E5:1 G5:1 C6:1 B5:1 G5:1 A5:2 F5:1 G5:1 A5:1 B5:1 C6:3 -:1',
-        bass: 'C3:2 G3:2 A2:2 E3:2 F2:2 C3:2 G2:2 D3:2 C3:2 G3:2 E2:2 B2:2 F2:2 G2:2 C3:2 G2:2' },
-      field: { bpm: 92, dr: 'k.h...h.', vl: 0.065, lead: 'D5:1.5 F5:.5 A5:1 F5:1 E5:2 C5:1 D5:1 G5:1.5 F5:.5 E5:1 D5:1 A4:3 -:1 D5:1.5 F5:.5 A5:1 C6:1 B5:1 A5:1 G5:2 F5:1 E5:1 D5:1 C5:1 D5:3 -:1',
-        bass: 'D3:2 A2:2 C3:2 G2:2 G2:2 D3:2 A2:2 E3:2 D3:2 A2:2 G2:2 D3:2 F2:2 C3:2 D3:2 A2:2' },
-      dig: { bpm: 132, dr: 'khshkhsh', vl: 0.07, lead: 'A4:.5 C5:.5 E5:.5 C5:.5 A4:.5 C5:.5 E5:.5 C5:.5 G4:.5 B4:.5 D5:.5 B4:.5 G4:.5 B4:.5 D5:.5 B4:.5 F4:.5 A4:.5 C5:.5 A4:.5 E4:.5 G#4:.5 B4:.5 G#4:.5 A4:1 E5:1 A5:2 A5:1 G5:1 E5:1 C5:1 D5:1 E5:1 G5:2 F5:1 E5:1 D5:1 B4:1 E5:2 G#4:2',
-        bass: 'A2:1 E3:1 A2:1 E3:1 G2:1 D3:1 G2:1 D3:1 F2:1 C3:1 E2:1 B2:1 A2:1 E3:1 A2:2 A2:1 E3:1 C3:1 E3:1 G2:1 D3:1 B2:2 F2:1 C3:1 D3:1 B2:1 E2:2 E3:2' }
+      map: { bpm: 66, att: .03, sus: .55, lv: .11, av: .05, bv: .13, lead: 'E5:2 G5:2 A5:2 G5:2 E5:2 D5:1 C5:1 D5:4 G5:2 A5:2 C6:2 A5:2 G5:2 E5:1 D5:1 C5:4',
+        arp: 'C4:.5 E4:.5 G4:.5 E4:.5 C4:.5 E4:.5 G4:.5 E4:.5 A3:.5 C4:.5 E4:.5 C4:.5 A3:.5 C4:.5 E4:.5 C4:.5 F3:.5 A3:.5 C4:.5 A3:.5 F3:.5 A3:.5 C4:.5 A3:.5 G3:.5 B3:.5 D4:.5 B3:.5 G3:.5 B3:.5 D4:.5 B3:.5 C4:.5 E4:.5 G4:.5 E4:.5 C4:.5 E4:.5 G4:.5 E4:.5 A3:.5 C4:.5 E4:.5 C4:.5 A3:.5 C4:.5 E4:.5 C4:.5 F3:.5 A3:.5 C4:.5 A3:.5 F3:.5 A3:.5 C4:.5 A3:.5 C4:.5 E4:.5 G4:.5 E4:.5 C4:.5 E4:.5 G4:.5 E4:.5', bass: 'C3:4 A2:4 F2:4 G2:4 C3:4 A2:4 F2:4 C3:4' },
+      field: { bpm: 58, att: .05, sus: .6, lv: .1, av: .05, bv: .12, lead: 'B4:2 D5:2 E5:3 D5:1 B4:2 A4:2 G4:4 A4:2 B4:2 D5:2 E5:2 D5:3 B4:1 G4:4',
+        arp: 'G3:.5 B3:.5 D4:.5 B3:.5 G3:.5 B3:.5 D4:.5 B3:.5 E3:.5 G3:.5 B3:.5 G3:.5 E3:.5 G3:.5 B3:.5 G3:.5 C4:.5 E4:.5 G4:.5 E4:.5 C4:.5 E4:.5 G4:.5 E4:.5 G3:.5 B3:.5 D4:.5 B3:.5 G3:.5 B3:.5 D4:.5 B3:.5 A3:.5 C4:.5 E4:.5 C4:.5 A3:.5 C4:.5 E4:.5 C4:.5 C4:.5 E4:.5 G4:.5 E4:.5 C4:.5 E4:.5 G4:.5 E4:.5 D4:.5 F#4:.5 A4:.5 F#4:.5 D4:.5 F#4:.5 A4:.5 F#4:.5 G3:.5 B3:.5 D4:.5 B3:.5 G3:.5 B3:.5 D4:.5 B3:.5', bass: 'G2:4 E2:4 C3:4 G2:4 A2:4 C3:4 D3:4 G2:4' },
+      dig: { bpm: 72, att: .03, sus: .5, lv: .1, av: .055, bv: .12, lead: 'F#5:1 A5:1 D6:2 B5:2 A5:2 G5:1 F#5:1 E5:2 E5:2 C#5:2 A5:2 F#5:2 D6:2 B5:2 B5:1 A5:1 G5:2 A5:2 D5:2',
+        arp: 'D4:.5 F#4:.5 A4:.5 F#4:.5 D4:.5 F#4:.5 A4:.5 F#4:.5 B3:.5 D4:.5 F#4:.5 D4:.5 B3:.5 D4:.5 F#4:.5 D4:.5 G3:.5 B3:.5 D4:.5 B3:.5 G3:.5 B3:.5 D4:.5 B3:.5 A3:.5 C#4:.5 E4:.5 C#4:.5 A3:.5 C#4:.5 E4:.5 C#4:.5 D4:.5 F#4:.5 A4:.5 F#4:.5 D4:.5 F#4:.5 A4:.5 F#4:.5 B3:.5 D4:.5 F#4:.5 D4:.5 B3:.5 D4:.5 F#4:.5 D4:.5 G3:.5 B3:.5 D4:.5 B3:.5 G3:.5 B3:.5 D4:.5 B3:.5 A3:.5 C#4:.5 E4:.5 C#4:.5 A3:.5 C#4:.5 E4:.5 C#4:.5', bass: 'D3:4 B2:4 G2:4 A2:4 D3:4 B2:4 G2:4 A2:4' }
     };
     var master = null, noise = null, inst = null, want = null, timer = null, ducked = false;
     function ready() { var a = actx(); if (!a) return null; if (!master) { master = a.createGain(); master.gain.value = 0.5; master.connect(a.destination); var n = a.sampleRate; noise = a.createBuffer(1, n, a.sampleRate); var d = noise.getChannelData(0); for (var i = 0; i < n; i++) d[i] = Math.random() * 2 - 1; } return a; }
-    function note(a, bus, nodes, type, f, t, d, v) {
-      var o = a.createOscillator(), g = a.createGain(); o.type = type; o.frequency.value = f;
-      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(v, t + 0.01); g.gain.setValueAtTime(v * 0.8, t + d * 0.7); g.gain.linearRampToValueAtTime(0.0001, t + d * 0.96);
+    function note(a, bus, nodes, type, f, t, d, v, att, sus) {
+      var o = a.createOscillator(), g = a.createGain(); o.type = type; o.frequency.value = f; att = att || 0.01; sus = sus || 0.8;
+      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(v, t + att); g.gain.linearRampToValueAtTime(v * sus, t + d * 0.7); g.gain.linearRampToValueAtTime(0.0001, t + d * 0.97);
       o.connect(g); g.connect(bus); o.start(t); o.stop(t + d); nodes.push(o);
     }
     function hit(a, bus, nodes, k, t) {
@@ -432,9 +462,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     }
     function sched(a, I, t0) {
       var T = I.tr, bt = 60 / T.bpm;
-      I.lead.ev.forEach(function (e) { note(a, I.bus, I.nodes, 'square', e.f, t0 + e.t * bt, e.d * bt, T.vl); });
-      I.bass.ev.forEach(function (e) { note(a, I.bus, I.nodes, 'triangle', e.f, t0 + e.t * bt, e.d * bt, 0.17); });
-      for (var b = 0; b < I.lead.len / 4; b++) for (var i = 0; i < 8; i++) { var c = T.dr.charAt(i); if (c !== '.') hit(a, I.bus, I.nodes, c, t0 + (b * 4 + i * 0.5) * bt); }
+      I.lead.ev.forEach(function (e) { note(a, I.bus, I.nodes, 'sine', e.f, t0 + e.t * bt, e.d * bt * 1.15, T.lv, T.att, T.sus); });
+      I.arp.ev.forEach(function (e) { note(a, I.bus, I.nodes, 'triangle', e.f, t0 + e.t * bt, e.d * bt * 2.2, T.av, 0.01, 0.35); });
+      I.bass.ev.forEach(function (e) { note(a, I.bus, I.nodes, 'sine', e.f, t0 + e.t * bt, e.d * bt, T.bv, 0.12, 0.8); });
     }
     function stop() {
       if (!inst) return; var a = actx(), I = inst; inst = null;
@@ -444,7 +474,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     function start() {
       if (!bgmOn || !want || inst) return; var a = ready(); if (!a) return;
       var T = TR[want], bus = a.createGain(); bus.gain.value = 1; bus.connect(master);
-      var I = { tr: T, bus: bus, nodes: [], lead: seq(T.lead), bass: seq(T.bass) };
+      var I = { tr: T, bus: bus, nodes: [], lead: seq(T.lead), arp: seq(T.arp), bass: seq(T.bass) };
       I.dur = I.lead.len * 60 / T.bpm; I.next = a.currentTime + 0.12; inst = I; sched(a, I, I.next); I.next += I.dur;
       if (!timer) timer = setInterval(function () {
         var a2 = actx(); if (!a2 || !inst) return;
@@ -718,14 +748,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       if (j._s === 401) { busy = false; $('dig').disabled = false; toast('オパ会にもう一度入ってから、開いてな'); taps = TAPS - 1; setProg(); return; }
       if (j._s === 403) { busy = false; $('dig').disabled = false; taps = 0; setProg(); toast(j.message || 'まだ開いてへん鉱山やで'); openMap(); return; }
       if (!j.stone) { busy = false; $('dig').disabled = false; taps = TAPS - 1; setProg(); $('hint').textContent = 'つながらへんかった。もう一回たたいてな'; toast(j.message || 'つながらへんかった。もう一回な'); return; }
-      player = j.player; taps = 0; setProg(); stats(); lastStone = j.stone; pendingUnlock = j.unlocked || []; renderPlay(); reveal(j.stone);
+      player = j.player; taps = 0; setProg(); stats(); lastStone = j.stone; pendingUnlock = j.unlocked || []; lastGain = j.gain || 0; lastXp = j.xpGain || 0; lastLvUp = j.lvUp || 0; renderPlay(); applyAura(); reveal(j.stone);
     }).catch(function () { busy = false; $('dig').disabled = false; taps = TAPS - 1; setProg(); $('hint').textContent = 'つながらへんかった。もう一回たたいてな'; });
   }
   function reveal(st) {
     var s = BY[st.id], t = TIERS[st.tier], rv = $('rev');
     $('revGem').innerHTML = gemEl(st.id, '', st.grade); $('revGem').style.setProperty('--glow', t.glow);
     var ti = $('revTier'); ti.textContent = t.n + '｜' + gname(s, st.grade); ti.className = 'tier ' + t.c;
-    $('revName').textContent = s.nm; $('revNew').hidden = !(st.isNew || st.isNewGrade); $('revTri').textContent = gnote(s, st.grade) + '\n' + s.tri;
+    $('revName').textContent = s.nm; $('revNew').hidden = !(st.isNew || st.isNewGrade); $('revTri').textContent = gnote(s, st.grade) + '\n' + s.tri + (lastGain ? '\n🪙 ゲームマネー +' + lastGain + '　✨ けいけんち +' + lastXp : '');
     rv.className = 'on' + (st.tier >= 1 ? ' f' + (st.tier === 3 ? 3 : 1) : '');
     var flash = rv.querySelector('.flash'); flash.style.animation = 'none'; void flash.offsetWidth; flash.style.animation = '';
     var olds = rv.querySelectorAll('.conf'); for (var i = 0; i < olds.length; i++) olds[i].remove();
@@ -740,7 +770,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     $('revOk').textContent = st.tier === 3 ? 'すごい！つぎも掘る！' : 'つぎも掘る！';
   }
   $('revOk').addEventListener('click', function () {
-    BGM.duck(false);
+    BGM.duck(false); if (lastLvUp > 0) { setTimeout(function () { toast('レベルが ' + (player.lv || 1) + ' に上がったで！'); sfx(2); }, 400); lastLvUp = 0; }
     $('rev').className = ''; busy = false; $('dig').disabled = false;
     leaveDig();
     afterReveal();
@@ -836,8 +866,172 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('openGo').addEventListener('click', fromOpening);
   $('skip').addEventListener('click', fromOpening);
 
+  /* ---------- ゲームマネー・もちもの・ショップ ---------- */
+  var ITEMS = [
+    { id: 'o1', slot: 'outfit', nm: '作業エプロン', price: 300, tier: 0, ic: '🧑‍🔧', fx: '見た目：うっすら光るオーラ' },
+    { id: 'o2', slot: 'outfit', nm: '鑑定士のジャケット', price: 1500, tier: 1, ic: '🧥', fx: '見た目：青いオーラ' },
+    { id: 'o3', slot: 'outfit', nm: '遊色ドレス', price: 6000, tier: 2, ic: '👗', fx: '見た目：紫のオーラ' },
+    { id: 'o4', slot: 'outfit', nm: 'AMON特別ローブ', price: 20000, tier: 3, ic: '👑', fx: '見た目：金色のオーラ' },
+    { id: 't1', slot: 'tool', nm: '銀のつるはし', price: 400, tier: 0, ic: '⛏️', cut: .05, fx: '掘る回数が 5% へる' },
+    { id: 't2', slot: 'tool', nm: '遊色ルーペつきつるはし', price: 2000, tier: 1, ic: '🔍', cut: .10, fx: '掘る回数が 10% へる' },
+    { id: 't3', slot: 'tool', nm: 'オパール専用の発掘機', price: 8000, tier: 2, ic: '⚙️', cut: .15, fx: '掘る回数が 15% へる' },
+    { id: 't4', slot: 'tool', nm: '星の輝きの採掘用具', price: 25000, tier: 3, ic: '🌟', cut: .20, fx: '掘る回数が 20% へる' }
+  ];
+  var IBY = {}; ITEMS.forEach(function (i) { IBY[i.id] = i; });
+  var AURA = ['rgba(255,255,255,.35)', 'rgba(88,166,255,.8)', 'rgba(181,131,255,.85)', 'rgba(255,211,106,.95)'];
+  var bagTab = 0, buyArm = null, lastGain = 0, lastXp = 0, lastLvUp = 0;
+  function eqItem(slot) { var id = ((player || {}).equip || {})[slot]; return id ? IBY[id] : null; }
+  function toolCut() { var t = eqItem('tool'); return t ? t.cut : 0; }
+  function aura() { var o = eqItem('outfit'); return o ? 'drop-shadow(0 0 10px ' + AURA[o.tier] + ') drop-shadow(0 0 22px ' + AURA[o.tier] + ')' : ''; }
+  function applyAura() { var a = aura(); if ($('hb')) $('hb').style.filter = a; if ($('hero')) $('hero').style.filter = a; }
+  function renderBag() {
+    var coins = (player || {}).coins || 0, have = (player || {}).items || [], h = '';
+    $('coinBar').innerHTML = '<span>🪙 ゲームマネー</span><b>' + coins.toLocaleString() + '</b>';
+    Array.prototype.forEach.call($('bagTabs').children, function (b) { b.classList.toggle('on', +b.dataset.t === bagTab); });
+    if (bagTab === 0) {
+      var any = false;
+      ['outfit', 'tool'].forEach(function (slot) {
+        var list = ITEMS.filter(function (i) { return i.slot === slot && have.indexOf(i.id) >= 0; });
+        h += '<div class="sec">' + (slot === 'outfit' ? '衣装' : '採掘道具') + '</div>';
+        if (!list.length) h += '<p class="tiny">まだ持ってへんで。ショップで買えるよ。</p>';
+        list.forEach(function (i) { any = true; var on = ((player.equip || {})[slot]) === i.id;
+          h += '<div class="it"><div class="ic">' + i.ic + '</div><div class="tx"><b>' + i.nm + '</b><span class="rt" style="color:' + TIERCOL[i.tier] + '">' + TIERS[i.tier].n + '</span>　' + i.fx + '</div><button class="' + (on ? 'eq' : '') + '" type="button" data-eq="' + i.id + '">' + (on ? 'つけてる' : 'つける') + '</button></div>'; });
+      });
+      h += '<div class="sec">割引券・ほかの券</div><p class="tiny">券は、まだ出ぇへんで。もうすぐ入るから、楽しみにしててな。</p>';
+    } else {
+      h += '<p class="tiny">ゲームマネーは、石を掘ると貯まるで（お金では買えへん）。いいランクの石ほど、たくさんもらえるよ。</p>';
+      ['outfit', 'tool'].forEach(function (slot) {
+        h += '<div class="sec">' + (slot === 'outfit' ? '衣装' : '採掘道具') + '</div>';
+        ITEMS.filter(function (i) { return i.slot === slot; }).forEach(function (i) {
+          var own = have.indexOf(i.id) >= 0, poor = coins < i.price, arm = buyArm === i.id;
+          h += '<div class="it"><div class="ic">' + i.ic + '</div><div class="tx"><b>' + i.nm + '</b><span class="rt" style="color:' + TIERCOL[i.tier] + '">' + TIERS[i.tier].n + '</span>　' + i.fx + '<br>🪙 ' + i.price.toLocaleString() + '</div><button type="button" data-buy="' + i.id + '"' + (own || poor ? ' disabled' : '') + '>' + (own ? '持ってる' : (poor ? 'たりない' : (arm ? 'ほんまに？' : '買う'))) + '</button></div>';
+        });
+      });
+    }
+    $('bagBody').innerHTML = h;
+  }
+  var TIERCOL = ['#9db0b8', '#58a6ff', '#b583ff', '#ffd36a'];
+  function openBag(tab) { bagTab = tab || 0; buyArm = null; renderBag(); $('bag').classList.add('on'); }
+  ['bagBtn', 'fBag'].forEach(function (id) { if ($(id)) $(id).addEventListener('click', function () { openBag(0); }); });
+  $('bagTabs').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; bagTab = +b.dataset.t; buyArm = null; renderBag(); });
+  $('bagBody').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b || b.disabled) return;
+    if (b.dataset.buy) {
+      if (buyArm !== b.dataset.buy) { buyArm = b.dataset.buy; renderBag(); return; }
+      buyArm = null; b.disabled = true;
+      api({ action: 'game_buy', item: b.dataset.buy }).then(function (j) {
+        if (j.player) { player = j.player; toast('買えたで！もちものに入ったよ'); sfx(1); } else toast(j.message || 'うまく買えへんかった');
+        renderBag();
+      });
+    } else if (b.dataset.eq) {
+      var it = IBY[b.dataset.eq], on = ((player.equip || {})[it.slot]) === it.id;
+      b.disabled = true;
+      api({ action: 'game_equip', slot: it.slot, item: on ? null : it.id }).then(function (j) {
+        if (j.player) { player = j.player; applyAura(); } else toast(j.message || 'うまくいかへんかった');
+        renderBag();
+      });
+    }
+  });
+
+  /* ---------- 協力プレイ：待合室・招待・準備・スタート（段階1） ---------- */
+  var room = null, lbTimer = 0, partyN = 1, invStarted = false, partyTimer = 0, MULT = [1, 1.3, 1.6, 1.8, 2.0];
+  var myMid = '';
+  function amHost() { return room && room.host === myMid; }
+  function meRow() { return (room ? room.members : []).filter(function (x) { return x.id === myMid; })[0]; }
+  function esc(t) { return String(t).replace(/[&<>"]/g, function (c) { return { '&': '&amp;', '<': '&lt;', '>': '&gt;', '"': '&quot;' }[c]; }); }
+  function lobbyUp(r) { room = r; renderLobby(true); }
+  function openLobby(r) {
+    room = r; $('lobby').classList.add('on'); closeSheetsExceptLobby();
+    $('lbHost').innerHTML = ''; renderLobby(true);
+    clearInterval(lbTimer); lbTimer = setInterval(pollRoom, 3000);
+  }
+  function closeSheetsExceptLobby() { $('book').classList.remove('on'); $('set').classList.remove('on'); $('bag').classList.remove('on'); $('mineSheet').classList.remove('on'); }
+  function closeLobby() { clearInterval(lbTimer); lbTimer = 0; $('lobby').classList.remove('on'); }
+  function pollRoom() {
+    if (!room) return;
+    api({ action: 'room_state', room: room.id }).then(function (j) {
+      if (!j.room || j.room.status === 'closed') { toast('この部屋は、おわったで'); closeLobby(); room = null; partyN = 1; return; }
+      room = j.room; renderLobby(false);
+      if (room.status === 'playing') beginParty();
+    });
+  }
+  function renderLobby(first) {
+    if (!room) return;
+    var m = MBY[room.mine]; $('lbTtl').textContent = '待合室：' + (m ? m.nm : '');
+    var h = '<p class="tiny">' + (amHost() ? '仲間を呼んで、みんなの「準備OK」がそろったら、はじめるを押してな。1人でもはじめられるで。' : 'ホストが、はじめるのを待ってな。準備ができたら「準備OK」を押してな。') + '</p>';
+    room.members.forEach(function (x) {
+      var isHost = x.id === room.host;
+      h += '<div class="it"><div class="ic">' + (isHost ? '👑' : '⛏️') + '</div><div class="tx"><b>' + esc(x.name) + '</b>Lv ' + x.lv + (isHost ? '<span class="chip ok">ホスト</span>' : (x.ready ? '<span class="chip ok">準備OK</span>' : '<span class="chip">まだ</span>')) + '</div>' +
+        (amHost() && !isHost ? '<button type="button" data-kick="' + x.id + '">外す</button>' : '') + '</div>';
+    });
+    h += '<p class="tiny">' + room.members.length + ' / ' + room.max + ' 人</p>';
+    $('lbMem').innerHTML = h;
+    if (first && amHost()) {
+      $('lbHost').innerHTML = '<div class="sec">オパ会の仲間を誘う</div><div class="srch"><input class="nm" id="lbQ" maxlength="12" placeholder="キャラの名前で探す" autocomplete="off"><button class="opt" id="lbFind" type="button">探す</button></div><div id="lbRes"></div>';
+    }
+    var others = room.members.filter(function (x) { return x.id !== room.host; }), allReady = others.every(function (x) { return x.ready; });
+    var me = meRow();
+    var b = '';
+    if (amHost()) b += '<button class="big" id="lbStart" type="button"' + (allReady ? '' : ' disabled') + '>' + (allReady ? '▶ はじめる' : 'みんなの準備を待ってるで') + '</button>';
+    else b += '<button class="big" id="lbReady" type="button">' + (me && me.ready ? '準備をやめる' : '✅ 準備OK') + '</button>';
+    b += '<button class="ghost" id="lbLeave" type="button">' + (amHost() ? '部屋をとじる' : 'ぬける') + '</button>';
+    $('lbBtns').innerHTML = b;
+  }
+  $('lbMem').addEventListener('click', function (e) { var k = e.target.closest('[data-kick]'); if (!k || !room) return; api({ action: 'room_kick', room: room.id, member: k.dataset.kick }).then(function (j) { if (j.room) lobbyUp(j.room); else toast(j.message || 'うまくいかへんかった'); }); });
+  $('lbHost').addEventListener('click', function (e) {
+    var f = e.target.closest('#lbFind'), iv = e.target.closest('[data-inv]');
+    if (f) { var q = $('lbQ').value.trim(); if (!q) return; api({ action: 'game_find', q: q }).then(function (j) {
+      var r = j.found || []; $('lbRes').innerHTML = r.length ? r.map(function (x) { return '<div class="it"><div class="ic">⛏️</div><div class="tx"><b>' + esc(x.name) + '</b>Lv ' + x.lv + '</div><button type="button" data-inv="' + x.id + '">誘う</button></div>'; }).join('') : '<p class="tiny">見つからへんかった。名前を確かめてな。</p>'; }); }
+    if (iv) { iv.disabled = true; api({ action: 'room_invite', room: room.id, to: iv.dataset.inv }).then(function (j) { toast(j.ok ? '誘ったで！返事を待ってな' : (j.message || 'うまく誘えへんかった')); iv.textContent = j.ok ? '誘った' : '誘う'; if (!j.ok) iv.disabled = false; }); }
+  });
+  $('lbBtns').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b || b.disabled || !room) return;
+    if (b.id === 'lbStart') { b.disabled = true; api({ action: 'room_start', room: room.id }).then(function (j) { if (j.room) { room = j.room; beginParty(); } else { toast(j.message || 'まだはじめられへん'); renderLobby(false); } }); }
+    else if (b.id === 'lbReady') { var me = meRow(); api({ action: 'room_ready', room: room.id, ready: !(me && me.ready) }).then(function (j) { if (j.room) lobbyUp(j.room); }); }
+    else if (b.id === 'lbLeave') { api({ action: 'room_leave', room: room.id }); closeLobby(); room = null; partyN = 1; }
+  });
+  $('lbClose').addEventListener('click', function () { closeLobby(); });
+  $('minePty').addEventListener('click', function () {
+    if (!sheetMine) return; var btn = this; btn.disabled = true;
+    api({ action: 'room_create', mine: sheetMine }).then(function (j) { btn.disabled = false; if (j.room) openLobby(j.room); else toast(j.message || '部屋を作れへんかった'); });
+  });
+  function beginParty() {
+    var r = room; closeLobby(); partyN = r.members.length; sfx(2);
+    toast('スタート！ ' + partyN + '人で掘るで（掘る速さ ×' + MULT[Math.min(partyN, 5) - 1] + '）');
+    clearInterval(partyTimer); partyTimer = setInterval(pollParty, 6000);
+    enterMine(r.mine);
+  }
+  function pollParty() {
+    if (!room) { clearInterval(partyTimer); return; }
+    api({ action: 'room_state', room: room.id }).then(function (j) {
+      if (!j.room || j.room.status === 'closed') { room = null; partyN = 1; clearInterval(partyTimer); if ($('field').classList.contains('on')) fieldHud(); toast('パーティはおわったで'); return; }
+      room = j.room; var n = room.members.length; if (n !== partyN) { partyN = n; if ($('field').classList.contains('on')) fieldHud(); }
+    });
+  }
+  $('fhud').addEventListener('click', function (e) { if (e.target.closest('#fLeave') && room) { api({ action: 'room_leave', room: room.id }); room = null; partyN = 1; clearInterval(partyTimer); fieldHud(); toast('パーティをぬけたで'); } });
+  /* 招待の受け取り（ゲームを開いている間、15秒ごとに確認） */
+  function startInvPoll() {
+    if (invStarted) return; invStarted = true;
+    if (!myMid) api({ action: 'game_load' }).then(function (j) { myMid = j.me || ''; });
+    setInterval(function () {
+      if (document.hidden || room) return;
+      api({ action: 'room_inbox' }).then(function (j) {
+        var i = j.invites && j.invites[0], bar = $('invBar');
+        if (!i) { bar.classList.remove('on'); return; }
+        var mn = MBY[i.mine] ? MBY[i.mine].nm : '';
+        bar.innerHTML = '<b>' + esc(i.from) + '</b> さんが「' + esc(mn) + '」で一緒に掘ろうって誘ってるで！<div class="rw"><button type="button" data-ia="' + i.id + '">参加する</button><button type="button" data-id="' + i.id + '">ことわる</button></div>';
+        bar.classList.add('on');
+      });
+    }, 15000);
+  }
+  $('invBar').addEventListener('click', function (e) {
+    var a = e.target.closest('[data-ia]'), d = e.target.closest('[data-id]'); if (!a && !d) return; this.classList.remove('on');
+    if (a) api({ action: 'room_accept', invite: a.dataset.ia }).then(function (j) { if (j.room) openLobby(j.room); else toast(j.message || '入れへんかった'); });
+    else api({ action: 'room_decline', invite: d.dataset.id });
+  });
+
   /* ---------- つなぎ・設定 ---------- */
-  function closeSheets() { $('book').classList.remove('on'); $('set').classList.remove('on'); }
+  function closeSheets() { $('book').classList.remove('on'); $('set').classList.remove('on'); $('bag').classList.remove('on'); }
   $('bookBtn').addEventListener('click', function () { renderBook(); $('book').classList.add('on'); });
   $('setBtn').addEventListener('click', function () { $('set').classList.add('on'); });
   document.addEventListener('click', function (e) { var b = e.target.closest('[data-close]'); if (b) $(b.dataset.close).classList.remove('on'); });
@@ -1203,7 +1397,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     w.innerHTML = html; spots = []; spotSeq = 0;
     ['a', 'a', 'a', 'a', 'b', 'b', 'c'].forEach(function (k) { addSpot(k); });
     hero.x = 380; hero.y = 900; hero.dir = 1; ftarget = null;
-    $('hb').innerHTML = avatarSVG(player.avatar);
+    $('hb').innerHTML = avatarSVG(player.avatar); applyAura();
     updHero();
   }
   function updHero() {
@@ -1212,7 +1406,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function fieldHud() {
     var k = Object.keys(player.stones || {}).length;
-    $('fhud').innerHTML = '<span>掘った回数 <b>' + (player.digs || 0) + '</b></span><span>見つけた石 <b>' + k + '</b>/' + STONES.length + '</span><span>ここで <b>' + (((player.mines || {})[curMine]) || 0) + '</b> 回</span>';
+    $('fhud').innerHTML = '<span>掘った回数 <b>' + (player.digs || 0) + '</b></span><span>見つけた石 <b>' + k + '</b>/' + STONES.length + '</span><span>ここで <b>' + (((player.mines || {})[curMine]) || 0) + '</b> 回</span><span>🪙 <b>' + ((player.coins || 0).toLocaleString()) + '</b></span><span>' + (partyN > 1 ? '👥 <b>' + partyN + '</b>人 <button id="fLeave" class="opt" type="button" style="padding:3px 8px;font-size:11px">ぬける</button>　' : '') + 'Lv <b>' + (player.lv || 1) + '</b>' + (player.xpNeed ? '（あと ' + (player.xpNeed - (player.xpInto || 0)).toLocaleString() + '）' : '（MAX）') + '</span>';
   }
   function openField(id) {
     curMine = id; var m = MBY[id];
@@ -1247,7 +1441,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     $('ftip').style.opacity = 0;
   });
   function startDig(sp) {
-    curSpot = sp; spotKind = sp.kind; TAPS = SPOTTAPS[sp.kind]; taps = 0; busy = false;
+    curSpot = sp; spotKind = sp.kind; TAPS = Math.max(3, Math.round(SPOTTAPS[sp.kind] * (1 - toolCut()) / (MULT[Math.min(partyN, 5) - 1] || 1))); taps = 0; busy = false;
     renderPlay(); $('dig').disabled = false;
     $('hint').textContent = sp.kind === 'c' ? '深い穴…なにかが眠ってるで。たたいてな' : (sp.kind === 'b' ? '光ってる！いい石の気配や。たたいてな' : '岩をたたいてな！');
     show('play');
@@ -1274,6 +1468,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
   /* ---------- 起動 ---------- */
   function startGame() {
+    startInvPoll();
     function toMap() { openMap(player.digs ? null : 'lr'); }
     if (!hasSeen('prologue')) storyStart(PROLOGUE, function () { markSeen('prologue'); toMap(); }, null);
     else toMap();
@@ -1282,7 +1477,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!token) { $('loadMsg').textContent = '先にオパ会に入ってから、ゲームを開いてな'; document.querySelector('#load .spin').style.display = 'none'; return; }
     api({ action: 'game_load' }).then(function (j) {
       if (j._s === 401) { $('loadMsg').textContent = 'オパ会の入り直しが必要みたい。チャットに入ってから開いてな'; document.querySelector('#load .spin').style.display = 'none'; return; }
-      nick = j.nickname || '';
+      nick = j.nickname || ''; myMid = j.me || '';
       if (j.player) { player = j.player; startGame(); }
       else playOpening();
     }).catch(function () { $('loadMsg').textContent = 'つながらへんかった。いったん閉じて、もう一回開いてな'; document.querySelector('#load .spin').style.display = 'none'; });
