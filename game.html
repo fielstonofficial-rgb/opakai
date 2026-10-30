@@ -408,7 +408,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v23（曲・待合室）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v24（採掘の曲）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所や（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -605,6 +605,23 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function themeSync() { if (!THEME.a) return; try { if (bgmOn && THEME.on) THEME.a.play(); else if (!bgmOn) THEME.a.pause(); } catch (e) {} }
   document.addEventListener('visibilitychange', function () { if (!THEME.a || !THEME.on) return; try { if (document.hidden) THEME.a.pause(); else if (bgmOn) THEME.a.play(); } catch (e) {} });
+  /* ---------- 場面ごとの曲（ファイルがある場面だけ。なければ今までのBGM） ---------- */
+  var SONGS = { dig: 'opa-dig.mp3' }, SC = { a: null, name: null, on: false, failed: {} }, curScene = null;
+  function sceneStop() {
+    var a = SC.a; SC.on = false; SC.a = null; SC.name = null; if (!a) return;
+    var v = a.volume, n = 0, iv = setInterval(function () { n++; try { a.volume = Math.max(0, v * (1 - n / 8)); } catch (e) {} if (n >= 8) { clearInterval(iv); try { a.pause(); } catch (e) {} } }, 80);
+  }
+  function sceneSong(name) {
+    var f = SONGS[name];
+    if (!bgmOn || !f || SC.failed[name]) { sceneStop(); return false; }
+    if (SC.name === name && SC.a) return true;
+    sceneStop();
+    var a = new Audio(f); a.loop = true; a.volume = .5; SC.a = a; SC.name = name; SC.on = true;
+    a.addEventListener('error', function () { SC.failed[name] = true; if (SC.a === a) { SC.a = null; SC.name = null; SC.on = false; BGM.refresh(); } });
+    var pr = a.play(); if (pr && pr.catch) pr.catch(function () { if (SC.a === a) { SC.a = null; SC.name = null; SC.on = false; BGM.refresh(); } });
+    return true;
+  }
+  document.addEventListener('visibilitychange', function () { if (!SC.a) return; try { if (document.hidden) SC.a.pause(); else if (bgmOn) SC.a.play(); } catch (e) {} });
   var BGM = (function () {
     var NT = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
     function fr(n) { var x = /^([A-G])(#|b)?(\d)$/.exec(n); var v = NT[x[1]] + (x[2] === '#' ? 1 : x[2] === 'b' ? -1 : 0); return 440 * Math.pow(2, (12 * (+x[3] + 1) + v - 69) / 12); }
@@ -695,7 +712,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       setTimeout(function () { I.nodes.forEach(function (o) { try { o.stop(); } catch (e) {} }); try { I.bus.disconnect(); } catch (e) {} }, 400);
     }
     function start() {
-      if (!bgmOn || !want || inst || THEME.on) return; var a = ready(); if (!a) return;
+      if (!bgmOn || !want || inst || THEME.on || SC.on) return; var a = ready(); if (!a) return;
       var T = TR[want], bus = a.createGain(); bus.gain.value = 1; bus.connect(master);
       var I = { tr: T, bus: bus, nodes: [], lead: seq(T.lead), arp: seq(T.arp), bass: seq(T.bass), pad: seqC(T.pad), perc: seqP(T.perc) };
       I.dur = I.lead.len * 60 / T.bpm; I.next = a.currentTime + 0.12; inst = I; sched(a, I, I.next); I.next += I.dur;
@@ -710,6 +727,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       duck: function (d) { ducked = d; var a = actx(); if (master && a) master.gain.setTargetAtTime(d ? 0.1 : 0.55, a.currentTime, 0.1); },
       off: stop
     };
+  })();
+  (function () {
+    var s0 = BGM.set, r0 = BGM.refresh;
+    BGM.set = function (n) { curScene = n; sceneSong(n); s0(n); };
+    BGM.refresh = function () { if (bgmOn && curScene) sceneSong(curScene); else if (!bgmOn) sceneStop(); r0(); };
   })();
   document.addEventListener('pointerdown', function () { actx(); BGM.refresh(); }, { once: true });
   document.addEventListener('visibilitychange', function () { if (!ac) return; try { if (document.hidden) ac.suspend(); else ac.resume(); } catch (e) {} });
