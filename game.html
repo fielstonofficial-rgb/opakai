@@ -84,7 +84,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 .rockwrap::after{content:"";position:absolute;inset:6% 4% 4% 4%;border-radius:46%;background:radial-gradient(circle,rgba(255,226,140,.8),rgba(255,226,140,0) 66%);opacity:calc(var(--g,0)*.85);mix-blend-mode:screen;pointer-events:none;transition:opacity .15s}
 .shard{position:absolute;width:13px;height:13px;background:linear-gradient(135deg,#c3ced5,#56646d);clip-path:polygon(10% 0,100% 30%,70% 100%,0 70%);pointer-events:none;animation:shard .65s ease-out forwards}
 @keyframes shard{to{transform:translate(var(--dx),var(--dy)) rotate(280deg);opacity:0}}
-.mon{position:absolute;left:34%;bottom:3%;width:36%;max-width:160px;pointer-events:none;animation:monIn .45s cubic-bezier(.2,1.5,.4,1)}
+.mon{position:relative;width:100%;pointer-events:none;animation:monIn .45s cubic-bezier(.2,1.5,.4,1)}
 .mon svg{width:100%;display:block;filter:drop-shadow(0 8px 8px rgba(0,0,0,.55))}
 .mon.hit{animation:monHit .2s}
 .mon.atk{animation:monAtk .5s}
@@ -230,12 +230,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 .today .g{width:28px;height:28px}
 #field{background:#0a1216}
 #fview{position:relative;flex:1;min-height:0;overflow:hidden;touch-action:none;background:#2a2118;cursor:pointer}
-#world{position:absolute;left:0;top:0;width:760px;height:1000px;will-change:transform;overflow:hidden}
+#world{position:absolute;left:0;top:0;width:760px;height:1000px;will-change:transform;overflow:hidden;transform-origin:0 0}
 #world::after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 90px 36px rgba(0,0,0,.5);pointer-events:none;z-index:99999}
 #world .pt{position:absolute;border-radius:50%;pointer-events:none}
 #world .dc{position:absolute;pointer-events:none;transform:translate(-50%,-100%)}
 #world .dc svg{display:block;width:100%;height:100%}
-.spot{position:absolute;width:74px;height:62px;transform:translate(-50%,-70%);pointer-events:none}
+.spot{position:absolute;width:92px;height:76px;transform:translate(-50%,-70%);pointer-events:none}
 .spot svg{width:100%;height:100%;display:block}
 .spot.k-b::before,.spot.k-c::before{content:"";position:absolute;left:50%;top:48%;width:120%;height:120%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,236,150,.55),transparent);animation:glow 1.5s ease-in-out infinite}
 .spot.k-c::before{background:radial-gradient(closest-side,rgba(190,140,255,.75),transparent);width:150%;height:150%}
@@ -244,12 +244,30 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 .spot.used::before,.spot.used .sp{display:none}
 @keyframes glow{0%,100%{opacity:.55;transform:translate(-50%,-50%) scale(.9)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}}
 @keyframes twk{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1)}}
-#hero2{position:absolute;width:64px;height:100px;transform:translate(-50%,-100%);pointer-events:none}
+#hero2{position:absolute;width:78px;height:124px;transform:translate(-50%,-100%);pointer-events:none}
 #hero2 .hb{width:100%;height:100%;transform-origin:50% 100%}
 #hero2 .hb svg{height:100%;width:auto;display:block;margin:0 auto}
 #hero2.walk .hb{animation:bob .32s ease-in-out infinite}
 #hero2 .hs{position:absolute;left:50%;bottom:-3px;width:44px;height:12px;margin-left:-22px;border-radius:50%;background:rgba(0,0,0,.35);z-index:-1}
 @keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}
+.dprog{position:absolute;left:8%;right:8%;top:-16px;height:7px;border-radius:9px;background:rgba(0,0,0,.55);overflow:hidden;border:1px solid rgba(255,255,255,.25)}
+.dprog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#7fd6ff,#b583ff,#ffd36a);transition:width .12s}
+.spot.hit{animation:sphit .18s}
+@keyframes sphit{25%{transform:translate(calc(-50% - 4px),-70%) rotate(-2deg)}75%{transform:translate(calc(-50% + 4px),-70%) rotate(2deg)}}
+.spot.dg::after{content:"";position:absolute;inset:-10% -6% -6% -6%;border-radius:50%;background:radial-gradient(circle,rgba(255,226,140,.85),rgba(255,226,140,0) 66%);opacity:calc(var(--g,0)*.9);mix-blend-mode:screen;pointer-events:none;transition:opacity .15s}
+#hero2 .hb .fpk{position:absolute;width:58px;height:58px;transform-origin:28% 76%;transform:rotate(-6deg);pointer-events:none}
+#hero2 .hb .fpk svg{width:100%;height:100%;display:block}
+#hero2 .hb .fpk.sw1{animation:swing .3s ease-in-out}
+#hero2 .hb.lunge{animation:lunge .3s ease-in-out}
+#hero2 .hb.hurt{animation:hurt .38s}
+#fDigBar{position:absolute;left:14px;right:14px;bottom:12px;z-index:100000;display:none;gap:8px;align-items:center}
+#field.digging #fDigBar{display:flex}
+#fDigBar .big{flex:1}
+#fCancel{flex:none;padding:15px 14px;border-radius:16px;border:1px solid var(--line);background:rgba(8,16,20,.82);color:var(--ink);font-size:15px}
+#fview .hint{position:absolute;left:12px;right:12px;top:10px;margin:0;padding:8px 12px;border-radius:12px;background:rgba(8,16,20,.78);border:1px solid var(--line);color:var(--ink);text-align:center;z-index:5;display:none;pointer-events:none;font-size:13px}
+#field.digging #fview .hint{display:block}
+#field.digging #ftip{display:none}
+.monw{position:absolute;width:92px;transform:translate(-50%,-100%);pointer-events:none}
 .ping{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;border:3px solid rgba(255,255,255,.85);pointer-events:none;animation:pg .5s ease-out forwards;z-index:99998}
 @keyframes pg{from{transform:scale(.3);opacity:1}to{transform:scale(1.5);opacity:0}}
 #ftip{position:absolute;left:12px;right:12px;top:10px;padding:8px 12px;border-radius:12px;background:rgba(8,16,20,.78);border:1px solid var(--line);font-size:13px;text-align:center;pointer-events:none;transition:opacity .6s;z-index:5}
@@ -296,7 +314,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   </section>
   <section class="scr" id="field">
     <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="もちもの・ショップ">🎒</button><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
-    <div id="fview"><div id="world"></div><div id="ftip"></div></div>
+    <div id="fview"><div id="world"></div><div id="ftip"></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="fCancel" type="button">やめる</button></div></div>
     <div class="fhud" id="fhud"></div>
   </section>
 
@@ -314,11 +332,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     </div>
     <div class="hud">
       <div class="prog"><i id="progBar"></i></div>
-      <p class="hint" id="hint">岩をたたいてな！</p>
     </div>
     <div class="stats"><span>掘った回数 <b id="sDigs">0</b></span><span>見つけた石 <b id="sKinds">0</b>/<span id="sAll">16</span></span></div>
     <div class="today" id="today"></div>
-    <div class="foot"><button class="big" id="dig" type="button">⛏️ 掘る！</button></div>
 
   </section>
 
@@ -466,33 +482,82 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var NT = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
     function fr(n) { var x = /^([A-G])(#|b)?(\d)$/.exec(n); var v = NT[x[1]] + (x[2] === '#' ? 1 : x[2] === 'b' ? -1 : 0); return 440 * Math.pow(2, (12 * (+x[3] + 1) + v - 69) / 12); }
     function seq(s) { var out = [], t = 0; s.trim().split(/\s+/).forEach(function (k) { var p = k.split(':'), d = parseFloat(p[1]); if (p[0] !== '-') out.push({ t: t, d: d, f: fr(p[0]) }); t += d; }); return { ev: out, len: t }; }
-    var TR = {
-      map: { bpm: 66, att: .03, sus: .55, lv: .11, av: .05, bv: .13, lead: 'E5:2 G5:2 A5:2 G5:2 E5:2 D5:1 C5:1 D5:4 G5:2 A5:2 C6:2 A5:2 G5:2 E5:1 D5:1 C5:4',
-        arp: 'C4:.5 E4:.5 G4:.5 E4:.5 C4:.5 E4:.5 G4:.5 E4:.5 A3:.5 C4:.5 E4:.5 C4:.5 A3:.5 C4:.5 E4:.5 C4:.5 F3:.5 A3:.5 C4:.5 A3:.5 F3:.5 A3:.5 C4:.5 A3:.5 G3:.5 B3:.5 D4:.5 B3:.5 G3:.5 B3:.5 D4:.5 B3:.5 C4:.5 E4:.5 G4:.5 E4:.5 C4:.5 E4:.5 G4:.5 E4:.5 A3:.5 C4:.5 E4:.5 C4:.5 A3:.5 C4:.5 E4:.5 C4:.5 F3:.5 A3:.5 C4:.5 A3:.5 F3:.5 A3:.5 C4:.5 A3:.5 C4:.5 E4:.5 G4:.5 E4:.5 C4:.5 E4:.5 G4:.5 E4:.5', bass: 'C3:4 A2:4 F2:4 G2:4 C3:4 A2:4 F2:4 C3:4' },
-      field: { bpm: 58, att: .05, sus: .6, lv: .1, av: .05, bv: .12, lead: 'B4:2 D5:2 E5:3 D5:1 B4:2 A4:2 G4:4 A4:2 B4:2 D5:2 E5:2 D5:3 B4:1 G4:4',
-        arp: 'G3:.5 B3:.5 D4:.5 B3:.5 G3:.5 B3:.5 D4:.5 B3:.5 E3:.5 G3:.5 B3:.5 G3:.5 E3:.5 G3:.5 B3:.5 G3:.5 C4:.5 E4:.5 G4:.5 E4:.5 C4:.5 E4:.5 G4:.5 E4:.5 G3:.5 B3:.5 D4:.5 B3:.5 G3:.5 B3:.5 D4:.5 B3:.5 A3:.5 C4:.5 E4:.5 C4:.5 A3:.5 C4:.5 E4:.5 C4:.5 C4:.5 E4:.5 G4:.5 E4:.5 C4:.5 E4:.5 G4:.5 E4:.5 D4:.5 F#4:.5 A4:.5 F#4:.5 D4:.5 F#4:.5 A4:.5 F#4:.5 G3:.5 B3:.5 D4:.5 B3:.5 G3:.5 B3:.5 D4:.5 B3:.5', bass: 'G2:4 E2:4 C3:4 G2:4 A2:4 C3:4 D3:4 G2:4' },
-      dig: { bpm: 72, att: .03, sus: .5, lv: .1, av: .055, bv: .12, lead: 'F#5:1 A5:1 D6:2 B5:2 A5:2 G5:1 F#5:1 E5:2 E5:2 C#5:2 A5:2 F#5:2 D6:2 B5:2 B5:1 A5:1 G5:2 A5:2 D5:2',
-        arp: 'D4:.5 F#4:.5 A4:.5 F#4:.5 D4:.5 F#4:.5 A4:.5 F#4:.5 B3:.5 D4:.5 F#4:.5 D4:.5 B3:.5 D4:.5 F#4:.5 D4:.5 G3:.5 B3:.5 D4:.5 B3:.5 G3:.5 B3:.5 D4:.5 B3:.5 A3:.5 C#4:.5 E4:.5 C#4:.5 A3:.5 C#4:.5 E4:.5 C#4:.5 D4:.5 F#4:.5 A4:.5 F#4:.5 D4:.5 F#4:.5 A4:.5 F#4:.5 B3:.5 D4:.5 F#4:.5 D4:.5 B3:.5 D4:.5 F#4:.5 D4:.5 G3:.5 B3:.5 D4:.5 B3:.5 G3:.5 B3:.5 D4:.5 B3:.5 A3:.5 C#4:.5 E4:.5 C#4:.5 A3:.5 C#4:.5 E4:.5 C#4:.5', bass: 'D3:4 B2:4 G2:4 A2:4 D3:4 B2:4 G2:4 A2:4' }
+    // 中世ヨーロッパ風：フルート（主旋律）・ハープ（分散和音）・ストリングス（和音）・チェロ（低音）・ティンパニ
+    // chords: 小節ごとに { h:ハープ4音, b:低音2つ, p:ストリングス和音 }。lead は主旋律（拍:音名:長さ）。
+    var CH = {
+      Dm: { h: ['D3', 'A3', 'D4', 'F4'], b: ['D2', 'A2'], p: 'D3+A3+F4' }, C: { h: ['C3', 'G3', 'C4', 'E4'], b: ['C2', 'G2'], p: 'C3+G3+E4' },
+      Bb: { h: ['Bb2', 'F3', 'Bb3', 'D4'], b: ['Bb1', 'F2'], p: 'Bb2+F3+D4' }, Gm: { h: ['G2', 'D3', 'G3', 'Bb3'], b: ['G1', 'D2'], p: 'G2+D3+Bb3' },
+      Am: { h: ['A2', 'E3', 'A3', 'C4'], b: ['A1', 'E2'], p: 'A2+E3+C4' }, F: { h: ['F2', 'C3', 'F3', 'A3'], b: ['F1', 'C2'], p: 'F2+C3+A3' },
+      D: { h: ['D3', 'A3', 'D4', 'F#4'], b: ['D2', 'A2'], p: 'D3+A3+F#4' }, A: { h: ['A2', 'E3', 'A3', 'C#4'], b: ['A1', 'E2'], p: 'A2+E3+C#4' },
+      Bm: { h: ['B2', 'F#3', 'B3', 'D4'], b: ['B1', 'F#2'], p: 'B2+F#3+D4' }, G: { h: ['G2', 'D3', 'G3', 'B3'], b: ['G1', 'D2'], p: 'G2+D3+B3' },
+      Em: { h: ['E2', 'B2', 'E3', 'G3'], b: ['E2', 'B2'], p: 'E3+B3+G4' }
     };
-    var master = null, noise = null, inst = null, want = null, timer = null, ducked = false;
-    function ready() { var a = actx(); if (!a) return null; if (!master) { master = a.createGain(); master.gain.value = 0.5; master.connect(a.destination); var n = a.sampleRate; noise = a.createBuffer(1, n, a.sampleRate); var d = noise.getChannelData(0); for (var i = 0; i < n; i++) d[i] = Math.random() * 2 - 1; } return a; }
-    function note(a, bus, nodes, type, f, t, d, v, att, sus) {
-      var o = a.createOscillator(), g = a.createGain(); o.type = type; o.frequency.value = f; att = att || 0.01; sus = sus || 0.8;
-      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(v, t + att); g.gain.linearRampToValueAtTime(v * sus, t + d * 0.7); g.gain.linearRampToValueAtTime(0.0001, t + d * 0.97);
-      o.connect(g); g.connect(bus); o.start(t); o.stop(t + d); nodes.push(o);
+    function build(prog, lead, o) {
+      var arp = [], bass = [], pad = [], perc = [];
+      prog.forEach(function (n) {
+        var c = CH[n], h = c.h, pat = o.pat || [0, 1, 2, 3, 1, 2, 3, 2];
+        pat.forEach(function (i) { arp.push(h[i] + ':' + (4 / pat.length)); });
+        bass.push(c.b[0] + ':2', c.b[1] + ':2'); pad.push(c.p + ':4');
+        perc.push(o.perc || 'k:1 -:1 k:1 -:1');
+      });
+      return { lead: lead, arp: arp.join(' '), bass: bass.join(' '), pad: pad.join(' '), perc: perc.join(' ') };
     }
-    function hit(a, bus, nodes, k, t) {
-      if (k === 'k') { var o = a.createOscillator(), g = a.createGain(); o.type = 'triangle'; o.frequency.setValueAtTime(160, t); o.frequency.exponentialRampToValueAtTime(40, t + 0.12); g.gain.setValueAtTime(0.2, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.14); o.connect(g); g.connect(bus); o.start(t); o.stop(t + 0.15); nodes.push(o); return; }
-      var s = a.createBufferSource(), f = a.createBiquadFilter(), g2 = a.createGain(); s.buffer = noise;
-      f.type = k === 's' ? 'bandpass' : 'highpass'; f.frequency.value = k === 's' ? 1800 : 6500;
-      var d = k === 's' ? 0.09 : 0.03; g2.gain.setValueAtTime(k === 's' ? 0.08 : 0.03, t); g2.gain.exponentialRampToValueAtTime(0.001, t + d);
-      s.connect(f); f.connect(g2); g2.connect(bus); s.start(t); s.stop(t + d + 0.02); nodes.push(s);
+    function trk(bpm, prog, lead, o) {
+      var t = build(prog, lead, o), r = { bpm: bpm, lv: o.lv || .14, av: o.av || .075, bv: o.bv || .1, pv: o.pv || .045, tv: o.tv || .18 };
+      for (var k in t) r[k] = t[k]; return r;
+    }
+    var TR = {
+      // 地図：ゆったり堂々と（D ドリアン）
+      map: trk(78, ['Dm', 'C', 'Bb', 'C', 'Dm', 'Gm', 'Am', 'Dm'],
+        'A4:1 D5:1 F5:2 E5:1.5 D5:.5 C5:2 D5:1 F5:1 G5:2 E5:2 G5:1 E5:1 D5:1 A4:1 D5:1 F5:1 G5:1.5 F5:.5 D5:2 E5:1 A5:1 G5:1 E5:1 D5:4', { perc: 'k:2 -:2' }),
+      // フィールド：冒険の行進（4拍の歩み）
+      field: trk(98, ['Dm', 'Bb', 'F', 'C', 'Dm', 'Bb', 'C', 'Dm'],
+        'D5:1 F5:1 A5:1 F5:1 D5:1 F5:.5 G5:.5 A5:2 C6:1 A5:1 F5:1 A5:1 G5:2 E5:1 G5:1 F5:1 A5:1 D6:1 A5:1 D5:1 F5:.5 G5:.5 A5:2 G5:1 F5:1 E5:1 G5:1 D5:4', { perc: 'k:1 -:.5 k:.5 k:1 -:1' }),
+      // 掘る：少し高まる（A ドリア→D）
+      dig: trk(112, ['Am', 'G', 'F', 'G', 'Am', 'F', 'G', 'Am'],
+        'E5:.5 A5:.5 C6:1 B5:1 A5:1 G5:.5 A5:.5 B5:1 D6:2 C6:1 B5:1 A5:1 F5:.5 G5:.5 A5:1 C6:1 B5:2 A5:1 G5:1 E5:.5 A5:.5 C6:1 E6:1 D6:1 C6:1 B5:1 G5:1 B5:1 D6:2 A5:4', { pat: [0, 1, 2, 3, 2, 1, 2, 3], perc: 'k:.5 k:.5 -:.5 k:.5 k:.5 -:.5 k:.5 k:.5', tv: .14, av: .07 })
+    };
+    function seqC(s) { var out = [], t = 0; s.trim().split(/\s+/).forEach(function (k) { var p = k.split(':'), d = parseFloat(p[1]); if (p[0] !== '-') out.push({ t: t, d: d, fs: p[0].split('+').map(fr) }); t += d; }); return { ev: out, len: t }; }
+    function seqP(s) { var out = [], t = 0; s.trim().split(/\s+/).forEach(function (k) { var p = k.split(':'), d = parseFloat(p[1]); if (p[0] !== '-') out.push({ t: t, d: d, k: p[0] }); t += d; }); return { ev: out, len: t }; }
+    var master = null, noise = null, inst = null, want = null, timer = null, ducked = false;
+    function ready() { var a = actx(); if (!a) return null; if (!master) { master = a.createGain(); master.gain.value = 0.55; var cp = a.createDynamicsCompressor(); cp.threshold.value = -16; cp.ratio.value = 4; master.connect(cp); cp.connect(a.destination); var n = a.sampleRate; noise = a.createBuffer(1, n, a.sampleRate); var d = noise.getChannelData(0); for (var i = 0; i < n; i++) d[i] = Math.random() * 2 - 1; } return a; }
+    function env(g, t, d, v, att, rel) { g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(v, t + att); g.gain.setValueAtTime(v, t + Math.max(att, d - rel)); g.gain.linearRampToValueAtTime(0.0001, t + d); }
+    // フルート：やわらかい息の音＋ビブラート
+    function flute(a, bus, nodes, f, t, d, v) {
+      var o = a.createOscillator(), o2 = a.createOscillator(), g = a.createGain(), g2 = a.createGain(), lfo = a.createOscillator(), lg = a.createGain();
+      o.type = 'sine'; o.frequency.value = f; o2.type = 'triangle'; o2.frequency.value = f * 2; g2.gain.value = .22;
+      lfo.frequency.value = 5.4; lg.gain.value = 5; lfo.connect(lg); lg.connect(o.detune); lg.connect(o2.detune);
+      env(g, t, d, v, .06, .12); o.connect(g); o2.connect(g2); g2.connect(g); g.connect(bus);
+      [o, o2, lfo].forEach(function (x) { x.start(t); x.stop(t + d + .05); nodes.push(x); });
+    }
+    // ハープ：はじいた音（すぐ立ち上がって、のびて消える）
+    function harp(a, bus, nodes, f, t, d, v) {
+      var o = a.createOscillator(), o2 = a.createOscillator(), g = a.createGain(), g2 = a.createGain();
+      o.type = 'triangle'; o.frequency.value = f; o2.type = 'sine'; o2.frequency.value = f * 2; 
+      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(v, t + .006); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+      g2.gain.setValueAtTime(v * .5, t); g2.gain.exponentialRampToValueAtTime(0.0001, t + d * .35);
+      o.connect(g); o2.connect(g2); g.connect(bus); g2.connect(bus);
+      [o, o2].forEach(function (x) { x.start(t); x.stop(t + d + .05); nodes.push(x); });
+    }
+    // ストリングス／チェロ：ゆっくり立ち上がるのこぎり波をまるく
+    function strings(a, bus, nodes, f, t, d, v, cut, att) {
+      var fl = a.createBiquadFilter(), g = a.createGain(); fl.type = 'lowpass'; fl.frequency.value = cut; fl.Q.value = .6;
+      env(g, t, d, v, att, Math.min(.5, d * .4)); fl.connect(g); g.connect(bus);
+      [-7, 7].forEach(function (dt) { var o = a.createOscillator(); o.type = 'sawtooth'; o.frequency.value = f; o.detune.value = dt; o.connect(fl); o.start(t); o.stop(t + d + .05); nodes.push(o); });
+    }
+    function timp(a, bus, nodes, t, v) {
+      var o = a.createOscillator(), g = a.createGain(); o.type = 'sine'; o.frequency.setValueAtTime(118, t); o.frequency.exponentialRampToValueAtTime(62, t + .22);
+      g.gain.setValueAtTime(v, t); g.gain.exponentialRampToValueAtTime(0.001, t + .55); o.connect(g); g.connect(bus); o.start(t); o.stop(t + .6); nodes.push(o);
+      var s = a.createBufferSource(), f = a.createBiquadFilter(), g2 = a.createGain(); s.buffer = noise; f.type = 'lowpass'; f.frequency.value = 400;
+      g2.gain.setValueAtTime(v * .5, t); g2.gain.exponentialRampToValueAtTime(0.001, t + .08); s.connect(f); f.connect(g2); g2.connect(bus); s.start(t); s.stop(t + .1); nodes.push(s);
     }
     function sched(a, I, t0) {
       var T = I.tr, bt = 60 / T.bpm;
-      I.lead.ev.forEach(function (e) { note(a, I.bus, I.nodes, 'sine', e.f, t0 + e.t * bt, e.d * bt * 1.15, T.lv, T.att, T.sus); });
-      I.arp.ev.forEach(function (e) { note(a, I.bus, I.nodes, 'triangle', e.f, t0 + e.t * bt, e.d * bt * 2.2, T.av, 0.01, 0.35); });
-      I.bass.ev.forEach(function (e) { note(a, I.bus, I.nodes, 'sine', e.f, t0 + e.t * bt, e.d * bt, T.bv, 0.12, 0.8); });
+      I.lead.ev.forEach(function (e) { flute(a, I.bus, I.nodes, e.f, t0 + e.t * bt, Math.max(.2, e.d * bt * .98), T.lv); });
+      I.arp.ev.forEach(function (e) { harp(a, I.bus, I.nodes, e.f, t0 + e.t * bt, e.d * bt * 3.2, T.av); });
+      I.bass.ev.forEach(function (e) { strings(a, I.bus, I.nodes, e.f, t0 + e.t * bt, e.d * bt, T.bv, 520, .06); });
+      I.pad.ev.forEach(function (e) { e.fs.forEach(function (f) { strings(a, I.bus, I.nodes, f, t0 + e.t * bt, e.d * bt * 1.02, T.pv, 1500, .55); }); });
+      I.perc.ev.forEach(function (e) { timp(a, I.bus, I.nodes, t0 + e.t * bt, T.tv); });
     }
     function stop() {
       if (!inst) return; var a = actx(), I = inst; inst = null;
@@ -502,7 +567,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     function start() {
       if (!bgmOn || !want || inst) return; var a = ready(); if (!a) return;
       var T = TR[want], bus = a.createGain(); bus.gain.value = 1; bus.connect(master);
-      var I = { tr: T, bus: bus, nodes: [], lead: seq(T.lead), arp: seq(T.arp), bass: seq(T.bass) };
+      var I = { tr: T, bus: bus, nodes: [], lead: seq(T.lead), arp: seq(T.arp), bass: seq(T.bass), pad: seqC(T.pad), perc: seqP(T.perc) };
       I.dur = I.lead.len * 60 / T.bpm; I.next = a.currentTime + 0.12; inst = I; sched(a, I, I.next); I.next += I.dur;
       if (!timer) timer = setInterval(function () {
         var a2 = actx(); if (!a2 || !inst) return;
@@ -512,7 +577,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     return {
       set: function (name) { if (name === want && (inst || !bgmOn)) return; want = name; stop(); if (name) start(); },
       refresh: function () { if (bgmOn) start(); else stop(); },
-      duck: function (d) { ducked = d; var a = actx(); if (master && a) master.gain.setTargetAtTime(d ? 0.1 : 0.5, a.currentTime, 0.1); },
+      duck: function (d) { ducked = d; var a = actx(); if (master && a) master.gain.setTargetAtTime(d ? 0.1 : 0.55, a.currentTime, 0.1); },
       off: stop
     };
   })();
@@ -741,6 +806,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       '<g fill="rgba(255,255,255,.5)"><circle cx="200" cy="130" r="2.4"/><circle cx="116" cy="160" r="2"/><circle cx="224" cy="190" r="2.2"/></g></svg>';
   }
   function setProg() {
+    if (curSpot && curSpot.el) {
+      var e0 = curSpot.el, c0 = e0.querySelectorAll('.ck'), g0 = e0.querySelectorAll('.ckg'), sh0 = Math.floor(taps / TAPS * c0.length);
+      for (var q = 0; q < c0.length; q++) { c0[q].setAttribute('opacity', q < sh0 ? '1' : '0'); g0[q].setAttribute('opacity', q < sh0 ? '.95' : '0'); }
+      e0.style.setProperty('--g', Math.min(1, taps / TAPS).toFixed(2));
+      var pi = e0.querySelector('.dprog i'); if (pi) pi.style.width = Math.round(taps / TAPS * 100) + '%';
+    }
     $('progBar').style.width = Math.round(taps / TAPS * 100) + '%';
     var cks = $('rock').querySelectorAll('.ck'), ckg = $('rock').querySelectorAll('.ckg'), shown = Math.floor(taps / TAPS * cks.length);
     for (var i = 0; i < cks.length; i++) { cks[i].setAttribute('opacity', i < shown ? '1' : '0'); ckg[i].setAttribute('opacity', i < shown ? '.95' : '0'); }
@@ -775,22 +846,21 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
 
   /* ---------- 掘る ---------- */
-  function dust(x, y) {
-    var sc = $('scene'), r = sc.getBoundingClientRect();
+  function dustW(x, y) {
+    var w = $('world');
     for (var i = 0; i < 6; i++) {
       var d = document.createElement('i'); d.className = 'dust';
-      d.style.left = (x - r.left) + 'px'; d.style.top = (y - r.top) + 'px';
-      d.style.setProperty('--dx', (Math.random() * 90 - 45) + 'px'); d.style.setProperty('--dy', (Math.random() * -70 - 10) + 'px');
-      sc.appendChild(d); setTimeout(function (n) { return function () { n.remove(); }; }(d), 600);
+      d.style.left = x + 'px'; d.style.top = y + 'px'; d.style.zIndex = 99990;
+      d.style.setProperty('--dx', (Math.random() * 60 - 30) + 'px'); d.style.setProperty('--dy', (Math.random() * -50 - 8) + 'px');
+      w.appendChild(d); setTimeout(function (n) { return function () { n.remove(); }; }(d), 600);
     }
     for (var j = 0; j < 4; j++) {
-      var sh = document.createElement('i'); sh.className = 'shard';
-      sh.style.left = (x - r.left) + 'px'; sh.style.top = (y - r.top) + 'px'; sh.style.width = sh.style.height = (8 + Math.random() * 9) + 'px';
-      sh.style.setProperty('--dx', (Math.random() * 130 - 55) + 'px'); sh.style.setProperty('--dy', (Math.random() * -90 + 20) + 'px');
-      sc.appendChild(sh); setTimeout(function (n) { return function () { n.remove(); }; }(sh), 700);
+      var sh = document.createElement('i'); sh.className = 'shard'; sh.style.zIndex = 99990;
+      sh.style.left = x + 'px'; sh.style.top = y + 'px'; sh.style.width = sh.style.height = (7 + Math.random() * 8) + 'px';
+      sh.style.setProperty('--dx', (Math.random() * 90 - 40) + 'px'); sh.style.setProperty('--dy', (Math.random() * -60 + 14) + 'px');
+      w.appendChild(sh); setTimeout(function (n) { return function () { n.remove(); }; }(sh), 700);
     }
   }
-
   /* ---------- モンスター（かわいい系。強いのは少しこわい） ---------- */
   var MONS = [
     { nm: 'もぐら', tier: 0, hp: 3, svg: '<svg viewBox="0 0 100 100">@SH@<path d="M16 92Q10 40 50 32Q90 40 84 92Z" fill="#7a5a48"/><ellipse cx="50" cy="68" rx="26" ry="22" fill="#9a7b68"/><ellipse cx="50" cy="56" rx="8" ry="6" fill="#ff9fb0"/><circle cx="37" cy="46" r="3.4" fill="#1b1410"/><circle cx="63" cy="46" r="3.4" fill="#1b1410"/><circle cx="36" cy="44.7" r="1.1" fill="#fff"/><circle cx="62" cy="44.7" r="1.1" fill="#fff"/><path d="M43 64Q50 70 57 64" stroke="#4a2c22" stroke-width="2" fill="none" stroke-linecap="round"/><path d="M14 84l-7 7M22 89l-7 7M86 84l7 7M78 89l7 7" stroke="#f6e2cf" stroke-width="3.2" stroke-linecap="round"/></svg>' },
@@ -805,7 +875,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function monMark() { try { localStorage.setItem('opa_game_mon1', '1'); } catch (e) {} }
   function removeMon() {
     clearInterval(monTimer); monTimer = 0;
-    var m = $('mon'); if (m) m.remove();
+    var m = $('monw'); if (m) m.remove();
     monster = null; $('dig').innerHTML = '⛏️ 掘る！';
   }
   function spawnMon() {
@@ -813,26 +883,29 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var tier = Math.min(2, (spotKind === 'c' ? 2 : (spotKind === 'b' ? 1 : 0)) + (mi >= 6 ? 1 : 0));
     var pool = MONS.filter(function (x) { return x.tier === tier; });
     var def = pool[Math.floor(Math.random() * pool.length)];
-    monster = { d: def, hp: def.hp, max: def.hp };
-    var el = document.createElement('div'); el.className = 'mon'; el.id = 'mon';
-    el.innerHTML = '<div class="monnm">' + def.nm + '</div><div class="monhp"><i id="monHp"></i></div>' + def.svg.replace(/@SH@/g, '<ellipse cx="50" cy="93" rx="36" ry="6" fill="rgba(0,0,0,.3)"/>');
-    $('scene').appendChild(el);
+    var mx = curSpot.x + 56, my = curSpot.y + 30;
+    monster = { d: def, hp: def.hp, max: def.hp, x: mx, y: my };
+    var w = document.createElement('div'); w.className = 'monw'; w.id = 'monw'; w.style.left = mx + 'px'; w.style.top = my + 'px'; w.style.zIndex = Math.round(my) + 5;
+    w.innerHTML = '<div class="mon" id="mon"><div class="monnm">' + def.nm + '</div><div class="monhp"><i id="monHp"></i></div>' + def.svg.replace(/@SH@/g, '<ellipse cx="50" cy="93" rx="36" ry="6" fill="rgba(0,0,0,.3)"/>') + '</div>';
+    $('world').appendChild(w);
     $('dig').innerHTML = '👊 追いはらう！';
     $('hint').textContent = def.tier === 2 ? '「' + def.nm + '」や！ガルル…！たたいて追いはらえ！' : '「' + def.nm + '」が出てきた！たたいて追いはらえ！';
     sfx(1); vib([30, 30, 30]);
     monTimer = setInterval(function () {
-      var m = $('mon'), h = $('hero'); if (!m || !monster) return;
+      var m = $('mon'), h = $('hb'); if (!m || !monster) return;
       m.classList.remove('hit', 'atk'); void m.offsetWidth; m.classList.add('atk');
-      setTimeout(function () { if (!h) return; h.classList.remove('hurt'); void h.offsetWidth; h.classList.add('hurt'); }, 220);
+      setTimeout(function () { if (!h) return; h.classList.remove('lunge', 'hurt'); void h.offsetWidth; h.classList.add('hurt'); }, 220);
     }, 2600);
+  }
+  function swingAnim() {
+    var pk = $('fpick'); if (pk) { pk.classList.remove('sw1'); void pk.offsetWidth; pk.classList.add('sw1'); }
+    var hb = $('hb'); if (hb) { hb.classList.remove('lunge', 'hurt'); void hb.offsetWidth; hb.classList.add('lunge'); }
   }
   function hitMon() {
     var m = $('mon'); if (!m || !monster) return;
     monster.hp--; sfx('hit'); vib(20);
     m.classList.remove('hit', 'atk'); void m.offsetWidth; m.classList.add('hit');
-    var pk = $('pick'); if (pk) { pk.classList.remove('sw1'); void pk.offsetWidth; pk.classList.add('sw1'); }
-    var hr = $('hero'); if (hr) { hr.classList.remove('lunge'); void hr.offsetWidth; hr.classList.add('lunge'); }
-    var r = m.getBoundingClientRect(); dust(r.left + r.width * .5, r.top + r.height * .5);
+    swingAnim(); dustW(monster.x, monster.y - 30);
     $('monHp').style.width = Math.max(0, monster.hp / monster.max * 100) + '%';
     if (monster.hp > 0) { $('hint').textContent = '「' + monster.d.nm + '」あと ' + monster.hp + ' 回！'; return; }
     var nm = monster.d.nm; clearInterval(monTimer); monTimer = 0; monster = null;
@@ -842,16 +915,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     setTimeout(function () { removeMon(); }, 620);
   }
   function swing(ev) {
-    if (busy) return;
+    if (busy || !curSpot) return;
     actx();
     if (monster) { hitMon(); return; }
     taps++; sfx('hit'); vib(18);
-    var rk = $('rock'); rk.classList.remove('hit'); void rk.offsetWidth; rk.classList.add('hit');
-    var pk = $('pick'); pk.classList.remove('sw1'); void pk.offsetWidth; pk.classList.add('sw1');
-    var r = rk.getBoundingClientRect(), x = r.left + r.width * .5, y = r.top + r.height * .45;
-    if (ev && ev.clientX) { x = ev.clientX; y = ev.clientY; }
-    dust(x, y); setProg();
-    var hr0 = $('hero'); if (hr0) { hr0.classList.remove('lunge'); void hr0.offsetWidth; hr0.classList.add('lunge'); }
+    var el = curSpot.el; el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit');
+    swingAnim(); dustW(curSpot.x, curSpot.y - 18); setProg();
     var left = TAPS - taps;
     $('hint').textContent = left > 0 ? 'あと ' + left + ' 回！' : 'なにか出てきた…！';
     if (!monTried && taps >= Math.ceil(TAPS / 2) && taps < TAPS) { monTried = true; if (monFirst() || Math.random() < .55) { monMark(); spawnMon(); return; } }
@@ -1476,7 +1545,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   /* ---------- フィールド（歩いて、掘る場所を選ぶ） ---------- */
   var WW = 760, WH = 1000, SPEED = 200;
-  var hero = { x: 380, y: 900, dir: 1 }, camX = 0, camY = 0, ftarget = null, fieldOn = false, fraf = 0, flast = 0;
+  var hero = { x: 380, y: 900, dir: 1 }, fz = 1, zoomT = 1, camX = 0, camY = 0, ftarget = null, fieldOn = false, fraf = 0, flast = 0;
   var spots = [], curSpot = null, spotSeq = 0, spotKind = 'a', tipT = 0;
   var SPOTTAPS = { a: 10, b: 14, c: 18 };
   function hash(str) { var h = 2166136261; for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
@@ -1496,7 +1565,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (k === 'c') return '<svg viewBox="0 0 74 62"><ellipse cx="37" cy="40" rx="30" ry="16" fill="#2a1f3a"/><ellipse cx="37" cy="38" rx="23" ry="11" fill="#0a0612"/><ellipse cx="37" cy="38" rx="23" ry="11" fill="none" stroke="#b58cff" stroke-width="2.5"/></svg>';
     var body = '<path d="M6 54Q8 26 30 16Q50 8 64 28Q72 42 68 54Z" fill="' + c[1] + '" stroke="' + c[2] + '" stroke-width="2"/><path d="M18 34Q28 22 42 20" stroke="rgba(255,255,255,.35)" stroke-width="4" fill="none" stroke-linecap="round"/>';
     if (k === 'b') body += '<path d="M30 28L38 38L32 48M46 24L52 36" stroke="#ffe28a" stroke-width="3" fill="none" stroke-linecap="round"/>';
-    return '<svg viewBox="0 0 74 62">' + body + '</svg>';
+    var cr = ['M36 14L32 26', 'M32 26L44 34', 'M44 34L40 46', 'M22 24L28 34', 'M28 34L18 42', 'M52 20L48 30'], cc = '';
+    cr.forEach(function (d, i) { cc += '<path class="ck" d="' + d + '" stroke="#0e171b" stroke-width="3.4" fill="none" stroke-linecap="round" opacity="0"/><path class="ckg" d="' + d + '" stroke="#ffe39a" stroke-width="1.4" fill="none" stroke-linecap="round" opacity="0"/>'; });
+    return '<svg viewBox="0 0 74 62">' + body + cc + '</svg>';
   }
   function placeEl(e, x, y) { e.style.left = x + 'px'; e.style.top = y + 'px'; e.style.zIndex = Math.round(y); }
   function randSpot(kind) {
@@ -1533,8 +1604,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     w.innerHTML = html; spots = []; spotSeq = 0;
     ['a', 'a', 'a', 'a', 'b', 'b', 'c'].forEach(function (k) { addSpot(k); });
     hero.x = 380; hero.y = 900; hero.dir = 1; ftarget = null;
-    $('hb').innerHTML = avatarSVG(player.avatar); applyAura();
+    $('hb').innerHTML = heroHTML(); applyAura();
     updHero();
+  }
+  function heroHTML() {
+    var pa = normAv(player.avatar), hx = pa.gender === 0 ? 53.7 : 51.1;
+    return avatarSVG(player.avatar) + '<div class="fpk" id="fpick" style="left:' + (hx - 16.2).toFixed(1) + 'px;top:30px">' + pickHTML(SKIN[pa.skin]) + '</div>';
   }
   function updHero() {
     var h = $('hero2'); if (!h) return; placeEl(h, hero.x, hero.y);
@@ -1558,43 +1633,61 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var hh = $('hero2'), moved = false;
     if (ftarget) {
       var dx = ftarget.x - hero.x, dy = ftarget.y - hero.y, d = Math.hypot(dx, dy), step = SPEED * dt;
-      if (d <= step) { hero.x = ftarget.x; hero.y = ftarget.y; var sp = ftarget.spot; ftarget = null; if (hh) hh.classList.remove('walk'); updHero(); if (sp && !sp.used) { startDig(sp); return; } }
+      if (d <= step) { hero.x = ftarget.x; hero.y = ftarget.y; var sp = ftarget.spot; ftarget = null; if (hh) hh.classList.remove('walk'); updHero(); if (sp && !sp.used) { startDig(sp); } }
       else { hero.x += dx / d * step; hero.y += dy / d * step; if (Math.abs(dx) > 3) hero.dir = dx > 0 ? 1 : -1; moved = true; if (hh) hh.classList.add('walk'); updHero(); }
     }
     var fv = $('fview'), vw = fv.clientWidth, vh = fv.clientHeight;
-    var cx = clamp(hero.x - vw / 2, 0, Math.max(0, WW - vw)), cy = clamp(hero.y - vh * .6, 0, Math.max(0, WH - vh));
+    fz += (zoomT - fz) * Math.min(1, dt * 6);
+    var vwz = vw / fz, vhz = vh / fz, fx = hero.x, fy = hero.y;
+    if (curSpot) { fx = (hero.x + curSpot.x) / 2; fy = (hero.y + curSpot.y) / 2 + 10; }
+    var cx = clamp(fx - vwz / 2, 0, Math.max(0, WW - vwz)), cy = clamp(fy - vhz * (curSpot ? .55 : .6), 0, Math.max(0, WH - vhz));
     var k = Math.min(1, dt * 9); camX += (cx - camX) * k; camY += (cy - camY) * k;
-    $('world').style.transform = 'translate3d(' + (-camX).toFixed(1) + 'px,' + (-camY).toFixed(1) + 'px,0)';
+    $('world').style.transform = 'translate3d(' + (-camX * fz).toFixed(1) + 'px,' + (-camY * fz).toFixed(1) + 'px,0) scale(' + fz.toFixed(3) + ')';
     fraf = requestAnimationFrame(tick);
   }
   $('fview').addEventListener('pointerdown', function (e) {
     if (!fieldOn) return; actx();
-    var r = this.getBoundingClientRect(), wx = e.clientX - r.left + camX, wy = e.clientY - r.top + camY, hit = null, best = 58;
+    if (e.target.closest && e.target.closest('#fDigBar')) return;
+    if (curSpot) { swing(e); return; }
+    var r = this.getBoundingClientRect(), wx = (e.clientX - r.left) / fz + camX, wy = (e.clientY - r.top) / fz + camY, hit = null, best = 58;
     spots.forEach(function (s) { if (s.used) return; var d = Math.hypot(wx - s.x, wy - (s.y - 12)); if (d < best) { best = d; hit = s; } });
     var pg = document.createElement('i'); pg.className = 'ping'; pg.style.left = wx + 'px'; pg.style.top = wy + 'px'; $('world').appendChild(pg); setTimeout(function () { pg.remove(); }, 520);
-    if (hit) ftarget = { x: hit.x, y: hit.y + 30, spot: hit };
+    if (hit) ftarget = { x: hit.x - 58, y: hit.y + 26, spot: hit };
     else ftarget = { x: clamp(wx, 30, WW - 30), y: clamp(wy, 200, WH - 40), spot: null };
     $('ftip').style.opacity = 0;
   });
+  function digUI(on) {
+    $('field').classList.toggle('digging', !!on); zoomT = on ? 1.55 : 1;
+    if (!on) { $('hint').textContent = ''; }
+  }
   function startDig(sp) {
     removeMon(); monTried = false; curSpot = sp; spotKind = sp.kind; TAPS = Math.max(3, Math.round(SPOTTAPS[sp.kind] * (1 - toolCut()) / (MULT[Math.min(partyN, 5) - 1] || 1))); taps = 0; busy = false;
-    renderPlay(); $('dig').disabled = false;
-    $('hint').textContent = sp.kind === 'c' ? '深い穴…なにかが眠ってるで。たたいてな' : (sp.kind === 'b' ? '光ってる！いい石の気配や。たたいてな' : '岩をたたいてな！');
-    show('play');
+    hero.dir = 1; updHero(); $('dig').disabled = false; $('dig').innerHTML = '⛏️ 掘る！';
+    sp.el.classList.add('dg'); var pr = document.createElement('div'); pr.className = 'dprog'; pr.innerHTML = '<i></i>'; sp.el.appendChild(pr);
+    setProg(); digUI(true); BGM.set('dig');
+    $('hint').textContent = sp.kind === 'c' ? '深い穴…なにかが眠ってるで。画面をたたいてな' : (sp.kind === 'b' ? '光ってる！いい石の気配や。たたいてな' : '岩をたたいてな！');
+  }
+  function endDigVisual(sp) {
+    if (sp && sp.el) { sp.el.classList.remove('dg', 'hit'); var pr = sp.el.querySelector('.dprog'); if (pr) pr.remove(); var ks = sp.el.querySelectorAll('.ck,.ckg'); for (var i = 0; i < ks.length; i++) ks[i].setAttribute('opacity', '0'); sp.el.style.removeProperty('--g'); }
+    digUI(false);
+  }
+  function cancelDig() {
+    removeMon(); var sp = curSpot; curSpot = null; taps = 0; endDigVisual(sp); BGM.set('field');
   }
   function leaveDig() {
     removeMon(); var sp = curSpot; curSpot = null;
     if (sp) {
-      sp.used = true; sp.el.classList.add('used');
+      endDigVisual(sp); sp.used = true; sp.el.classList.add('used');
       setTimeout(function () { var i = spots.indexOf(sp); if (i < 0) return; spots.splice(i, 1); sp.el.remove(); addSpot(sp.kind); }, 14000);
     }
-    taps = 0; setProg(); fieldHud(); show('field');
+    taps = 0; fieldHud(); show('field');
   }
-  $('fBack').addEventListener('click', function () { openMap(curMine); });
+  $('fCancel').addEventListener('click', function () { if (!busy) cancelDig(); });
+  $('fBack').addEventListener('click', function () { if (curSpot) cancelDig(); openMap(curMine); });
   $('fBook').addEventListener('click', function () { renderBook(); $('book').classList.add('on'); });
   $('fSet').addEventListener('click', function () { $('setName').textContent = player.avatar.name + ' さん'; $('set').classList.add('on'); });
 
-  function backToField() { if ($('hb')) $('hb').innerHTML = avatarSVG(player.avatar); show('field'); }
+  function backToField() { if ($('hb')) $('hb').innerHTML = heroHTML(); show('field'); }
   function gname(s, g) { var op = (s.f === 'opal' || s.f === 'boulder'); return (op ? ['色なし', '遊色うすめ', '遊色あざやか', '極上の遊色'] : ['くすみ', 'ふつう', 'きれい', '極上'])[g] || ''; }
   function gnote(s, g) {
     var op = (s.f === 'opal' || s.f === 'boulder');
