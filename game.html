@@ -1,6 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
+<!--GV:36-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -321,8 +322,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #fTools #qcBtn{border:1.5px solid #9ff0c0;background:rgba(6,30,20,.82);color:#c9ffe0}
 #fTools #gmTog{position:static;margin-right:auto;border:1.5px solid rgba(255,255,255,.3);background:rgba(10,18,24,.82);color:#fff}
 #fTools #gmTog.on{border-color:#ffd36a;color:#ffe9a8;background:rgba(40,30,6,.88)}
-#field.digging #fTools,#field.arena #fTools{bottom:70px}
-#field.digging #qcPanel,#field.arena #qcPanel{bottom:108px}
+#field.digging #fTools,#field.arena #fTools,#field.plaza #fTools{bottom:70px}
+#field.digging #qcPanel,#field.arena #qcPanel,#field.plaza #qcPanel{bottom:108px}
 #field.town #fTools{bottom:134px}
 #qcPanel button{padding:11px 4px;border-radius:12px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff;font-weight:800;font-size:13px}
 #qcPanel button.hl{border-color:#ff7a8a;background:rgba(255,80,100,.22)}
@@ -383,6 +384,16 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #arRes.on{display:flex}
 #arRes .arrc{width:100%;max-width:340px;background:#1b2230;border-radius:20px;padding:22px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.6)}
 #arRes h2{margin:0 0 8px;font-size:30px}
+#arInv{position:fixed;left:50%;top:76px;transform:translateX(-50%);z-index:310;display:none;width:min(92vw,360px);padding:12px;border-radius:16px;background:linear-gradient(180deg,#5a1e2c,#3a1220);border:2px solid #ff7a8a;text-align:center;color:#fff;box-shadow:0 8px 30px rgba(0,0,0,.6)}
+#arInv.on{display:block}#arInv b{display:block;font-size:16px;margin-bottom:8px}#arInv button{margin:0 5px}
+.abtn{border:0;border-radius:14px;padding:12px 16px;font-weight:900;font-size:15px;background:linear-gradient(180deg,#ff8a8a,#e0405a);color:#fff}
+#updBar{position:fixed;left:8px;right:8px;top:8px;z-index:400;display:none;padding:10px 12px;border-radius:12px;background:#ffd36a;color:#3a2a08;font-weight:900;font-size:13px;text-align:center;box-shadow:0 4px 18px rgba(0,0,0,.5)}
+#updBar.on{display:block}
+#field.plaza #fDigBar{display:flex}
+#field.plaza #dig{display:none}
+#field.plaza #atkBtn{flex:1}
+#field.plaza.safe #atkBtn{opacity:.4}
+#field.plaza #fview{background:#cfae72}
 #field.arena #fDigBar{display:flex}
 #field.arena #dig{display:none}
 #field.arena #fview{background:#cfae72}
@@ -510,7 +521,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v35（ボタン整理）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v36（闘技場の広場）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所や（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -520,7 +531,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="装備・もちもの">🎒<small>装備・持物</small></button><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
     <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="fTools"><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">💬</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしもた…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
         <div id="gld"><div class="gc"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="tiny">ギルドの部屋</span><button id="gClose" type="button" class="gbtn" style="padding:6px 12px">とじる</button></div><div id="gBody"></div></div></div>
-        <div id="arn"><div class="arh"><b>⚔ 闘技場</b><span class="tiny" id="arRec"></span><button id="arClose" type="button" class="gbtn" style="padding:8px 12px">町にもどる</button></div><div id="arBody"></div></div>
+        <div id="arInv"><b id="arInvT"></b><div><button type="button" class="abtn" id="arInvY">受ける</button><button type="button" class="gbtn" id="arInvN">ことわる</button></div></div><div id="updBar" role="button">🔄 新しい版があるで。ここをタップして更新</div>
         <div id="arBig"></div>
         <div id="arRes"><div class="arrc"><h2 id="arResT"></h2><p class="tiny" id="arResP"></p><button id="arResB" type="button" class="gbtn" style="width:100%;margin-top:12px">部屋にもどる</button></div></div>
     <div id="tchat"><div id="tlog"></div><div id="trow"><input id="tin" type="text" maxlength="40" placeholder="ひとこと話す（40字まで）" autocomplete="off"><button id="tsend" type="button">送る</button></div></div>
@@ -1976,117 +1987,173 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('tin').addEventListener('pointerdown', function (e) { e.stopPropagation(); });
 
 
-  /* ---------- 闘技場（プレイヤー同士で戦えるのは、町のここだけ。勝っても負けても、持ち物は減らへん） ---------- */
-  var inArena = false;
-  var AR_ROOMS = [
-    { k: 1, m: 1, cap: 2, nm: '1対1 第1室' }, { k: 2, m: 1, cap: 2, nm: '1対1 第2室' }, { k: 3, m: 1, cap: 2, nm: '1対1 第3室' },
-    { k: 4, m: 2, cap: 4, nm: '2対2 第1室' }, { k: 5, m: 2, cap: 4, nm: '2対2 第2室' }
-  ];
+  /* ---------- 闘技場（観客席＝安全／闘技場内＝だれでも攻撃できる／タップで挑戦→承認→1対1の決闘場）。勝っても負けても、持ち物は減らへん ---------- */
+  var inArena = false, inPlaza = false, FLOOR_Y = 640;
   var AR_TIME = 90;
-  var arena = { on: false, room: 0, tm: -1, others: [], inv: null, m: null, tmr: 0 };
+  var arena = { on: false, others: [], inv: null, out: null, m: null, tmr: 0, zt: 0, hb0: 0, floor: false, zs: 0, hitAt: {} };
   function arRec() { try { return JSON.parse(LSget('opa_arena_rec_' + myMid) || '{}') || {}; } catch (e) { return {}; } }
   function arRecAdd(k) { var r = arRec(); r[k] = (r[k] || 0) + 1; LSset('opa_arena_rec_' + myMid, JSON.stringify(r)); }
-  function arMe() { return { id: myMid, n: (player.avatar && player.avatar.name) || '', av: player.avatar, r: arena.room, tm: arena.tm, bz: (arena.m && !arena.m.over) ? 1 : 0 }; }
+  function arMe() { return { id: myMid, n: (player.avatar && player.avatar.name) || '', av: player.avatar, bz: (arena.m && !arena.m.over) ? 1 : 0 }; }
   function arSend(m) { m.f = myMid; RT.send(m); }
   function arTrack() { RT.track(arMe()); }
-  function arName(id) { var n = ''; arena.others.forEach(function (o) { if (o.id === id) n = o.n; }); return n || 'だれか'; }
-  function arOcc(k) {
-    var out = arena.others.filter(function (o) { return o.r === k; }).map(function (o) { return { id: o.id, n: o.n, tm: o.tm, bz: o.bz, me: false }; });
-    if (arena.room === k) out.push({ id: myMid, n: (player.avatar && player.avatar.name) || 'あなた', tm: arena.tm, bz: 0, me: true });
-    return out;
+  function arName(id) { var n = ''; if (peers[id] && peers[id].n) n = peers[id].n; arena.others.forEach(function (o) { if (o.id === id) n = o.n; }); return n || 'だれか'; }
+  function arHost(m) { return m.ids.slice().sort()[0]; }
+  function arBig(t, ms) { var e = $('arBig'); e.textContent = t; e.classList.remove('on'); void e.offsetWidth; e.classList.add('on'); clearTimeout(e._t); e._t = setTimeout(function () { e.classList.remove('on'); }, ms || 900); }
+  function arDmg() { return isGM() ? 120 : Math.min(500, atkP()); }
+
+  /* ----- 広場（観客席と闘技場内） ----- */
+  function plazaSVG() {
+    var o = '<svg width="900" height="1100" viewBox="0 0 900 1100" style="position:absolute;left:0;top:0;pointer-events:none;z-index:0"><defs><linearGradient id="pS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8cf9a"/><stop offset="1" stop-color="#cfae72"/></linearGradient><linearGradient id="pW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5a68"/><stop offset="1" stop-color="#3b2f3d"/></linearGradient><linearGradient id="pT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a3a56"/><stop offset="1" stop-color="#352a42"/></linearGradient></defs>';
+    o += '<rect width="900" height="1100" fill="#2b2230"/><rect x="0" y="0" width="900" height="170" fill="url(#pW)"/>';
+    var i, cs = ['#ff8aa0', '#ffd36a', '#9fd0ff', '#b9f0b0', '#e0b0ff', '#fff'];
+    for (i = 0; i < 120; i++) { var cx = 10 + (i * 37) % 880, cy = 30 + Math.floor((i * 13) % 5) * 28; o += '<circle cx="' + cx + '" cy="' + cy + '" r="7" fill="' + cs[i % 6] + '" opacity=".8"/>'; }
+    for (i = 0; i < 10; i++) o += '<rect x="' + (14 + i * 92) + '" y="120" width="14" height="52" fill="#5b4a5e"/>';
+    // 観客席（段々の席）
+    o += '<rect x="0" y="170" width="900" height="430" fill="url(#pT)"/>';
+    for (i = 0; i < 6; i++) { var ry = 200 + i * 66; o += '<rect x="0" y="' + ry + '" width="900" height="8" fill="#6b5a78"/><rect x="0" y="' + (ry + 8) + '" width="900" height="3" fill="rgba(0,0,0,.25)"/>'; for (var j = 0; j < 17; j++) { o += '<rect x="' + (20 + j * 52) + '" y="' + (ry + 26) + '" width="34" height="20" rx="5" fill="' + (j % 2 ? '#7a4a6a' : '#5a4a8a') + '" opacity=".75"/>'; } }
+    o += '<text x="450" y="236" text-anchor="middle" font-size="26" font-weight="900" fill="#cfe9ff" opacity=".55" font-family="system-ui,sans-serif">🛡 観客席（ここは安全）</text>';
+    // 柵と入口
+    o += '<rect x="0" y="588" width="900" height="26" fill="#5a4a5e"/><path d="M0 588H900" stroke="#9a80a0" stroke-width="4"/>';
+    for (i = 0; i < 18; i++) o += '<rect x="' + (10 + i * 50) + '" y="566" width="10" height="48" rx="3" fill="#7a6480"/>';
+    o += '<rect x="380" y="566" width="140" height="52" fill="#2b2230"/><path d="M380 566V618M520 566V618" stroke="#ffd36a" stroke-width="5"/><text x="450" y="560" text-anchor="middle" font-size="18" font-weight="900" fill="#ffd36a" font-family="system-ui,sans-serif">▼ 闘技場の入口</text>';
+    // 闘技場内
+    o += '<rect x="0" y="614" width="900" height="486" fill="url(#pS)"/><ellipse cx="450" cy="860" rx="420" ry="220" fill="none" stroke="#a88a54" stroke-width="6"/><ellipse cx="450" cy="860" rx="400" ry="204" fill="rgba(255,255,255,.12)"/><path d="M450 650V1070" stroke="#a88a54" stroke-width="4" stroke-dasharray="14 12"/>';
+    o += '<text x="450" y="690" text-anchor="middle" font-size="26" font-weight="900" fill="#8a2a3a" opacity=".55" font-family="system-ui,sans-serif">⚔ 闘技場内（だれにでも攻撃される）</text>';
+    o += '<path d="M60 170V100L130 126L60 152" fill="#e0405a" stroke="#7a1a2a" stroke-width="2"/><path d="M840 170V100L770 126L840 152" fill="#4a8ae0" stroke="#1a3a7a" stroke-width="2"/>';
+    return o + '</svg>';
+  }
+  function buildPlaza() {
+    var w = $('world'); setWorld(900, 1100); w.classList.remove('cave'); w.style.background = '#2b2230';
+    w.innerHTML = plazaSVG() + '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
+    spots = []; spotSeq = 0; foes = []; fgen++; curSpot = null; guard = false; peers = {};
+    hero.x = 450; hero.y = 420; hero.dir = 1; ftarget = null; $('hb').innerHTML = heroHTML(); applyAura(); updHero();
+    var f = $('field'); f.classList.remove('town', 'arena'); f.classList.add('plaza', 'safe'); $('fTtl').textContent = '闘技場'; $('fCancel').textContent = '町へ出る';
+    fz = zoomT = .6; $('ftip').dataset.shown = 1; $('ftip').style.opacity = 0; arena.zs = 0;
+  }
+  function plZoneTick() {
+    if (!inPlaza) return; var fl = hero.y >= FLOOR_Y; if (arena.zs && fl === arena.floor) return;
+    var first = !arena.zs; arena.floor = fl; arena.zs = 1; $('field').classList.toggle('safe', !fl);
+    $('fhud').innerHTML = fl ? '<span style="flex:1;text-align:center;color:#ffb0b8">⚔ 闘技場内 ― だれからでも攻撃されるで！</span>' : '<span style="flex:1;text-align:center;color:#bfe9ff">🛡 観客席 ― ここは安全（攻撃されへん）</span>';
+    if (!first) toast(fl ? '⚔ 闘技場の中に入った！ ここでは、だれにでも攻撃されるで' : '🛡 観客席にもどった。ここは安全やで');
   }
   function openArena() {
-    if (arena.on) { $('arn').classList.add('on'); arRender(); return; }
-    rtStop(); arena.on = true; arena.room = 0; arena.tm = -1; arena.others = []; arena.inv = null; arena.m = null;
-    $('arn').classList.add('on'); $('arBody').innerHTML = '<p class="tiny">つないでるで…</p>'; BGM.set('town');
-    RT.join('arena', arMe(), { onMsg: arMsg, onPeers: arPeers }, function (ok) {
-      if (!ok) { arena.on = false; $('arn').classList.remove('on'); toast('つながらへんかった。あとでもう一回な'); openTown(); hero.x = 150; hero.y = 1060; updHero(); return; }
-      arRender();
+    if (arena.on) return;
+    rtStop(); arena.on = true; arena.others = []; arena.inv = null; arena.out = null; arena.m = null; arena.hb0 = hp.cur;
+    inTown = false; inPlaza = true; buildPlaza();
+    hp.ready = true; hp.max = hpMaxNow(); hp.cur = hp.max; hp.down = false; hp.inv = 0; hpUi(); gearUi(); if (eqItem('weapon')) wHand = 'weapon';
+    show('field'); BGM.set('field'); plZoneTick();
+    var tip = $('ftip'); tip.style.opacity = 1; tip.textContent = '闘技場へようこそ！ 観客席は安全。入口から下の「闘技場内」に入ると、だれからでも攻撃される（こちらも攻撃できる）で。人をタップすると「戦いを挑む」で、承認されたら1対1の決闘や'; clearTimeout(tipT); tipT = setTimeout(function () { tip.style.opacity = 0; }, 9000);
+    clearInterval(arena.zt); arena.zt = setInterval(plZoneTick, 250);
+    RT.join('arena', arMe(), { onMsg: plMsg, onPeers: plPeers }, function (ok) {
+      if (!ok) { toast('つながらへんかった。あとでもう一回な'); leaveArena(); return; }
+      rtOn = true; rtLast = 0; rtSend(posMsg());
     });
   }
-  function closeArena() {
-    if (arena.m && !arena.m.over) return;
-    arena.on = false; arena.room = 0; arena.tm = -1; arena.inv = null; arena.m = null; $('arn').classList.remove('on');
-    openTown(); hero.x = 150; hero.y = 1060; ftarget = null; updHero();
+  function leaveArena() {
+    if (!arena.on) return; if (inArena && arena.m && !arena.m.over) return;
+    clearInterval(arena.zt); clearInterval(arena.tmr); inPlaza = false; inArena = false; arena.on = false; arena.m = null; arena.inv = null; arena.out = null;
+    $('arInv').classList.remove('on'); $('arRes').classList.remove('on'); rtStop();
+    hp.down = false; hp.max = hpMaxNow(); hp.cur = Math.max(1, Math.min(hp.max, arena.hb0 || hp.max)); hp.inv = 0;
+    var f = $('field'); f.classList.remove('plaza', 'safe', 'arena'); $('fCancel').textContent = 'やめる';
+    openTown(); hero.x = 150; hero.y = 1060; ftarget = null; updHero(); hpUi(); gearUi();
   }
-  function arPeers(list) {
+  function plPeers(list) {
     arena.others = (list || []).filter(function (m) { return m && m.id && m.id !== myMid; });
-    var m = arena.m;
-    if (m && !m.over) m.ids.forEach(function (id) {
+    if (inArena) { arCheckLeft(); return; }
+    rtPeers(arena.others);
+  }
+  function arCheckLeft() {
+    var m = arena.m; if (!m || m.over) return;
+    m.ids.forEach(function (id) {
       if (id === myMid || m.ko[id]) return;
       if (!arena.others.some(function (o) { return o.id === id; })) setTimeout(function () { if (arena.m === m && !m.over && !m.ko[id] && !arena.others.some(function (o) { return o.id === id; })) arKO(id); }, 4000);
     });
-    if ($('arn').classList.contains('on')) arRender();
   }
-  function arRender() {
-    var b = $('arBody'), rec = arRec(), h = '';
-    $('arRec').textContent = '戦績 ' + (rec.w || 0) + '勝 ' + (rec.l || 0) + '敗' + (rec.d ? ' ' + rec.d + '分' : '');
-    if (arena.inv && Date.now() - arena.inv.t < 20000) h += '<div class="inv"><b>⚔ ' + esc(arena.inv.n) + ' さんが、勝負を挑んできた！</b><button type="button" class="abtn" data-ar="acc">受ける</button><button type="button" class="gbtn" data-ar="dec">ことわる</button></div>';
-    else arena.inv = null;
-    if (!arena.room) {
-      h += '<p class="tiny">プレイヤー同士で戦えるのは、町の中でここだけやで。勝っても負けても、持ち物は減らへんから安心してな。部屋をえらんでな。</p>';
-      AR_ROOMS.forEach(function (r) {
-        var oc = arOcc(r.k), busy = oc.some(function (x) { return x.bz; }), full = oc.length >= r.cap;
-        h += '<div class="arr"><div><b>' + r.nm + '</b> <span class="tiny">' + oc.length + '/' + r.cap + '人</span><div class="tiny">' + (oc.length ? oc.map(function (x) { return esc(x.n); }).join('、') : 'だれもおらんで') + (busy ? '　⚔ 対戦中' : '') + '</div></div><button class="gbtn" type="button" data-ar="in" data-k="' + r.k + '"' + ((full || busy) ? ' disabled' : '') + '>入る</button></div>';
-      });
-    } else {
-      var r = AR_ROOMS[arena.room - 1], oc = arOcc(r.k);
-      h += '<h3>' + r.nm + '</h3>';
-      if (r.m === 1) {
-        oc.forEach(function (x) {
-          if (x.me) h += '<div class="arp"><b>🙂 ' + esc(x.n) + '（あなた）</b></div>';
-          else h += '<div class="arp"><b>🧑 ' + esc(x.n) + '</b><button type="button" class="abtn" data-ar="ch" data-id="' + esc(x.id) + '"' + (x.bz ? ' disabled' : '') + '>⚔ 挑む！</button></div>';
-        });
-        if (oc.length < 2) h += '<p class="tiny">相手を待ってるで…。だれかが入ってきたら、名前が出るから、「挑む！」を押してな。</p>';
-        else h += '<p class="tiny">「挑む！」を押すと、相手に知らせが行くで。相手が「受ける」を押したら、すぐ始まる。</p>';
-      } else {
-        var t0 = oc.filter(function (x) { return x.tm === 0; }), t1 = oc.filter(function (x) { return x.tm === 1; }), me = arena.tm;
-        var col = function (arr, c, nm) { var s = '<div class="tm ' + c + '"><h4>' + nm + ' ' + arr.length + '/2</h4>'; arr.forEach(function (x) { s += '<div class="n">' + esc(x.n) + (x.me ? '（あなた）' : '') + '</div>'; }); return s + '</div>'; };
-        h += '<div class="tms">' + col(t0, 'r', '🔴 赤チーム') + col(t1, 'b', '🔵 青チーム') + '</div>';
-        h += '<div class="arr" style="gap:8px"><button class="gbtn" type="button" data-ar="tm" data-t="0"' + ((me === 0 || t0.length >= 2) ? ' disabled' : '') + '>赤に入る</button><button class="gbtn" type="button" data-ar="tm" data-t="1"' + ((me === 1 || t1.length >= 2) ? ' disabled' : '') + '>青に入る</button></div>';
-        var ready = t0.length === 2 && t1.length === 2 && me >= 0 && !oc.some(function (x) { return x.bz; });
-        h += '<button class="abtn" type="button" data-ar="go" style="width:100%;margin-top:6px"' + (ready ? '' : ' disabled') + '>⚔ はじめる！</button><p class="tiny">赤2人・青2人がそろったら、だれかが「はじめる」を押してな。</p>';
-      }
-      h += '<button class="gbtn dim" type="button" data-ar="out">部屋を出る</button>';
-    }
-    b.innerHTML = h;
-  }
-  $('arClose').addEventListener('click', closeArena);
-  $('arBody').addEventListener('click', function (e) {
-    var t = e.target.closest && e.target.closest('button[data-ar]'); if (!t || t.disabled) return; var a = t.dataset.ar; actx(); sfx(0);
-    if (a === 'in') { arena.room = +t.dataset.k; arena.tm = -1; arTrack(); arRender(); }
-    else if (a === 'out') { arena.room = 0; arena.tm = -1; arTrack(); arRender(); }
-    else if (a === 'tm') { arena.tm = +t.dataset.t; arTrack(); arRender(); }
-    else if (a === 'ch') { arSend({ t: 'ach', to: t.dataset.id, r: arena.room }); toast(arName(t.dataset.id) + ' さんに、挑戦を送ったで！'); }
-    else if (a === 'acc' && arena.inv) { var from = arena.inv.from, st = { r: arena.room, tm: [[from], [myMid]], mid: String(Date.now()) + myMid.slice(0, 4) }; arSend({ t: 'ast', r: st.r, tm: st.tm, mid: st.mid }); arBegin(st); }
-    else if (a === 'dec' && arena.inv) { arSend({ t: 'ano', to: arena.inv.from }); arena.inv = null; arRender(); }
-    else if (a === 'go') {
-      var oc = arOcc(arena.room), t0 = oc.filter(function (x) { return x.tm === 0; }).map(function (x) { return x.id; }), t1 = oc.filter(function (x) { return x.tm === 1; }).map(function (x) { return x.id; });
-      if (t0.length !== 2 || t1.length !== 2) return;
-      var st2 = { r: arena.room, tm: [t0, t1], mid: String(Date.now()) + myMid.slice(0, 4) }; arSend({ t: 'ast', r: st2.r, tm: st2.tm, mid: st2.mid }); arBegin(st2);
-    }
-  });
-  function arMsg(m) {
+  function plMsg(m) {
     if (!m || m.f === myMid) return;
-    var mt = arena.m;
+    var mt = arena.m, duel = inArena && mt && !mt.over;
     if (m.t === 'ach') {
-      if (m.to === myMid && arena.room && arena.room === m.r && !(mt && !mt.over)) { arena.inv = { from: m.f, n: arName(m.f), t: Date.now() }; sfx(2); vib([60, 40, 60]); arRender(); setTimeout(function () { if ($('arn').classList.contains('on')) arRender(); }, 20500); }
-      return;
+      if (m.to !== myMid) return;
+      if (!inPlaza || duel || arena.inv) { arSend({ t: 'ano', to: m.f, busy: 1 }); return; }
+      arena.inv = { from: m.f, n: arName(m.f), t: Date.now() }; $('arInvT').textContent = '⚔ ' + arena.inv.n + ' さんが、勝負を挑んできた！'; $('arInv').classList.add('on'); sfx(2); vib([60, 40, 60]);
+      var iv = arena.inv; setTimeout(function () { if (arena.inv === iv) { arena.inv = null; $('arInv').classList.remove('on'); } }, 20000); return;
     }
-    if (m.t === 'ano') { if (m.to === myMid) toast(arName(m.f) + ' さんは、今回はパスやって'); return; }
+    if (m.t === 'ano') { if (m.to === myMid) { if (arena.out && arena.out.to === m.f) arena.out = null; toast(arName(m.f) + (m.busy ? ' さんは、いま対応できへんみたい' : ' さんは、今回はパスやって')); } return; }
     if (m.t === 'ast') {
       if (!m.tm || !Array.isArray(m.tm) || m.tm.length !== 2 || !Array.isArray(m.tm[0]) || !Array.isArray(m.tm[1])) return;
-      var ids = m.tm[0].concat(m.tm[1]); if (ids.length < 2 || ids.length > 4 || ids.indexOf(myMid) < 0 || ids.indexOf(m.f) < 0) return;
-      if (mt && !mt.over) return; if (arena.room !== m.r) return;
-      arBegin({ r: m.r, tm: [m.tm[0].map(String), m.tm[1].map(String)], mid: String(m.mid) }); return;
+      var ids = m.tm[0].concat(m.tm[1]); if (ids.length !== 2 || ids.indexOf(myMid) < 0 || ids.indexOf(m.f) < 0) return;
+      if (!inPlaza || duel || !arena.out || arena.out.to !== m.f || Date.now() - arena.out.t > 25000) return;
+      arena.out = null; arBegin({ tm: [m.tm[0].map(String), m.tm[1].map(String)], mid: String(m.mid) }); return;
     }
-    if (!mt || mt.team[m.f] == null || (m.mid && m.mid !== mt.mid && m.t !== 'pos' && m.t !== 'chat')) return;
-    if (m.t === 'ahit') arOnHit(m);
-    else if (m.t === 'ako') arKO(m.f);
-    else if (m.t === 'aend') { if (m.f === arHost(mt)) arFinish(m.w); }
-    else if ((m.t === 'pos' || m.t === 'chat') && peers[m.f]) rtMsg(m);
+    if (inArena) {
+      if (!mt || mt.team[m.f] == null) return;
+      if (m.t === 'pos') { if (m.md === mt.mid && peers[m.f]) rtMsg(m); return; }
+      if (m.mid && m.mid !== mt.mid) return;
+      if (m.t === 'ahit') arOnHit(m);
+      else if (m.t === 'ako') arKO(m.f);
+      else if (m.t === 'aend') { if (m.f === arHost(mt)) arFinish(m.w); }
+      else if (m.t === 'chat' && peers[m.f]) rtMsg(m);
+      return;
+    }
+    if (!inPlaza) return;
+    if (m.t === 'pos') {
+      if (m.md) { var pd = peers[m.f]; if (pd && pd.el) pd.el.style.display = 'none'; return; }
+      rtMsg(m); var pv = peers[m.f]; if (pv && pv.el && pv.el.style.display === 'none') pv.el.style.display = ''; return;
+    }
+    if (m.t === 'fhit') plOnHit(m);
+    else if (m.t === 'chat') rtMsg(m);
   }
-  function arHost(m) { return m.ids.slice().sort()[0]; }
+  function plInFloor(pr) { return pr && pr.el && pr.el.style.display !== 'none' && pr.ty >= FLOOR_Y - 10; }
+  function plOnHit(m) {
+    if (m.to !== myMid || !inPlaza || hp.down || hero.y < FLOOR_Y) return;
+    var pr = peers[m.f]; if (!plInFloor(pr)) return;
+    var now = performance.now(); if (now - (arena.hitAt[m.f] || 0) < 150) return; arena.hitAt[m.f] = now;
+    if (Math.hypot(hero.x - pr.x, hero.y - pr.y) > 620) return;
+    var d = Math.max(1, Math.min(500, Math.round(+m.d || 1))), dmg = Math.max(1, Math.round(d * (1 - defP())));
+    hp.cur = Math.max(0, hp.cur - dmg); floatTxt(hero.x, hero.y - 74, '-' + dmg); sfx(1); vib([30, 20, 30]);
+    var hb = $('hb'); if (hb) { hb.classList.remove('lunge', 'hurt'); void hb.offsetWidth; hb.classList.add('hurt'); }
+    hpUi(); rtLast = 0; if (hp.cur <= 0) plKO();
+  }
+  function plKO() {
+    hp.cur = 0; hp.down = true; ftarget = null; hpUi(); rtLast = 0; bubble($('hero2'), 'やられた…'); toast('やられた！ 3秒で観客席にもどるで');
+    setTimeout(function () { if (!inPlaza || !hp.down) return; hp.down = false; hp.cur = hp.max; hero.x = 450; hero.y = 420; ftarget = null; updHero(); hpUi(); rtLast = 0; }, 3000);
+  }
+  function plAttack(pr) {
+    var rg = atkRange(), dist = Math.hypot(hero.x - pr.x, hero.y - pr.y);
+    if (dist > rg) { ftarget = { x: clamp(pr.x + (hero.x < pr.x ? -1 : 1) * Math.max(40, rg * .6), 40, WW - 40), y: clamp(pr.y, FLOOR_Y + 10, WH - 50), spot: null }; toast('もうちょっと近づいてな（とどくのは ' + Math.round(rg / 75) + ' マス）'); return; }
+    if (!canAttack()) return;
+    var wq = curW(); if (wq && wq.rng) shootFx(pr.x, pr.y, wq.kind);
+    hero.dir = pr.x >= hero.x ? 1 : -1; updHero(); sfx('hit'); vib(20); swingAnim();
+    if (pr.el) { pr.el.classList.remove('gmhit'); void pr.el.offsetWidth; pr.el.classList.add('gmhit'); }
+    arSend({ t: 'fhit', to: pr.id, d: arDmg() });
+  }
+  function plAtkNearest() {
+    if (!inPlaza || hp.down) return;
+    if (hero.y < FLOOR_Y) { toast('観客席ではたたかえへんで。入口から闘技場の中に入ってな'); return; }
+    var best = null, bd = 1e9; Object.keys(peers).forEach(function (id) { var q = peers[id]; if (!plInFloor(q) || q.dn) return; var d = Math.hypot(hero.x - q.x, hero.y - q.y); if (d < bd) { bd = d; best = q; } });
+    if (!best) { toast('闘技場の中に、ほかの人がおらんで'); return; }
+    plAttack(best);
+  }
+  function plTap(e, view) {
+    if (hp.down) return;
+    var r = view.getBoundingClientRect(), wx = (e.clientX - r.left) / fz + camX, wy = (e.clientY - r.top) / fz + camY, tg = null, bd = 56;
+    Object.keys(peers).forEach(function (id) { var q = peers[id]; if (!q.el || q.el.style.display === 'none') return; var d = Math.hypot(wx - q.x, wy - (q.y - 32)); if (d < bd) { bd = d; tg = q; } });
+    if (tg) { openProfile(tg); return; }
+    var pg = document.createElement('i'); pg.className = 'ping'; pg.style.left = wx + 'px'; pg.style.top = wy + 'px'; $('world').appendChild(pg); setTimeout(function () { pg.remove(); }, 520);
+    ftarget = { x: clamp(wx, 40, WW - 40), y: clamp(wy, 230, WH - 50), spot: null };
+  }
+  function arChallenge(pr) {
+    if (!inPlaza || hp.down || !pr) return;
+    if (arena.out && Date.now() - arena.out.t < 8000) { toast('ちょっと待ってな（返事を待ってるで）'); return; }
+    arena.out = { to: pr.id, t: Date.now() }; arSend({ t: 'ach', to: pr.id }); toast((pr.n || 'あいて') + ' さんに、挑戦を送ったで。返事を待ってな…');
+  }
+  $('arInvY').addEventListener('click', function () {
+    var iv = arena.inv; if (!iv) return; arena.inv = null; $('arInv').classList.remove('on');
+    var st = { tm: [[iv.from], [myMid]], mid: String(Date.now()) + myMid.slice(0, 4) }; arSend({ t: 'ast', tm: st.tm, mid: st.mid }); arBegin(st);
+  });
+  $('arInvN').addEventListener('click', function () { var iv = arena.inv; if (!iv) return; arena.inv = null; $('arInv').classList.remove('on'); arSend({ t: 'ano', to: iv.from }); });
+
+  /* ----- 1対1の決闘場 ----- */
   function arenaSVG() {
     var o = '<svg width="820" height="720" viewBox="0 0 820 720" style="position:absolute;left:0;top:0;pointer-events:none;z-index:0"><defs><linearGradient id="aS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8cf9a"/><stop offset="1" stop-color="#cfae72"/></linearGradient><linearGradient id="aW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5a68"/><stop offset="1" stop-color="#3b2f3d"/></linearGradient></defs>';
     o += '<rect width="820" height="720" fill="#2b2230"/><rect x="0" y="0" width="820" height="200" fill="url(#aW)"/>';
@@ -2100,25 +2167,23 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     o += '<path d="M60 150V90L120 112L60 134" fill="#e0405a" stroke="#7a1a2a" stroke-width="2"/><path d="M760 150V90L700 112L760 134" fill="#4a8ae0" stroke="#1a3a7a" stroke-width="2"/>';
     return o + '</svg>';
   }
-  function arBig(t, ms) { var e = $('arBig'); e.textContent = t; e.classList.remove('on'); void e.offsetWidth; e.classList.add('on'); clearTimeout(e._t); e._t = setTimeout(function () { e.classList.remove('on'); }, ms || 900); }
   function arBegin(s) {
     var ids = s.tm[0].concat(s.tm[1]); if (ids.indexOf(myMid) < 0) return; if (arena.m && !arena.m.over) return;
     var team = {}; s.tm[0].forEach(function (i) { team[i] = 0; }); s.tm[1].forEach(function (i) { team[i] = 1; });
-    var m = arena.m = { mid: s.mid, room: s.r, tm: s.tm, team: team, my: team[myMid], ko: {}, live: false, over: false, fin: 0, ids: ids, hit: {}, hb: hp.cur, t0: 0, sentEnd: false };
-    arena.inv = null; $('arn').classList.remove('on'); $('arRes').classList.remove('on');
-    inTown = false; inArena = true; arTrack();
-    $('field').classList.remove('town'); $('field').classList.add('arena'); $('fTtl').textContent = '闘技場'; $('fCancel').textContent = 'あきらめる';
+    var m = arena.m = { mid: s.mid, tm: s.tm, team: team, my: team[myMid], ko: {}, live: false, over: false, fin: 0, ids: ids, hit: {}, hb: hp.cur, t0: 0, sentEnd: false };
+    arena.inv = null; $('arInv').classList.remove('on'); $('arRes').classList.remove('on');
+    inTown = false; inPlaza = false; inArena = true; arTrack();
+    var fl = $('field'); fl.classList.remove('town', 'plaza', 'safe'); fl.classList.add('arena'); $('fTtl').textContent = '決闘場'; $('fCancel').textContent = 'あきらめる';
     var w = $('world'); setWorld(820, 720); w.classList.remove('cave'); w.style.background = '#2b2230';
     w.innerHTML = arenaSVG() + '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     spots = []; spotSeq = 0; foes = []; fgen++; curSpot = null; guard = false; peers = {};
-    var idx = s.tm[m.my].indexOf(myMid), n = s.tm[m.my].length;
-    hero.x = m.my === 0 ? 210 : 610; hero.y = n > 1 ? (idx ? 530 : 390) : 460; hero.dir = m.my === 0 ? 1 : -1; ftarget = null;
+    hero.x = m.my === 0 ? 210 : 610; hero.y = 460; hero.dir = m.my === 0 ? 1 : -1; ftarget = null;
     $('hb').innerHTML = heroHTML(); applyAura(); updHero();
     ids.forEach(function (id) {
       if (id === myMid) return; var o = null; arena.others.forEach(function (q) { if (q.id === id) o = q; }); if (!o) return;
-      var t = team[id], j = s.tm[t].indexOf(id), nn = s.tm[t].length, px = t === 0 ? 210 : 610, py = nn > 1 ? (j ? 530 : 390) : 460;
+      var t = team[id], px = t === 0 ? 210 : 610, py = 460;
       var pr = peers[id] = { id: id, x: px, y: py, tx: px, ty: py, dir: t === 0 ? 1 : -1, got: true, n: o.n, av: o.av, tm: t, h: 100 }; ghostEl(pr);
-      var gn = pr.el && pr.el.querySelector('.gname'); if (gn) gn.style.color = t === m.my ? '#9fd0ff' : '#ff9a9a';
+      var gn = pr.el && pr.el.querySelector('.gname'); if (gn) gn.style.color = '#ff9a9a';
     });
     if (eqItem('weapon')) wHand = 'weapon';
     hp.ready = true; hp.max = hpMaxNow(); hp.cur = hp.max; hp.down = false; hp.inv = 0; hpUi(); gearUi();
@@ -2135,10 +2200,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function arTick() {
     var m = arena.m; if (!m || m.over) { clearInterval(arena.tmr); return; }
-    var el = Math.floor((performance.now() - m.t0) / 1000), left = Math.max(0, AR_TIME - el), a = 0, e = 0;
-    m.ids.forEach(function (id) { if (!m.ko[id]) { if (m.team[id] === m.my) a++; else e++; } });
-    $('fhud').innerHTML = '<span>⏱ <b>' + left + '</b> 秒</span><span>味方 <b>' + a + '</b> 人</span><span>相手 <b>' + e + '</b> 人</span>';
-    if (left <= 0 && myMid === arHost(m) && !m.sentEnd) { m.sentEnd = true; var w = arHpWin(); arSend({ t: 'aend', r: m.room, mid: m.mid, w: w }); arFinish(w); }
+    var el = Math.floor((performance.now() - m.t0) / 1000), left = Math.max(0, AR_TIME - el);
+    $('fhud').innerHTML = '<span style="flex:1;text-align:center">⏱ <b>' + left + '</b> 秒</span>';
+    if (left <= 0 && myMid === arHost(m) && !m.sentEnd) { m.sentEnd = true; var w = arHpWin(); arSend({ t: 'aend', mid: m.mid, w: w }); arFinish(w); }
     else if (el > AR_TIME + 6) arFinish(arHpWin());
   }
   function arHpWin() {
@@ -2158,7 +2222,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function arMeKO() {
     var m = arena.m; if (!m || m.over || hp.down) return;
-    hp.cur = 0; hp.down = true; ftarget = null; hpUi(); rtLast = 0; arSend({ t: 'ako', r: m.room, mid: m.mid }); arKO(myMid); if (!m.over) arBig('ダウン…！', 1200);
+    hp.cur = 0; hp.down = true; ftarget = null; hpUi(); rtLast = 0; arSend({ t: 'ako', mid: m.mid }); arKO(myMid); if (!m.over) arBig('ダウン…！', 1200);
   }
   function arOnHit(m0) {
     var m = arena.m; if (m0.to !== myMid || !m.live || hp.down || m.over) return;
@@ -2170,7 +2234,6 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var hb = $('hb'); if (hb) { hb.classList.remove('lunge', 'hurt'); void hb.offsetWidth; hb.classList.add('hurt'); }
     hpUi(); rtLast = 0; if (hp.cur <= 0) arMeKO();
   }
-  function arDmg() { return isGM() ? 120 : Math.min(500, atkP()); }
   function arAttack(pr) {
     var m = arena.m; if (!m || !m.live || hp.down || !pr || pr.dn || m.ko[pr.id]) return;
     var rg = atkRange(), dist = Math.hypot(hero.x - pr.x, hero.y - pr.y);
@@ -2179,7 +2242,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var wq = curW(); if (wq && wq.rng) shootFx(pr.x, pr.y, wq.kind);
     hero.dir = pr.x >= hero.x ? 1 : -1; updHero(); sfx('hit'); vib(20); swingAnim();
     if (pr.el) { pr.el.classList.remove('gmhit'); void pr.el.offsetWidth; pr.el.classList.add('gmhit'); }
-    arSend({ t: 'ahit', to: pr.id, d: arDmg(), r: m.room, mid: m.mid });
+    arSend({ t: 'ahit', to: pr.id, d: arDmg(), mid: m.mid });
   }
   function arAtkNearest() {
     var m = arena.m; if (!m || !m.live || hp.down) return; var best = null, bd = 1e9;
@@ -2197,7 +2260,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function arGiveUp() {
     var m = arena.m; if (!m) { arBack(); return; }
     if (m.over) { arBack(); return; }
-    if (!m.live) { /* 始まる前は、そのまま部屋にもどる */ arSend({ t: 'ako', r: m.room, mid: m.mid }); arKO(myMid); hp.down = true; arFinish(m.my === 0 ? 1 : 0); return; }
+    if (!m.live) { arSend({ t: 'ako', mid: m.mid }); arKO(myMid); hp.down = true; arFinish(m.my === 0 ? 1 : 0); return; }
     if (!hp.down) arMeKO(); else arBack();
   }
   function arFinish(win) {
@@ -2209,13 +2272,28 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (won) sfx(2); setTimeout(function () { if (arena.m === m) $('arRes').classList.add('on'); }, 500);
   }
   function arBack() {
-    var m = arena.m; arena.m = null; clearInterval(arena.tmr); rtOn = false;
+    arena.m = null; clearInterval(arena.tmr);
     Object.keys(peers).forEach(function (id) { if (peers[id].el) peers[id].el.remove(); }); peers = {};
-    inArena = false; inTown = true; $('field').classList.remove('arena'); $('fCancel').textContent = 'やめる'; $('arRes').classList.remove('on'); $('arBig').classList.remove('on');
-    hp.down = false; hp.max = hpMaxNow(); hp.cur = Math.max(1, Math.min(hp.max, (m && m.hb) ? m.hb : hp.max)); hp.inv = 0; hpUi(); gearUi();
-    if (arena.on) { arTrack(); $('arn').classList.add('on'); arRender(); BGM.set('town'); }
+    inArena = false; $('field').classList.remove('arena'); $('arRes').classList.remove('on'); $('arBig').classList.remove('on');
+    if (!arena.on) return;
+    inPlaza = true; buildPlaza(); hp.down = false; hp.max = hpMaxNow(); hp.cur = hp.max; hp.inv = 0; hpUi(); gearUi(); arTrack();
+    rtOn = true; rtLast = 0; rtPeers(arena.others); BGM.set('field'); plZoneTick(); rtSend(posMsg());
   }
   $('arResB').addEventListener('click', arBack);
+
+
+  /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
+  var GV = 36;
+  (function () {
+    var last = Date.now();
+    function chk() {
+      var n = Date.now(); if (n - last < 300000) return; last = n;
+      try { fetch(location.pathname + '?x=' + n, { cache: 'no-store' }).then(function (r) { return r.text(); }).then(function (t) { var m = t.slice(0, 3000).match(/<!--GV:(\d+)-->/); if (m && +m[1] > GV) $('updBar').classList.add('on'); }).catch(function () {}); } catch (e) {}
+    }
+    document.addEventListener('visibilitychange', function () { if (!document.hidden) chk(); });
+    setInterval(chk, 600000);
+    $('updBar').addEventListener('click', function () { location.href = location.pathname + '?v=' + Date.now(); });
+  })();
 
   function rtStart() {
     rtStop(); if (!room || !myMid) return; shared = true;
@@ -2620,7 +2698,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   /* ---------- HP・戦い・病院・たすけ合い ---------- */
   var hp = { cur: 0, max: 0, down: false, inv: 0, ready: false }, downT = 0, downLeft = 0;
   function plv() { return Math.max(1, (player && player.lv) || 1); }
-  function hpMaxNow() { if (isGM()) return inArena ? 900 : 9999; var a = eqItem('armor'); return 80 + 10 * plv() + (a ? a.hp : 0); }
+  function hpMaxNow() { if (isGM()) return (inArena || inPlaza) ? 900 : 9999; var a = eqItem('armor'); return 80 + 10 * plv() + (a ? a.hp : 0); }
   function atkP() { var w = curW(); if (!w) return Math.max(1, Math.round(1 + Math.min(plv(), 60) / 12)); return Math.round((Math.round(6 + 1.5 * plv()) + w.atk) * (w.rng && !isGM() ? .8 : 1)); }
   var guard = false, atkAt = 0;
   function defP() { var s = eqItem('shield'), h = isGM() ? GMI.helm : null; return Math.min(.85, (s ? s.def : 0) + (h ? h.def : 0) + (guard ? .4 : 0)); }
@@ -2641,13 +2719,13 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!hp.ready) { var sv = LSget('opa_game_hp_' + myMid); hp.cur = (sv !== null && sv !== '' && isFinite(+sv)) ? Math.max(1, Math.min(mx, Math.round(+sv))) : mx; if (isGM()) hp.cur = mx; hp.ready = true; hp.max = mx; }
     if (mx !== hp.max) hp.max = mx;
     if (hp.cur > hp.max) hp.cur = hp.max;
-    if (!inArena) LSset('opa_game_hp_' + myMid, String(hp.cur));
+    if (!inArena && !inPlaza) LSset('opa_game_hp_' + myMid, String(hp.cur));
     var r = hp.max ? hp.cur / hp.max : 1, ph = $('phud'); if (!ph) return;
     $('phI').style.width = Math.max(0, r * 100) + '%'; $('phTx').textContent = 'HP ' + hp.cur + '/' + hp.max; ph.classList.toggle('low', r <= .3);
     var hh = $('hero2'); if (hh) { var b = hh.querySelector('.hhp'); if (b) { b.classList.toggle('on', r < 1); b.firstChild.style.width = (r * 100) + '%'; b.firstChild.style.background = r <= .3 ? '#ff5a5a' : '#4fd68a'; } hh.classList.toggle('down', hp.down); }
   }
   function floatTxt(x, y, t, c) { var e = document.createElement('div'); e.className = 'ftxt' + (c ? ' ' + c : ''); e.textContent = t; e.style.left = x + 'px'; e.style.top = y + 'px'; $('world').appendChild(e); setTimeout(function () { e.remove(); }, 850); }
-  function posMsg() { return { t: 'pos', x: Math.round(hero.x), y: Math.round(hero.y), d: hero.dir, h: Math.round(hp.cur / Math.max(1, hp.max) * 100), dn: hp.down ? 1 : 0, gm: isGM() ? 1 : 0, lv: (player && player.lv) || 1, eq: EQSL.map(function (sl) { var q = eqItem(sl); return q ? q.id : ''; }).join(',') }; }
+  function posMsg() { return { t: 'pos', x: Math.round(hero.x), y: Math.round(hero.y), d: hero.dir, h: Math.round(hp.cur / Math.max(1, hp.max) * 100), dn: hp.down ? 1 : 0, md: (arena && arena.m && !arena.m.over) ? arena.m.mid : 0, gm: isGM() ? 1 : 0, lv: (player && player.lv) || 1, eq: EQSL.map(function (sl) { var q = eqItem(sl); return q ? q.id : ''; }).join(',') }; }
   var EQSL = ['weapon', 'shield', 'armor', 'outfit', 'tool', 'helm'];
   function rtHp() { if (rtOn) { rtLast = 0; } }
   function hurtMe(dmg) {
@@ -2876,10 +2954,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function openProfile(pr) {
     var ids = String(pr.eq || '').split(','), eqh = '';
     EQSL.forEach(function (sl, i) { if (sl === 'helm' && !pr.gm) return; var q = ids[i] ? (IBY[ids[i]] || GMBY[ids[i]]) : null; eqh += '<div><span>' + EQN[sl] + '</span><br><b>' + (q ? q.ic + ' ' + q.nm : (pr.eq == null ? '？' : '— なし —')) + '</b></div>'; });
-    var box = $('pfc'); box.innerHTML = '<div class="pfav"><div class="hb2">' + charHTML(pr.av) + '</div></div><h3></h3><span class="lvc">Lv ' + (pr.lv != null ? pr.lv : '？') + '</span>' + (pr.gm ? ' <span class="lvc">👑 ゲームマスター</span>' : '') + '<div class="eqg">' + eqh + '</div><div><button type="button" id="pfX">とじる</button>' + (pr.gm && !isGM() ? '<button type="button" class="atk" id="pfA">⚔ こうげきしてみる</button>' : '') + '</div>';
+    var box = $('pfc'); box.innerHTML = '<div class="pfav"><div class="hb2">' + charHTML(pr.av) + '</div></div><h3></h3><span class="lvc">Lv ' + (pr.lv != null ? pr.lv : '？') + '</span>' + (pr.gm ? ' <span class="lvc">👑 ゲームマスター</span>' : '') + '<div class="eqg">' + eqh + '</div><div><button type="button" id="pfX">とじる</button>' + (pr.gm && !isGM() && !inPlaza ? '<button type="button" class="atk" id="pfA">⚔ こうげきしてみる</button>' : '') + (inPlaza ? '<button type="button" class="atk" id="pfD">⚔ 戦いを挑む</button>' : '') + '</div>';
     box.querySelector('h3').textContent = pr.n || 'だれか';
     $('pf').classList.add('on');
     $('pfX').onclick = function () { $('pf').classList.remove('on'); };
+    if ($('pfD')) $('pfD').onclick = function () { $('pf').classList.remove('on'); arChallenge(pr); };
     if ($('pfA')) $('pfA').onclick = function () { $('pf').classList.remove('on'); hitGmPeer(pr); };
   }
   $('pf').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('on'); });
@@ -2961,7 +3040,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function fieldHud() {
     hpUi(); gearUi();
-    if (inTown || inArena) return;
+    if (inTown || inArena || inPlaza) return;
     var k = Object.keys(player.stones || {}).length;
     $('fhud').innerHTML = '<span>掘った回数 <b>' + (player.digs || 0) + '</b></span><span>見つけた石 <b>' + k + '</b>/' + STONES.length + '</span><span>ここで <b>' + (((player.mines || {})[curMine]) || 0) + '</b> 回</span><span>🪙 <b>' + ((player.coins || 0).toLocaleString()) + '</b></span><span>' + (partyN > 1 ? '👥 <b>' + partyN + '</b>人 <button id="fLeave" class="opt" type="button" style="padding:3px 8px;font-size:11px">ぬける</button>　' : '') + 'Lv <b>' + (player.lv || 1) + '</b>' + (player.xpNeed ? '（あと ' + (player.xpNeed - (player.xpInto || 0)).toLocaleString() + '）' : '（MAX）') + '</span>';
   }
@@ -2996,6 +3075,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!fieldOn) return; actx();
     if (e.target.closest && (e.target.closest('#fDigBar') || e.target.closest('#downov'))) return;
     if (inArena) { arTap(e, this); return; }
+    if (inPlaza) { plTap(e, this); return; }
     if (hp.down) return;
     if (curSpot) {
       var r0 = this.getBoundingClientRect(), wx0 = (e.clientX - r0.left) / fz + camX, wy0 = (e.clientY - r0.top) / fz + camY;
@@ -3045,6 +3125,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function attackNearest() {
     if (inArena) { arAtkNearest(); return; }
+    if (inPlaza) { plAtkNearest(); return; }
     if (hp.down || busy) return; actx();
     var best = null, bd = 1e9; foes.forEach(function (f) { if (f.mode === 'dead') return; var d = Math.hypot(hero.x - f.x, hero.y - f.y); if (d < bd) { bd = d; best = f; } });
     if (!best) { toast('ちかくに敵はおらんで'); return; }
@@ -3052,8 +3133,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!hitFoeAt(best.x, best.y - yo)) toast('もうちょっと近づいてな（とどくのは ' + Math.round(atkRange() / 75) + ' マス）');
   }
   $('atkBtn').addEventListener('click', attackNearest);
-  $('fCancel').addEventListener('click', function () { if (inArena) { arGiveUp(); return; } if (!busy) cancelDig(); });
-  $('fBack').addEventListener('click', function () { if (inArena) { arGiveUp(); return; } if (curSpot) cancelDig(); var wasTown = inTown; leaveTown(); openMap(wasTown ? null : curMine); });
+  $('fCancel').addEventListener('click', function () { if (inArena) { arGiveUp(); return; } if (inPlaza) { leaveArena(); return; } if (!busy) cancelDig(); });
+  $('fBack').addEventListener('click', function () { if (inArena) { arGiveUp(); return; } if (inPlaza) { leaveArena(); return; } if (curSpot) cancelDig(); var wasTown = inTown; leaveTown(); openMap(wasTown ? null : curMine); });
   $('fBook').addEventListener('click', function () { renderBook(); $('book').classList.add('on'); });
   $('fSet').addEventListener('click', function () { $('setName').textContent = player.avatar.name + ' さん'; $('set').classList.add('on'); });
 
