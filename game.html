@@ -1,0 +1,503 @@
+<!doctype html>
+<html lang="ja">
+<head>
+<!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+<meta name="robots" content="noindex">
+<title>オパール採掘</title>
+<style>
+:root{--bg:#0a1216;--bg2:#13222a;--ink:#f3efe6;--mut:#9db0b8;--gold:#e8c46a;--line:rgba(255,255,255,.14);--n:#8fa3ad;--r:#58a6ff;--sr:#b583ff;--ur:#ffd36a}
+*{box-sizing:border-box;-webkit-tap-highlight-color:transparent}
+html,body{margin:0;height:100%;background:var(--bg);color:var(--ink);font-family:system-ui,-apple-system,"Hiragino Sans","Noto Sans JP","Yu Gothic",sans-serif;overflow:hidden;touch-action:manipulation}
+button{font:inherit;color:inherit;cursor:pointer}
+#app{position:fixed;inset:0;display:flex;flex-direction:column;max-width:560px;margin:0 auto;background:radial-gradient(120% 80% at 50% 0%,#1d3a45 0%,var(--bg) 62%)}
+.scr{position:absolute;inset:0;display:none;flex-direction:column}
+.scr.on{display:flex}
+/* 読み込み */
+#load{align-items:center;justify-content:center;gap:14px;text-align:center;padding:24px}
+.spin{width:38px;height:38px;border-radius:50%;border:4px solid var(--line);border-top-color:var(--gold);animation:sp 1s linear infinite}
+@keyframes sp{to{transform:rotate(360deg)}}
+/* オープニング */
+#open{align-items:center;justify-content:center;text-align:center;overflow:hidden;background:radial-gradient(90% 70% at 50% 40%,#244a58 0%,#0a1216 70%)}
+#open .ttl{font-size:clamp(34px,10vw,52px);font-weight:800;letter-spacing:.08em;margin:0;display:flex;gap:2px}
+#open .ttl span{opacity:0;transform:translateY(24px) scale(.8);animation:rise .7s cubic-bezier(.2,.9,.3,1.3) forwards;background:linear-gradient(180deg,#fff6d8,#e8c46a 60%,#b98a2e);-webkit-background-clip:text;background-clip:text;color:transparent;filter:drop-shadow(0 2px 8px rgba(232,196,106,.45))}
+@keyframes rise{to{opacity:1;transform:none}}
+#open .sub{margin:14px 0 0;color:var(--mut);opacity:0;animation:fade 1s 1.7s forwards;font-size:15px}
+#open .tap{margin-top:46px;opacity:0;animation:fade .8s 2.4s forwards,pulse 1.6s 3.2s infinite;font-size:17px;padding:14px 30px;border-radius:999px;border:1px solid var(--gold);background:rgba(232,196,106,.12)}
+@keyframes fade{to{opacity:1}}
+@keyframes pulse{50%{transform:scale(1.06);box-shadow:0 0 24px rgba(232,196,106,.45)}}
+.hero-gem{width:120px;height:120px;margin-bottom:18px;opacity:0;transform:scale(.3);animation:pop 1s .3s cubic-bezier(.2,1.4,.4,1) forwards}
+@keyframes pop{to{opacity:1;transform:none}}
+.fl{position:absolute;pointer-events:none;opacity:0;animation:floaty linear infinite}
+@keyframes floaty{0%{opacity:0;transform:translateY(20px) scale(.6)}20%{opacity:.9}100%{opacity:0;transform:translateY(-120px) scale(1.1) rotate(40deg)}}
+#skip{position:absolute;top:calc(12px + env(safe-area-inset-top));right:14px;background:none;border:0;color:var(--mut);font-size:13px;padding:8px}
+/* ヘッダー */
+.bar{display:flex;align-items:center;gap:8px;padding:calc(10px + env(safe-area-inset-top)) 12px 10px}
+.bar h1{flex:1;margin:0;font-size:17px;text-align:center}
+.ib{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.06);display:grid;place-items:center;font-size:19px;line-height:1}
+.ib:active{transform:scale(.94)}
+/* キャラ作り */
+#make .body{flex:1;overflow:auto;padding:4px 16px 20px}
+.prev{display:grid;place-items:center;padding:6px 0 2px}
+.prev svg{width:170px;height:204px;filter:drop-shadow(0 10px 14px rgba(0,0,0,.4))}
+.fld{margin:12px 0 6px;font-size:13px;color:var(--mut)}
+input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.07);color:var(--ink);font-size:17px}
+.opts{display:flex;flex-wrap:wrap;gap:8px}
+.opt{padding:9px 13px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.06);font-size:14px}
+.opt.sel{border-color:var(--gold);background:rgba(232,196,106,.18)}
+.sw{width:34px;height:34px;border-radius:50%;border:2px solid transparent;box-shadow:0 0 0 1px var(--line)}
+.sw.sel{border-color:#fff;box-shadow:0 0 0 2px var(--gold)}
+.foot{padding:12px 16px calc(14px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:rgba(10,18,22,.85)}
+.big{width:100%;padding:15px;border-radius:16px;border:0;font-size:18px;font-weight:700;color:#2a1f05;background:linear-gradient(180deg,#ffe9a8,#e8c46a 55%,#c99a3c);box-shadow:0 6px 18px -6px rgba(232,196,106,.6)}
+.big:active{transform:translateY(1px) scale(.99)}
+.big[disabled]{opacity:.5}
+.ghost{width:100%;margin-top:8px;padding:12px;border-radius:14px;border:1px solid var(--line);background:none;font-size:15px}
+/* 採掘 */
+#play .scene{position:relative;flex:1;min-height:0;display:flex;align-items:flex-end;justify-content:flex-end;overflow:hidden}
+#play .scene::before{content:"";position:absolute;inset:0;background:radial-gradient(70% 55% at 50% 52%,rgba(120,200,220,.16),transparent 70%),linear-gradient(180deg,rgba(255,255,255,.03),rgba(0,0,0,.35))}
+.rockwrap{position:relative;width:min(62vw,300px);aspect-ratio:1;margin:0 3% 6% 0;touch-action:manipulation}
+.rockwrap svg{width:100%;height:100%;display:block;filter:drop-shadow(0 14px 14px rgba(0,0,0,.5))}
+.rockwrap.hit{animation:shake .18s}
+@keyframes shake{25%{transform:translate(-5px,2px) rotate(-1.5deg)}75%{transform:translate(5px,-2px) rotate(1.5deg)}}
+.hero{position:absolute;left:3%;bottom:5%;width:34%;max-width:150px;pointer-events:none}
+.hero svg{width:100%;display:block;filter:drop-shadow(0 8px 10px rgba(0,0,0,.45))}
+.pick{position:absolute;left:24%;bottom:30%;width:22%;max-width:100px;transform-origin:20% 90%;pointer-events:none}
+.pick.sw1{animation:swing .26s ease-out}
+@keyframes swing{0%{transform:rotate(-8deg)}45%{transform:rotate(-62deg)}100%{transform:rotate(-8deg)}}
+.dust{position:absolute;width:7px;height:7px;border-radius:50%;background:#d8e4ea;pointer-events:none;animation:dust .55s ease-out forwards}
+@keyframes dust{to{transform:translate(var(--dx),var(--dy)) scale(.2);opacity:0}}
+.hud{padding:10px 16px 6px}
+.prog{height:14px;border-radius:999px;background:rgba(255,255,255,.1);overflow:hidden;border:1px solid var(--line)}
+.prog i{display:block;height:100%;width:0;background:linear-gradient(90deg,#7fd6ff,#b583ff,#ffd36a);transition:width .12s}
+.hint{margin:7px 0 0;font-size:13px;color:var(--mut);text-align:center;min-height:19px}
+.stats{display:flex;justify-content:space-around;padding:2px 12px 8px;font-size:13px;color:var(--mut)}
+.stats b{color:var(--ink);font-size:16px}
+.today{margin:0 16px 8px;padding:9px 12px;border-radius:12px;background:rgba(255,255,255,.05);border:1px solid var(--line);display:flex;gap:10px;align-items:center;font-size:13px;color:var(--mut)}
+.today .g{width:34px;height:34px;flex:none}
+/* 石の表示 */
+.gem{display:inline-block}
+.gem svg{width:100%;height:100%;display:block}
+.opal{position:relative;width:100%;height:100%;border-radius:50% 50% 48% 48%/58% 58% 42% 42%;overflow:hidden;clip-path:ellipse(50% 50% at 50% 50%);isolation:isolate;background:var(--b);box-shadow:inset 0 -9px 14px rgba(0,0,0,.4),inset 0 7px 10px rgba(255,255,255,.28),0 4px 10px rgba(0,0,0,.4)}
+.opal::before{content:"";position:absolute;inset:-35%;background:conic-gradient(from 0deg,var(--c1),var(--c2),var(--c3),var(--c4),var(--c1));filter:blur(9px);opacity:.88;mix-blend-mode:screen;animation:sp 7s linear infinite}
+.opal::after{content:"";position:absolute;inset:0;background:radial-gradient(60% 40% at 32% 24%,rgba(255,255,255,.65),transparent 60%),radial-gradient(40% 30% at 70% 80%,var(--c2),transparent 70%);mix-blend-mode:overlay;animation:glint 3.2s ease-in-out infinite}
+@keyframes glint{50%{opacity:.55;transform:translateX(6%)}}
+.opal.boulder{background:linear-gradient(135deg,#6b4a32,#3e2a1d 60%,#7a5638)}
+.opal.boulder::before{inset:12% 8%;border-radius:40% 60% 50% 50%;filter:blur(5px)}
+.unk{width:100%;height:100%;display:grid;place-items:center;border-radius:50%;background:rgba(255,255,255,.06);color:rgba(255,255,255,.28);font-weight:800;font-size:26px}
+/* 重ねる画面 */
+.sheet{position:absolute;inset:0;z-index:30;display:none;flex-direction:column;background:rgba(6,12,15,.97)}
+.sheet.on{display:flex}
+.sheet .body{flex:1;overflow:auto;padding:4px 16px 24px}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
+.card{border:1px solid var(--line);border-radius:16px;padding:12px 8px;text-align:center;background:rgba(255,255,255,.04);font-size:13px}
+.card .gem{width:62px;height:62px;margin:2px auto 6px;display:block}
+.card .t{display:block;font-size:11px;margin-bottom:2px}
+.card .nm2{font-weight:700;font-size:14px}
+.card .cnt{color:var(--mut);font-size:12px}
+.card.t3{border-color:rgba(255,211,106,.55);background:linear-gradient(180deg,rgba(255,211,106,.1),transparent)}
+.card.t2{border-color:rgba(181,131,255,.5)}
+.card.t1{border-color:rgba(88,166,255,.45)}
+.tN{color:var(--n)}.tR{color:var(--r)}.tS{color:var(--sr)}.tU{color:var(--ur)}
+.sec{margin:16px 0 6px;font-size:13px;color:var(--mut)}
+.row{display:flex;align-items:center;justify-content:space-between;gap:10px;padding:13px 0;border-bottom:1px solid var(--line)}
+.tg{width:52px;height:30px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.1);position:relative}
+.tg i{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .15s}
+.tg.on{background:#3fa66a}.tg.on i{left:25px}
+/* 掘り当て演出 */
+#rev{position:absolute;inset:0;z-index:40;display:none;flex-direction:column;align-items:center;justify-content:center;text-align:center;padding:24px;background:rgba(4,8,10,.9)}
+#rev.on{display:flex}
+#rev .flash{position:absolute;inset:0;background:#fff;opacity:0;pointer-events:none}
+#rev.f1 .flash{animation:fl .6s ease-out}
+#rev.f3 .flash{animation:fl 1.1s ease-out}
+@keyframes fl{0%{opacity:.9}100%{opacity:0}}
+#rev .big-gem{width:min(52vw,210px);height:min(52vw,210px);animation:zoom .8s cubic-bezier(.2,1.3,.4,1) both;filter:drop-shadow(0 0 28px var(--glow,rgba(255,255,255,.4)))}
+@keyframes zoom{from{transform:scale(.1) rotate(-30deg);opacity:0}to{transform:none;opacity:1}}
+#rev .tier{margin:18px 0 2px;font-size:15px;font-weight:800;letter-spacing:.2em}
+#rev .name{margin:0;font-size:28px;font-weight:800}
+#rev .new{display:inline-block;margin-left:8px;padding:2px 9px;border-radius:999px;background:#ff5a7a;color:#fff;font-size:12px;vertical-align:middle;animation:pulse 1.2s infinite}
+#rev .tri{margin:14px 0 24px;max-width:340px;font-size:14px;line-height:1.7;color:#d6e0e4}
+#rev .conf{position:absolute;top:-10px;width:9px;height:14px;opacity:.95;animation:fall linear forwards;pointer-events:none}
+@keyframes fall{to{transform:translateY(112vh) rotate(720deg);opacity:.8}}
+#toast{position:absolute;left:50%;bottom:calc(90px + env(safe-area-inset-bottom));transform:translateX(-50%);z-index:60;background:rgba(0,0,0,.85);border:1px solid var(--line);padding:10px 16px;border-radius:12px;font-size:14px;max-width:86%;text-align:center;display:none}
+.tiny{font-size:12px;color:var(--mut);line-height:1.6;margin:10px 0}
+</style>
+</head>
+<body>
+<div id="app">
+  <section class="scr on" id="load"><div class="spin"></div><div id="loadMsg">ほりだし中…</div></section>
+
+  <section class="scr" id="open">
+    <button id="skip" type="button">スキップ</button>
+    <div class="hero-gem" id="heroGem"></div>
+    <h1 class="ttl" id="ttl"></h1>
+    <p class="sub">掘って、集めて、図鑑をうめよう</p>
+    <button class="tap" id="openGo" type="button">タップして はじめる</button>
+  </section>
+
+  <section class="scr" id="make">
+    <div class="bar"><button class="ib" id="makeBack" type="button" aria-label="もどる" hidden>←</button><h1 id="makeTtl">キャラをつくろう</h1><span style="width:42px"></span></div>
+    <div class="body">
+      <div class="prev" id="prev"></div>
+      <div class="fld">なまえ（12文字まで）</div>
+      <input class="nm" id="nameIn" maxlength="12" autocomplete="off" placeholder="なまえ">
+      <div class="fld">髪型</div><div class="opts" id="oHair"></div>
+      <div class="fld">髪の色</div><div class="opts" id="oHairC"></div>
+      <div class="fld">服</div><div class="opts" id="oOut"></div>
+      <div class="fld">服の色</div><div class="opts" id="oOutC"></div>
+      <div class="fld">肌の色</div><div class="opts" id="oSkin"></div>
+      <p class="tiny">あとから、ゲームの中の「せってい」でいつでも変えられるで。</p>
+    </div>
+    <div class="foot"><button class="big" id="makeOk" type="button">この子で決定！</button></div>
+  </section>
+
+  <section class="scr" id="play">
+    <div class="bar">
+      <button class="ib" id="close" type="button" aria-label="とじる">✕</button>
+      <h1>オパール採掘</h1>
+      <button class="ib" id="bookBtn" type="button" aria-label="図鑑">📖</button>
+      <button class="ib" id="setBtn" type="button" aria-label="せってい">⚙️</button>
+    </div>
+    <div class="scene" id="scene">
+      <div class="hero" id="hero"></div>
+      <div class="pick" id="pick"></div>
+      <div class="rockwrap" id="rock"></div>
+    </div>
+    <div class="hud">
+      <div class="prog"><i id="progBar"></i></div>
+      <p class="hint" id="hint">岩をたたいてな！</p>
+    </div>
+    <div class="stats"><span>掘った回数 <b id="sDigs">0</b></span><span>見つけた石 <b id="sKinds">0</b>/<span id="sAll">16</span></span></div>
+    <div class="today" id="today"></div>
+    <div class="foot"><button class="big" id="dig" type="button">⛏️ 掘る！</button></div>
+
+    <div class="sheet" id="book">
+      <div class="bar"><span style="width:42px"></span><h1 id="bookTtl">図鑑</h1><button class="ib" data-close="book" type="button" aria-label="とじる">✕</button></div>
+      <div class="body"><div class="grid" id="bookGrid"></div></div>
+    </div>
+    <div class="sheet" id="set">
+      <div class="bar"><span style="width:42px"></span><h1>せってい</h1><button class="ib" data-close="set" type="button" aria-label="とじる">✕</button></div>
+      <div class="body">
+        <div class="sec">キャラクター</div>
+        <div class="row"><span id="setName"></span><button class="opt" id="editAvatar" type="button">キャラを変える</button></div>
+        <div class="sec">音と振動</div>
+        <div class="row"><span>効果音</span><button class="tg" id="tgSound" type="button" aria-label="効果音"><i></i></button></div>
+        <div class="row"><span>振動（スマホ）</span><button class="tg" id="tgVib" type="button" aria-label="振動"><i></i></button></div>
+        <p class="tiny">記録は、自動でセーブされます。次に開いた時は、つづきからはじまるで。</p>
+      </div>
+    </div>
+    <div id="rev">
+      <div class="flash"></div>
+      <div class="big-gem" id="revGem"></div>
+      <div class="tier" id="revTier"></div>
+      <h2 class="name"><span id="revName"></span><span class="new" id="revNew" hidden>NEW</span></h2>
+      <p class="tri" id="revTri"></p>
+      <button class="big" id="revOk" type="button" style="max-width:320px">つぎも掘る！</button>
+    </div>
+  </section>
+  <div id="toast"></div>
+</div>
+
+<script>
+(function () {
+  'use strict';
+  var API = 'https://fxkahiastkklxduecrhq.supabase.co/functions/v1/opa-game';
+  var TAPS = 10;                       // 石1つに必要なたたく回数
+  var TIERS = [
+    { n: 'ノーマル', c: 'tN', glow: 'rgba(143,163,173,.5)' },
+    { n: 'レア', c: 'tR', glow: 'rgba(88,166,255,.7)' },
+    { n: '超レア', c: 'tS', glow: 'rgba(181,131,255,.85)' },
+    { n: '激レア', c: 'tU', glow: 'rgba(255,211,106,1)' }
+  ];
+  /* 石の図鑑：t=段階 / f=形 / c=[明,基,暗]  opal:[基,c1,c2,c3,c4] */
+  var STONES = [
+    { id: 'quartz', t: 0, nm: '水晶', f: 'hex', c: ['#ffffff', '#dfeaf0', '#a9bcc8'], tri: '透明な石英。世界中で見つかる、いちばん身近な結晶やで。' },
+    { id: 'amethyst', t: 0, nm: 'アメジスト', f: 'hex', c: ['#e3c8ff', '#a66bdc', '#5f2d92'], tri: '紫色の石英。2月の誕生石として知られてるで。' },
+    { id: 'citrine', t: 0, nm: 'シトリン', f: 'hex', c: ['#fff0a8', '#f2b72e', '#b87a0c'], tri: '黄色の石英。明るい色で、運気の石とも言われるで。' },
+    { id: 'garnet', t: 0, nm: 'ガーネット', f: 'hex', c: ['#ffb3b3', '#c42b3a', '#6d0f1d'], tri: '深い赤が代表的。1月の誕生石やで。' },
+    { id: 'peridot', t: 0, nm: 'ペリドット', f: 'hex', c: ['#ecffb0', '#9acd32', '#4f7a0f'], tri: 'オリーブ色の石。8月の誕生石やで。' },
+    { id: 'sapphire', t: 1, nm: 'サファイア', f: 'oct', c: ['#b9d6ff', '#2f63d8', '#112a73'], tri: 'コランダムの仲間で、青がいちばん有名。9月の誕生石やで。' },
+    { id: 'emerald', t: 1, nm: 'エメラルド', f: 'oct', c: ['#b6ffd2', '#1fa764', '#0b5b34'], tri: '緑のベリル。5月の誕生石で、内側の細かな模様も味わいやで。' },
+    { id: 'ruby', t: 1, nm: 'ルビー', f: 'oct', c: ['#ffc1c8', '#d6203f', '#7a0a22'], tri: 'サファイアと同じコランダムの赤。7月の誕生石やで。' },
+    { id: 'diamond', t: 1, nm: 'ダイヤモンド', f: 'dia', c: ['#ffffff', '#d8f2ff', '#8fc3e6'], tri: '天然の物質でいちばん硬い。4月の誕生石やで。' },
+    { id: 'paraiba', t: 2, nm: 'パライバトルマリン', f: 'dia', c: ['#c9fff6', '#18d6d0', '#0a6f9a'], tri: 'ネオンのような青緑。1980年代にブラジルのパライバ州で見つかったんや。' },
+    { id: 'alexandrite', t: 2, nm: 'アレキサンドライト', f: 'dia', c: ['#d6ffd9', '#3aa57a', '#7a2a6e'], tri: '光によって色が変わる、めずらしい石。昼は青緑、灯りの下では赤紫っぽくなるで。' },
+    { id: 'colordiamond', t: 2, nm: 'カラーダイヤ', f: 'dia', c: ['#ffd6f0', '#ff6fb5', '#a5206a'], tri: '色のついた天然ダイヤ。ピンクや黄色は、とくに希少やで。' },
+    { id: 'crystalopal', t: 2, nm: 'クリスタルオパール', f: 'opal', o: ['#cfe9ee', '#ff77b0', '#6cf2c8', '#7aa8ff', '#ffe27a'], tri: '透きとおった体色のオパール。向こう側が透けて、遊色が奥から光るんや。' },
+    { id: 'boulderopal', t: 3, nm: 'ボルダーオパール', f: 'boulder', o: ['#5a3d28', '#33e0c0', '#3a7bff', '#9a5cff', '#a6ff6b'], tri: '鉄石（母岩）の上に、オパールの層が薄く走る石。クイーンズランドが産地として有名やで。' },
+    { id: 'fireopal', t: 3, nm: 'ファイアオパール', f: 'opal', o: ['#e8561c', '#ffb02e', '#ff3b30', '#ffd86b', '#ff7a2e'], tri: 'オレンジから赤の体色。メキシコが有名で、遊色のない石もあるんやで。' },
+    { id: 'blackopal', t: 3, nm: 'ブラックオパール', f: 'opal', o: ['#0b0f1e', '#19f0a6', '#3a6bff', '#d23bff', '#2bd4ff'], tri: '暗い体色に、遊色がくっきり映える。オーストラリアのライトニングリッジが産地として有名やで。' }
+  ];
+  var BY = {}; STONES.forEach(function (s) { BY[s.id] = s; });
+  var SKIN = ['#fde3d0', '#f6cfb0', '#ecb98f', '#d9a27a', '#b57a56', '#8a5a3c'];
+  var HAIRC = ['#2b2320', '#5a3a26', '#8b5a2b', '#c49a4a', '#d9d4cc', '#b04a4a', '#3a5a9a', '#7a4a9a'];
+  var OUTC = ['#d94f6b', '#e08a3c', '#e0c040', '#4fa36a', '#3f8ac4', '#7b5cc4', '#c4c4c4', '#2e3a4a'];
+  var HAIRN = ['ショート', 'ボブ', 'ロング', 'お団子', 'ポニーテール', 'パーマ'];
+  var OUTN = ['エプロン', 'ジャケット', 'ワンピース', 'つなぎ', 'カーディガン', 'ローブ'];
+
+  function $(id) { return document.getElementById(id); }
+  function LSget(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
+  function LSset(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  var token = LSget('opa_token');
+  var player = null, nick = '';
+  var taps = 0, busy = false;
+  var soundOn = LSget('opa_game_sound') !== '0', vibOn = LSget('opa_game_vib') !== '0';
+
+  /* ---------- 通信 ---------- */
+  function api(body) {
+    body.token = token;
+    return fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
+      .then(function (r) { return r.json().then(function (j) { j._s = r.status; return j; }); });
+  }
+  var tt;
+  function toast(m) { var t = $('toast'); t.textContent = m; t.style.display = 'block'; clearTimeout(tt); tt = setTimeout(function () { t.style.display = 'none'; }, 3200); }
+  function show(id) { ['load', 'open', 'make', 'play'].forEach(function (x) { $(x).classList.toggle('on', x === id); }); }
+
+  /* ---------- 音・振動 ---------- */
+  var ac = null;
+  function actx() { if (!ac) { try { ac = new (window.AudioContext || window.webkitAudioContext)(); } catch (e) { ac = null; } } if (ac && ac.state === 'suspended') ac.resume(); return ac; }
+  function tone(f, t0, d, type, vol) {
+    var a = actx(); if (!a) return;
+    var o = a.createOscillator(), g = a.createGain();
+    o.type = type || 'sine'; o.frequency.value = f;
+    g.gain.setValueAtTime(0.0001, a.currentTime + t0);
+    g.gain.exponentialRampToValueAtTime(vol || 0.15, a.currentTime + t0 + 0.02);
+    g.gain.exponentialRampToValueAtTime(0.0001, a.currentTime + t0 + d);
+    o.connect(g); g.connect(a.destination); o.start(a.currentTime + t0); o.stop(a.currentTime + t0 + d + 0.05);
+  }
+  function sfx(kind) {
+    if (!soundOn) return;
+    if (kind === 'hit') { tone(180 + Math.random() * 60, 0, 0.09, 'square', 0.08); tone(90, 0, 0.12, 'triangle', 0.12); }
+    else if (kind === 0) { tone(880, 0, .25, 'sine'); tone(1320, .08, .3, 'sine', .1); }
+    else if (kind === 1) { [660, 880, 1100].forEach(function (f, i) { tone(f, i * .09, .35, 'sine'); }); }
+    else if (kind === 2) { [523, 659, 784, 1047, 1319].forEach(function (f, i) { tone(f, i * .1, .45, 'triangle', .16); }); }
+    else if (kind === 3) { [523, 659, 784, 1047, 1319, 1568, 2093].forEach(function (f, i) { tone(f, i * .09, .7, 'triangle', .18); tone(f * 2, i * .09 + .03, .5, 'sine', .07); }); }
+  }
+  function vib(p) { if (vibOn && navigator.vibrate) { try { navigator.vibrate(p); } catch (e) {} } }
+
+  /* ---------- 石のイラスト ---------- */
+  var gcount = 0;
+  function gemHTML(id) {
+    var s = BY[id]; if (!s) return '<div class="unk">？</div>';
+    if (s.f === 'opal' || s.f === 'boulder') {
+      var o = s.o;
+      return '<div class="opal' + (s.f === 'boulder' ? ' boulder' : '') + '" style="--b:' + o[0] + ';--c1:' + o[1] + ';--c2:' + o[2] + ';--c3:' + o[3] + ';--c4:' + o[4] + '"></div>';
+    }
+    var c = s.c, gid = 'g' + id + (++gcount), shape, facets;
+    if (s.f === 'hex') { shape = '50,6 86,28 86,72 50,94 14,72 14,28'; facets = '<path d="M50 6L50 50M14 28L50 50L86 28M50 50L14 72M50 50L86 72M50 50L50 94" stroke="rgba(255,255,255,.55)" stroke-width="1.6" fill="none"/>'; }
+    else if (s.f === 'oct') { shape = '30,10 70,10 90,30 90,70 70,90 30,90 10,70 10,30'; facets = '<path d="M30 10L38 38M70 10L62 38M90 30L62 38M90 70L62 62M70 90L62 62M30 90L38 62M10 70L38 62M10 30L38 38" stroke="rgba(255,255,255,.5)" stroke-width="1.4" fill="none"/><rect x="38" y="38" width="24" height="24" fill="rgba(255,255,255,.18)" stroke="rgba(255,255,255,.7)" stroke-width="1.4"/>'; }
+    else { shape = '14,36 32,12 68,12 86,36 50,92'; facets = '<path d="M14 36L86 36M32 12L40 36L50 92L60 36L68 12M40 36L50 12L60 36" stroke="rgba(255,255,255,.6)" stroke-width="1.5" fill="none"/>'; }
+    return '<svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + c[0] + '"/><stop offset=".5" stop-color="' + c[1] + '"/><stop offset="1" stop-color="' + c[2] + '"/></linearGradient></defs><polygon points="' + shape + '" fill="url(#' + gid + ')" stroke="rgba(255,255,255,.65)" stroke-width="2" stroke-linejoin="round"/>' + facets + '<ellipse cx="36" cy="26" rx="9" ry="4" fill="rgba(255,255,255,.75)" transform="rotate(-25 36 26)"/></svg>';
+  }
+  function gemEl(id, cls) { return '<span class="gem ' + (cls || '') + '" style="width:100%;height:100%">' + gemHTML(id) + '</span>'; }
+
+  /* ---------- キャラのイラスト ---------- */
+  function avatarSVG(a) {
+    var skin = SKIN[a.skin] || SKIN[1], hc = HAIRC[a.hairColor] || HAIRC[0], oc = OUTC[a.outfitColor] || OUTC[0];
+    var back = '', front = '', body = '';
+    var cap = '<path d="M27 50Q25 20 50 19Q75 20 73 50Q66 35 50 34Q34 35 27 50Z" fill="' + hc + '"/>';
+    if (a.hair === 0) { front = cap; }
+    else if (a.hair === 1) { back = '<path d="M26 46Q24 24 50 22Q76 24 74 46L76 72Q50 78 24 72Z" fill="' + hc + '"/>'; front = cap; }
+    else if (a.hair === 2) { back = '<path d="M25 46Q23 22 50 20Q77 22 75 46L80 104Q50 110 20 104Z" fill="' + hc + '"/>'; front = cap; }
+    else if (a.hair === 3) { back = '<circle cx="50" cy="15" r="11" fill="' + hc + '"/>'; front = cap; }
+    else if (a.hair === 4) { back = '<path d="M70 34Q92 40 88 76Q84 62 72 52Z" fill="' + hc + '"/>'; front = cap; }
+    else { back = '<circle cx="30" cy="40" r="11" fill="' + hc + '"/><circle cx="70" cy="40" r="11" fill="' + hc + '"/>'; front = '<circle cx="36" cy="28" r="12" fill="' + hc + '"/><circle cx="50" cy="23" r="13" fill="' + hc + '"/><circle cx="64" cy="28" r="12" fill="' + hc + '"/>'; }
+    var torso = '<path d="M20 120Q20 76 50 72Q80 76 80 120Z" fill="' + oc + '"/>';
+    var o = a.outfit;
+    if (o === 0) body = '<path d="M20 120Q20 76 50 72Q80 76 80 120Z" fill="#f4efe6"/><path d="M34 80L66 80L70 120L30 120Z" fill="' + oc + '"/><path d="M36 80L40 72M64 80L60 72" stroke="' + oc + '" stroke-width="3"/>';
+    else if (o === 1) body = torso + '<path d="M50 74L40 100L50 120L60 100Z" fill="#f4efe6"/><path d="M50 74L38 98M50 74L62 98" stroke="rgba(0,0,0,.28)" stroke-width="2" fill="none"/><circle cx="50" cy="104" r="1.8" fill="#222"/>';
+    else if (o === 2) body = '<path d="M26 120L33 76Q50 70 67 76L74 120Z" fill="' + oc + '"/><path d="M33 92Q50 98 67 92" stroke="rgba(255,255,255,.55)" stroke-width="3" fill="none"/>';
+    else if (o === 3) body = torso + '<rect x="40" y="92" width="20" height="14" rx="2" fill="rgba(0,0,0,.18)"/><circle cx="40" cy="80" r="2.2" fill="#f2d46a"/><circle cx="60" cy="80" r="2.2" fill="#f2d46a"/>';
+    else if (o === 4) body = '<path d="M20 120Q20 76 50 72Q80 76 80 120Z" fill="#f4efe6"/><path d="M20 120Q20 76 42 73L44 120Z M80 120Q80 76 58 73L56 120Z" fill="' + oc + '"/><circle cx="43" cy="92" r="1.6" fill="rgba(0,0,0,.4)"/><circle cx="43" cy="104" r="1.6" fill="rgba(0,0,0,.4)"/>';
+    else body = '<path d="M14 120Q16 76 50 72Q84 76 86 120Z" fill="' + oc + '"/><path d="M40 74L50 120L60 74" stroke="#f2d46a" stroke-width="3.5" fill="none"/><path d="M50 90l2.6 5.4 5.9.8-4.3 4.1 1 5.8-5.2-2.8-5.2 2.8 1-5.8-4.3-4.1 5.9-.8z" fill="#f2d46a"/>';
+    return '<svg viewBox="0 0 100 120" aria-hidden="true">' + back + body +
+      '<rect x="44" y="62" width="12" height="14" rx="5" fill="' + skin + '"/><circle cx="50" cy="48" r="22" fill="' + skin + '"/>' + front +
+      '<circle cx="42" cy="50" r="2.3" fill="#2a2018"/><circle cx="58" cy="50" r="2.3" fill="#2a2018"/><circle cx="36" cy="57" r="4" fill="#ff8aa0" opacity=".35"/><circle cx="64" cy="57" r="4" fill="#ff8aa0" opacity=".35"/><path d="M44 58Q50 64 56 58" stroke="#8a4a3a" stroke-width="2" fill="none" stroke-linecap="round"/></svg>';
+  }
+  var PICK = '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M20 84L74 30" stroke="#8a5a2b" stroke-width="8" stroke-linecap="round"/><path d="M42 16Q82 14 92 52Q70 34 42 16Z" fill="#cfd8dc" stroke="#78909c" stroke-width="2.5" stroke-linejoin="round"/></svg>';
+
+  /* ---------- 岩 ---------- */
+  var CRACKS = ['M150 60L142 96', 'M142 96L170 118', 'M170 118L160 150', 'M110 70L124 108', 'M124 108L98 128', 'M196 84L182 112', 'M98 128L106 168', 'M160 150L186 176', 'M96 100L72 118', 'M120 40L150 60'];
+  function rockSVG() {
+    var c = ''; CRACKS.forEach(function (d, i) { c += '<path class="ck" data-i="' + i + '" d="' + d + '" stroke="#0e171b" stroke-width="3.2" fill="none" stroke-linecap="round" opacity="0"/>'; });
+    return '<svg viewBox="0 0 300 300" aria-hidden="true"><defs><linearGradient id="rk" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9aa8b0"/><stop offset=".55" stop-color="#5f6e77"/><stop offset="1" stop-color="#33414a"/></linearGradient></defs>' +
+      '<path d="M40 250Q22 170 70 110Q96 52 150 44Q214 36 246 100Q282 160 262 250Z" fill="url(#rk)" stroke="#233038" stroke-width="3"/>' +
+      '<path d="M82 120Q104 74 150 66" stroke="rgba(255,255,255,.35)" stroke-width="7" fill="none" stroke-linecap="round"/>' +
+      '<path d="M60 200Q90 190 120 214M188 190Q220 176 246 204" stroke="rgba(0,0,0,.18)" stroke-width="5" fill="none" stroke-linecap="round"/>' + c +
+      '<g fill="rgba(255,255,255,.5)"><circle cx="200" cy="130" r="2.4"/><circle cx="116" cy="160" r="2"/><circle cx="224" cy="190" r="2.2"/></g></svg>';
+  }
+  function setProg() {
+    $('progBar').style.width = Math.round(taps / TAPS * 100) + '%';
+    var cks = $('rock').querySelectorAll('.ck');
+    for (var i = 0; i < cks.length; i++) cks[i].setAttribute('opacity', i < taps ? '1' : '0');
+  }
+
+  /* ---------- 画面の組み立て ---------- */
+  function renderPlay() {
+    $('hero').innerHTML = avatarSVG(player.avatar);
+    $('pick').innerHTML = PICK;
+    $('rock').innerHTML = rockSVG();
+    setProg(); stats();
+    var day = Math.floor((Date.now() + 9 * 3600e3) / 86400e3);
+    var s = STONES[(day * 7 + 3) % STONES.length];
+    $('today').innerHTML = '<span class="g">' + gemEl(s.id) + '</span><span>今日の注目石は <b style="color:var(--ink)">' + s.nm + '</b>。図鑑でのぞいてみてな</span>';
+    $('setName').textContent = player.avatar.name + ' さん';
+  }
+  function stats() {
+    var k = Object.keys(player.stones || {}).length;
+    $('sDigs').textContent = player.digs || 0; $('sKinds').textContent = k; $('sAll').textContent = STONES.length;
+  }
+  function renderBook() {
+    var g = $('bookGrid'), h = '', have = player.stones || {}, k = 0;
+    STONES.slice().sort(function (a, b) { return b.t - a.t; }).forEach(function (s) {
+      var n = have[s.id] || 0; if (n) k++;
+      h += '<div class="card t' + s.t + '"><span class="t ' + TIERS[s.t].c + '">' + TIERS[s.t].n + '</span><span class="gem">' + (n ? gemEl(s.id) : '<div class="unk">？</div>') + '</span><div class="nm2">' + (n ? s.nm : '？？？') + '</div><div class="cnt">' + (n ? '×' + n : 'まだ見つけてへん') + '</div></div>';
+    });
+    g.innerHTML = h; $('bookTtl').textContent = '図鑑 ' + k + '/' + STONES.length;
+  }
+
+  /* ---------- 掘る ---------- */
+  function dust(x, y) {
+    var sc = $('scene'), r = sc.getBoundingClientRect();
+    for (var i = 0; i < 6; i++) {
+      var d = document.createElement('i'); d.className = 'dust';
+      d.style.left = (x - r.left) + 'px'; d.style.top = (y - r.top) + 'px';
+      d.style.setProperty('--dx', (Math.random() * 90 - 45) + 'px'); d.style.setProperty('--dy', (Math.random() * -70 - 10) + 'px');
+      sc.appendChild(d); setTimeout(function (n) { return function () { n.remove(); }; }(d), 600);
+    }
+  }
+  function swing(ev) {
+    if (busy) return;
+    actx();
+    taps++; sfx('hit'); vib(18);
+    var rk = $('rock'); rk.classList.remove('hit'); void rk.offsetWidth; rk.classList.add('hit');
+    var pk = $('pick'); pk.classList.remove('sw1'); void pk.offsetWidth; pk.classList.add('sw1');
+    var r = rk.getBoundingClientRect(), x = r.left + r.width * .5, y = r.top + r.height * .45;
+    if (ev && ev.clientX) { x = ev.clientX; y = ev.clientY; }
+    dust(x, y); setProg();
+    var left = TAPS - taps;
+    $('hint').textContent = left > 0 ? 'あと ' + left + ' 回！' : 'なにか出てきた…！';
+    if (taps >= TAPS) doDig(0);
+  }
+  function doDig(retry) {
+    busy = true; $('dig').disabled = true;
+    api({ action: 'game_dig' }).then(function (j) {
+      if (j._s === 429 && j.waitMs && retry < 2) { setTimeout(function () { doDig(retry + 1); }, j.waitMs + 80); return; }
+      if (j._s === 401) { busy = false; $('dig').disabled = false; toast('オパ会にもう一度入ってから、開いてな'); taps = TAPS - 1; setProg(); return; }
+      if (!j.stone) { busy = false; $('dig').disabled = false; taps = TAPS - 1; setProg(); $('hint').textContent = 'つながらへんかった。もう一回たたいてな'; toast(j.message || 'つながらへんかった。もう一回な'); return; }
+      player = j.player; taps = 0; setProg(); stats(); reveal(j.stone);
+    }).catch(function () { busy = false; $('dig').disabled = false; taps = TAPS - 1; setProg(); $('hint').textContent = 'つながらへんかった。もう一回たたいてな'; });
+  }
+  function reveal(st) {
+    var s = BY[st.id], t = TIERS[st.tier], rv = $('rev');
+    $('revGem').innerHTML = gemEl(st.id); $('revGem').style.setProperty('--glow', t.glow);
+    var ti = $('revTier'); ti.textContent = t.n; ti.className = 'tier ' + t.c;
+    $('revName').textContent = s.nm; $('revNew').hidden = !st.isNew; $('revTri').textContent = s.tri;
+    rv.className = 'on' + (st.tier >= 1 ? ' f' + (st.tier === 3 ? 3 : 1) : '');
+    var flash = rv.querySelector('.flash'); flash.style.animation = 'none'; void flash.offsetWidth; flash.style.animation = '';
+    var olds = rv.querySelectorAll('.conf'); for (var i = 0; i < olds.length; i++) olds[i].remove();
+    var cnt = [0, 0, 22, 60][st.tier], cols = ['#ffd36a', '#ff7aa8', '#7fd6ff', '#b583ff', '#8affc1'];
+    for (var k = 0; k < cnt; k++) {
+      var c = document.createElement('i'); c.className = 'conf';
+      c.style.left = Math.random() * 100 + '%'; c.style.background = cols[k % cols.length];
+      c.style.animationDuration = (1.8 + Math.random() * 1.8) + 's'; c.style.animationDelay = (Math.random() * .6) + 's';
+      rv.appendChild(c);
+    }
+    sfx(st.tier); vib([[25], [40, 40, 40], [60, 50, 60, 50, 90], [80, 60, 80, 60, 80, 60, 220]][st.tier]);
+    $('revOk').textContent = st.tier === 3 ? 'すごい！つぎも掘る！' : 'つぎも掘る！';
+  }
+  $('revOk').addEventListener('click', function () {
+    $('rev').className = ''; busy = false; $('dig').disabled = false;
+    $('hint').textContent = '岩をたたいてな！';
+  });
+
+  /* ---------- キャラ作り ---------- */
+  var draft = { name: '', skin: 1, hair: 0, hairColor: 0, outfit: 0, outfitColor: 0 };
+  var makeMode = 'create';
+  function swatches(host, arr, key) {
+    var h = ''; arr.forEach(function (c, i) { h += '<button type="button" class="sw' + (draft[key] === i ? ' sel' : '') + '" data-i="' + i + '" style="background:' + c + '" aria-label="' + (i + 1) + '番"></button>'; });
+    host.innerHTML = h;
+    host.onclick = function (e) { var b = e.target.closest('.sw'); if (!b) return; draft[key] = +b.dataset.i; drawMake(); };
+  }
+  function pills(host, arr, key) {
+    var h = ''; arr.forEach(function (n, i) { h += '<button type="button" class="opt' + (draft[key] === i ? ' sel' : '') + '" data-i="' + i + '">' + n + '</button>'; });
+    host.innerHTML = h;
+    host.onclick = function (e) { var b = e.target.closest('.opt'); if (!b) return; draft[key] = +b.dataset.i; drawMake(); };
+  }
+  function drawMake() {
+    $('prev').innerHTML = avatarSVG(draft);
+    pills($('oHair'), HAIRN, 'hair'); swatches($('oHairC'), HAIRC, 'hairColor');
+    pills($('oOut'), OUTN, 'outfit'); swatches($('oOutC'), OUTC, 'outfitColor'); swatches($('oSkin'), SKIN, 'skin');
+  }
+  function openMake(mode) {
+    makeMode = mode;
+    if (mode === 'edit' && player) { var a = player.avatar; draft = { name: a.name, skin: a.skin, hair: a.hair, hairColor: a.hairColor, outfit: a.outfit, outfitColor: a.outfitColor }; }
+    else { draft = { name: nick || '', skin: 1, hair: 0, hairColor: 0, outfit: 0, outfitColor: 0 }; }
+    $('nameIn').value = draft.name;
+    $('makeTtl').textContent = mode === 'edit' ? 'キャラを変える' : 'キャラをつくろう';
+    $('makeOk').textContent = mode === 'edit' ? '変更を保存' : 'この子で決定！';
+    $('makeBack').hidden = mode !== 'edit';
+    drawMake(); show('make');
+  }
+  $('nameIn').addEventListener('input', function () { draft.name = this.value; });
+  $('makeBack').addEventListener('click', function () { show('play'); });
+  $('makeOk').addEventListener('click', function () {
+    var btn = this; btn.disabled = true;
+    var av = { name: ($('nameIn').value || '').trim() || nick, skin: draft.skin, hair: draft.hair, hairColor: draft.hairColor, outfit: draft.outfit, outfitColor: draft.outfitColor };
+    api({ action: makeMode === 'edit' ? 'game_avatar' : 'game_create', avatar: av }).then(function (j) {
+      btn.disabled = false;
+      if (!j.player) { toast(j.message || 'うまく保存できへんかった。もう一回な'); return; }
+      player = j.player; renderPlay(); show('play'); closeSheets();
+      if (makeMode === 'create') $('hint').textContent = 'ようこそ、' + player.avatar.name + 'さん！岩をたたいてな';
+    }).catch(function () { btn.disabled = false; toast('つながらへんかった。もう一回な'); });
+  });
+
+  /* ---------- オープニング ---------- */
+  function playOpening() {
+    var t = $('ttl'); t.innerHTML = '';
+    'オパール採掘'.split('').forEach(function (ch, i) { var s = document.createElement('span'); s.textContent = ch; s.style.animationDelay = (0.9 + i * 0.12) + 's'; t.appendChild(s); });
+    $('heroGem').innerHTML = gemEl('blackopal');
+    var o = $('open'), old = o.querySelectorAll('.fl'); for (var q = 0; q < old.length; q++) old[q].remove();
+    var ids = ['fireopal', 'sapphire', 'crystalopal', 'emerald', 'boulderopal', 'diamond', 'paraiba', 'ruby'];
+    for (var i = 0; i < 12; i++) {
+      var f = document.createElement('div'); f.className = 'fl';
+      f.style.cssText = 'left:' + (Math.random() * 88 + 2) + '%;top:' + (Math.random() * 80 + 8) + '%;width:' + (18 + Math.random() * 18) + 'px;height:' + (18 + Math.random() * 18) + 'px;animation-duration:' + (4 + Math.random() * 4) + 's;animation-delay:' + (Math.random() * 3) + 's';
+      f.innerHTML = gemEl(ids[i % ids.length]); o.appendChild(f);
+    }
+    show('open');
+  }
+  function fromOpening() { actx(); sfx(2); vib(40); openMake('create'); }
+  $('openGo').addEventListener('click', fromOpening);
+  $('skip').addEventListener('click', fromOpening);
+
+  /* ---------- つなぎ・設定 ---------- */
+  function closeSheets() { $('book').classList.remove('on'); $('set').classList.remove('on'); }
+  $('bookBtn').addEventListener('click', function () { renderBook(); $('book').classList.add('on'); });
+  $('setBtn').addEventListener('click', function () { $('set').classList.add('on'); });
+  document.addEventListener('click', function (e) { var b = e.target.closest('[data-close]'); if (b) $(b.dataset.close).classList.remove('on'); });
+  $('editAvatar').addEventListener('click', function () { closeSheets(); openMake('edit'); });
+  function tg(btn, on) { btn.classList.toggle('on', on); btn.setAttribute('aria-pressed', String(on)); }
+  tg($('tgSound'), soundOn); tg($('tgVib'), vibOn);
+  $('tgSound').addEventListener('click', function () { soundOn = !soundOn; LSset('opa_game_sound', soundOn ? '1' : '0'); tg(this, soundOn); if (soundOn) { actx(); sfx(1); } });
+  $('tgVib').addEventListener('click', function () { vibOn = !vibOn; LSset('opa_game_vib', vibOn ? '1' : '0'); tg(this, vibOn); vib(60); });
+  $('close').addEventListener('click', function () {
+    if (window.parent !== window) window.parent.postMessage({ type: 'opa-game-close' }, '*'); else history.back();
+  });
+  $('rock').addEventListener('pointerdown', function (e) { e.preventDefault(); swing(e); });
+  $('dig').addEventListener('click', function () { swing(null); });
+
+  /* ---------- 起動 ---------- */
+  function boot() {
+    if (!token) { $('loadMsg').textContent = '先にオパ会に入ってから、ゲームを開いてな'; document.querySelector('#load .spin').style.display = 'none'; return; }
+    api({ action: 'game_load' }).then(function (j) {
+      if (j._s === 401) { $('loadMsg').textContent = 'オパ会の入り直しが必要みたい。チャットに入ってから開いてな'; document.querySelector('#load .spin').style.display = 'none'; return; }
+      nick = j.nickname || '';
+      if (j.player) { player = j.player; renderPlay(); show('play'); $('hint').textContent = 'おかえり、' + player.avatar.name + 'さん！岩をたたいてな'; }
+      else playOpening();
+    }).catch(function () { $('loadMsg').textContent = 'つながらへんかった。いったん閉じて、もう一回開いてな'; document.querySelector('#load .spin').style.display = 'none'; });
+  }
+  boot();
+})();
+</script>
+</body>
+</html>
