@@ -58,6 +58,8 @@ button{font:inherit;color:inherit;cursor:pointer}
 .bar{display:flex;align-items:center;gap:8px;padding:calc(10px + env(safe-area-inset-top)) 12px 10px}
 .bar h1{flex:1;margin:0;font-size:17px;text-align:center}
 .ib{width:42px;height:42px;border-radius:50%;border:1px solid var(--line);background:rgba(255,255,255,.06);display:grid;place-items:center;font-size:19px;line-height:1}
+.ib small{white-space:nowrap;display:block;font-size:9px;font-weight:800;margin-top:2px;letter-spacing:-.02em}
+#fBag,#bagBtn{width:62px;height:44px;border-radius:14px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:17px;border-color:rgba(232,196,106,.6)}
 .ib:active{transform:scale(.94)}
 /* キャラ作り */
 #make .body{flex:1;overflow:auto;padding:2px 16px 16px}
@@ -298,6 +300,10 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 .prj.bow{width:26px;background:#c9a36a;box-shadow:none}
 .prj.gun{width:9px;height:9px;margin:-4px 0 0 -4px;border-radius:50%;background:#fff3a0;box-shadow:0 0 10px #ffd36a}
 .foe.boss{width:150px;height:150px}
+.foe.big{width:118px;height:118px}
+.foe.big .fnm{top:-17px;font-size:12px;color:#ffb27a}
+.foe.big .fhp{top:-4px;height:7px}
+.monw.big{width:150px}
 .foe.boss .fnm{top:-18px;font-size:13px;color:#ffd36a}
 .foe.boss .fhp{top:-4px;height:8px;left:0;right:0}
 .slam{position:absolute;width:260px;height:260px;margin:-130px 0 0 -130px;border-radius:50%;border:4px solid rgba(255,70,70,.9);background:radial-gradient(circle,rgba(255,60,60,.35),rgba(255,60,60,.08));pointer-events:none;z-index:99996;display:none;animation:slamp .5s ease-in-out infinite alternate}
@@ -435,14 +441,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v27（持ちかえ・ひとこと・GM）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v28（装備画面・大型モンスター）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所や（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
   </section>
   <div id="cfm"><div class="gc"><h3>ゲームをとじる？</h3><p class="tiny">とじても、ここまでの記録は残るで。</p><div class="rw" style="display:flex;gap:8px;margin-top:12px"><button id="cfmNo" type="button" class="gbtn" style="flex:1">つづける</button><button id="cfmYes" type="button" class="gbtn dim" style="flex:1;margin-top:0">とじる</button></div></div></div>
   <section class="scr" id="field">
-    <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="もちもの・ショップ">🎒</button><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
+    <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="装備・もちもの">🎒<small>装備・持物</small></button><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
     <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><button id="guardBtn" type="button">🛡 ガード</button><button id="swBtn" type="button">🔁 持ちかえ</button><button id="qcBtn" type="button">💬 ひとこと</button><div id="qcPanel"></div><div id="downov"><b>たおれてしもた…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="fCancel" type="button">やめる</button></div></div>
         <div id="gld"><div class="gc"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="tiny">ギルドの部屋</span><button id="gClose" type="button" class="gbtn" style="padding:6px 12px">とじる</button></div><div id="gBody"></div></div></div>
     <div id="tchat"><div id="tlog"></div><div id="trow"><input id="tin" type="text" maxlength="40" placeholder="ひとこと話す（40字まで）" autocomplete="off"><button id="tsend" type="button">送る</button></div></div>
@@ -453,7 +459,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     <div class="bar">
       <button class="ib" id="backMap" type="button" aria-label="地図へ">←</button>
       <h1 id="playTtl">オパールを探して</h1>
-      <button class="ib" id="bagBtn" type="button" aria-label="もちもの・ショップ">🎒</button>
+      <button class="ib" id="bagBtn" type="button" aria-label="装備・もちもの">🎒<small>装備・持物</small></button>
       <button class="ib" id="bookBtn" type="button" aria-label="図鑑">📖</button>
       <button class="ib" id="setBtn" type="button" aria-label="せってい">⚙️</button>
     </div>
@@ -480,9 +486,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     <div id="invBar"></div>
     <div id="tkov"><div class="tkc" id="tkCard"><div class="tkic" id="tkIc">🎫</div><div class="tkrk" id="tkRk"></div><div class="tknm" id="tkNm"></div><div class="tkcode" id="tkCode"></div><p class="tkds" id="tkDs"></p><button class="big" id="tkOk" type="button">もちものを見る</button></div></div>
     <div class="sheet" id="bag">
-      <div class="bar"><span style="width:42px"></span><h1>もちもの・ショップ</h1><button class="ib" data-close="bag" type="button" aria-label="とじる">✕</button></div>
+      <div class="bar"><span style="width:42px"></span><h1>装備・もちもの・ショップ</h1><button class="ib" data-close="bag" type="button" aria-label="とじる">✕</button></div>
       <div class="coinbar" id="coinBar"></div>
-      <div class="tabs" id="bagTabs"><button type="button" data-t="0" class="on">🎒 もちもの</button><button type="button" data-t="1">🛍️ ショップ</button><button type="button" data-t="2">💰 売る</button></div>
+      <div class="tabs" id="bagTabs"><button type="button" data-t="0" class="on">⚔️ 装備</button><button type="button" data-t="1">🛍️ ショップ</button><button type="button" data-t="2">💰 売る</button></div>
       <div class="body" id="bagBody"></div>
     </div>
     <div class="sheet" id="mkt">
@@ -1067,15 +1073,15 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var m = $('monw'); if (m) m.remove();
     monster = null; $('dig').innerHTML = '⛏️ 掘る！';
   }
-  function spawnMon(defArg) {
+  function spawnMon(defArg, bigArg) {
     var mi = Math.max(0, MINES.indexOf(MBY[curMine]));
     var tier = Math.min(2, (spotKind === 'c' ? 2 : (spotKind === 'b' ? 1 : 0)) + ((MBY[curMine] && MBY[curMine].lv >= 30) ? 1 : 0));
     var pool = MONS.filter(function (x) { return x.tier === tier; });
     var def = defArg || pool[Math.floor(Math.random() * pool.length)];
     var mx = curSpot.x + 56, my = curSpot.y + 30;
-    var mst = foeStat(def.tier); monster = { d: def, st: mst, hp: mst.hp, max: mst.hp, x: mx, y: my };
-    var w = document.createElement('div'); w.className = 'monw'; w.id = 'monw'; w.style.left = mx + 'px'; w.style.top = my + 'px'; w.style.zIndex = Math.round(my) + 5;
-    w.innerHTML = '<div class="mon" id="mon"><div class="monnm">' + def.nm + ' <span id="monV">' + mst.hp + '/' + mst.hp + '</span></div><div class="monhp"><i id="monHp"></i></div>' + def.svg.replace(/@SH@/g, '<ellipse cx="50" cy="93" rx="36" ry="6" fill="rgba(0,0,0,.3)"/>') + '</div>';
+    var big = bigArg != null ? !!bigArg : (Math.random() < bigChance()), mst = foeStat(def.tier, big); monster = { big: big, d: def, st: mst, hp: mst.hp, max: mst.hp, x: mx, y: my };
+    var w = document.createElement('div'); w.className = 'monw' + (big ? ' big' : ''); w.id = 'monw'; w.style.left = mx + 'px'; w.style.top = my + 'px'; w.style.zIndex = Math.round(my) + 5;
+    w.innerHTML = '<div class="mon" id="mon"><div class="monnm">' + (big ? '大型 ' : '') + def.nm + ' <span id="monV">' + mst.hp + '/' + mst.hp + '</span></div><div class="monhp"><i id="monHp"></i></div>' + def.svg.replace(/@SH@/g, '<ellipse cx="50" cy="93" rx="36" ry="6" fill="rgba(0,0,0,.3)"/>') + '</div>';
     $('world').appendChild(w);
     $('dig').innerHTML = '👊 追いはらう！'; if (eqItem('weapon')) toast('武器に持ちかえた！'); handUi();
     $('hint').textContent = def.tier === 2 ? '「' + def.nm + '」や！ガルル…！たたいて追いはらえ！' : '「' + def.nm + '」が出てきた！たたいて追いはらえ！';
@@ -1099,7 +1105,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     swingAnim(); dustW(monster.x, monster.y - 30);
     $('monHp').style.width = Math.max(0, monster.hp / monster.max * 100) + '%';
     if (monster.hp > 0) { $('hint').textContent = '「' + monster.d.nm + '」HP ' + monster.hp + '/' + monster.max + '！'; return; }
-    var nm = monster.d.nm; dropRoll(monster.d && monster.d.tier); clearInterval(monTimer); monTimer = 0; monster = null;
+    var nm = monster.d.nm; dropRoll(Math.min(2, ((monster.d && monster.d.tier) || 0) + (monster.big ? 1 : 0))); clearInterval(monTimer); monTimer = 0; monster = null;
     m.classList.remove('hit', 'atk'); void m.offsetWidth; m.classList.add('flee'); sfx(2);
     $('hint').textContent = '追いはらったで！つづけて掘ろう（あと ' + (TAPS - taps) + ' 回）';
     toast(nm + 'を追いはらった！');
@@ -1299,9 +1305,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     tool: { id: 'gm_t', slot: 'tool', nm: '黄金のつるはし', cut: .2, ic: '⛏️' },
     weapon: { id: 'gm_w', slot: 'weapon', kind: 'bow', nm: '黄金の神弓', atk: 9999999, rng: 560, cd: 220, ic: '🏹' },
     shield: { id: 'gm_s', slot: 'shield', nm: '黄金の盾', def: .85, ic: '🛡️' },
-    armor: { id: 'gm_a', slot: 'armor', nm: '黄金の鎧', hp: 99999, ic: '🐉' }
+    armor: { id: 'gm_a', slot: 'armor', nm: '黄金の鎧', hp: 0, ic: '🐉' },
+    helm: { id: 'gm_h', slot: 'helm', nm: '黄金の兜', def: .05, ic: '⛑️' }
   };
   function isGM() { return !!(player && player.gm); }
+  var GMLIST = ['weapon', 'helm', 'armor', 'shield', 'outfit', 'tool'];
   function eqItem(slot) { if (isGM() && GMI[slot]) return GMI[slot]; var id = ((player || {}).equip || {})[slot]; return id ? IBY[id] : null; }
   var wHand = 'weapon';
   function handW() { return !!eqItem('weapon') && (!!monster || (wHand === 'weapon' && !curSpot)); }
@@ -1315,7 +1323,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     Array.prototype.forEach.call($('bagTabs').children, function (b) { b.classList.toggle('on', +b.dataset.t === bagTab); });
     if (bagTab === 0) {
       var any = false;
+      var SLALL = isGM() ? GMLIST : SLOTS;
+      h += '<div class="sec">いま つけてる装備</div><div class="it" style="display:block"><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">' + SLALL.map(function (sl) { var q = eqItem(sl); return '<div style="padding:6px 8px;border-radius:10px;background:rgba(255,255,255,.06);font-size:12px"><span style="color:var(--mut)">' + (sl === 'helm' ? '兜' : SLN[sl].split('（')[0]) + '</span><br><b>' + (q ? q.ic + ' ' + q.nm : '— なし —') + '</b></div>'; }).join('') + '</div></div>';
+      if (isGM()) h += '<p class="tiny">👑 ゲームマスター装備は、ぜんぶ黄金で固定やで（弓は飛び道具。つるはしは、掘る専用）。</p>';
       SLOTS.forEach(function (slot) {
+        if (isGM()) return;
         var list = ITEMS.filter(function (i) { return i.slot === slot && have.indexOf(i.id) >= 0; });
         h += '<div class="sec">' + SLN[slot] + '</div>';
         if (!list.length) h += '<p class="tiny">まだ持ってへんで。ショップで買えるよ。</p>';
@@ -2263,22 +2275,24 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   /* ---------- HP・戦い・病院・たすけ合い ---------- */
   var hp = { cur: 0, max: 0, down: false, inv: 0, ready: false }, downT = 0, downLeft = 0;
   function plv() { return Math.max(1, (player && player.lv) || 1); }
-  function hpMaxNow() { if (isGM()) return 999999; var a = eqItem('armor'); return 80 + 10 * plv() + (a ? a.hp : 0); }
+  function hpMaxNow() { if (isGM()) return 9999; var a = eqItem('armor'); return 80 + 10 * plv() + (a ? a.hp : 0); }
   function atkP() { var w = curW(); if (!w) return Math.max(1, Math.round(1 + Math.min(plv(), 60) / 12)); return Math.round(6 + 1.5 * plv()) + w.atk; }
   var guard = false, atkAt = 0;
-  function defP() { var s = eqItem('shield'); return Math.min(.85, (s ? s.def : 0) + (guard ? .4 : 0)); }
+  function defP() { var s = eqItem('shield'), h = isGM() ? GMI.helm : null; return Math.min(.85, (s ? s.def : 0) + (h ? h.def : 0) + (guard ? .4 : 0)); }
   function atkReady() { var w = curW(), n = performance.now(); if (n < atkAt) return false; atkAt = n + (w && w.cd ? w.cd : 0); return true; }
   function atkRange() { var w = curW(); return w && w.rng ? w.rng : 150; }
   function diffN() { var m = (curMine && MBY[curMine]) ? MBY[curMine].lv : 1; return Math.max(0, Math.min(1, (m - 1) / 60)); }
   function foeCap() { return 5 + Math.round(diffN() * 7); }
   function foeAlive() { return foes.filter(function (x) { return x.mode !== 'dead' && !x.boss; }).length; }
-  function foeStat(tier) {
-    var fl = ((curMine && MBY[curMine]) ? MBY[curMine].lv : 1) + [0, 2, 4][tier];
-    return { hp: Math.round((18 + 4 * fl) * [1, 1.6, 2.4][tier]), atk: Math.round((4 + .9 * fl) * [1, 1.3, 1.7][tier]) };
+  function isAus() { var m = curMine && MBY[curMine]; return !!(m && /^オーストラリア/.test(m.ct)); }
+  function bigChance() { if (!isAus()) return 0; return .35 + .3 * diffN(); }
+  function foeStat(tier, big) {
+    var fl = ((curMine && MBY[curMine]) ? MBY[curMine].lv : 1) + [0, 2, 4][tier], k = big ? 1 : 0;
+    return { hp: Math.round((18 + 4 * fl) * [1, 1.6, 2.4][tier] * (k ? 3.5 : 1)), atk: Math.round((4 + .9 * fl) * [1, 1.3, 1.7][tier] * (k ? 1.7 : 1)) };
   }
   function hpUi() {
     var mx = hpMaxNow();
-    if (!hp.ready) { var sv = LSget('opa_game_hp_' + myMid); hp.cur = (sv !== null && sv !== '' && isFinite(+sv)) ? Math.max(1, Math.min(mx, Math.round(+sv))) : mx; hp.ready = true; hp.max = mx; }
+    if (!hp.ready) { var sv = LSget('opa_game_hp_' + myMid); hp.cur = (sv !== null && sv !== '' && isFinite(+sv)) ? Math.max(1, Math.min(mx, Math.round(+sv))) : mx; if (isGM()) hp.cur = mx; hp.ready = true; hp.max = mx; }
     if (mx !== hp.max) hp.max = mx;
     if (hp.cur > hp.max) hp.cur = hp.max;
     LSset('opa_game_hp_' + myMid, String(hp.cur));
@@ -2290,7 +2304,6 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function posMsg() { return { t: 'pos', x: Math.round(hero.x), y: Math.round(hero.y), d: hero.dir, h: Math.round(hp.cur / Math.max(1, hp.max) * 100), dn: hp.down ? 1 : 0, gm: isGM() ? 1 : 0 }; }
   function rtHp() { if (rtOn) { rtLast = 0; } }
   function hurtMe(dmg) {
-    if (isGM()) return false;
     if (hp.down || inTown || busy) return false;
     var now = performance.now(); if (now < hp.inv) return false; hp.inv = now + 650;
     dmg = Math.max(1, Math.round(dmg * (1 - defP()))); hp.cur = Math.max(0, hp.cur - dmg);
@@ -2385,11 +2398,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function amFoeHost() { return !netFoes() || amHost(); }
   function addFoe(x, y, nf) {
     if (x == null) for (var n = 0; n < 30; n++) { x = 60 + Math.random() * (WW - 120); y = 300 + Math.random() * (WH - 380); if (Math.hypot(x - hero.x, y - hero.y) > 280) break; }
-    var d = nf ? MONS[nf.di] : foeDef(), st = foeStat(d.tier), el = document.createElement('div'); el.className = 'foe';
+    var big = nf ? !!nf.big : (!inTown && Math.random() < bigChance());
+    var d = nf ? MONS[nf.di] : foeDef(), st = foeStat(d.tier, big), el = document.createElement('div'); el.className = 'foe' + (big ? ' big' : '');
     var h0 = nf ? nf.h : st.hp, m0 = nf ? nf.m : st.hp;
-    el.innerHTML = '<div class="fnm">' + d.nm + ' <span class="fv">' + h0 + '/' + m0 + '</span></div><div class="fhp"><i></i></div><div class="fi">' + d.svg.replace(/@SH@/g, '<ellipse cx="50" cy="93" rx="36" ry="6" fill="rgba(0,0,0,.3)"/>') + '</div>';
+    el.innerHTML = '<div class="fnm">' + (big ? '大型 ' : '') + d.nm + ' <span class="fv">' + h0 + '/' + m0 + '</span></div><div class="fhp"><i></i></div><div class="fi">' + d.svg.replace(/@SH@/g, '<ellipse cx="50" cy="93" rx="36" ry="6" fill="rgba(0,0,0,.3)"/>') + '</div>';
     $('world').appendChild(el);
-    var f = { id: nf ? nf.id : ++foeSeq, di: MONS.indexOf(d), nx: x, ny: y, d: d, st: st, cd: 0, hp: h0, max: m0, x: x, y: y, hx: x, hy: y, tx: x, ty: y, t: 0, mode: 'idle', el: el, fi: el.querySelector('.fi'), bar: el.querySelector('.fhp i'), dir: 1 };
+    var f = { big: big, id: nf ? nf.id : ++foeSeq, di: MONS.indexOf(d), nx: x, ny: y, d: d, st: st, cd: 0, hp: h0, max: m0, x: x, y: y, hx: x, hy: y, tx: x, ty: y, t: 0, mode: 'idle', el: el, fi: el.querySelector('.fi'), bar: el.querySelector('.fhp i'), dir: 1 };
     f.bar.style.width = Math.max(0, h0 / m0 * 100) + '%'; foes.push(f); placeEl(el, x, y); return f;
   }
   function dropRoll(tier) {
@@ -2400,7 +2414,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     }).catch(function () {});
   }
   function killFoe(f, delay) {
-    f.mode = 'dead'; if (!f.noDrop && !f.boss) dropRoll(f.d && f.d.tier); var g = fgen; if (f.tel) { f.tel.remove(); f.tel = null; }
+    f.mode = 'dead'; if (!f.noDrop && !f.boss) dropRoll(Math.min(2, ((f.d && f.d.tier) || 0) + (f.big ? 1 : 0))); var g = fgen; if (f.tel) { f.tel.remove(); f.tel = null; }
     if (amFoeHost() && netFoes()) { if (f.boss) { rtSend({ t: 'bk' }); claimBoss(); } else { kills++; if (kills >= 6 && Object.keys(peers).length >= 1 && !foes.some(function (x) { return x.boss && x.mode !== 'dead'; })) { kills = 0; setTimeout(spawnBoss, 3000); } } }
     setTimeout(function () { if (f.el) f.el.remove(); var i = foes.indexOf(f); if (i >= 0) foes.splice(i, 1); }, 620);
     f.el.classList.add('flee');
@@ -2422,10 +2436,10 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       if (f.mode === 'stun') { f.t -= dt; sp = 80; if (best) { ux = -dx / dist; uy = -dy / dist; } if (f.t <= 0) f.mode = 'idle'; }
       else if (best && dist < 200 && !monster) {
         if (f.mode !== 'chase') { f.mode = 'chase'; f.el.classList.add('alert'); }
-        sp = f.d.nm === 'コウモリ' ? 125 : (f.d.tier === 2 ? 78 : 96); ux = dx / dist; uy = dy / dist;
-        if (dist < 36) {
+        sp = (f.d.nm === 'コウモリ' ? 125 : (f.d.tier === 2 ? 78 : 96)) * (f.big ? .85 : 1); ux = dx / dist; uy = dy / dist;
+        if (dist < (f.big ? 58 : 36)) {
           if (best.me) {
-            if (curSpot && !monster && !netFoes()) { var d0 = f.d; f.noDrop = true; killFoe(f, 22000); spawnMon(d0); return; }
+            if (curSpot && !monster && !netFoes()) { var d0 = f.d; f.noDrop = true; killFoe(f, 22000); spawnMon(d0, f.big); return; }
             if (f.cd <= 0 && (!curSpot || netFoes())) {
               f.cd = 1.4; hurtMe(f.st.atk);
               if (!curSpot) { hero.x = clamp(hero.x + ux * 60, 30, WW - 30); hero.y = clamp(hero.y + uy * 60, 230, WH - 30); ftarget = null; updHero(); }
@@ -2442,7 +2456,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     });
     if (netFoes()) {
       var now = performance.now();
-      if (now - fsAt > 140) { fsAt = now; rtSend({ t: 'fs', fl: foes.filter(function (f) { return f.mode !== 'dead'; }).map(function (f) { return [f.id, f.di, Math.round(f.x), Math.round(f.y), Math.max(0, Math.round(f.hp)), f.max, f.mode === 'chase' ? 1 : 0, f.dir, f.boss ? 1 : 0, f.slt > 0 ? 1 : 0, Math.round(f.slx || 0), Math.round(f.sly || 0)]; }) }); }
+      if (now - fsAt > 140) { fsAt = now; rtSend({ t: 'fs', fl: foes.filter(function (f) { return f.mode !== 'dead'; }).map(function (f) { return [f.id, f.di, Math.round(f.x), Math.round(f.y), Math.max(0, Math.round(f.hp)), f.max, f.mode === 'chase' ? 1 : 0, f.dir, f.boss ? 1 : 0, f.slt > 0 ? 1 : 0, Math.round(f.slx || 0), Math.round(f.sly || 0), f.big ? 1 : 0]; }) }); }
     }
   }
   var kills = 0, waveT = 20, monWaves = 0;
@@ -2494,7 +2508,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var seen = {};
     list.forEach(function (a) {
       seen[a[0]] = 1; var f = null; foes.forEach(function (x) { if (x.id === a[0] && x.mode !== 'dead') f = x; });
-      if (!f) { if (!MONS[a[1]]) return; f = addFoe(a[2], a[3], { id: a[0], di: a[1], h: a[4], m: a[5] }); }
+      if (!f) { if (!MONS[a[1]]) return; f = addFoe(a[2], a[3], { id: a[0], di: a[1], h: a[4], m: a[5], big: a[12] }); }
       if (a[8] && !f.boss) { f.boss = true; decorBoss(f); toast('⚠ ボスが出た！みんなで力を合わせよう'); sfx(1); }
       f.nx = a[2]; f.ny = a[3]; f.dir = a[7] || 1; f.max = a[5]; if (a[4] !== f.hp) setFoeHp(f, a[4]);
       if (f.boss) { f.slt = a[9] ? 1 : 0; f.slx = a[10]; f.sly = a[11]; slamUi(f); }
@@ -2520,7 +2534,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function hitFoeAt(wx, wy) {
     var best = 56, hit = null;
-    foes.forEach(function (f) { if (f.mode === 'dead') return; var yo = f.boss ? 70 : 26, d = Math.hypot(wx - f.x, wy - (f.y - yo)) - (f.boss ? 70 : 0); if (d < best && Math.hypot(hero.x - f.x, hero.y - f.y) < atkRange() + (f.boss ? 60 : 0)) { best = d; hit = f; } });
+    foes.forEach(function (f) { if (f.mode === 'dead') return; var yo = f.boss ? 70 : (f.big ? 50 : 26), d = Math.hypot(wx - f.x, wy - (f.y - yo)) - (f.boss ? 70 : (f.big ? 32 : 0)); if (d < best && Math.hypot(hero.x - f.x, hero.y - f.y) < atkRange() + (f.boss ? 60 : (f.big ? 30 : 0))) { best = d; hit = f; } });
     if (!hit) return false;
     if (hp.down) return true;
     if (!canAttack()) return true;
