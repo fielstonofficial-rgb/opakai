@@ -73,6 +73,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 @keyframes lunge{58%{transform:translateX(12px) rotate(2deg)}}
 .hero.hurt{animation:hurt .38s}
 @keyframes hurt{30%{transform:translateX(-9px) rotate(-2.5deg)}60%{transform:translateX(4px)}}
+.tkov,#tkov{position:fixed;inset:0;z-index:90;display:none;align-items:center;justify-content:center;background:rgba(3,6,12,.86);padding:20px}
+#tkov.on{display:flex}
+.tkc{width:100%;max-width:360px;text-align:center;padding:26px 20px 20px;border-radius:22px;background:linear-gradient(180deg,#1b2a36,#0d1620);border:2px solid var(--tk,#ffd36a);box-shadow:0 0 0 4px rgba(255,255,255,.05),0 0 46px -4px var(--tk,#ffd36a);animation:zoom .6s cubic-bezier(.2,1.4,.4,1)}
+.tkic{font-size:64px;line-height:1;filter:drop-shadow(0 0 16px var(--tk,#ffd36a));animation:bob 1.6s ease-in-out infinite}
+.tkrk{margin-top:12px;font-size:14px;font-weight:700;letter-spacing:.08em}
+.tknm{margin:6px 0 4px;font-size:26px;font-weight:800}
+.tkcode{display:inline-block;margin:4px 0 10px;padding:4px 14px;border-radius:999px;background:rgba(255,255,255,.08);font-size:15px;letter-spacing:.12em;font-weight:700}
+.tkds{margin:0 0 16px;font-size:13px;line-height:1.7;color:var(--mut);white-space:pre-line;text-align:left}
 .rockwrap::after{content:"";position:absolute;inset:6% 4% 4% 4%;border-radius:46%;background:radial-gradient(circle,rgba(255,226,140,.8),rgba(255,226,140,0) 66%);opacity:calc(var(--g,0)*.85);mix-blend-mode:screen;pointer-events:none;transition:opacity .15s}
 .shard{position:absolute;width:13px;height:13px;background:linear-gradient(135deg,#c3ced5,#56646d);clip-path:polygon(10% 0,100% 30%,70% 100%,0 70%);pointer-events:none;animation:shard .65s ease-out forwards}
 @keyframes shard{to{transform:translate(var(--dx),var(--dy)) rotate(280deg);opacity:0}}
@@ -323,6 +331,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <div class="body"><div id="lbMem"></div><div id="lbHost"></div><div id="lbBtns"></div></div>
     </div>
     <div id="invBar"></div>
+    <div id="tkov"><div class="tkc" id="tkCard"><div class="tkic" id="tkIc">🎫</div><div class="tkrk" id="tkRk"></div><div class="tknm" id="tkNm"></div><div class="tkcode" id="tkCode"></div><p class="tkds" id="tkDs"></p><button class="big" id="tkOk" type="button">もちものを見る</button></div></div>
     <div class="sheet" id="bag">
       <div class="bar"><span style="width:42px"></span><h1>もちもの・ショップ</h1><button class="ib" data-close="bag" type="button" aria-label="とじる">✕</button></div>
       <div class="coinbar" id="coinBar"></div>
@@ -855,7 +864,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       if (j._s === 401) { busy = false; $('dig').disabled = false; toast('オパ会にもう一度入ってから、開いてな'); taps = TAPS - 1; setProg(); return; }
       if (j._s === 403) { busy = false; $('dig').disabled = false; taps = 0; setProg(); toast(j.message || 'まだ開いてへん鉱山やで'); openMap(); return; }
       if (!j.stone) { busy = false; $('dig').disabled = false; taps = TAPS - 1; setProg(); $('hint').textContent = 'つながらへんかった。もう一回たたいてな'; toast(j.message || 'つながらへんかった。もう一回な'); return; }
-      player = j.player; taps = 0; setProg(); stats(); lastStone = j.stone; pendingUnlock = j.unlocked || []; lastGain = j.gain || 0; lastXp = j.xpGain || 0; lastLvUp = j.lvUp || 0; renderPlay(); applyAura(); reveal(j.stone);
+      if (j.ticket) { tickets.unshift(j.ticket); pendingTicket = j.ticket; } player = j.player; taps = 0; setProg(); stats(); lastStone = j.stone; pendingUnlock = j.unlocked || []; lastGain = j.gain || 0; lastXp = j.xpGain || 0; lastLvUp = j.lvUp || 0; renderPlay(); applyAura(); reveal(j.stone);
     }).catch(function () { busy = false; $('dig').disabled = false; taps = TAPS - 1; setProg(); $('hint').textContent = 'つながらへんかった。もう一回たたいてな'; });
   }
   function reveal(st) {
@@ -881,6 +890,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     $('rev').className = ''; busy = false; $('dig').disabled = false;
     leaveDig();
     afterReveal();
+    if (pendingTicket) { var pt = pendingTicket; pendingTicket = null; setTimeout(function () { showTicket(pt); }, 450); }
   });
 
   /* ---------- キャラ作り ---------- */
@@ -987,6 +997,21 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var IBY = {}; ITEMS.forEach(function (i) { IBY[i.id] = i; });
   var AURA = ['rgba(255,255,255,.35)', 'rgba(88,166,255,.8)', 'rgba(181,131,255,.85)', 'rgba(255,211,106,.95)'];
   var bagTab = 0, buyArm = null, lastGain = 0, lastXp = 0, lastLvUp = 0;
+  var tickets = [], pendingTicket = null;
+  var TKN = {
+    r: { nm: '5%OFFチケット', rk: 'レア', ic: '🎫', col: '#58a6ff', ds: 'お店のオパールを買うとき、金額から 5% OFF になるチケットやで。' },
+    sr: { nm: '優先リカット券', rk: '超レア', ic: '✨', col: '#b583ff', ds: '研磨の依頼を、優先して受け付けるチケットや。傷取りにもリカットにも使えるで。研磨の料金（傷取り2,200円・リカット4,400円・送料600円／税込）は、いつも通りかかります。' },
+    ur: { nm: '10%OFFチケット', rk: '激レア', ic: '👑', col: '#ffd36a', ds: 'お店のオパールを買うとき、金額から 10% OFF になるチケットやで。' }
+  };
+  function tkDate(t) { try { var d = new Date(t); return (d.getMonth() + 1) + '/' + d.getDate(); } catch (e) { return ''; } }
+  function showTicket(t) {
+    var k = TKN[t.kind] || TKN.r, el = $('tkov');
+    $('tkIc').textContent = k.ic; $('tkRk').textContent = 'スペシャルチケット｜' + k.rk; $('tkRk').style.color = k.col;
+    $('tkNm').textContent = k.nm; $('tkCode').textContent = '番号　' + t.code; $('tkDs').textContent = k.ds + '\n使い方の細かいところは、決まり次第お知らせするで。番号は控えといてな。';
+    $('tkCard').style.setProperty('--tk', k.col);
+    el.classList.add('on'); sfx(3); vib([80, 60, 80, 60, 80, 60, 200]);
+  }
+  $('tkOk').addEventListener('click', function () { $('tkov').classList.remove('on'); openBag(0); });
   function eqItem(slot) { var id = ((player || {}).equip || {})[slot]; return id ? IBY[id] : null; }
   function toolCut() { var t = eqItem('tool'); return t ? t.cut : 0; }
   function aura() { var o = eqItem('outfit'); return o ? 'drop-shadow(0 0 10px ' + AURA[o.tier] + ') drop-shadow(0 0 22px ' + AURA[o.tier] + ')' : ''; }
@@ -1004,7 +1029,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         list.forEach(function (i) { any = true; var on = ((player.equip || {})[slot]) === i.id;
           h += '<div class="it"><div class="ic">' + i.ic + '</div><div class="tx"><b>' + i.nm + '</b><span class="rt" style="color:' + TIERCOL[i.tier] + '">' + TIERS[i.tier].n + '</span>　' + i.fx + '</div><button class="' + (on ? 'eq' : '') + '" type="button" data-eq="' + i.id + '">' + (on ? 'つけてる' : 'つける') + '</button></div>'; });
       });
-      h += '<div class="sec">割引券・ほかの券</div><p class="tiny">券は、まだ出ぇへんで。もうすぐ入るから、楽しみにしててな。</p>';
+      h += '<div class="sec">スペシャルチケット</div>';
+      var tl = (tickets || []).filter(function (t) { return t.status === 'have'; });
+      if (!tl.length) h += '<p class="tiny">まだ持ってへんで。石を掘ってるとき、ごくまれに出るかも。レア・超レア・激レアの3種類や。</p>';
+      tl.forEach(function (t) { var k = TKN[t.kind] || TKN.r;
+        h += '<div class="it"><div class="ic">' + k.ic + '</div><div class="tx"><b>' + k.nm + '</b><span class="rt" style="color:' + k.col + '">' + k.rk + '</span><br>' + k.ds.split('。')[0] + '。<br>番号 <b>' + t.code + '</b>　' + tkDate(t.created_at) + ' にゲット</div></div>'; });
     } else {
       h += '<p class="tiny">ゲームマネーは、石を掘ると貯まるで（お金では買えへん）。いいランクの石ほど、たくさんもらえるよ。</p>';
       ['outfit', 'tool'].forEach(function (slot) {
@@ -1585,7 +1614,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     api({ action: 'game_load' }).then(function (j) {
       if (j._s === 401) { $('loadMsg').textContent = 'オパ会の入り直しが必要みたい。チャットに入ってから開いてな'; document.querySelector('#load .spin').style.display = 'none'; return; }
       nick = j.nickname || ''; myMid = j.me || '';
-      if (j.player) { player = j.player; startGame(); }
+      if (j.player) { player = j.player; tickets = j.tickets || []; startGame(); }
       else playOpening();
     }).catch(function () { $('loadMsg').textContent = 'つながらへんかった。いったん閉じて、もう一回開いてな'; document.querySelector('#load .spin').style.display = 'none'; });
   }
