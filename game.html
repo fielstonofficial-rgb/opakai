@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:36-->
+<!--GV:37-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -322,8 +322,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #fTools #qcBtn{border:1.5px solid #9ff0c0;background:rgba(6,30,20,.82);color:#c9ffe0}
 #fTools #gmTog{position:static;margin-right:auto;border:1.5px solid rgba(255,255,255,.3);background:rgba(10,18,24,.82);color:#fff}
 #fTools #gmTog.on{border-color:#ffd36a;color:#ffe9a8;background:rgba(40,30,6,.88)}
-#field.digging #fTools,#field.arena #fTools,#field.plaza #fTools{bottom:70px}
-#field.digging #qcPanel,#field.arena #qcPanel,#field.plaza #qcPanel{bottom:108px}
+#field.digging #fTools{bottom:70px}
+#field.digging #qcPanel{bottom:108px}
 #field.town #fTools{bottom:134px}
 #qcPanel button{padding:11px 4px;border-radius:12px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff;font-weight:800;font-size:13px}
 #qcPanel button.hl{border-color:#ff7a8a;background:rgba(255,80,100,.22)}
@@ -389,12 +389,27 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 .abtn{border:0;border-radius:14px;padding:12px 16px;font-weight:900;font-size:15px;background:linear-gradient(180deg,#ff8a8a,#e0405a);color:#fff}
 #updBar{position:fixed;left:8px;right:8px;top:8px;z-index:400;display:none;padding:10px 12px;border-radius:12px;background:#ffd36a;color:#3a2a08;font-weight:900;font-size:13px;text-align:center;box-shadow:0 4px 18px rgba(0,0,0,.5)}
 #updBar.on{display:block}
-#field.plaza #fDigBar{display:flex}
-#field.plaza #dig{display:none}
-#field.plaza #atkBtn{flex:1}
-#field.plaza.safe #atkBtn{opacity:.4}
+
+#fBack.wide{width:auto;height:42px;border-radius:999px;padding:0 13px;font-size:12px;font-weight:800;white-space:nowrap}
+#fBack.wide small{display:none}
+#field.plaza #tchat{display:block}
+#field.plaza #fTools{bottom:134px}
+#field.arena #tchat{display:none}
+#plDown{position:absolute;left:10px;right:10px;bottom:178px;z-index:30;display:none;align-items:center;justify-content:space-between;gap:8px;padding:10px 12px;border-radius:14px;background:rgba(30,10,18,.94);border:1px solid #ff6a8a;color:#fff;font-weight:800;font-size:13px}
+#plDown.on{display:flex}
+#npc{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px}
+#npc.on{display:flex}
+#npc .nc{width:100%;max-width:420px;max-height:86vh;overflow:auto;background:#1b2230;color:#fff;border-radius:18px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+#npc .nh{display:flex;justify-content:space-between;align-items:center;margin-bottom:8px}
+#npc .nh b{font-size:17px;color:#ffd36a}
+#npcSay{background:rgba(255,255,255,.08);border-radius:12px;padding:12px;font-size:14px;line-height:1.6;min-height:56px;white-space:pre-wrap}
+#npcQs{display:flex;flex-wrap:wrap;gap:6px;margin:10px 0}
+#npcQs button{border:1px solid rgba(255,255,255,.25);background:rgba(255,255,255,.08);color:#fff;border-radius:999px;padding:7px 11px;font-size:12px;font-weight:700}
+#npc .nin{display:flex;gap:8px}
+#npc .nin input{flex:1;min-width:0;border:0;border-radius:10px;padding:10px 12px;font-size:16px}
+.gh.npc .gname{color:#ffe08a;font-weight:900}
+.gh.npc{pointer-events:none}
 #field.plaza #fview{background:#cfae72}
-#field.arena #fDigBar{display:flex}
 #field.arena #dig{display:none}
 #field.arena #fview{background:#cfae72}
 #field.arena #atkBtn{flex:1}
@@ -521,7 +536,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v36（闘技場の広場）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v37（案内役・一般モード）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所や（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -529,9 +544,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   <div id="cfm"><div class="gc"><h3>ゲームをとじる？</h3><p class="tiny">とじても、ここまでの記録は残るで。</p><div class="rw" style="display:flex;gap:8px;margin-top:12px"><button id="cfmNo" type="button" class="gbtn" style="flex:1">つづける</button><button id="cfmYes" type="button" class="gbtn dim" style="flex:1;margin-top:0">とじる</button></div></div></div>
   <section class="scr" id="field">
     <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="装備・もちもの">🎒<small>装備・持物</small></button><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
-    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="fTools"><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">💬</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしもた…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
+    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="plDown"><span>やられた…（このままチャットもできるで）</span><button type="button" class="gbtn" id="plDownGo">🏥 病院へ向かう</button></div><div id="fTools"><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">💬</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしもた…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
         <div id="gld"><div class="gc"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="tiny">ギルドの部屋</span><button id="gClose" type="button" class="gbtn" style="padding:6px 12px">とじる</button></div><div id="gBody"></div></div></div>
-        <div id="arInv"><b id="arInvT"></b><div><button type="button" class="abtn" id="arInvY">受ける</button><button type="button" class="gbtn" id="arInvN">ことわる</button></div></div><div id="updBar" role="button">🔄 新しい版があるで。ここをタップして更新</div>
+        <div id="npc"><div class="nc"><div class="nh"><b id="npcN"></b><button type="button" class="gbtn" id="npcX" style="padding:6px 12px">とじる</button></div><div id="npcSay"></div><div id="npcQs"></div><div class="nin"><input id="npcIn" maxlength="30" placeholder="聞きたいこと（例：HP、闘技場、売る）" autocomplete="off"><button type="button" class="gbtn" id="npcGo">きく</button></div><div id="npcAct"></div></div></div><div id="arInv"><b id="arInvT"></b><div><button type="button" class="abtn" id="arInvY">受ける</button><button type="button" class="gbtn" id="arInvN">ことわる</button></div></div><div id="updBar" role="button">🔄 新しい版があるで。ここをタップして更新</div>
         <div id="arBig"></div>
         <div id="arRes"><div class="arrc"><h2 id="arResT"></h2><p class="tiny" id="arResP"></p><button id="arResB" type="button" class="gbtn" style="width:100%;margin-top:12px">部屋にもどる</button></div></div>
     <div id="tchat"><div id="tlog"></div><div id="trow"><input id="tin" type="text" maxlength="40" placeholder="ひとこと話す（40字まで）" autocomplete="off"><button id="tsend" type="button">送る</button></div></div>
@@ -678,7 +693,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function api(body) {
     body.token = token;
     return fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
-      .then(function (r) { return r.json().then(function (j) { j._s = r.status; if (j && j.player && (j.me === GM_ID || myMidG === GM_ID)) { j.player.gmReal = true; j.player.lvReal = j.player.lv; if (gmOn) { j.player.lv = 999; j.player.gm = true; } } return j; }); });
+      .then(function (r) { return r.json().then(function (j) { j._s = r.status; if (j && j.player && (j.me === GM_ID || myMidG === GM_ID)) { j.player.gmReal = true; j.player.lvReal = j.player.lv; j.player.avReal = j.player.avatar; if (gmOn) { j.player.lv = 999; j.player.gm = true; } else { j.player.lv = GEN_LV; j.player.avatar = genAv(j.player.avatar); } } return j; }); });
   }
   var GM_ID = '4a324658-8414-4361-9962-9a6963982a39', myMidG = '', gmOn = LSget('opa_gm_off') !== '1';
   function lvS(x) { return x && x.id === GM_ID ? 999 : (x ? x.lv : 1); }
@@ -1402,12 +1417,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   };
   function isGM() { return !!(player && player.gm); }
   function gmTogUi() { var b = $('gmTog'); if (!b) return; var on = $('map').classList.contains('on') || $('field').classList.contains('on'); var inF = $('field').classList.contains('on'), tl = $('fTools'); if (!b._home) b._home = b.parentNode; var host = inF ? tl : b._home; if (host && b.parentNode !== host) { if (inF) host.insertBefore(b, host.firstChild); else host.appendChild(b); } b.style.display = (player && player.gmReal && on) ? 'block' : 'none'; b.className = gmOn ? 'on' : ''; b.textContent = inF ? (gmOn ? '👑 マスター' : '🙂 一般') : (gmOn ? '👑 マスター中（タップで一般に変身）' : '🙂 一般中（タップでマスターに変身）'); }
+  var GEN_LV = 30, GEN_NAME = 'たかお';
+  function genAv(a) { var o = {}; for (var k in a) o[k] = a[k]; o.name = GEN_NAME; o.acc = 0; return o; }
   function applyGmMode() {
     if (!player || !player.gmReal) return;
-    player.gm = gmOn; player.lv = gmOn ? 999 : (player.lvReal || 1); hp.ready = false; guard = false;
+    player.gm = gmOn; player.lv = gmOn ? 999 : GEN_LV; if (!player.avReal) player.avReal = player.avatar; player.avatar = gmOn ? player.avReal : genAv(player.avReal); if ($('hb')) $('hb').innerHTML = heroHTML(); hp.ready = false; guard = false;
     hpUi(); applyAura(); gearUi(); try { stats(); } catch (e) {} gmTogUi();
     if ($('bag').classList.contains('on')) renderBag();
-    toast(gmOn ? '👑 マスターに変身した！' : '🙂 一般プレイヤーに変身した（Lvも装備も ふつうの状態）');
+    toast(gmOn ? '👑 マスターに変身した！' : '🙂 一般プレイヤー（Lv' + GEN_LV + '・' + GEN_NAME + '）に変身した');
   }
   var GMLIST = ['weapon', 'helm', 'armor', 'shield', 'outfit', 'tool'];
   function eqItem(slot) { if (isGM() && GMI[slot]) return GMI[slot]; var id = ((player || {}).equip || {})[slot]; return id ? IBY[id] : null; }
@@ -1911,7 +1928,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
     hero.x = TW / 2; hero.y = 1130; hero.dir = 1; ftarget = null; fz = zoomT;
-    $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi();
+    $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi(); addNpcs();
   }
   function townDoorAt(wx, wy) { for (var i = 0; i < DOORS.length; i++) { var d = DOORS[i]; if (Math.abs(wx - d.x) < d.w / 2 + 10 && wy < d.y + 40 && wy > d.y - d.h) return d; } return null; }
   function openDoor(k) {
@@ -1920,6 +1937,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     else if (k === 'hospital') healFull();
     else if (k === 'exch') { sfx(2); openMarket(); }
     else if (k === 'arena') { sfx(2); openArena(); }
+    else if (/^npc:/.test(k)) openNpc(k.slice(4));
   }
   /* ---------- ギルド（Lv10から。申請→運営が承認→みんなが入れる。最大30人） ---------- */
   function gmsg(t) { var e = $('gBody'); if (e) { var m = document.createElement('p'); m.className = 'tiny'; m.style.color = '#ffd36a'; m.textContent = t; e.prepend(m); setTimeout(function () { m.remove(); }, 4000); } }
@@ -2042,20 +2060,21 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     inTown = false; inPlaza = true; buildPlaza();
     hp.ready = true; hp.max = hpMaxNow(); hp.cur = hp.max; hp.down = false; hp.inv = 0; hpUi(); gearUi(); if (eqItem('weapon')) wHand = 'weapon';
     show('field'); BGM.set('field'); plZoneTick();
-    var tip = $('ftip'); tip.style.opacity = 1; tip.textContent = '闘技場へようこそ！ 観客席は安全。入口から下の「闘技場内」に入ると、だれからでも攻撃される（こちらも攻撃できる）で。人をタップすると「戦いを挑む」で、承認されたら1対1の決闘や'; clearTimeout(tipT); tipT = setTimeout(function () { tip.style.opacity = 0; }, 9000);
+    var tip = $('ftip'); tip.style.opacity = 1; tip.textContent = '闘技場へようこそ！ 観客席は安全や。入口から下の「闘技場内」に入ると、相手をタップするだけで攻撃できる（攻撃もされる）で。観客席の人をタップすると「戦いを挑む」で、承認されたら1対1の決闘や'; clearTimeout(tipT); tipT = setTimeout(function () { tip.style.opacity = 0; }, 9000);
     clearInterval(arena.zt); arena.zt = setInterval(plZoneTick, 250);
     RT.join('arena', arMe(), { onMsg: plMsg, onPeers: plPeers }, function (ok) {
       if (!ok) { toast('つながらへんかった。あとでもう一回な'); leaveArena(); return; }
       rtOn = true; rtLast = 0; rtSend(posMsg());
     });
   }
-  function leaveArena() {
-    if (!arena.on) return; if (inArena && arena.m && !arena.m.over) return;
+  $('plDownGo').addEventListener('click', function () { leaveArena(true); });
+  function leaveArena(toHosp) {
+    if (!arena.on) return; $('plDown').classList.remove('on'); if (inArena && arena.m && !arena.m.over) return;
     clearInterval(arena.zt); clearInterval(arena.tmr); inPlaza = false; inArena = false; arena.on = false; arena.m = null; arena.inv = null; arena.out = null;
     $('arInv').classList.remove('on'); $('arRes').classList.remove('on'); rtStop();
     hp.down = false; hp.max = hpMaxNow(); hp.cur = Math.max(1, Math.min(hp.max, arena.hb0 || hp.max)); hp.inv = 0;
     var f = $('field'); f.classList.remove('plaza', 'safe', 'arena'); $('fCancel').textContent = 'やめる';
-    openTown(); hero.x = 150; hero.y = 1060; ftarget = null; updHero(); hpUi(); gearUi();
+    openTown(); if (toHosp) { hero.x = 1170; hero.y = 575; toast('病院の前で目が覚めた。病院に入ると、HPが全回復するで'); } else { hero.x = 150; hero.y = 1060; } ftarget = null; updHero(); hpUi(); gearUi();
   }
   function plPeers(list) {
     arena.others = (list || []).filter(function (m) { return m && m.id && m.id !== myMid; });
@@ -2115,8 +2134,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     hpUi(); rtLast = 0; if (hp.cur <= 0) plKO();
   }
   function plKO() {
-    hp.cur = 0; hp.down = true; ftarget = null; hpUi(); rtLast = 0; bubble($('hero2'), 'やられた…'); toast('やられた！ 3秒で観客席にもどるで');
-    setTimeout(function () { if (!inPlaza || !hp.down) return; hp.down = false; hp.cur = hp.max; hero.x = 450; hero.y = 420; ftarget = null; updHero(); hpUi(); rtLast = 0; }, 3000);
+    hp.cur = 0; hp.down = true; ftarget = null; hpUi(); rtLast = 0; bubble($('hero2'), 'やられた…'); $('plDown').classList.add('on');
   }
   function plAttack(pr) {
     var rg = atkRange(), dist = Math.hypot(hero.x - pr.x, hero.y - pr.y);
@@ -2138,7 +2156,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (hp.down) return;
     var r = view.getBoundingClientRect(), wx = (e.clientX - r.left) / fz + camX, wy = (e.clientY - r.top) / fz + camY, tg = null, bd = 56;
     Object.keys(peers).forEach(function (id) { var q = peers[id]; if (!q.el || q.el.style.display === 'none') return; var d = Math.hypot(wx - q.x, wy - (q.y - 32)); if (d < bd) { bd = d; tg = q; } });
-    if (tg) { openProfile(tg); return; }
+    if (tg) { if (hero.y >= FLOOR_Y && plInFloor(tg)) { if (!tg.dn) plAttack(tg); return; } openProfile(tg); return; }
     var pg = document.createElement('i'); pg.className = 'ping'; pg.style.left = wx + 'px'; pg.style.top = wy + 'px'; $('world').appendChild(pg); setTimeout(function () { pg.remove(); }, 520);
     ftarget = { x: clamp(wx, 40, WW - 40), y: clamp(wy, 230, WH - 50), spot: null };
   }
@@ -2188,7 +2206,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (eqItem('weapon')) wHand = 'weapon';
     hp.ready = true; hp.max = hpMaxNow(); hp.cur = hp.max; hp.down = false; hp.inv = 0; hpUi(); gearUi();
     fz = zoomT = .6; $('ftip').style.opacity = 0; BGM.set('field'); show('field'); inTown = false;
-    $('fhud').innerHTML = '<span style="flex:1;text-align:center">もうすぐ始まるで！ 相手をタップか「こうげき」ボタン</span>';
+    $('fhud').innerHTML = '<span style="flex:1;text-align:center">もうすぐ始まるで！ 相手をタップで攻撃や</span>';
     rtOn = true; rtLast = 0; rtSend(posMsg());
     var cnt = 3; arBig(String(cnt), 900);
     var cd = setInterval(function () {
@@ -2276,14 +2294,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     Object.keys(peers).forEach(function (id) { if (peers[id].el) peers[id].el.remove(); }); peers = {};
     inArena = false; $('field').classList.remove('arena'); $('arRes').classList.remove('on'); $('arBig').classList.remove('on');
     if (!arena.on) return;
-    inPlaza = true; buildPlaza(); hp.down = false; hp.max = hpMaxNow(); hp.cur = hp.max; hp.inv = 0; hpUi(); gearUi(); arTrack();
+    inPlaza = true; $('plDown').classList.remove('on'); buildPlaza(); hp.down = false; hp.max = hpMaxNow(); hp.cur = hp.max; hp.inv = 0; hpUi(); gearUi(); arTrack();
     rtOn = true; rtLast = 0; rtPeers(arena.others); BGM.set('field'); plZoneTick(); rtSend(posMsg());
   }
   $('arResB').addEventListener('click', arBack);
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 36;
+  var GV = 37;
   (function () {
     var last = Date.now();
     function chk() {
@@ -2294,6 +2312,67 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     setInterval(chk, 600000);
     $('updBar').addEventListener('click', function () { location.href = location.pathname + '?v=' + Date.now(); });
   })();
+
+
+  /* ---------- 町のNPC（案内役ミミ・闘技場の受付レオ） ---------- */
+  var NPCS = {
+    guide: { nm: '案内役 ミミ', x: 640, y: 1150, av: { name: 'ミミ', gender: 1, skin: 1, face: 2, hair: 3, hairColor: 2, outfit: 5, outfitColor: 9, pattern: 0, patColor: 6, bottom: 1, bottomColor: 2, acc: 3 },
+      hi: 'こんにちは！ うちは案内役のミミや。プレイでわからんことがあったら、なんでも聞いてな。下の質問をタップか、聞きたいことを打ってや。',
+      faq: [
+        { q: '歩き方・掘り方', k: ['歩', '掘り方', 'あるき', 'ほり方', 'はじめ', '操作', '使い方'], a: '行きたい所をタップしたら歩くで。光ってる鉱脈をタップしたら、そこまで歩いて掘れる状態になるから、「掘る！」を何回もタップしてな。ゲージがたまったら石が出てくるで。' },
+        { q: '石の品質', k: ['品質', 'くすみ', '極上', 'レア', '光', 'いい石', '良い石'], a: '石には4段階の品質があるで。光が強い鉱脈ほど、ええ品質が出やすい。いちばんええのは、紫に光る深い穴や。深い穴は掘るのに時間はかかるけどな。' },
+        { q: 'レベルと経験値', k: ['レベル', 'lv', '経験値', 'けいけん', 'xp', '上げ'], a: '石を掘ると経験値がたまって、レベルアップするで。最大はレベル100や。1日にもらえる経験値には上限があって、超えるとぐっと増えにくくなる。ゆっくり毎日遊ぶのがええで。' },
+        { q: '鉱山が開かへん', k: ['開か', '行けな', 'ロック', '鍵', '解放', '鉱山', '産地', 'マップ'], a: 'マップで鉱山をえらぶと、必要なレベルが出るで。そのレベルになったら行けるようになる。まずは低いレベルの鉱山で掘って、レベルを上げてな。' },
+        { q: 'HPと病院', k: ['hp', '体力', '病院', '回復', 'やられ', '倒れ', 'たおれ', '死'], a: 'HPは自動では回復せえへんのや。町の病院の建物に入ると、全回復するで。敵にやられて倒れたら、仲間がタップで起こしてくれるか、自動で病院の前に運ばれる。' },
+        { q: '武器と戦い方', k: ['武器', '戦', '攻撃', '敵', 'モンスター', '弓', '銃', 'つるはし', '持ちかえ', '持ち替え'], a: '敵には武器で戦うんや。「持ちかえ」ボタンで、武器とつるはしを切りかえられる。つるはしは、敵にはほとんど効かへんで。届く距離は、近距離が2マス、弓が3マス、銃が4マスや。遠くから撃てる分、威力は少し弱めやで。' },
+        { q: 'ガード', k: ['ガード', '盾', 'たて', '防御'], a: '盾を持ってたら、ガードのボタンが出るで。ガード中は受けるダメージが減る。そのかわり、ガード中は攻撃できへんから気いつけてな。' },
+        { q: 'ゲームマネー', k: ['マネー', 'お金', 'コイン', '稼', '貯め', 'ためる', '通貨'], a: 'ゲームマネーは、石を掘ったり、敵を倒したりでたまるで。本物のお金では買えへん、遊んで貯めるものや。ショップで装備を買ったり、石や装備を売ったりできる。' },
+        { q: 'ショップと取引所', k: ['ショップ', '買', '売', '取引', '交換', '手数料', '値段'], a: 'ショップは、装備や道具をゲームマネーで買う所や。取引所は、プレイヤー同士で、装備やスペシャルチケットをゲームマネーで売り買いする所で、手数料は5％やで。建物をタップしたら入れる。' },
+        { q: '装備の付けかえ', k: ['装備', '付け', '着替', 'リュック', '持ち物', '持物', 'もちもの'], a: '画面の右上の「装備・持物」ボタンで、持ってる装備の付けかえができるで。持ち物の確認もそこや。' },
+        { q: 'ギルド', k: ['ギルド', '仲間', 'チーム', '入る', '申請'], a: 'ギルドはレベル10から。町のギルドの建物で申請して、運営が承認したら、最大30人で入れるで。' },
+        { q: '仲間と協力', k: ['協力', 'パーティ', '待合', '招待', 'みんな', '一緒', 'ボス', '複数'], a: 'マップの下の「パーティーの待合室」で、最大5人まで仲間を集められるで。同じ鉱山に入ったら協力プレイや。人数が多いほど、掘るのが早くなる。2人以上やと、ボスのごほうびも出るで。' },
+        { q: 'スペシャルチケット', k: ['チケット', '券', '割引', 'スペシャル', '当た'], a: '掘ってると、まれに当たることがあるで。当たる確率は、レベルや装備、人数では変わらへん。細かい使い方は、決まったらお知らせするな。' },
+        { q: '闘技場って？', k: ['闘技', '対戦', 'バトル', '決闘', 'pvp', '勝負'], a: '町の左下にあるで。観客席は安全な場所。闘技場内に入ると、相手をタップするだけで攻撃できる（攻撃もされる）。観客席の人をタップして「戦いを挑む」を押して、相手が受けたら、1対1の決闘や。負けても持ち物は減らへんから安心してな。' },
+        { q: 'ひとこと（クイックチャット）', k: ['チャット', 'ひとこと', '話', '会話', '助けて', 'メッセージ'], a: '町や協力プレイでは、画面の下の「💬」ボタンで、「たすけて」「ナイス」をワンタッチで送れるで。町では、文字を打って話すこともできる（ことばは保存されへん）。' },
+        { q: '音や振動を切りたい', k: ['音', 'bgm', '音楽', '振動', 'うるさ', '消'], a: '右上の⚙で、BGM、効果音、振動を、それぞれオンオフできるで。' }
+      ] },
+    rcp: { nm: '闘技場の受付 レオ', x: 270, y: 1075, av: { name: 'レオ', gender: 0, skin: 2, face: 1, hair: 1, hairColor: 0, outfit: 7, outfitColor: 1, pattern: 1, patColor: 8, bottom: 0, bottomColor: 1, acc: 0 },
+      hi: 'いらっしゃい！ 闘技場の受付のレオや。観客席は安全、闘技場内は何でもありやで。ルールを知りたいなら、下を見てな。',
+      enter: true,
+      faq: [
+        { q: '観客席って？', k: ['観客', '安全', 'セーフ'], a: '観客席は、攻撃されへん安全な場所や。ここから、戦いたい人をタップして「戦いを挑む」を押せるで。' },
+        { q: '闘技場内のルール', k: ['闘技場内', 'ルール', '攻撃', '無差別'], a: '闘技場内にいる人は、だれでも攻撃できて、だれからでも攻撃される。相手をタップするだけで攻撃や。やられたら、「病院へ向かう」ボタンが出るで。押さんかったら、倒れたままチャットもできる。' },
+        { q: '1対1の決闘', k: ['決闘', '1対1', '挑む', '承認', '申し込'], a: '観客席で相手をタップして「戦いを挑む」を押してな。相手が「受ける」を押したら、決闘場で1対1や。制限時間は90秒で、HPが多く残った方の勝ちになる。' },
+        { q: '持ち物は減る？', k: ['減る', '失う', '負け', '罰', '報酬', 'ごほうび'], a: '減らへん！ 勝っても負けても、ゲームマネーや装備は変わらへんで。今のところ、ごほうびもないから、気楽に腕試ししてな。' }
+      ] }
+  };
+  function addNpcs() {
+    Object.keys(NPCS).forEach(function (k) {
+      var n = NPCS[k], e = document.createElement('div'); e.className = 'gh npc'; e.dataset.npc = k;
+      e.innerHTML = '<div class="hs"></div><div class="hb">' + charHTML(n.av) + '</div><div class="gname"></div>'; e.querySelector('.gname').textContent = '💬 ' + n.nm;
+      placeEl(e, n.x, n.y); $('world').appendChild(e);
+    });
+  }
+  function npcAt(wx, wy) { var r = null, bd = 62; Object.keys(NPCS).forEach(function (k) { var n = NPCS[k], d = Math.hypot(wx - n.x, wy - (n.y - 32)); if (d < bd) { bd = d; r = k; } }); return r; }
+  var npcCur = null;
+  function npcSay(t) { $('npcSay').textContent = t; }
+  function openNpc(k) {
+    var n = NPCS[k]; if (!n) return; npcCur = k; sfx(2);
+    $('npcN').textContent = n.nm; npcSay(n.hi); $('npcIn').value = '';
+    $('npcQs').innerHTML = n.faq.map(function (f, i) { return '<button type="button" data-i="' + i + '">' + esc(f.q) + '</button>'; }).join('');
+    $('npcAct').innerHTML = n.enter ? '<button type="button" class="abtn" id="npcEnter" style="width:100%;margin-top:10px">⚔ 闘技場に入る</button>' : '';
+    $('npc').classList.add('on');
+  }
+  function npcAsk(txt) {
+    var n = NPCS[npcCur]; if (!n) return; var q = String(txt || '').toLowerCase().replace(/\s+/g, ''); if (!q) return;
+    var best = null, bs = 0; n.faq.forEach(function (f) { var sc = 0; f.k.forEach(function (w) { if (q.indexOf(w.toLowerCase()) >= 0) sc += w.length; }); if (sc > bs) { bs = sc; best = f; } });
+    npcSay(best ? best.a : 'ごめんな、それはうちにはわからんわ。下の質問から近いのを選んでみてな。それでもわからんかったら、オープンチャットで運営のマイケルさんに聞いてみてや。');
+  }
+  $('npcQs').addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('button[data-i]'); if (!b) return; var f = NPCS[npcCur].faq[+b.dataset.i]; if (f) { sfx(0); npcSay(f.a); } });
+  $('npcGo').addEventListener('click', function () { npcAsk($('npcIn').value); });
+  $('npcIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); npcAsk($('npcIn').value); } });
+  $('npcX').addEventListener('click', function () { $('npc').classList.remove('on'); });
+  $('npc').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('on'); var b = e.target.closest && e.target.closest('#npcEnter'); if (b) { $('npc').classList.remove('on'); openArena(); } });
 
   function rtStart() {
     rtStop(); if (!room || !myMid) return; shared = true;
@@ -2802,7 +2881,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (guard) { toast('ガード中は、たたけへんで'); return false; }
     return atkReady();
   }
-  $('swBtn').addEventListener('click', function () { wHand = wHand === 'weapon' ? 'pick' : 'weapon'; toast(wHand === 'weapon' ? '武器に持ちかえた！' : 'つるはしに持ちかえた（敵にはほとんど効かへんで）'); gearUi(); sfx(2); });
+  $('swBtn').addEventListener('click', function () { wHand = wHand === 'weapon' ? 'pick' : 'weapon'; gearUi(); sfx(2); });
   var QC = [['🆘 たすけて！', 'たすけて！', 1], ['❗ ヘルプ！', 'ヘルプ！', 1], ['👍 ナイス！', 'ナイス！'], ['🙌 グッジョブ！', 'グッジョブ！'], ['👉 こっち！', 'こっち来て！'], ['🙏 ありがとう', 'ありがとう！'], ['🆗 りょうかい', 'りょうかい！'], ['⚠️ きをつけて', '気をつけて！']];
   $('qcPanel').innerHTML = QC.map(function (q, i) { return '<button type="button" data-q="' + i + '"' + (q[2] ? ' class="hl"' : '') + '>' + q[0] + '</button>'; }).join('');
   $('qcBtn').addEventListener('click', function () { $('qcPanel').classList.toggle('on'); });
@@ -3042,7 +3121,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     hpUi(); gearUi();
     if (inTown || inArena || inPlaza) return;
     var k = Object.keys(player.stones || {}).length;
-    $('fhud').innerHTML = '<span>掘った回数 <b>' + (player.digs || 0) + '</b></span><span>見つけた石 <b>' + k + '</b>/' + STONES.length + '</span><span>ここで <b>' + (((player.mines || {})[curMine]) || 0) + '</b> 回</span><span>🪙 <b>' + ((player.coins || 0).toLocaleString()) + '</b></span><span>' + (partyN > 1 ? '👥 <b>' + partyN + '</b>人 <button id="fLeave" class="opt" type="button" style="padding:3px 8px;font-size:11px">ぬける</button>　' : '') + 'Lv <b>' + (player.lv || 1) + '</b>' + (player.xpNeed ? '（あと ' + (player.xpNeed - (player.xpInto || 0)).toLocaleString() + '）' : '（MAX）') + '</span>';
+    $('fhud').innerHTML = '<span>掘った回数 <b>' + (player.digs || 0) + '</b></span><span>見つけた石 <b>' + k + '</b>/' + STONES.length + '</span><span>ここで <b>' + (((player.mines || {})[curMine]) || 0) + '</b> 回</span><span>🪙 <b>' + ((player.coins || 0).toLocaleString()) + '</b></span><span>' + (partyN > 1 ? '👥 <b>' + partyN + '</b>人 <button id="fLeave" class="opt" type="button" style="padding:3px 8px;font-size:11px">ぬける</button>　' : '') + 'Lv <b>' + (player.lv || 1) + '</b>' + (player.xpNeed ? '（あと ' + (player.xpNeed - (player.xpInto || 0)).toLocaleString() + '）' : (player.gmReal ? '' : '（MAX）')) + '</span>';
   }
   function openField(id) {
     if (inTown) leaveTown(); curMine = id; var m = MBY[id];
@@ -3054,6 +3133,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function startLoop() { if (fraf) return; flast = performance.now(); fraf = requestAnimationFrame(tick); }
   function tick(t) {
     fraf = 0; if (!fieldOn) return;
+    var bl = inArena ? '🏳 あきらめる' : (inPlaza ? '🚪 町へ' : (inTown ? '🚪 マップへ' : '🚪 鉱山を出る')); if (bl !== window.__bl) { window.__bl = bl; var bb = $('fBack'); bb.className = 'ib wide'; bb.textContent = bl; }
     var dt = Math.min(.05, (t - flast) / 1000); flast = t;
     var hh = $('hero2'), moved = false;
     if (ftarget) {
@@ -3086,6 +3166,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     }
     var r = this.getBoundingClientRect(), wx = (e.clientX - r.left) / fz + camX, wy = (e.clientY - r.top) / fz + camY, hit = null, best = 58;
     if (hitFoeAt(wx, wy)) return;
+    if (inTown) { var nk = npcAt(wx, wy); if (nk) { var pg1 = document.createElement('i'); pg1.className = 'ping'; pg1.style.left = wx + 'px'; pg1.style.top = wy + 'px'; $('world').appendChild(pg1); setTimeout(function () { pg1.remove(); }, 520); ftarget = { x: NPCS[nk].x, y: NPCS[nk].y + 44, spot: null, door: 'npc:' + nk }; $('ftip').style.opacity = 0; return; } }
     var tpr = peerAt(wx, wy); if (tpr && !tpr.dn) { openProfile(tpr); return; }
     var gpr = null; Object.keys(peers).forEach(function (id) { var q = peers[id]; if (q.dn && Math.hypot(wx - q.x, wy - (q.y - 32)) < 70) gpr = q; });
     if (gpr) { doRevive(gpr.id); return; }
