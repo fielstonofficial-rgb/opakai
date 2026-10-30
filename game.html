@@ -286,6 +286,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         <div class="sec">キャラクター</div>
         <div class="row"><span id="setName"></span><button class="opt" id="editAvatar" type="button">キャラを変える</button></div>
         <div class="sec">音と振動</div>
+        <div class="row"><span>BGM（音楽）</span><button class="tg" id="tgBgm" type="button" aria-label="BGM"><i></i></button></div>
         <div class="row"><span>効果音</span><button class="tg" id="tgSound" type="button" aria-label="効果音"><i></i></button></div>
         <div class="row"><span>振動（スマホ）</span><button class="tg" id="tgVib" type="button" aria-label="振動"><i></i></button></div>
         <div class="row"><span>ゲームをとじる</span><button class="opt" id="closeGame" type="button">とじる</button></div>
@@ -376,7 +377,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   var tt;
   function toast(m) { var t = $('toast'); t.textContent = m; t.style.display = 'block'; clearTimeout(tt); tt = setTimeout(function () { t.style.display = 'none'; }, 3200); }
-  function show(id) { ['load', 'open', 'make', 'map', 'field', 'play'].forEach(function (x) { $(x).classList.toggle('on', x === id); }); fieldOn = (id === 'field'); if (fieldOn) startLoop(); }
+  function show(id) { ['load', 'open', 'make', 'map', 'field', 'play'].forEach(function (x) { $(x).classList.toggle('on', x === id); }); fieldOn = (id === 'field'); if (fieldOn) startLoop(); if (typeof BGM !== 'undefined' && BGM) BGM.set(({ open: 'map', make: 'map', map: 'map', field: 'field', play: 'dig' })[id] || null); }
 
   /* ---------- 音・振動 ---------- */
   var ac = null;
@@ -400,6 +401,65 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     else if (kind === 3) { [523, 659, 784, 1047, 1319, 1568, 2093].forEach(function (f, i) { tone(f, i * .09, .7, 'triangle', .18); tone(f * 2, i * .09 + .03, .5, 'sine', .07); }); }
   }
   function vib(p) { if (vibOn && navigator.vibrate) { try { navigator.vibrate(p); } catch (e) {} } }
+
+  /* ---------- BGM（ファミコン風・オリジナル曲） ---------- */
+  var bgmOn = LSget('opa_game_bgm') !== '0';
+  var BGM = (function () {
+    var NT = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
+    function fr(n) { var x = /^([A-G])(#|b)?(\d)$/.exec(n); var v = NT[x[1]] + (x[2] === '#' ? 1 : x[2] === 'b' ? -1 : 0); return 440 * Math.pow(2, (12 * (+x[3] + 1) + v - 69) / 12); }
+    function seq(s) { var out = [], t = 0; s.trim().split(/\s+/).forEach(function (k) { var p = k.split(':'), d = parseFloat(p[1]); if (p[0] !== '-') out.push({ t: t, d: d, f: fr(p[0]) }); t += d; }); return { ev: out, len: t }; }
+    var TR = {
+      map: { bpm: 112, dr: 'k.h.s.h.', vl: 0.075, lead: 'C5:1 E5:1 G5:1 E5:1 A4:1 C5:1 E5:2 F5:1 A5:1 G5:1 E5:1 D5:2 G4:2 C5:1 E5:1 G5:1 C6:1 B5:1 G5:1 A5:2 F5:1 G5:1 A5:1 B5:1 C6:3 -:1',
+        bass: 'C3:2 G3:2 A2:2 E3:2 F2:2 C3:2 G2:2 D3:2 C3:2 G3:2 E2:2 B2:2 F2:2 G2:2 C3:2 G2:2' },
+      field: { bpm: 92, dr: 'k.h...h.', vl: 0.065, lead: 'D5:1.5 F5:.5 A5:1 F5:1 E5:2 C5:1 D5:1 G5:1.5 F5:.5 E5:1 D5:1 A4:3 -:1 D5:1.5 F5:.5 A5:1 C6:1 B5:1 A5:1 G5:2 F5:1 E5:1 D5:1 C5:1 D5:3 -:1',
+        bass: 'D3:2 A2:2 C3:2 G2:2 G2:2 D3:2 A2:2 E3:2 D3:2 A2:2 G2:2 D3:2 F2:2 C3:2 D3:2 A2:2' },
+      dig: { bpm: 132, dr: 'khshkhsh', vl: 0.07, lead: 'A4:.5 C5:.5 E5:.5 C5:.5 A4:.5 C5:.5 E5:.5 C5:.5 G4:.5 B4:.5 D5:.5 B4:.5 G4:.5 B4:.5 D5:.5 B4:.5 F4:.5 A4:.5 C5:.5 A4:.5 E4:.5 G#4:.5 B4:.5 G#4:.5 A4:1 E5:1 A5:2 A5:1 G5:1 E5:1 C5:1 D5:1 E5:1 G5:2 F5:1 E5:1 D5:1 B4:1 E5:2 G#4:2',
+        bass: 'A2:1 E3:1 A2:1 E3:1 G2:1 D3:1 G2:1 D3:1 F2:1 C3:1 E2:1 B2:1 A2:1 E3:1 A2:2 A2:1 E3:1 C3:1 E3:1 G2:1 D3:1 B2:2 F2:1 C3:1 D3:1 B2:1 E2:2 E3:2' }
+    };
+    var master = null, noise = null, inst = null, want = null, timer = null, ducked = false;
+    function ready() { var a = actx(); if (!a) return null; if (!master) { master = a.createGain(); master.gain.value = 0.5; master.connect(a.destination); var n = a.sampleRate; noise = a.createBuffer(1, n, a.sampleRate); var d = noise.getChannelData(0); for (var i = 0; i < n; i++) d[i] = Math.random() * 2 - 1; } return a; }
+    function note(a, bus, nodes, type, f, t, d, v) {
+      var o = a.createOscillator(), g = a.createGain(); o.type = type; o.frequency.value = f;
+      g.gain.setValueAtTime(0.0001, t); g.gain.linearRampToValueAtTime(v, t + 0.01); g.gain.setValueAtTime(v * 0.8, t + d * 0.7); g.gain.linearRampToValueAtTime(0.0001, t + d * 0.96);
+      o.connect(g); g.connect(bus); o.start(t); o.stop(t + d); nodes.push(o);
+    }
+    function hit(a, bus, nodes, k, t) {
+      if (k === 'k') { var o = a.createOscillator(), g = a.createGain(); o.type = 'triangle'; o.frequency.setValueAtTime(160, t); o.frequency.exponentialRampToValueAtTime(40, t + 0.12); g.gain.setValueAtTime(0.2, t); g.gain.exponentialRampToValueAtTime(0.001, t + 0.14); o.connect(g); g.connect(bus); o.start(t); o.stop(t + 0.15); nodes.push(o); return; }
+      var s = a.createBufferSource(), f = a.createBiquadFilter(), g2 = a.createGain(); s.buffer = noise;
+      f.type = k === 's' ? 'bandpass' : 'highpass'; f.frequency.value = k === 's' ? 1800 : 6500;
+      var d = k === 's' ? 0.09 : 0.03; g2.gain.setValueAtTime(k === 's' ? 0.08 : 0.03, t); g2.gain.exponentialRampToValueAtTime(0.001, t + d);
+      s.connect(f); f.connect(g2); g2.connect(bus); s.start(t); s.stop(t + d + 0.02); nodes.push(s);
+    }
+    function sched(a, I, t0) {
+      var T = I.tr, bt = 60 / T.bpm;
+      I.lead.ev.forEach(function (e) { note(a, I.bus, I.nodes, 'square', e.f, t0 + e.t * bt, e.d * bt, T.vl); });
+      I.bass.ev.forEach(function (e) { note(a, I.bus, I.nodes, 'triangle', e.f, t0 + e.t * bt, e.d * bt, 0.17); });
+      for (var b = 0; b < I.lead.len / 4; b++) for (var i = 0; i < 8; i++) { var c = T.dr.charAt(i); if (c !== '.') hit(a, I.bus, I.nodes, c, t0 + (b * 4 + i * 0.5) * bt); }
+    }
+    function stop() {
+      if (!inst) return; var a = actx(), I = inst; inst = null;
+      if (a) { try { I.bus.gain.cancelScheduledValues(a.currentTime); I.bus.gain.setValueAtTime(I.bus.gain.value, a.currentTime); I.bus.gain.linearRampToValueAtTime(0, a.currentTime + 0.25); } catch (e) {} }
+      setTimeout(function () { I.nodes.forEach(function (o) { try { o.stop(); } catch (e) {} }); try { I.bus.disconnect(); } catch (e) {} }, 400);
+    }
+    function start() {
+      if (!bgmOn || !want || inst) return; var a = ready(); if (!a) return;
+      var T = TR[want], bus = a.createGain(); bus.gain.value = 1; bus.connect(master);
+      var I = { tr: T, bus: bus, nodes: [], lead: seq(T.lead), bass: seq(T.bass) };
+      I.dur = I.lead.len * 60 / T.bpm; I.next = a.currentTime + 0.12; inst = I; sched(a, I, I.next); I.next += I.dur;
+      if (!timer) timer = setInterval(function () {
+        var a2 = actx(); if (!a2 || !inst) return;
+        if (a2.currentTime > inst.next - 1.5) { sched(a2, inst, inst.next); inst.next += inst.dur; }
+      }, 250);
+    }
+    return {
+      set: function (name) { if (name === want && (inst || !bgmOn)) return; want = name; stop(); if (name) start(); },
+      refresh: function () { if (bgmOn) start(); else stop(); },
+      duck: function (d) { ducked = d; var a = actx(); if (master && a) master.gain.setTargetAtTime(d ? 0.1 : 0.5, a.currentTime, 0.1); },
+      off: stop
+    };
+  })();
+  document.addEventListener('pointerdown', function () { actx(); BGM.refresh(); }, { once: true });
+  document.addEventListener('visibilitychange', function () { if (!ac) return; try { if (document.hidden) ac.suspend(); else ac.resume(); } catch (e) {} });
 
   /* ---------- 石のイラスト ---------- */
   var gcount = 0;
@@ -676,10 +736,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       c.style.animationDuration = (1.8 + Math.random() * 1.8) + 's'; c.style.animationDelay = (Math.random() * .6) + 's';
       rv.appendChild(c);
     }
-    sfx(st.tier); vib([[25], [40, 40, 40], [60, 50, 60, 50, 90], [80, 60, 80, 60, 80, 60, 220]][st.tier]);
+    BGM.duck(true); sfx(st.tier); vib([[25], [40, 40, 40], [60, 50, 60, 50, 90], [80, 60, 80, 60, 80, 60, 220]][st.tier]);
     $('revOk').textContent = st.tier === 3 ? 'すごい！つぎも掘る！' : 'つぎも掘る！';
   }
   $('revOk').addEventListener('click', function () {
+    BGM.duck(false);
     $('rev').className = ''; busy = false; $('dig').disabled = false;
     leaveDig();
     afterReveal();
@@ -782,6 +843,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   document.addEventListener('click', function (e) { var b = e.target.closest('[data-close]'); if (b) $(b.dataset.close).classList.remove('on'); });
   $('editAvatar').addEventListener('click', function () { editFrom = $('play').classList.contains('on') ? 'play' : ($('field').classList.contains('on') ? 'field' : 'map'); closeSheets(); openMake('edit'); });
   function tg(btn, on) { btn.classList.toggle('on', on); btn.setAttribute('aria-pressed', String(on)); }
+  tg($('tgBgm'), bgmOn); $('tgBgm').addEventListener('click', function () { bgmOn = !bgmOn; LSset('opa_game_bgm', bgmOn ? '1' : '0'); tg(this, bgmOn); if (bgmOn) actx(); BGM.refresh(); });
   tg($('tgSound'), soundOn); tg($('tgVib'), vibOn);
   $('tgSound').addEventListener('click', function () { soundOn = !soundOn; LSset('opa_game_sound', soundOn ? '1' : '0'); tg(this, soundOn); if (soundOn) { actx(); sfx(1); } });
   $('tgVib').addEventListener('click', function () { vibOn = !vibOn; LSset('opa_game_vib', vibOn ? '1' : '0'); tg(this, vibOn); vib(60); });
