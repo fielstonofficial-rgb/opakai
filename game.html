@@ -321,8 +321,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 .spot.used::before,.spot.used .sp{display:none}
 @keyframes glow{0%,100%{opacity:.55;transform:translate(-50%,-50%) scale(.9)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}}
 @keyframes twk{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1)}}
-#hero2{position:absolute;width:47px;height:96px;transform:translate(-50%,-100%);pointer-events:none}
-#hero2 .hb{width:78px;height:160px;zoom:.6;transform-origin:50% 100%}
+#hero2{position:absolute;width:38px;height:71px;transform:translate(-50%,-100%);pointer-events:none}
+#hero2 .hb{width:64px;height:118px;zoom:.6;transform-origin:50% 100%}
 #hero2 .hb svg{height:100%;width:auto;display:block;margin:0 auto}
 #hero2.walk .hb{animation:bob .32s ease-in-out infinite}
 #hero2 .hs{position:absolute;left:50%;bottom:-3px;width:30px;height:9px;margin-left:-15px;border-radius:50%;background:rgba(0,0,0,.35);z-index:-1}
@@ -345,8 +345,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #field.digging #fview .hint{display:block}
 #field.digging #ftip{display:none}
 .monw{position:absolute;width:92px;transform:translate(-50%,-100%);pointer-events:none}
-.gh{position:absolute;width:47px;height:96px;transform:translate(-50%,-100%);pointer-events:none}
-.gh .hb{width:78px;height:160px;zoom:.6;transform-origin:50% 100%;position:relative}
+.gh{position:absolute;width:38px;height:71px;transform:translate(-50%,-100%);pointer-events:none}
+.gh .hb{width:64px;height:118px;zoom:.6;transform-origin:50% 100%;position:relative}
 .gh .hb svg{height:100%;width:auto;display:block;margin:0 auto}
 .gh.walk .hb{animation:bob .32s ease-in-out infinite}
 .gh .hs{position:absolute;left:50%;bottom:-3px;width:44px;height:12px;margin-left:-22px;border-radius:50%;background:rgba(0,0,0,.35);z-index:-1}
@@ -396,7 +396,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ（ショップ・ギルド・取引所あり）</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v19（ボス戦）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ（ショップ・ギルド・取引所あり）</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v20（バランス調整）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所や（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -893,6 +893,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     function tf(yn, k, yo) { return 'translate(60 ' + yn + ') scale(.96 ' + k + ') translate(-60 ' + (-yo) + ')'; }
     var HT = 'translate(60 42) scale(.64) translate(-60 -70)', LT = tf(144, 1.78, 134), TT = tf(46, 1.815, 80), AT = tf(64, 1.9, 90);
     var ST = 'translate(60 290) scale(.96 1) translate(-60 -216)', HAT = 'translate(60 161) scale(.96 1) translate(-60 -141)';
+    if (opt && opt.T) { HT = opt.T.HT; LT = opt.T.LT; TT = opt.T.TT; AT = opt.T.AT; ST = opt.T.ST; HAT = opt.T.HAT; }
     var svg = '<svg viewBox="0 0 120 ' + (opt && opt.crop ? opt.crop : 306) + '" aria-hidden="true"><defs>' + defs + '</defs>' +
       '<g transform="' + HT + '">' + back + hood + '</g>' +
       '<g transform="' + LT + '">' + legs + '</g><g transform="' + ST + '">' + shoes + '</g>' +
@@ -1702,7 +1703,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var me = { id: myMid, n: (player.avatar && player.avatar.name) || '', av: player.avatar };
     RT.join('town', me, { onMsg: rtMsg, onPeers: rtPeers }, function (ok) { if (ok) { rtOn = true; rtLast = 0; rtSend(posMsg()); } else toast('つながらへんかった。町には一人だけやで'); });
   }
-  function leaveTown() { inTown = false; zoomT = 1; fz = 1; $('field').classList.remove('town'); rtStop(); setWorld(760, 1000); }
+  function leaveTown() { inTown = false; zoomT = ZW; fz = ZW; $('field').classList.remove('town'); rtStop(); setWorld(760, 1000); }
   function sendChat() {
     var inp = $('tin'), t = String(inp.value || '').replace(/\s+/g, ' ').trim().slice(0, 40); if (!t) return;
     var now = Date.now(); if (now - tChatAt < 1800) { toast('ちょっと待ってな'); return; } tChatAt = now;
@@ -2072,7 +2073,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   /* ---------- フィールド（歩いて、掘る場所を選ぶ） ---------- */
   var WW = 760, WH = 1000, SPEED = 200;
   function setWorld(w, h) { WW = w; WH = h; var el = $('world'); el.style.width = w + 'px'; el.style.height = h + 'px'; }
-  var hero = { x: 380, y: 900, dir: 1 }, fz = 1, zoomT = 1, camX = 0, camY = 0, ftarget = null, fieldOn = false, fraf = 0, flast = 0;
+  var ZW = .66, hero = { x: 380, y: 900, dir: 1 }, fz = ZW, zoomT = ZW, camX = 0, camY = 0, ftarget = null, fieldOn = false, fraf = 0, flast = 0;
   var spots = [], curSpot = null, spotSeq = 0, spotKind = 'a', tipT = 0;
   var SPOTTAPS = { a: 40, b: 70, c: 100 };
   function hash(str) { var h = 2166136261; for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
@@ -2393,9 +2394,10 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!shared || amHost()) for (var q = 0; q < 5; q++) addFoe();
     updHero(); hpUi();
   }
+  var FLDT = { crop: 222, T: { HT: 'translate(60 74) scale(.8) translate(-60 -74)', LT: 'translate(0 0)', TT: 'translate(0 0)', AT: 'translate(0 0)', ST: 'translate(0 0)', HAT: 'translate(0 0)' } };
   function charHTML(av, pid) {
-    var pa = normAv(av), hx = pa.gender === 0 ? 53.0 : 50.5;
-    return avatarSVG(av) + '<div class="fpk"' + (pid ? ' id="' + pid + '"' : '') + ' style="left:' + (hx - 16.2).toFixed(1) + 'px;top:40px">' + pickHTML(SKIN[pa.skin]) + '</div>';
+    var pa = normAv(av), hx0 = pa.gender === 0 ? 53.0 : 50.5, hx = ((((hx0 - 7.6) / 62.7 * 120) - 60) / .96 + 60) / 120 * 64;
+    return avatarSVG(av, FLDT) + '<div class="fpk"' + (pid ? ' id="' + pid + '"' : '') + ' style="left:' + (hx - 16.2).toFixed(1) + 'px;top:31px">' + pickHTML(SKIN[pa.skin]) + '</div>';
   }
   function heroHTML() { return charHTML(player.avatar, 'fpick'); }
   function updHero() {
@@ -2452,7 +2454,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     $('ftip').style.opacity = 0;
   });
   function digUI(on) {
-    $('field').classList.toggle('digging', !!on); zoomT = on ? 1.55 : (inTown ? .62 : 1);
+    $('field').classList.toggle('digging', !!on); zoomT = on ? 1.25 : (inTown ? .62 : ZW);
     if (!on) { $('hint').textContent = ''; }
   }
   function startDig(sp) {
