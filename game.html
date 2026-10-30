@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:37-->
+<!--GV:38-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -536,7 +536,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v37（案内役・一般モード）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v38（闘技場ひろく）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所や（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -2006,7 +2006,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 闘技場（観客席＝安全／闘技場内＝だれでも攻撃できる／タップで挑戦→承認→1対1の決闘場）。勝っても負けても、持ち物は減らへん ---------- */
-  var inArena = false, inPlaza = false, FLOOR_Y = 640;
+  var inArena = false, inPlaza = false, FLOOR_Y = 220;
   var AR_TIME = 90;
   var arena = { on: false, others: [], inv: null, out: null, m: null, tmr: 0, zt: 0, hb0: 0, floor: false, zs: 0, hitAt: {} };
   function arRec() { try { return JSON.parse(LSget('opa_arena_rec_' + myMid) || '{}') || {}; } catch (e) { return {}; } }
@@ -2022,29 +2022,28 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   /* ----- 広場（観客席と闘技場内） ----- */
   function plazaSVG() {
     var o = '<svg width="900" height="1100" viewBox="0 0 900 1100" style="position:absolute;left:0;top:0;pointer-events:none;z-index:0"><defs><linearGradient id="pS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8cf9a"/><stop offset="1" stop-color="#cfae72"/></linearGradient><linearGradient id="pW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5a68"/><stop offset="1" stop-color="#3b2f3d"/></linearGradient><linearGradient id="pT" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#4a3a56"/><stop offset="1" stop-color="#352a42"/></linearGradient></defs>';
-    o += '<rect width="900" height="1100" fill="#2b2230"/><rect x="0" y="0" width="900" height="170" fill="url(#pW)"/>';
+    o += '<rect width="900" height="1100" fill="#2b2230"/><rect x="0" y="0" width="900" height="60" fill="url(#pW)"/>';
     var i, cs = ['#ff8aa0', '#ffd36a', '#9fd0ff', '#b9f0b0', '#e0b0ff', '#fff'];
-    for (i = 0; i < 120; i++) { var cx = 10 + (i * 37) % 880, cy = 30 + Math.floor((i * 13) % 5) * 28; o += '<circle cx="' + cx + '" cy="' + cy + '" r="7" fill="' + cs[i % 6] + '" opacity=".8"/>'; }
-    for (i = 0; i < 10; i++) o += '<rect x="' + (14 + i * 92) + '" y="120" width="14" height="52" fill="#5b4a5e"/>';
-    // 観客席（段々の席）
-    o += '<rect x="0" y="170" width="900" height="430" fill="url(#pT)"/>';
-    for (i = 0; i < 6; i++) { var ry = 200 + i * 66; o += '<rect x="0" y="' + ry + '" width="900" height="8" fill="#6b5a78"/><rect x="0" y="' + (ry + 8) + '" width="900" height="3" fill="rgba(0,0,0,.25)"/>'; for (var j = 0; j < 17; j++) { o += '<rect x="' + (20 + j * 52) + '" y="' + (ry + 26) + '" width="34" height="20" rx="5" fill="' + (j % 2 ? '#7a4a6a' : '#5a4a8a') + '" opacity=".75"/>'; } }
-    o += '<text x="450" y="236" text-anchor="middle" font-size="26" font-weight="900" fill="#cfe9ff" opacity=".55" font-family="system-ui,sans-serif">🛡 観客席（ここは安全）</text>';
+    for (i = 0; i < 60; i++) { var cx = 10 + (i * 37) % 880, cy = 14 + Math.floor((i * 13) % 2) * 22; o += '<circle cx="' + cx + '" cy="' + cy + '" r="7" fill="' + cs[i % 6] + '" opacity=".8"/>'; }
+    // 観客席（せまい2段）
+    o += '<rect x="0" y="60" width="900" height="130" fill="url(#pT)"/>';
+    for (i = 0; i < 2; i++) { var ry = 66 + i * 60; o += '<rect x="0" y="' + ry + '" width="900" height="6" fill="#6b5a78"/>'; for (var j = 0; j < 17; j++) { o += '<rect x="' + (20 + j * 52) + '" y="' + (ry + 16) + '" width="34" height="18" rx="5" fill="' + (j % 2 ? '#7a4a6a' : '#5a4a8a') + '" opacity=".75"/>'; } }
+    o += '<text x="450" y="106" text-anchor="middle" font-size="22" font-weight="900" fill="#cfe9ff" opacity=".6" font-family="system-ui,sans-serif">🛡 観客席（ここは安全）</text>';
     // 柵と入口
-    o += '<rect x="0" y="588" width="900" height="26" fill="#5a4a5e"/><path d="M0 588H900" stroke="#9a80a0" stroke-width="4"/>';
-    for (i = 0; i < 18; i++) o += '<rect x="' + (10 + i * 50) + '" y="566" width="10" height="48" rx="3" fill="#7a6480"/>';
-    o += '<rect x="380" y="566" width="140" height="52" fill="#2b2230"/><path d="M380 566V618M520 566V618" stroke="#ffd36a" stroke-width="5"/><text x="450" y="560" text-anchor="middle" font-size="18" font-weight="900" fill="#ffd36a" font-family="system-ui,sans-serif">▼ 闘技場の入口</text>';
-    // 闘技場内
-    o += '<rect x="0" y="614" width="900" height="486" fill="url(#pS)"/><ellipse cx="450" cy="860" rx="420" ry="220" fill="none" stroke="#a88a54" stroke-width="6"/><ellipse cx="450" cy="860" rx="400" ry="204" fill="rgba(255,255,255,.12)"/><path d="M450 650V1070" stroke="#a88a54" stroke-width="4" stroke-dasharray="14 12"/>';
-    o += '<text x="450" y="690" text-anchor="middle" font-size="26" font-weight="900" fill="#8a2a3a" opacity=".55" font-family="system-ui,sans-serif">⚔ 闘技場内（だれにでも攻撃される）</text>';
-    o += '<path d="M60 170V100L130 126L60 152" fill="#e0405a" stroke="#7a1a2a" stroke-width="2"/><path d="M840 170V100L770 126L840 152" fill="#4a8ae0" stroke="#1a3a7a" stroke-width="2"/>';
+    o += '<rect x="0" y="190" width="900" height="24" fill="#5a4a5e"/><path d="M0 190H900" stroke="#9a80a0" stroke-width="4"/>';
+    for (i = 0; i < 18; i++) o += '<rect x="' + (10 + i * 50) + '" y="170" width="10" height="44" rx="3" fill="#7a6480"/>';
+    o += '<rect x="380" y="170" width="140" height="48" fill="#2b2230"/><path d="M380 170V218M520 170V218" stroke="#ffd36a" stroke-width="5"/><text x="450" y="162" text-anchor="middle" font-size="16" font-weight="900" fill="#ffd36a" font-family="system-ui,sans-serif">▼ 闘技場の入口</text>';
+    // 闘技場内（全体の8割）
+    o += '<rect x="0" y="214" width="900" height="886" fill="url(#pS)"/><ellipse cx="450" cy="660" rx="430" ry="410" fill="none" stroke="#a88a54" stroke-width="6"/><ellipse cx="450" cy="660" rx="410" ry="392" fill="rgba(255,255,255,.12)"/><path d="M450 270V1050" stroke="#a88a54" stroke-width="4" stroke-dasharray="14 12"/>';
+    o += '<text x="450" y="262" text-anchor="middle" font-size="24" font-weight="900" fill="#8a2a3a" opacity=".55" font-family="system-ui,sans-serif">⚔ 闘技場内（だれにでも攻撃される）</text>';
+    o += '<path d="M60 60V10L130 36L60 62" fill="#e0405a" stroke="#7a1a2a" stroke-width="2"/><path d="M840 60V10L770 36L840 62" fill="#4a8ae0" stroke="#1a3a7a" stroke-width="2"/>';
     return o + '</svg>';
   }
   function buildPlaza() {
     var w = $('world'); setWorld(900, 1100); w.classList.remove('cave'); w.style.background = '#2b2230';
     w.innerHTML = plazaSVG() + '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     spots = []; spotSeq = 0; foes = []; fgen++; curSpot = null; guard = false; peers = {};
-    hero.x = 450; hero.y = 420; hero.dir = 1; ftarget = null; $('hb').innerHTML = heroHTML(); applyAura(); updHero();
+    hero.x = 450; hero.y = 120; hero.dir = 1; ftarget = null; $('hb').innerHTML = heroHTML(); applyAura(); updHero();
     var f = $('field'); f.classList.remove('town', 'arena'); f.classList.add('plaza', 'safe'); $('fTtl').textContent = '闘技場'; $('fCancel').textContent = '町へ出る';
     fz = zoomT = .6; $('ftip').dataset.shown = 1; $('ftip').style.opacity = 0; arena.zs = 0;
   }
@@ -2301,7 +2300,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 37;
+  var GV = 38;
   (function () {
     var last = Date.now();
     function chk() {
