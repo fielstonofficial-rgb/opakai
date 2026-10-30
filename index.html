@@ -1142,7 +1142,7 @@ body.admin-on .tools .adminbtn{display:inline-flex}
   #helpBtn svg { width: 22px !important; height: 22px !important; }
   #helpBtn svg text { font-size: 17px !important; }
 }
-@media (max-width: 370px) { .chat-head .linebtn .lx { display: none !important; } }
+@media (max-width: 370px) { #lineBtn span { font-size: 0 !important; } #lineBtn .lx { font-size: 9px !important; } }
 </style>
 </head>
 <body>
@@ -1953,7 +1953,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
   /* ---- オパール採掘ゲーム（別ページ game.html を全画面で開く。チャットとは独立） ---- */
   function gameOpen(on) {
     var fr = $('gameFrame');
-    if (on) { fr.src = 'game.html?v=20261030'; $('gamePanel').hidden = false; }
+    if (on) { fr.src = 'game.html?v=' + Date.now(); $('gamePanel').hidden = false; }
     else { $('gamePanel').hidden = true; fr.src = 'about:blank'; }
   }
   $('gameBtn').addEventListener('click', function () { gameOpen(true); });
