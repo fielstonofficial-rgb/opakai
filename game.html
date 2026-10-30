@@ -370,6 +370,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <div class="body">
         <div class="sec">キャラクター</div>
         <div class="row"><span id="setName"></span><button class="opt" id="editAvatar" type="button">キャラを変える</button></div>
+        <div class="row"><span>ぜんぶ消して最初から</span><button class="opt" id="resetAll" type="button">やり直す</button></div>
         <div class="sec">音と振動</div>
         <div class="row"><span>BGM（音楽）</span><button class="tg" id="tgBgm" type="button" aria-label="BGM"><i></i></button></div>
         <div class="row"><span>効果音</span><button class="tg" id="tgSound" type="button" aria-label="効果音"><i></i></button></div>
@@ -1347,6 +1348,13 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('bookBtn').addEventListener('click', function () { renderBook(); $('book').classList.add('on'); });
   $('setBtn').addEventListener('click', function () { $('set').classList.add('on'); });
   document.addEventListener('click', function (e) { var b = e.target.closest('[data-close]'); if (b) $(b.dataset.close).classList.remove('on'); });
+  var resetArm = 0;
+  $('resetAll').addEventListener('click', function () {
+    var b = this;
+    if (!resetArm) { resetArm = 1; b.textContent = '本当に？もう1回タップ'; setTimeout(function () { resetArm = 0; b.textContent = 'やり直す'; }, 5000); return; }
+    b.disabled = true; b.textContent = '処理中…';
+    api({ action: 'game_reset' }).then(function (j) { if (j && j.ok) { try { localStorage.removeItem('opa_seen'); } catch (e) {} location.reload(); } else { b.disabled = false; b.textContent = 'やり直す'; resetArm = 0; toast((j && j.message) || 'うまくいかんかった'); } });
+  });
   $('editAvatar').addEventListener('click', function () { editFrom = $('play').classList.contains('on') ? 'play' : ($('field').classList.contains('on') ? 'field' : 'map'); closeSheets(); openMake('edit'); });
   function tg(btn, on) { btn.classList.toggle('on', on); btn.setAttribute('aria-pressed', String(on)); }
   tg($('tgBgm'), bgmOn); $('tgBgm').addEventListener('click', function () { bgmOn = !bgmOn; LSset('opa_game_bgm', bgmOn ? '1' : '0'); tg(this, bgmOn); if (bgmOn) actx(); BGM.refresh(); });
