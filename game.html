@@ -178,6 +178,22 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 .tg i{position:absolute;top:3px;left:3px;width:22px;height:22px;border-radius:50%;background:#fff;transition:left .15s}
 .tg.on{background:#3fa66a}.tg.on i{left:25px}
 /* 掘り当て演出 */
+#gmTog{position:absolute;right:10px;top:70px;z-index:28;display:none;padding:7px 12px;border-radius:999px;border:1px solid rgba(255,255,255,.3);background:rgba(10,18,24,.88);color:#fff;font-size:11px;font-weight:800}
+#gmTog.on{border-color:#ffd36a;color:#ffe9a8;background:rgba(40,30,6,.9);box-shadow:0 0 10px rgba(255,211,106,.4)}
+#pf{position:absolute;inset:0;z-index:48;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:18px}
+#pf.on{display:flex}
+#pf .pfc{width:100%;max-width:340px;border-radius:20px;background:#101c24;border:1px solid var(--line);padding:16px;text-align:center}
+#pf .pfav{height:120px;display:flex;justify-content:center;margin-bottom:6px}
+#pf .pfav .hb2{width:64px;height:118px;position:relative}
+#pf .pfav svg{height:100%;width:auto}
+#pf .fpk{display:none}
+#pf h3{margin:4px 0;font-size:18px}
+#pf .lvc{display:inline-block;padding:2px 12px;border-radius:999px;background:rgba(232,196,106,.18);border:1px solid var(--gold);color:var(--gold);font-weight:800;font-size:13px}
+#pf .eqg{display:grid;grid-template-columns:1fr 1fr;gap:6px;margin:12px 0;text-align:left}
+#pf .eqg div{padding:6px 8px;border-radius:10px;background:rgba(255,255,255,.06);font-size:12px}
+#pf .eqg span{color:var(--mut)}
+#pf button{padding:11px 18px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.08);color:#fff;font-weight:800;margin:0 4px}
+#pf button.atk{border-color:#ff7a8a;background:rgba(255,80,100,.2)}
 #rvMini{position:absolute;left:50%;top:118px;transform:translate(-50%,-14px);z-index:45;display:none;align-items:center;gap:10px;padding:8px 14px 8px 10px;border-radius:16px;background:rgba(8,16,22,.92);border:1px solid var(--rc,rgba(255,255,255,.3));box-shadow:0 0 18px var(--rc,transparent);pointer-events:none;opacity:0;transition:opacity .25s,transform .25s;max-width:92%}
 #rvMini.on{display:flex;opacity:1;transform:translate(-50%,0)}
 #rvMini .g{width:46px;height:46px;flex:none}
@@ -450,7 +466,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v30（武器のとどく距離）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v31（プロフィール・マスター変身）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所や（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -520,6 +536,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         <p class="tiny">記録は、自動でセーブされます。次に開いた時は、つづきからはじまるで。</p>
       </div>
     </div>
+    <button id="gmTog" type="button"></button>
+    <div id="pf"><div class="pfc" id="pfc"></div></div>
     <div id="rvMini"><div class="g" id="rvG"></div><div class="t"><small id="rvT"></small><b id="rvN"></b><span id="rvX"></span></div></div>
     <div id="rev">
       <div class="flash"></div>
@@ -602,13 +620,13 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function api(body) {
     body.token = token;
     return fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
-      .then(function (r) { return r.json().then(function (j) { j._s = r.status; if (j && j.player && (j.me === GM_ID || myMidG === GM_ID)) { j.player.lv = 999; j.player.gm = true; } return j; }); });
+      .then(function (r) { return r.json().then(function (j) { j._s = r.status; if (j && j.player && (j.me === GM_ID || myMidG === GM_ID)) { j.player.gmReal = true; j.player.lvReal = j.player.lv; if (gmOn) { j.player.lv = 999; j.player.gm = true; } } return j; }); });
   }
-  var GM_ID = '4a324658-8414-4361-9962-9a6963982a39', myMidG = '';
+  var GM_ID = '4a324658-8414-4361-9962-9a6963982a39', myMidG = '', gmOn = LSget('opa_gm_off') !== '1';
   function lvS(x) { return x && x.id === GM_ID ? 999 : (x ? x.lv : 1); }
   var tt;
   function toast(m) { var t = $('toast'); t.textContent = m; t.style.display = 'block'; clearTimeout(tt); tt = setTimeout(function () { t.style.display = 'none'; }, 3200); }
-  function show(id) { ['load', 'open', 'make', 'map', 'field', 'play'].forEach(function (x) { $(x).classList.toggle('on', x === id); }); fieldOn = (id === 'field'); if (fieldOn) startLoop(); if (typeof BGM !== 'undefined' && BGM) if (id !== 'open') themeStop(); BGM.set(({ field: (inTown ? 'town' : 'field'), play: 'dig' })[id] || (id === 'open' && !THEME.on && THEME.failed ? 'map' : null)); }
+  function show(id) { ['load', 'open', 'make', 'map', 'field', 'play'].forEach(function (x) { $(x).classList.toggle('on', x === id); }); if (typeof gmTogUi === 'function') gmTogUi(); fieldOn = (id === 'field'); if (fieldOn) startLoop(); if (typeof BGM !== 'undefined' && BGM) if (id !== 'open') themeStop(); BGM.set(({ field: (inTown ? 'town' : 'field'), play: 'dig' })[id] || (id === 'open' && !THEME.on && THEME.failed ? 'map' : null)); }
 
   /* ---------- 音・振動 ---------- */
   var ac = null;
@@ -1319,6 +1337,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     helm: { id: 'gm_h', slot: 'helm', nm: '黄金の兜', def: .05, ic: '⛑️' }
   };
   function isGM() { return !!(player && player.gm); }
+  function gmTogUi() { var b = $('gmTog'); if (!b) return; var on = $('map').classList.contains('on') || $('field').classList.contains('on'); b.style.display = (player && player.gmReal && on) ? 'block' : 'none'; b.className = gmOn ? 'on' : ''; b.textContent = gmOn ? '👑 マスター中（タップで一般に変身）' : '🙂 一般中（タップでマスターに変身）'; }
+  function applyGmMode() {
+    if (!player || !player.gmReal) return;
+    player.gm = gmOn; player.lv = gmOn ? 999 : (player.lvReal || 1); hp.ready = false; guard = false;
+    hpUi(); applyAura(); gearUi(); try { stats(); } catch (e) {} gmTogUi();
+    if ($('bag').classList.contains('on')) renderBag();
+    toast(gmOn ? '👑 マスターに変身した！' : '🙂 一般プレイヤーに変身した（Lvも装備も ふつうの状態）');
+  }
   var GMLIST = ['weapon', 'helm', 'armor', 'shield', 'outfit', 'tool'];
   function eqItem(slot) { if (isGM() && GMI[slot]) return GMI[slot]; var id = ((player || {}).equip || {})[slot]; return id ? IBY[id] : null; }
   var wHand = 'weapon';
@@ -1334,7 +1360,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (bagTab === 0) {
       var any = false;
       var SLALL = isGM() ? GMLIST : SLOTS;
-      h += '<div class="sec">いま つけてる装備</div><div class="it" style="display:block"><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">' + SLALL.map(function (sl) { var q = eqItem(sl); return '<div style="padding:6px 8px;border-radius:10px;background:rgba(255,255,255,.06);font-size:12px"><span style="color:var(--mut)">' + (sl === 'helm' ? '兜' : SLN[sl].split('（')[0]) + '</span><br><b>' + (q ? q.ic + ' ' + q.nm : '— なし —') + '</b></div>'; }).join('') + '</div></div>';
+      h += '<div class="sec">いま つけてる装備　<span style="color:var(--gold)">Lv ' + (player.lv || 1) + (isGM() ? '（👑マスター）' : '') + '　HP ' + hpMaxNow() + '</span></div><div class="it" style="display:block"><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">' + SLALL.map(function (sl) { var q = eqItem(sl); return '<div style="padding:6px 8px;border-radius:10px;background:rgba(255,255,255,.06);font-size:12px"><span style="color:var(--mut)">' + (sl === 'helm' ? '兜' : SLN[sl].split('（')[0]) + '</span><br><b>' + (q ? q.ic + ' ' + q.nm : '— なし —') + '</b></div>'; }).join('') + '</div></div>';
       if (isGM()) h += '<p class="tiny">👑 ゲームマスター装備は、ぜんぶ黄金で固定やで（弓は飛び道具。つるはしは、掘る専用）。</p>';
       SLOTS.forEach(function (slot) {
         if (isGM()) return;
@@ -1648,7 +1674,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function rtMsg(m) {
     if (!m || m.f === myMid) return;
     var pr = peers[m.f];
-    if (m.t === 'pos') { if (!pr) pr = peers[m.f] = { id: m.f, x: m.x, y: m.y, tx: m.x, ty: m.y, dir: m.d || 1, got: false }; if (!pr.got) { pr.x = m.x; pr.y = m.y; pr.got = true; } pr.tx = m.x; pr.ty = m.y; pr.dir = m.d || 1; pr.h = m.h == null ? 100 : m.h; pr.dn = m.dn ? 1 : 0; pr.gm = m.gm ? 1 : 0; ghostEl(pr); if (pr.gm && pr.el && !pr.el.classList.contains('gmg')) { pr.el.classList.add('gmg'); var gn = pr.el.querySelector('.gname'); if (gn) gn.textContent = '👑GM ' + (pr.n || ''); } return; }
+    if (m.t === 'pos') { if (!pr) pr = peers[m.f] = { id: m.f, x: m.x, y: m.y, tx: m.x, ty: m.y, dir: m.d || 1, got: false }; if (!pr.got) { pr.x = m.x; pr.y = m.y; pr.got = true; } pr.tx = m.x; pr.ty = m.y; pr.dir = m.d || 1; pr.h = m.h == null ? 100 : m.h; pr.dn = m.dn ? 1 : 0; pr.gm = m.gm ? 1 : 0; pr.lv = m.lv; pr.eq = m.eq; ghostEl(pr); if (pr.gm && pr.el && !pr.el.classList.contains('gmg')) { pr.el.classList.add('gmg'); var gn = pr.el.querySelector('.gname'); if (gn) gn.textContent = '👑GM ' + (pr.n || ''); } return; }
     if (m.t === 'rev') { if (m.to === myMid && hp.down) reviveMe(pr && pr.n); return; }
     if (m.t === 'fs') { if (!amFoeHost()) applyFoeState(m.fl || []); return; }
     if (m.t === 'hit') { if (amFoeHost() && netFoes()) { var hf = null; foes.forEach(function (x) { if (x.id === m.i) hf = x; }); if (hf) applyFoeDamage(hf, Math.max(1, Math.min((pr && pr.gm) ? 1e8 : 500, Math.round(m.d || 1)))); } return; }
@@ -2311,7 +2337,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var hh = $('hero2'); if (hh) { var b = hh.querySelector('.hhp'); if (b) { b.classList.toggle('on', r < 1); b.firstChild.style.width = (r * 100) + '%'; b.firstChild.style.background = r <= .3 ? '#ff5a5a' : '#4fd68a'; } hh.classList.toggle('down', hp.down); }
   }
   function floatTxt(x, y, t, c) { var e = document.createElement('div'); e.className = 'ftxt' + (c ? ' ' + c : ''); e.textContent = t; e.style.left = x + 'px'; e.style.top = y + 'px'; $('world').appendChild(e); setTimeout(function () { e.remove(); }, 850); }
-  function posMsg() { return { t: 'pos', x: Math.round(hero.x), y: Math.round(hero.y), d: hero.dir, h: Math.round(hp.cur / Math.max(1, hp.max) * 100), dn: hp.down ? 1 : 0, gm: isGM() ? 1 : 0 }; }
+  function posMsg() { return { t: 'pos', x: Math.round(hero.x), y: Math.round(hero.y), d: hero.dir, h: Math.round(hp.cur / Math.max(1, hp.max) * 100), dn: hp.down ? 1 : 0, gm: isGM() ? 1 : 0, lv: (player && player.lv) || 1, eq: EQSL.map(function (sl) { var q = eqItem(sl); return q ? q.id : ''; }).join(',') }; }
+  var EQSL = ['weapon', 'shield', 'armor', 'outfit', 'tool', 'helm'];
   function rtHp() { if (rtOn) { rtLast = 0; } }
   function hurtMe(dmg) {
     if (hp.down || inTown || busy) return false;
@@ -2368,6 +2395,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (pk.dataset.m === mode) return; pk.dataset.m = mode;
     pk.innerHTML = mode === 'pick' ? pickHTML(SKIN[normAv(player.avatar).skin]) : weaponSVG(mode);
   }
+  $('gmTog').addEventListener('click', function () { gmOn = !gmOn; LSset('opa_gm_off', gmOn ? '0' : '1'); applyGmMode(); });
+  $('gmTog').addEventListener('pointerdown', function (e) { e.stopPropagation(); });
   function gearUi() {
     var g = $('guardBtn'); if (!g) return; var has = !!eqItem('shield');
     g.style.display = (has && fieldOn) ? 'block' : 'none'; g.classList.toggle('on', guard); g.textContent = guard ? '🛡 ガード中（もう一度でやめる）' : '🛡 ガード';
@@ -2532,8 +2561,21 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (f.hp <= 0) { sfx(2); killFoe(f, 25000); }
     else if (!f.boss) { f.mode = 'stun'; f.t = 1.1; f.el.classList.remove('alert'); }
   }
-  function hitGmAt(wx, wy) {
-    var g = null; Object.keys(peers).forEach(function (id) { var q = peers[id]; if (q.gm && q.el && Math.hypot(wx - q.x, wy - (q.y - 32)) < 64) g = q; });
+  var GMBY = {}; Object.keys(GMI).forEach(function (k) { GMBY[GMI[k].id] = GMI[k]; });
+  var EQN = { weapon: '武器', shield: '盾', armor: '防具', outfit: '衣装', tool: '採掘道具', helm: '兜' };
+  function peerAt(wx, wy) { var g = null, bd = 50; Object.keys(peers).forEach(function (id) { var q = peers[id]; if (!q.el) return; var d = Math.hypot(wx - q.x, wy - (q.y - 32)); if (d < bd) { bd = d; g = q; } }); return g; }
+  function openProfile(pr) {
+    var ids = String(pr.eq || '').split(','), eqh = '';
+    EQSL.forEach(function (sl, i) { if (sl === 'helm' && !pr.gm) return; var q = ids[i] ? (IBY[ids[i]] || GMBY[ids[i]]) : null; eqh += '<div><span>' + EQN[sl] + '</span><br><b>' + (q ? q.ic + ' ' + q.nm : (pr.eq == null ? '？' : '— なし —')) + '</b></div>'; });
+    var box = $('pfc'); box.innerHTML = '<div class="pfav"><div class="hb2">' + charHTML(pr.av) + '</div></div><h3></h3><span class="lvc">Lv ' + (pr.lv != null ? pr.lv : '？') + '</span>' + (pr.gm ? ' <span class="lvc">👑 ゲームマスター</span>' : '') + '<div class="eqg">' + eqh + '</div><div><button type="button" id="pfX">とじる</button>' + (pr.gm && !isGM() ? '<button type="button" class="atk" id="pfA">⚔ こうげきしてみる</button>' : '') + '</div>';
+    box.querySelector('h3').textContent = pr.n || 'だれか';
+    $('pf').classList.add('on');
+    $('pfX').onclick = function () { $('pf').classList.remove('on'); };
+    if ($('pfA')) $('pfA').onclick = function () { $('pf').classList.remove('on'); hitGmPeer(pr); };
+  }
+  $('pf').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('on'); });
+  function hitGmAt(wx, wy) { var g = peerAt(wx, wy); return !!(g && g.gm && hitGmPeer(g)); }
+  function hitGmPeer(g) {
     if (!g || hp.down) return false;
     if (Math.hypot(hero.x - g.x, hero.y - g.y) > atkRange()) { toast('もうちょっと近づいてな'); return true; }
     if (!canAttack()) return true;
@@ -2648,7 +2690,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (curSpot) { swing(e); return; }
     var r = this.getBoundingClientRect(), wx = (e.clientX - r.left) / fz + camX, wy = (e.clientY - r.top) / fz + camY, hit = null, best = 58;
     if (hitFoeAt(wx, wy)) return;
-    if (!isGM() && hitGmAt(wx, wy)) return;
+    var tpr = peerAt(wx, wy); if (tpr && !tpr.dn) { openProfile(tpr); return; }
     var gpr = null; Object.keys(peers).forEach(function (id) { var q = peers[id]; if (q.dn && Math.hypot(wx - q.x, wy - (q.y - 32)) < 70) gpr = q; });
     if (gpr) { doRevive(gpr.id); return; }
     if (inTown) { var dr = townDoorAt(wx, wy); if (dr) { var pg0 = document.createElement('i'); pg0.className = 'ping'; pg0.style.left = wx + 'px'; pg0.style.top = wy + 'px'; $('world').appendChild(pg0); setTimeout(function () { pg0.remove(); }, 520); ftarget = { x: dr.x, y: dr.y + 46, spot: null, door: dr.k }; $('ftip').style.opacity = 0; return; } }
