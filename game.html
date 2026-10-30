@@ -345,6 +345,38 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #gld input{flex:1;min-width:0;border:0;border-radius:10px;padding:10px 12px;font-size:16px}
 .gbtn{border:0;border-radius:12px;padding:10px 14px;font-weight:800;background:#ffd36a;color:#3a2a08}
 .gbtn.dim{background:#3a4458;color:#cfd6e4;width:100%;margin-top:12px}.gbtn:disabled{opacity:.5}
+
+#arn{position:fixed;inset:0;z-index:305;background:linear-gradient(180deg,#2a1420,#1b1226 60%,#120c1a);color:#fff;display:none;flex-direction:column;padding:12px 14px calc(14px + env(safe-area-inset-bottom));overflow:auto}
+#arn.on{display:flex}
+#arn .arh{display:flex;align-items:center;gap:10px;justify-content:space-between;margin-bottom:8px}
+#arn .arh b{font-size:19px}
+#arn h3{margin:6px 0 8px;font-size:17px;color:#ffd36a}
+#arn .arr{display:flex;gap:10px;align-items:center;justify-content:space-between;margin:8px 0;padding:10px 12px;border-radius:14px;background:rgba(255,255,255,.07);border:1px solid rgba(255,255,255,.12)}
+#arn .arr .tiny{margin-top:3px}
+#arn .arp{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0;padding:12px;border-radius:14px;background:rgba(255,255,255,.09)}
+#arn .arp b{font-size:16px}
+#arn .abtn{border:0;border-radius:14px;padding:12px 16px;font-weight:900;font-size:15px;background:linear-gradient(180deg,#ff8a8a,#e0405a);color:#fff}
+#arn .abtn:disabled{opacity:.45}
+#arn .tms{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin:8px 0}
+#arn .tm{border-radius:14px;padding:10px;min-height:96px;background:rgba(255,255,255,.07)}
+#arn .tm.r{border:2px solid #ff7a8a}#arn .tm.b{border:2px solid #7ab8ff}
+#arn .tm h4{margin:0 0 6px;font-size:14px}
+#arn .tm div.n{padding:6px 8px;margin:4px 0;border-radius:8px;background:rgba(255,255,255,.1);font-size:14px}
+#arn .inv{margin:8px 0;padding:12px;border-radius:14px;background:linear-gradient(180deg,#5a1e2c,#3a1220);border:2px solid #ff7a8a;text-align:center}
+#arn .inv b{display:block;font-size:17px;margin-bottom:8px}
+#arn .inv button{margin:0 5px}
+#arBig{position:fixed;left:0;right:0;top:34%;z-index:250;text-align:center;font-size:44px;font-weight:900;color:#fff;text-shadow:0 3px 12px rgba(0,0,0,.8),0 0 24px rgba(255,90,110,.8);pointer-events:none;display:none}
+#arBig.on{display:block;animation:arPop .5s ease-out}
+@keyframes arPop{from{transform:scale(1.7);opacity:0}to{transform:scale(1);opacity:1}}
+#arRes{position:fixed;inset:0;z-index:320;background:rgba(0,0,0,.66);display:none;align-items:center;justify-content:center;padding:20px}
+#arRes.on{display:flex}
+#arRes .arrc{width:100%;max-width:340px;background:#1b2230;border-radius:20px;padding:22px;text-align:center;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+#arRes h2{margin:0 0 8px;font-size:30px}
+#field.arena #fDigBar{display:flex}
+#field.arena #dig{display:none}
+#field.arena #fview{background:#cfae72}
+#field.arena #atkBtn{flex:1}
+#field.arena #world::after{box-shadow:inset 0 0 70px 14px rgba(0,0,0,.25)}
 #gld .gm{display:grid;gap:4px;margin-top:8px}#gld .gm div{background:rgba(255,255,255,.07);border-radius:8px;padding:6px 10px}
 .town-btn.pty{background:linear-gradient(180deg,#bfeaff,#6fb8e8)}
 .town-btn{display:block;margin:8px auto 0;width:auto;min-width:62%;padding:9px 22px;border:0;border-radius:14px;font-weight:800;font-size:14px;color:#3a2a08;background:linear-gradient(180deg,#ffe9a8,#f2c25a);box-shadow:0 3px 10px rgba(0,0,0,.35)}
@@ -467,7 +499,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v33（地獄ステージ）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v34（闘技場）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所や（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -477,6 +509,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="装備・もちもの">🎒<small>装備・持物</small></button><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
     <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><button id="guardBtn" type="button">🛡 ガード</button><button id="swBtn" type="button">🔁 持ちかえ</button><button id="qcBtn" type="button">💬 ひとこと</button><div id="qcPanel"></div><div id="downov"><b>たおれてしもた…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
         <div id="gld"><div class="gc"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="tiny">ギルドの部屋</span><button id="gClose" type="button" class="gbtn" style="padding:6px 12px">とじる</button></div><div id="gBody"></div></div></div>
+        <div id="arn"><div class="arh"><b>⚔ 闘技場</b><span class="tiny" id="arRec"></span><button id="arClose" type="button" class="gbtn" style="padding:8px 12px">町にもどる</button></div><div id="arBody"></div></div>
+        <div id="arBig"></div>
+        <div id="arRes"><div class="arrc"><h2 id="arResT"></h2><p class="tiny" id="arResP"></p><button id="arResB" type="button" class="gbtn" style="width:100%;margin-top:12px">部屋にもどる</button></div></div>
     <div id="tchat"><div id="tlog"></div><div id="trow"><input id="tin" type="text" maxlength="40" placeholder="ひとこと話す（40字まで）" autocomplete="off"><button id="tsend" type="button">送る</button></div></div>
     <div class="fhud" id="fhud"></div>
   </section>
@@ -1642,7 +1677,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         var bc = new BroadcastChannel('opa_rt_' + roomId), pm = {}, c = { send: function (p) { bc.postMessage({ k: 'm', p: p }); }, leave: function () { bc.postMessage({ k: 'bye', id: me.id }); bc.close(); } };
         var pub = function () { bc.postMessage({ k: 'hello', me: me }); }, vals = function () { return Object.keys(pm).map(function (k) { return pm[k]; }); };
         bc.onmessage = function (e) { var d = e.data; if (d.k === 'hello') { var nw = !pm[d.me.id]; pm[d.me.id] = d.me; if (nw) pub(); h.onPeers(vals()); } else if (d.k === 'bye') { delete pm[d.id]; h.onPeers(vals()); } else if (d.k === 'm') h.onMsg(d.p); };
-        cur = c; pub(); if (done) done(true); return;
+        c.track = function (m) { me = m; pub(); }; cur = c; pub(); if (done) done(true); return;
       }
       loadLib(function (ok) {
         if (!ok) { if (done) done(false); return; }
@@ -1652,12 +1687,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
           ch.on('broadcast', { event: 'm' }, function (e) { h.onMsg(e.payload); });
           ch.on('presence', { event: 'sync' }, function () { var st = ch.presenceState(), out = []; Object.keys(st).forEach(function (k) { var m = st[k][0]; if (m && m.id !== me.id) out.push(m); }); h.onPeers(out); });
           ch.subscribe(function (status) { if (status === 'SUBSCRIBED') { ch.track(me); if (done) { done(true); done = null; } } });
-          cur = { send: function (p) { ch.send({ type: 'broadcast', event: 'm', payload: p }); }, leave: function () { try { cl.removeChannel(ch); } catch (e) {} } };
+          cur = { track: function (m) { me = m; try { ch.track(m); } catch (e) {} }, send: function (p) { ch.send({ type: 'broadcast', event: 'm', payload: p }); }, leave: function () { try { cl.removeChannel(ch); } catch (e) {} } };
         } catch (e) { if (done) done(false); }
       });
     }
     function leave() { if (cur) { try { cur.leave(); } catch (e) {} cur = null; } }
-    return { join: join, leave: leave, send: function (p) { if (cur) cur.send(p); }, on: function () { return !!cur; } };
+    return { join: join, leave: leave, track: function (m) { if (cur && cur.track) cur.track(m); }, send: function (p) { if (cur) cur.send(p); }, on: function () { return !!cur; } };
   })();
   var gmTalkAt = 0;
   var rtOn = false, peers = {}, rtLast = 0, rtWas = false, shared = false;
@@ -1726,6 +1761,19 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function townSVG(k) {
     var SH = function (cx, cy, rx, ry) { return '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + rx + '" ry="' + ry + '" fill="rgba(30,55,30,.30)"/>'; };
     var roofLines = function (x0, x1, y0, y1, step, op) { var o = ''; for (var y = y0; y < y1; y += step) o += '<path d="M' + x0 + ' ' + y + 'H' + x1 + '" stroke="rgba(0,0,0,' + (op || .13) + ')" stroke-width="1.4"/>'; return o; };
+    if (k === 'arena') {
+      var ar = '';
+      for (var ai = 0; ai < 7; ai++) { var ax = 22 + ai * 26; ar += '<path d="M' + ax + ' 170V120Q' + (ax + 11) + ' 100 ' + (ax + 22) + ' 120V170Z" fill="#3a2a22" stroke="#6b5646" stroke-width="2"/>'; }
+      return '<svg viewBox="0 0 220 190"><defs><linearGradient id="arW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e9d8bd"/><stop offset="1" stop-color="#b79d78"/></linearGradient></defs>' +
+        SH(110, 178, 104, 8) +
+        '<path d="M8 170V70Q8 30 110 30Q212 30 212 70V170Z" fill="url(#arW)" stroke="#7a6248" stroke-width="3"/>' +
+        '<path d="M8 100H212M8 134H212" stroke="rgba(90,66,40,.35)" stroke-width="2"/>' + ar +
+        '<path d="M30 44Q110 6 190 44" fill="none" stroke="#8a6c4a" stroke-width="6" stroke-linecap="round"/>' +
+        '<rect x="62" y="56" width="96" height="30" rx="8" fill="#4a1e28" stroke="#ffd36a" stroke-width="3"/><text x="110" y="78" text-anchor="middle" font-size="19" font-weight="900" fill="#ffe9b8" font-family="system-ui,sans-serif">闘技場</text>' +
+        '<path d="M26 38V8L50 18L26 28" fill="#e0405a" stroke="#7a1a2a" stroke-width="1.5"/><path d="M194 38V8L170 18L194 28" fill="#4a8ae0" stroke="#1a3a7a" stroke-width="1.5"/>' +
+        '<path d="M92 128L128 164M128 128L92 164" stroke="#ffd36a" stroke-width="5" stroke-linecap="round" opacity=".9"/>' +
+        '</svg>';
+    }
     if (k === 'shop') {
       var aw = ''; for (var i = 0; i < 6; i++) { var x0 = 8 + i * 30.67; aw += '<path d="M' + x0 + ' 76H' + (x0 + 30.67) + 'V96Q' + (x0 + 15.3) + ' 107 ' + x0 + ' 96Z" fill="' + (i % 2 ? '#fffaf0' : '#d9475f') + '" stroke="rgba(0,0,0,.18)" stroke-width="1"/>'; }
       return '<svg viewBox="0 0 200 180"><defs><linearGradient id="shW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fff6e0"/><stop offset="1" stop-color="#f0d8ae"/></linearGradient><linearGradient id="shR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c24a62"/><stop offset="1" stop-color="#8f2f46"/></linearGradient><linearGradient id="shG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d8f3ff"/><stop offset="1" stop-color="#7cc3e8"/></linearGradient><linearGradient id="shD" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#a7733f"/><stop offset="1" stop-color="#6f4524"/></linearGradient><radialGradient id="shO" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff"/><stop offset=".25" stop-color="#8ff0d6"/><stop offset=".55" stop-color="#9b7bff"/><stop offset="1" stop-color="#5a3fc0"/></radialGradient></defs>' +
@@ -1829,11 +1877,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     put('shop', 330, 470, 210, 189); lbl('ショップ', 330, 240);
     put('hall', 750, 470, 280, 226); lbl('ギルド', 750, 196);
     put('hosp', 1170, 470, 190, 190); lbl('🏥 病院', 1170, 236); put('house1', 120, 640, 150, 150); put('exch', 1380, 650, 180, 180); lbl('取引所', 1380, 420);
-    put('fount', 750, 1010, 260, 195);
-    DOORS = [{ k: 'shop', x: 330, y: 470, w: 200, h: 180 }, { k: 'guild', x: 750, y: 470, w: 270, h: 210 }, { k: 'hospital', x: 1170, y: 470, w: 190, h: 180 }, { k: 'exch', x: 1380, y: 650, w: 180, h: 170 }];
+    put('fount', 750, 1010, 260, 195); put('arena', 150, 1000, 230, 196); lbl('⚔ 闘技場', 150, 765);
+    DOORS = [{ k: 'shop', x: 330, y: 470, w: 200, h: 180 }, { k: 'guild', x: 750, y: 470, w: 270, h: 210 }, { k: 'hospital', x: 1170, y: 470, w: 190, h: 180 }, { k: 'exch', x: 1380, y: 650, w: 180, h: 170 }, { k: 'arena', x: 150, y: 1000, w: 220, h: 190 }];
     put('stall', 480, 905, 150, 120); put('stall', 1020, 905, 150, 120);
     [[500, 350, 'tree2', 62, 100], [1000, 350, 'tree2', 62, 100], [1300, 360, 'tree', 78, 104], [40, 380, 'tree', 78, 104], [60, 430, 'tree', 80, 106], [1450, 430, 'tree2', 62, 100], [560, 520, 'tree', 78, 104], [950, 520, 'tree', 78, 104],
-      [60, 900, 'tree2', 62, 100], [1440, 910, 'tree', 80, 106], [330, 880, 'tree', 78, 104], [1170, 880, 'tree', 78, 104], [200, 1180, 'tree', 80, 106], [1300, 1180, 'tree2', 62, 100], [420, 1250, 'tree', 80, 106], [1080, 1250, 'tree', 80, 106], [90, 1260, 'tree2', 62, 100], [1420, 1260, 'tree', 78, 104]].forEach(function (q) { put(q[2], q[0], q[1], q[3], q[4]); });
+      [1440, 910, 'tree', 80, 106], [330, 880, 'tree', 78, 104], [1170, 880, 'tree', 78, 104], [200, 1180, 'tree', 80, 106], [1300, 1180, 'tree2', 62, 100], [420, 1250, 'tree', 80, 106], [1080, 1250, 'tree', 80, 106], [90, 1260, 'tree2', 62, 100], [1420, 1260, 'tree', 78, 104]].forEach(function (q) { put(q[2], q[0], q[1], q[3], q[4]); });
     [[240, 712], [560, 712], [940, 712], [1260, 712], [640, 870], [860, 870], [500, 1080], [1000, 1080]].forEach(function (q) { put('lamp', q[0], q[1], 28, 86); });
     [[250, 498], [420, 498], [640, 498], [860, 498], [1090, 498], [1260, 498], [60, 690], [190, 690], [1300, 690], [1460, 690]].forEach(function (q) { put('bush', q[0], q[1], 64, 40); });
     [[270, 590], [390, 590], [620, 600], [880, 600], [1110, 590], [1230, 600], [250, 790], [1250, 790], [330, 1000], [1170, 1000], [750, 1230]].forEach(function (q) { put('flower', q[0], q[1], 92, 38); });
@@ -1849,6 +1897,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     else if (k === 'guild') { sfx(2); openGuild(); }
     else if (k === 'hospital') healFull();
     else if (k === 'exch') { sfx(2); openMarket(); }
+    else if (k === 'arena') { sfx(2); openArena(); }
   }
   /* ---------- ギルド（Lv10から。申請→運営が承認→みんなが入れる。最大30人） ---------- */
   function gmsg(t) { var e = $('gBody'); if (e) { var m = document.createElement('p'); m.className = 'tiny'; m.style.color = '#ffd36a'; m.textContent = t; e.prepend(m); setTimeout(function () { m.remove(); }, 4000); } }
@@ -1898,7 +1947,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     $('field').classList.add('town'); $('fTtl').textContent = 'オパ会の町';
     zoomT = .62; buildTown(); show('field'); closeSheets(); digUI(false); BGM.set('town'); gearUi();
     $('fhud').innerHTML = '<span style="flex:1;text-align:center">町では、みんなと歩いて話せるで（ことばは保存されへん）</span>';
-    var tip = $('ftip'); tip.style.opacity = 1; tip.textContent = '歩きたい場所をタップ！ ショップ・ギルド・病院（HP回復）・取引所は、建物をタップ。下の欄から、ひとこと話せるで'; clearTimeout(tipT); tipT = setTimeout(function () { tip.style.opacity = 0; }, 6000);
+    var tip = $('ftip'); tip.style.opacity = 1; tip.textContent = '歩きたい場所をタップ！ ショップ・ギルド・病院（HP回復）・取引所・⚔闘技場（プレイヤー同士で戦えるのはここだけ）は、建物をタップ。下の欄から、ひとこと話せるで'; clearTimeout(tipT); tipT = setTimeout(function () { tip.style.opacity = 0; }, 6000);
     $('tlog').innerHTML = '';
     var me = { id: myMid, n: (player.avatar && player.avatar.name) || '', av: player.avatar };
     RT.join('town', me, { onMsg: rtMsg, onPeers: rtPeers }, function (ok) { if (ok) { rtOn = true; rtLast = 0; rtSend(posMsg()); } else toast('つながらへんかった。町には一人だけやで'); });
@@ -1914,6 +1963,248 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('tsend').addEventListener('click', sendChat);
   $('tin').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); sendChat(); } });
   $('tin').addEventListener('pointerdown', function (e) { e.stopPropagation(); });
+
+
+  /* ---------- 闘技場（プレイヤー同士で戦えるのは、町のここだけ。勝っても負けても、持ち物は減らへん） ---------- */
+  var inArena = false;
+  var AR_ROOMS = [
+    { k: 1, m: 1, cap: 2, nm: '1対1 第1室' }, { k: 2, m: 1, cap: 2, nm: '1対1 第2室' }, { k: 3, m: 1, cap: 2, nm: '1対1 第3室' },
+    { k: 4, m: 2, cap: 4, nm: '2対2 第1室' }, { k: 5, m: 2, cap: 4, nm: '2対2 第2室' }
+  ];
+  var AR_TIME = 90;
+  var arena = { on: false, room: 0, tm: -1, others: [], inv: null, m: null, tmr: 0 };
+  function arRec() { try { return JSON.parse(LSget('opa_arena_rec_' + myMid) || '{}') || {}; } catch (e) { return {}; } }
+  function arRecAdd(k) { var r = arRec(); r[k] = (r[k] || 0) + 1; LSset('opa_arena_rec_' + myMid, JSON.stringify(r)); }
+  function arMe() { return { id: myMid, n: (player.avatar && player.avatar.name) || '', av: player.avatar, r: arena.room, tm: arena.tm, bz: (arena.m && !arena.m.over) ? 1 : 0 }; }
+  function arSend(m) { m.f = myMid; RT.send(m); }
+  function arTrack() { RT.track(arMe()); }
+  function arName(id) { var n = ''; arena.others.forEach(function (o) { if (o.id === id) n = o.n; }); return n || 'だれか'; }
+  function arOcc(k) {
+    var out = arena.others.filter(function (o) { return o.r === k; }).map(function (o) { return { id: o.id, n: o.n, tm: o.tm, bz: o.bz, me: false }; });
+    if (arena.room === k) out.push({ id: myMid, n: (player.avatar && player.avatar.name) || 'あなた', tm: arena.tm, bz: 0, me: true });
+    return out;
+  }
+  function openArena() {
+    if (arena.on) { $('arn').classList.add('on'); arRender(); return; }
+    rtStop(); arena.on = true; arena.room = 0; arena.tm = -1; arena.others = []; arena.inv = null; arena.m = null;
+    $('arn').classList.add('on'); $('arBody').innerHTML = '<p class="tiny">つないでるで…</p>'; BGM.set('town');
+    RT.join('arena', arMe(), { onMsg: arMsg, onPeers: arPeers }, function (ok) {
+      if (!ok) { arena.on = false; $('arn').classList.remove('on'); toast('つながらへんかった。あとでもう一回な'); openTown(); hero.x = 150; hero.y = 1060; updHero(); return; }
+      arRender();
+    });
+  }
+  function closeArena() {
+    if (arena.m && !arena.m.over) return;
+    arena.on = false; arena.room = 0; arena.tm = -1; arena.inv = null; arena.m = null; $('arn').classList.remove('on');
+    openTown(); hero.x = 150; hero.y = 1060; ftarget = null; updHero();
+  }
+  function arPeers(list) {
+    arena.others = (list || []).filter(function (m) { return m && m.id && m.id !== myMid; });
+    var m = arena.m;
+    if (m && !m.over) m.ids.forEach(function (id) {
+      if (id === myMid || m.ko[id]) return;
+      if (!arena.others.some(function (o) { return o.id === id; })) setTimeout(function () { if (arena.m === m && !m.over && !m.ko[id] && !arena.others.some(function (o) { return o.id === id; })) arKO(id); }, 4000);
+    });
+    if ($('arn').classList.contains('on')) arRender();
+  }
+  function arRender() {
+    var b = $('arBody'), rec = arRec(), h = '';
+    $('arRec').textContent = '戦績 ' + (rec.w || 0) + '勝 ' + (rec.l || 0) + '敗' + (rec.d ? ' ' + rec.d + '分' : '');
+    if (arena.inv && Date.now() - arena.inv.t < 20000) h += '<div class="inv"><b>⚔ ' + esc(arena.inv.n) + ' さんが、勝負を挑んできた！</b><button type="button" class="abtn" data-ar="acc">受ける</button><button type="button" class="gbtn" data-ar="dec">ことわる</button></div>';
+    else arena.inv = null;
+    if (!arena.room) {
+      h += '<p class="tiny">プレイヤー同士で戦えるのは、町の中でここだけやで。勝っても負けても、持ち物は減らへんから安心してな。部屋をえらんでな。</p>';
+      AR_ROOMS.forEach(function (r) {
+        var oc = arOcc(r.k), busy = oc.some(function (x) { return x.bz; }), full = oc.length >= r.cap;
+        h += '<div class="arr"><div><b>' + r.nm + '</b> <span class="tiny">' + oc.length + '/' + r.cap + '人</span><div class="tiny">' + (oc.length ? oc.map(function (x) { return esc(x.n); }).join('、') : 'だれもおらんで') + (busy ? '　⚔ 対戦中' : '') + '</div></div><button class="gbtn" type="button" data-ar="in" data-k="' + r.k + '"' + ((full || busy) ? ' disabled' : '') + '>入る</button></div>';
+      });
+    } else {
+      var r = AR_ROOMS[arena.room - 1], oc = arOcc(r.k);
+      h += '<h3>' + r.nm + '</h3>';
+      if (r.m === 1) {
+        oc.forEach(function (x) {
+          if (x.me) h += '<div class="arp"><b>🙂 ' + esc(x.n) + '（あなた）</b></div>';
+          else h += '<div class="arp"><b>🧑 ' + esc(x.n) + '</b><button type="button" class="abtn" data-ar="ch" data-id="' + esc(x.id) + '"' + (x.bz ? ' disabled' : '') + '>⚔ 挑む！</button></div>';
+        });
+        if (oc.length < 2) h += '<p class="tiny">相手を待ってるで…。だれかが入ってきたら、名前が出るから、「挑む！」を押してな。</p>';
+        else h += '<p class="tiny">「挑む！」を押すと、相手に知らせが行くで。相手が「受ける」を押したら、すぐ始まる。</p>';
+      } else {
+        var t0 = oc.filter(function (x) { return x.tm === 0; }), t1 = oc.filter(function (x) { return x.tm === 1; }), me = arena.tm;
+        var col = function (arr, c, nm) { var s = '<div class="tm ' + c + '"><h4>' + nm + ' ' + arr.length + '/2</h4>'; arr.forEach(function (x) { s += '<div class="n">' + esc(x.n) + (x.me ? '（あなた）' : '') + '</div>'; }); return s + '</div>'; };
+        h += '<div class="tms">' + col(t0, 'r', '🔴 赤チーム') + col(t1, 'b', '🔵 青チーム') + '</div>';
+        h += '<div class="arr" style="gap:8px"><button class="gbtn" type="button" data-ar="tm" data-t="0"' + ((me === 0 || t0.length >= 2) ? ' disabled' : '') + '>赤に入る</button><button class="gbtn" type="button" data-ar="tm" data-t="1"' + ((me === 1 || t1.length >= 2) ? ' disabled' : '') + '>青に入る</button></div>';
+        var ready = t0.length === 2 && t1.length === 2 && me >= 0 && !oc.some(function (x) { return x.bz; });
+        h += '<button class="abtn" type="button" data-ar="go" style="width:100%;margin-top:6px"' + (ready ? '' : ' disabled') + '>⚔ はじめる！</button><p class="tiny">赤2人・青2人がそろったら、だれかが「はじめる」を押してな。</p>';
+      }
+      h += '<button class="gbtn dim" type="button" data-ar="out">部屋を出る</button>';
+    }
+    b.innerHTML = h;
+  }
+  $('arClose').addEventListener('click', closeArena);
+  $('arBody').addEventListener('click', function (e) {
+    var t = e.target.closest && e.target.closest('button[data-ar]'); if (!t || t.disabled) return; var a = t.dataset.ar; actx(); sfx(0);
+    if (a === 'in') { arena.room = +t.dataset.k; arena.tm = -1; arTrack(); arRender(); }
+    else if (a === 'out') { arena.room = 0; arena.tm = -1; arTrack(); arRender(); }
+    else if (a === 'tm') { arena.tm = +t.dataset.t; arTrack(); arRender(); }
+    else if (a === 'ch') { arSend({ t: 'ach', to: t.dataset.id, r: arena.room }); toast(arName(t.dataset.id) + ' さんに、挑戦を送ったで！'); }
+    else if (a === 'acc' && arena.inv) { var from = arena.inv.from, st = { r: arena.room, tm: [[from], [myMid]], mid: String(Date.now()) + myMid.slice(0, 4) }; arSend({ t: 'ast', r: st.r, tm: st.tm, mid: st.mid }); arBegin(st); }
+    else if (a === 'dec' && arena.inv) { arSend({ t: 'ano', to: arena.inv.from }); arena.inv = null; arRender(); }
+    else if (a === 'go') {
+      var oc = arOcc(arena.room), t0 = oc.filter(function (x) { return x.tm === 0; }).map(function (x) { return x.id; }), t1 = oc.filter(function (x) { return x.tm === 1; }).map(function (x) { return x.id; });
+      if (t0.length !== 2 || t1.length !== 2) return;
+      var st2 = { r: arena.room, tm: [t0, t1], mid: String(Date.now()) + myMid.slice(0, 4) }; arSend({ t: 'ast', r: st2.r, tm: st2.tm, mid: st2.mid }); arBegin(st2);
+    }
+  });
+  function arMsg(m) {
+    if (!m || m.f === myMid) return;
+    var mt = arena.m;
+    if (m.t === 'ach') {
+      if (m.to === myMid && arena.room && arena.room === m.r && !(mt && !mt.over)) { arena.inv = { from: m.f, n: arName(m.f), t: Date.now() }; sfx(2); vib([60, 40, 60]); arRender(); setTimeout(function () { if ($('arn').classList.contains('on')) arRender(); }, 20500); }
+      return;
+    }
+    if (m.t === 'ano') { if (m.to === myMid) toast(arName(m.f) + ' さんは、今回はパスやって'); return; }
+    if (m.t === 'ast') {
+      if (!m.tm || !Array.isArray(m.tm) || m.tm.length !== 2 || !Array.isArray(m.tm[0]) || !Array.isArray(m.tm[1])) return;
+      var ids = m.tm[0].concat(m.tm[1]); if (ids.length < 2 || ids.length > 4 || ids.indexOf(myMid) < 0 || ids.indexOf(m.f) < 0) return;
+      if (mt && !mt.over) return; if (arena.room !== m.r) return;
+      arBegin({ r: m.r, tm: [m.tm[0].map(String), m.tm[1].map(String)], mid: String(m.mid) }); return;
+    }
+    if (!mt || mt.team[m.f] == null || (m.mid && m.mid !== mt.mid && m.t !== 'pos' && m.t !== 'chat')) return;
+    if (m.t === 'ahit') arOnHit(m);
+    else if (m.t === 'ako') arKO(m.f);
+    else if (m.t === 'aend') { if (m.f === arHost(mt)) arFinish(m.w); }
+    else if ((m.t === 'pos' || m.t === 'chat') && peers[m.f]) rtMsg(m);
+  }
+  function arHost(m) { return m.ids.slice().sort()[0]; }
+  function arenaSVG() {
+    var o = '<svg width="820" height="720" viewBox="0 0 820 720" style="position:absolute;left:0;top:0;pointer-events:none;z-index:0"><defs><linearGradient id="aS" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e8cf9a"/><stop offset="1" stop-color="#cfae72"/></linearGradient><linearGradient id="aW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a5a68"/><stop offset="1" stop-color="#3b2f3d"/></linearGradient></defs>';
+    o += '<rect width="820" height="720" fill="#2b2230"/><rect x="0" y="0" width="820" height="200" fill="url(#aW)"/>';
+    var i, cs = ['#ff8aa0', '#ffd36a', '#9fd0ff', '#b9f0b0', '#e0b0ff', '#fff'];
+    for (i = 0; i < 110; i++) { var cx = 10 + (i * 37) % 800, cy = 36 + Math.floor((i * 13) % 5) * 28 + (i % 3) * 3; o += '<circle cx="' + cx + '" cy="' + cy + '" r="7" fill="' + cs[i % 6] + '" opacity=".85"/>'; }
+    o += '<rect x="0" y="176" width="820" height="26" fill="#4b3a4d"/><path d="M0 176H820" stroke="#8a7090" stroke-width="3"/>';
+    for (i = 0; i < 9; i++) o += '<rect x="' + (20 + i * 100) + '" y="150" width="14" height="52" fill="#5b4a5e"/>';
+    o += '<rect x="0" y="200" width="820" height="520" fill="url(#aS)"/><ellipse cx="410" cy="460" rx="380" ry="210" fill="none" stroke="#a88a54" stroke-width="6"/><ellipse cx="410" cy="460" rx="360" ry="194" fill="rgba(255,255,255,.12)"/>';
+    o += '<path d="M410 270V650" stroke="#a88a54" stroke-width="4" stroke-dasharray="14 12"/>';
+    o += '<circle cx="210" cy="460" r="46" fill="rgba(224,64,90,.28)" stroke="#e0405a" stroke-width="4"/><circle cx="610" cy="460" r="46" fill="rgba(74,138,224,.28)" stroke="#4a8ae0" stroke-width="4"/>';
+    o += '<path d="M60 150V90L120 112L60 134" fill="#e0405a" stroke="#7a1a2a" stroke-width="2"/><path d="M760 150V90L700 112L760 134" fill="#4a8ae0" stroke="#1a3a7a" stroke-width="2"/>';
+    return o + '</svg>';
+  }
+  function arBig(t, ms) { var e = $('arBig'); e.textContent = t; e.classList.remove('on'); void e.offsetWidth; e.classList.add('on'); clearTimeout(e._t); e._t = setTimeout(function () { e.classList.remove('on'); }, ms || 900); }
+  function arBegin(s) {
+    var ids = s.tm[0].concat(s.tm[1]); if (ids.indexOf(myMid) < 0) return; if (arena.m && !arena.m.over) return;
+    var team = {}; s.tm[0].forEach(function (i) { team[i] = 0; }); s.tm[1].forEach(function (i) { team[i] = 1; });
+    var m = arena.m = { mid: s.mid, room: s.r, tm: s.tm, team: team, my: team[myMid], ko: {}, live: false, over: false, fin: 0, ids: ids, hit: {}, hb: hp.cur, t0: 0, sentEnd: false };
+    arena.inv = null; $('arn').classList.remove('on'); $('arRes').classList.remove('on');
+    inTown = false; inArena = true; arTrack();
+    $('field').classList.remove('town'); $('field').classList.add('arena'); $('fTtl').textContent = '闘技場'; $('fCancel').textContent = 'あきらめる';
+    var w = $('world'); setWorld(820, 720); w.classList.remove('cave'); w.style.background = '#2b2230';
+    w.innerHTML = arenaSVG() + '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
+    spots = []; spotSeq = 0; foes = []; fgen++; curSpot = null; guard = false; peers = {};
+    var idx = s.tm[m.my].indexOf(myMid), n = s.tm[m.my].length;
+    hero.x = m.my === 0 ? 210 : 610; hero.y = n > 1 ? (idx ? 530 : 390) : 460; hero.dir = m.my === 0 ? 1 : -1; ftarget = null;
+    $('hb').innerHTML = heroHTML(); applyAura(); updHero();
+    ids.forEach(function (id) {
+      if (id === myMid) return; var o = null; arena.others.forEach(function (q) { if (q.id === id) o = q; }); if (!o) return;
+      var t = team[id], j = s.tm[t].indexOf(id), nn = s.tm[t].length, px = t === 0 ? 210 : 610, py = nn > 1 ? (j ? 530 : 390) : 460;
+      var pr = peers[id] = { id: id, x: px, y: py, tx: px, ty: py, dir: t === 0 ? 1 : -1, got: true, n: o.n, av: o.av, tm: t, h: 100 }; ghostEl(pr);
+      var gn = pr.el && pr.el.querySelector('.gname'); if (gn) gn.style.color = t === m.my ? '#9fd0ff' : '#ff9a9a';
+    });
+    if (eqItem('weapon')) wHand = 'weapon';
+    hp.ready = true; hp.max = hpMaxNow(); hp.cur = hp.max; hp.down = false; hp.inv = 0; hpUi(); gearUi();
+    fz = zoomT = .6; $('ftip').style.opacity = 0; BGM.set('field'); show('field'); inTown = false;
+    $('fhud').innerHTML = '<span style="flex:1;text-align:center">もうすぐ始まるで！ 相手をタップか「こうげき」ボタン</span>';
+    rtOn = true; rtLast = 0; rtSend(posMsg());
+    var cnt = 3; arBig(String(cnt), 900);
+    var cd = setInterval(function () {
+      if (arena.m !== m || m.over) { clearInterval(cd); return; }
+      cnt--; if (cnt > 0) { arBig(String(cnt), 900); sfx(0); return; }
+      clearInterval(cd); m.live = true; m.t0 = performance.now(); arBig('ファイト！', 1000); sfx(2); vib([80, 40, 80]);
+      clearInterval(arena.tmr); arena.tmr = setInterval(arTick, 250);
+    }, 1000);
+  }
+  function arTick() {
+    var m = arena.m; if (!m || m.over) { clearInterval(arena.tmr); return; }
+    var el = Math.floor((performance.now() - m.t0) / 1000), left = Math.max(0, AR_TIME - el), a = 0, e = 0;
+    m.ids.forEach(function (id) { if (!m.ko[id]) { if (m.team[id] === m.my) a++; else e++; } });
+    $('fhud').innerHTML = '<span>⏱ <b>' + left + '</b> 秒</span><span>味方 <b>' + a + '</b> 人</span><span>相手 <b>' + e + '</b> 人</span>';
+    if (left <= 0 && myMid === arHost(m) && !m.sentEnd) { m.sentEnd = true; var w = arHpWin(); arSend({ t: 'aend', r: m.room, mid: m.mid, w: w }); arFinish(w); }
+    else if (el > AR_TIME + 6) arFinish(arHpWin());
+  }
+  function arHpWin() {
+    var m = arena.m, sum = [0, 0];
+    m.ids.forEach(function (id) { if (m.ko[id]) return; var pc = id === myMid ? hp.cur / Math.max(1, hp.max) * 100 : ((peers[id] && peers[id].h != null) ? peers[id].h : 100); sum[m.team[id]] += pc; });
+    return sum[0] > sum[1] + .5 ? 0 : (sum[1] > sum[0] + .5 ? 1 : -1);
+  }
+  function arKO(id) {
+    var m = arena.m; if (!m || m.over || m.ko[id] || m.team[id] == null) return;
+    m.ko[id] = 1; if (peers[id]) { peers[id].dn = 1; if (peers[id].el) peers[id].el.classList.add('dn'); }
+    if (id !== myMid) { floatTxt(peers[id] ? peers[id].x : hero.x, (peers[id] ? peers[id].y : hero.y) - 74, 'ダウン！', 'y'); sfx('hit'); }
+    var al = [0, 0]; m.ids.forEach(function (q) { if (!m.ko[q]) al[m.team[q]]++; });
+    if ((al[0] === 0 || al[1] === 0) && !m.fin) m.fin = setTimeout(function () {
+      var a2 = [0, 0]; m.ids.forEach(function (q) { if (!m.ko[q]) a2[m.team[q]]++; });
+      arFinish(a2[0] > 0 && a2[1] === 0 ? 0 : (a2[1] > 0 && a2[0] === 0 ? 1 : -1));
+    }, 700);
+  }
+  function arMeKO() {
+    var m = arena.m; if (!m || m.over || hp.down) return;
+    hp.cur = 0; hp.down = true; ftarget = null; hpUi(); rtLast = 0; arSend({ t: 'ako', r: m.room, mid: m.mid }); arKO(myMid); if (!m.over) arBig('ダウン…！', 1200);
+  }
+  function arOnHit(m0) {
+    var m = arena.m; if (m0.to !== myMid || !m.live || hp.down || m.over) return;
+    if (m.team[m0.f] === m.my) return; var pr = peers[m0.f]; if (!pr || pr.dn) return;
+    var now = performance.now(); if (now - (m.hit[m0.f] || 0) < 150) return; m.hit[m0.f] = now;
+    if (Math.hypot(hero.x - pr.x, hero.y - pr.y) > 620) return;
+    var d = Math.max(1, Math.min(500, Math.round(+m0.d || 1))), dmg = Math.max(1, Math.round(d * (1 - defP())));
+    hp.cur = Math.max(0, hp.cur - dmg); floatTxt(hero.x, hero.y - 74, '-' + dmg); sfx(1); vib([30, 20, 30]);
+    var hb = $('hb'); if (hb) { hb.classList.remove('lunge', 'hurt'); void hb.offsetWidth; hb.classList.add('hurt'); }
+    hpUi(); rtLast = 0; if (hp.cur <= 0) arMeKO();
+  }
+  function arDmg() { return isGM() ? 120 : Math.min(500, atkP()); }
+  function arAttack(pr) {
+    var m = arena.m; if (!m || !m.live || hp.down || !pr || pr.dn || m.ko[pr.id]) return;
+    var rg = atkRange(), dist = Math.hypot(hero.x - pr.x, hero.y - pr.y);
+    if (dist > rg) { ftarget = { x: clamp(pr.x + (hero.x < pr.x ? -1 : 1) * Math.max(40, rg * .6), 40, WW - 40), y: clamp(pr.y, 230, WH - 50), spot: null }; toast('もうちょっと近づいてな（とどくのは ' + Math.round(rg / 75) + ' マス）'); return; }
+    if (!canAttack()) return;
+    var wq = curW(); if (wq && wq.rng) shootFx(pr.x, pr.y, wq.kind);
+    hero.dir = pr.x >= hero.x ? 1 : -1; updHero(); sfx('hit'); vib(20); swingAnim();
+    if (pr.el) { pr.el.classList.remove('gmhit'); void pr.el.offsetWidth; pr.el.classList.add('gmhit'); }
+    arSend({ t: 'ahit', to: pr.id, d: arDmg(), r: m.room, mid: m.mid });
+  }
+  function arAtkNearest() {
+    var m = arena.m; if (!m || !m.live || hp.down) return; var best = null, bd = 1e9;
+    m.ids.forEach(function (id) { var q = peers[id]; if (!q || id === myMid || m.team[id] === m.my || q.dn || m.ko[id]) return; var d = Math.hypot(hero.x - q.x, hero.y - q.y); if (d < bd) { bd = d; best = q; } });
+    if (best) arAttack(best);
+  }
+  function arTap(e, view) {
+    var m = arena.m; if (!m || !m.live || hp.down) return;
+    var r = view.getBoundingClientRect(), wx = (e.clientX - r.left) / fz + camX, wy = (e.clientY - r.top) / fz + camY, tg = null, bd = 56;
+    m.ids.forEach(function (id) { var q = peers[id]; if (!q || id === myMid || m.team[id] === m.my || q.dn) return; var d = Math.hypot(wx - q.x, wy - (q.y - 32)); if (d < bd) { bd = d; tg = q; } });
+    if (tg) { arAttack(tg); return; }
+    var pg = document.createElement('i'); pg.className = 'ping'; pg.style.left = wx + 'px'; pg.style.top = wy + 'px'; $('world').appendChild(pg); setTimeout(function () { pg.remove(); }, 520);
+    ftarget = { x: clamp(wx, 40, WW - 40), y: clamp(wy, 230, WH - 50), spot: null };
+  }
+  function arGiveUp() {
+    var m = arena.m; if (!m) { arBack(); return; }
+    if (m.over) { arBack(); return; }
+    if (!m.live) { /* 始まる前は、そのまま部屋にもどる */ arSend({ t: 'ako', r: m.room, mid: m.mid }); arKO(myMid); hp.down = true; arFinish(m.my === 0 ? 1 : 0); return; }
+    if (!hp.down) arMeKO(); else arBack();
+  }
+  function arFinish(win) {
+    var m = arena.m; if (!m || m.over) return; m.over = true; m.live = false; clearInterval(arena.tmr); clearTimeout(m.fin); arTrack();
+    var won = win === m.my, draw = win === -1 || win == null;
+    arRecAdd(draw ? 'd' : (won ? 'w' : 'l'));
+    ftarget = null; var rt = $('arResT'); rt.textContent = draw ? '🤝 引き分け' : (won ? '🏆 勝ち！' : '💦 負け…'); rt.style.color = draw ? '#cfd6e4' : (won ? '#ffd36a' : '#9fb4ff');
+    var rc = arRec(); $('arResP').textContent = (draw ? 'いい勝負やった！' : (won ? 'おめでとう！ナイスファイト！' : 'ええ勝負やった。また挑戦してな！')) + '　戦績 ' + (rc.w || 0) + '勝 ' + (rc.l || 0) + '敗';
+    if (won) sfx(2); setTimeout(function () { if (arena.m === m) $('arRes').classList.add('on'); }, 500);
+  }
+  function arBack() {
+    var m = arena.m; arena.m = null; clearInterval(arena.tmr); rtOn = false;
+    Object.keys(peers).forEach(function (id) { if (peers[id].el) peers[id].el.remove(); }); peers = {};
+    inArena = false; inTown = true; $('field').classList.remove('arena'); $('fCancel').textContent = 'やめる'; $('arRes').classList.remove('on'); $('arBig').classList.remove('on');
+    hp.down = false; hp.max = hpMaxNow(); hp.cur = Math.max(1, Math.min(hp.max, (m && m.hb) ? m.hb : hp.max)); hp.inv = 0; hpUi(); gearUi();
+    if (arena.on) { arTrack(); $('arn').classList.add('on'); arRender(); BGM.set('town'); }
+  }
+  $('arResB').addEventListener('click', arBack);
 
   function rtStart() {
     rtStop(); if (!room || !myMid) return; shared = true;
@@ -2318,7 +2609,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   /* ---------- HP・戦い・病院・たすけ合い ---------- */
   var hp = { cur: 0, max: 0, down: false, inv: 0, ready: false }, downT = 0, downLeft = 0;
   function plv() { return Math.max(1, (player && player.lv) || 1); }
-  function hpMaxNow() { if (isGM()) return 9999; var a = eqItem('armor'); return 80 + 10 * plv() + (a ? a.hp : 0); }
+  function hpMaxNow() { if (isGM()) return inArena ? 900 : 9999; var a = eqItem('armor'); return 80 + 10 * plv() + (a ? a.hp : 0); }
   function atkP() { var w = curW(); if (!w) return Math.max(1, Math.round(1 + Math.min(plv(), 60) / 12)); return Math.round((Math.round(6 + 1.5 * plv()) + w.atk) * (w.rng && !isGM() ? .8 : 1)); }
   var guard = false, atkAt = 0;
   function defP() { var s = eqItem('shield'), h = isGM() ? GMI.helm : null; return Math.min(.85, (s ? s.def : 0) + (h ? h.def : 0) + (guard ? .4 : 0)); }
@@ -2339,7 +2630,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!hp.ready) { var sv = LSget('opa_game_hp_' + myMid); hp.cur = (sv !== null && sv !== '' && isFinite(+sv)) ? Math.max(1, Math.min(mx, Math.round(+sv))) : mx; if (isGM()) hp.cur = mx; hp.ready = true; hp.max = mx; }
     if (mx !== hp.max) hp.max = mx;
     if (hp.cur > hp.max) hp.cur = hp.max;
-    LSset('opa_game_hp_' + myMid, String(hp.cur));
+    if (!inArena) LSset('opa_game_hp_' + myMid, String(hp.cur));
     var r = hp.max ? hp.cur / hp.max : 1, ph = $('phud'); if (!ph) return;
     $('phI').style.width = Math.max(0, r * 100) + '%'; $('phTx').textContent = 'HP ' + hp.cur + '/' + hp.max; ph.classList.toggle('low', r <= .3);
     var hh = $('hero2'); if (hh) { var b = hh.querySelector('.hhp'); if (b) { b.classList.toggle('on', r < 1); b.firstChild.style.width = (r * 100) + '%'; b.firstChild.style.background = r <= .3 ? '#ff5a5a' : '#4fd68a'; } hh.classList.toggle('down', hp.down); }
@@ -2659,7 +2950,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function fieldHud() {
     hpUi(); gearUi();
-    if (inTown) return;
+    if (inTown || inArena) return;
     var k = Object.keys(player.stones || {}).length;
     $('fhud').innerHTML = '<span>掘った回数 <b>' + (player.digs || 0) + '</b></span><span>見つけた石 <b>' + k + '</b>/' + STONES.length + '</span><span>ここで <b>' + (((player.mines || {})[curMine]) || 0) + '</b> 回</span><span>🪙 <b>' + ((player.coins || 0).toLocaleString()) + '</b></span><span>' + (partyN > 1 ? '👥 <b>' + partyN + '</b>人 <button id="fLeave" class="opt" type="button" style="padding:3px 8px;font-size:11px">ぬける</button>　' : '') + 'Lv <b>' + (player.lv || 1) + '</b>' + (player.xpNeed ? '（あと ' + (player.xpNeed - (player.xpInto || 0)).toLocaleString() + '）' : '（MAX）') + '</span>';
   }
@@ -2693,6 +2984,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('fview').addEventListener('pointerdown', function (e) {
     if (!fieldOn) return; actx();
     if (e.target.closest && (e.target.closest('#fDigBar') || e.target.closest('#downov'))) return;
+    if (inArena) { arTap(e, this); return; }
     if (hp.down) return;
     if (curSpot) {
       var r0 = this.getBoundingClientRect(), wx0 = (e.clientX - r0.left) / fz + camX, wy0 = (e.clientY - r0.top) / fz + camY;
@@ -2741,6 +3033,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     taps = 0; fieldHud(); show('field');
   }
   function attackNearest() {
+    if (inArena) { arAtkNearest(); return; }
     if (hp.down || busy) return; actx();
     var best = null, bd = 1e9; foes.forEach(function (f) { if (f.mode === 'dead') return; var d = Math.hypot(hero.x - f.x, hero.y - f.y); if (d < bd) { bd = d; best = f; } });
     if (!best) { toast('ちかくに敵はおらんで'); return; }
@@ -2748,8 +3041,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!hitFoeAt(best.x, best.y - yo)) toast('もうちょっと近づいてな（とどくのは ' + Math.round(atkRange() / 75) + ' マス）');
   }
   $('atkBtn').addEventListener('click', attackNearest);
-  $('fCancel').addEventListener('click', function () { if (!busy) cancelDig(); });
-  $('fBack').addEventListener('click', function () { if (curSpot) cancelDig(); var wasTown = inTown; leaveTown(); openMap(wasTown ? null : curMine); });
+  $('fCancel').addEventListener('click', function () { if (inArena) { arGiveUp(); return; } if (!busy) cancelDig(); });
+  $('fBack').addEventListener('click', function () { if (inArena) { arGiveUp(); return; } if (curSpot) cancelDig(); var wasTown = inTown; leaveTown(); openMap(wasTown ? null : curMine); });
   $('fBook').addEventListener('click', function () { renderBook(); $('book').classList.add('on'); });
   $('fSet').addEventListener('click', function () { $('setName').textContent = player.avatar.name + ' さん'; $('set').classList.add('on'); });
 
