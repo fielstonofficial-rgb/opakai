@@ -235,6 +235,16 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #world .pt{position:absolute;border-radius:50%;pointer-events:none}
 #world .dc{position:absolute;pointer-events:none;transform:translate(-50%,-100%)}
 #world .dc svg{display:block;width:100%;height:100%}
+.tlbl{position:absolute;transform:translateX(-50%);z-index:99000;font-weight:800;font-size:20px;color:#fff;background:rgba(40,60,100,.82);border-radius:12px;padding:4px 14px;box-shadow:0 2px 6px rgba(0,0,0,.35);pointer-events:none}
+#gld{position:fixed;inset:0;z-index:300;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px}
+#gld.on{display:flex}
+#gld .gc{width:100%;max-width:420px;max-height:84vh;overflow:auto;background:#1b2230;color:#fff;border-radius:18px;padding:16px;box-shadow:0 10px 40px rgba(0,0,0,.6)}
+#gld h3{margin:0 0 8px;font-size:19px}#gld h4{margin:14px 0 6px;font-size:14px;color:#ffd36a}
+#gld .grow{display:flex;gap:8px;align-items:center;justify-content:space-between;margin:6px 0}
+#gld input{flex:1;min-width:0;border:0;border-radius:10px;padding:10px 12px;font-size:16px}
+.gbtn{border:0;border-radius:12px;padding:10px 14px;font-weight:800;background:#ffd36a;color:#3a2a08}
+.gbtn.dim{background:#3a4458;color:#cfd6e4;width:100%;margin-top:12px}.gbtn:disabled{opacity:.5}
+#gld .gm{display:grid;gap:4px;margin-top:8px}#gld .gm div{background:rgba(255,255,255,.07);border-radius:8px;padding:6px 10px}
 .town-btn{display:block;margin:8px 14px 0;width:calc(100% - 28px);padding:13px;border:0;border-radius:14px;font-weight:800;font-size:16px;color:#3a2a08;background:linear-gradient(180deg,#ffe9a8,#f2c25a);box-shadow:0 3px 10px rgba(0,0,0,.35)}
 #tchat{position:absolute;left:8px;right:8px;bottom:78px;z-index:50;display:none;pointer-events:none}
 #field.town #tchat{display:block}
@@ -359,6 +369,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   <section class="scr" id="field">
     <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="もちもの・ショップ">🎒</button><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
     <div id="fview"><div id="world"></div><div id="ftip"></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="fCancel" type="button">やめる</button></div></div>
+    <div id="gld"><div class="gc"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="tiny">ギルドの部屋</span><button id="gClose" type="button" class="gbtn" style="padding:6px 12px">とじる</button></div><div id="gBody"></div></div></div>
     <div id="tchat"><div id="tlog"></div><div id="trow"><input id="tin" type="text" maxlength="40" placeholder="ひとこと話す（40字まで）" autocomplete="off"><button id="tsend" type="button">送る</button></div></div>
     <div class="fhud" id="fhud"></div>
   </section>
@@ -559,6 +570,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       // フィールド：冒険の行進（4拍の歩み）
       field: trk(98, ['Dm', 'Bb', 'F', 'C', 'Dm', 'Bb', 'C', 'Dm'],
         'D5:1 F5:1 A5:1 F5:1 D5:1 F5:.5 G5:.5 A5:2 C6:1 A5:1 F5:1 A5:1 G5:2 E5:1 G5:1 F5:1 A5:1 D6:1 A5:1 D5:1 F5:.5 G5:.5 A5:2 G5:1 F5:1 E5:1 G5:1 D5:4', { perc: 'k:1 -:.5 k:.5 k:1 -:1' }),
+      // 町：明るくてポジティブ（C メジャー）
+      town: trk(116, ['C', 'G', 'Am', 'F', 'C', 'G', 'F', 'C'],
+        'E5:1 G5:1 C6:1 G5:1 B5:1 A5:.5 G5:.5 D5:2 C6:1 B5:1 A5:1 E5:1 F5:1 A5:1 C6:1 A5:1 G5:1 E5:.5 G5:.5 C6:2 D6:1 B5:1 G5:1 B5:1 A5:1 C6:1 A5:.5 G5:.5 F5:1 G5:1 E5:1 C5:2', { pat: [0, 2, 1, 3, 2, 3, 1, 2], perc: 'k:1 -:.5 k:.5 k:1 -:1', lv: .15, av: .085, tv: .15 }),
       // 掘る：少し高まる（A ドリア→D）
       dig: trk(112, ['Am', 'G', 'F', 'G', 'Am', 'F', 'G', 'Am'],
         'E5:.5 A5:.5 C6:1 B5:1 A5:1 G5:.5 A5:.5 B5:1 D6:2 C6:1 B5:1 A5:1 F5:.5 G5:.5 A5:1 C6:1 B5:2 A5:1 G5:1 E5:.5 A5:.5 C6:1 E6:1 D6:1 C6:1 B5:1 G5:1 B5:1 D6:2 A5:4', { pat: [0, 1, 2, 3, 2, 1, 2, 3], perc: 'k:.5 k:.5 -:.5 k:.5 k:.5 -:.5 k:.5 k:.5', tv: .14, av: .07 })
@@ -1303,8 +1317,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     placeEl(e, pr.x, pr.y);
   }
   function rtPeers(list) {
+    var dx0 = WW / 2, dy0 = WH - 100;
     var seen = {};
-    list.forEach(function (m) { if (!m || !m.id || m.id === myMid) return; seen[m.id] = 1; var pr = peers[m.id]; if (!pr) { pr = peers[m.id] = { id: m.id, x: 380, y: 900, tx: 380, ty: 900, dir: 1, got: false }; if (rtOn) rtSend({ t: 'pos', x: Math.round(hero.x), y: Math.round(hero.y), d: hero.dir }); } pr.n = m.n; pr.av = m.av; ghostEl(pr); });
+    list.forEach(function (m) { if (!m || !m.id || m.id === myMid) return; seen[m.id] = 1; var pr = peers[m.id]; if (!pr) { pr = peers[m.id] = { id: m.id, x: dx0, y: dy0, tx: dx0, ty: dy0, dir: 1, got: false }; if (rtOn) rtSend({ t: 'pos', x: Math.round(hero.x), y: Math.round(hero.y), d: hero.dir }); } pr.n = m.n; pr.av = m.av; ghostEl(pr); });
     Object.keys(peers).forEach(function (id) { if (!seen[id]) { if (peers[id].el) peers[id].el.remove(); delete peers[id]; spots.forEach(function (sp) { if (sp.by === id) rtFree(sp); }); } });
     partyShown();
   }
@@ -1352,28 +1367,75 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function townSVG(k) {
     if (k === 'house') return '<svg viewBox="0 0 150 150"><rect x="14" y="56" width="122" height="90" fill="#e9d9bf" stroke="#b79a73" stroke-width="3"/><path d="M4 60L75 8L146 60Z" fill="#b5523b" stroke="#8a3a2a" stroke-width="3"/><rect x="58" y="92" width="34" height="54" rx="4" fill="#7a5230"/><rect x="24" y="76" width="26" height="24" fill="#9ed8f0" stroke="#7a5230" stroke-width="3"/><rect x="100" y="76" width="26" height="24" fill="#9ed8f0" stroke="#7a5230" stroke-width="3"/><circle cx="86" cy="120" r="2.5" fill="#ffd36a"/></svg>';
     if (k === 'shop') return '<svg viewBox="0 0 170 150"><rect x="10" y="50" width="150" height="96" fill="#f3e3c4" stroke="#b79a73" stroke-width="3"/><path d="M6 50H164L156 24H14Z" fill="#c43c5a"/><path d="M14 24H40L36 50H6ZM66 24H92L90 50H62ZM118 24H144L150 50H122Z" fill="#fff"/><rect x="22" y="70" width="60" height="44" fill="#9ed8f0" stroke="#7a5230" stroke-width="3"/><rect x="104" y="80" width="40" height="66" rx="4" fill="#7a5230"/><ellipse cx="52" cy="92" rx="14" ry="10" fill="#b583ff"/><ellipse cx="46" cy="90" rx="5" ry="3.5" fill="#7dffd0"/></svg>';
+    if (k === 'hall') return '<svg viewBox="0 0 240 190"><rect x="14" y="70" width="212" height="116" fill="#d9d3c8" stroke="#9a9184" stroke-width="3"/><path d="M6 74L120 14L234 74Z" fill="#3f5f9a" stroke="#2c4570" stroke-width="3"/><rect x="100" y="104" width="40" height="82" rx="20" fill="#5a3d28"/><circle cx="130" cy="150" r="3" fill="#ffd36a"/><rect x="28" y="92" width="36" height="46" fill="#9ed8f0" stroke="#5a3d28" stroke-width="3"/><rect x="176" y="92" width="36" height="46" fill="#9ed8f0" stroke="#5a3d28" stroke-width="3"/><path d="M120 14V-4" stroke="#5a3d28" stroke-width="3"/><path d="M120 -4L152 6L120 16Z" fill="#e0506a"/><path d="M104 52L120 36L136 52Z" fill="#ffd36a"/></svg>';
     if (k === 'tree') return '<svg viewBox="0 0 80 110"><rect x="35" y="64" width="10" height="44" fill="#6b4a2c"/><circle cx="40" cy="42" r="32" fill="#4f9a56"/><circle cx="26" cy="52" r="20" fill="#5aaa62"/><circle cx="54" cy="50" r="20" fill="#5aaa62"/><circle cx="34" cy="32" r="9" fill="rgba(255,255,255,.18)"/></svg>';
     if (k === 'lamp') return '<svg viewBox="0 0 30 100"><rect x="13" y="22" width="4" height="76" fill="#3a3a44"/><rect x="6" y="6" width="18" height="20" rx="4" fill="#ffe9a8" stroke="#3a3a44" stroke-width="3"/></svg>';
     if (k === 'fount') return '<svg viewBox="0 0 160 120"><ellipse cx="80" cy="92" rx="70" ry="22" fill="#9aa4ae" stroke="#6e7882" stroke-width="3"/><ellipse cx="80" cy="88" rx="58" ry="16" fill="#7fc6e8"/><rect x="72" y="40" width="16" height="48" fill="#aab4be"/><path d="M80 14Q64 36 56 56M80 14Q96 36 104 56M80 14V50" stroke="#cdeeff" stroke-width="3.5" fill="none" stroke-linecap="round"/><circle cx="80" cy="12" r="6" fill="#e9f8ff"/></svg>';
+    if (k === 'flower') return '<svg viewBox="0 0 90 40"><ellipse cx="45" cy="30" rx="42" ry="9" fill="#7a5a3a"/><g><circle cx="14" cy="20" r="6" fill="#ff8fb0"/><circle cx="30" cy="16" r="6" fill="#ffd36a"/><circle cx="46" cy="20" r="6" fill="#ff8fb0"/><circle cx="62" cy="16" r="6" fill="#b583ff"/><circle cx="78" cy="20" r="6" fill="#ffd36a"/></g><g fill="#4f9a56"><rect x="13" y="24" width="2" height="8"/><rect x="29" y="20" width="2" height="12"/><rect x="45" y="24" width="2" height="8"/><rect x="61" y="20" width="2" height="12"/><rect x="77" y="24" width="2" height="8"/></g></svg>';
     return '';
   }
+  var DOORS = [];
   function buildTown() {
-    var w = $('world'), rr = rng(4242), html = '';
-    w.classList.remove('cave');
-    w.style.background = 'linear-gradient(180deg,#8fd0ee 0,#cfeaf3 150px,#d8cfa8 151px,#cdbf94 100%)';
-    for (var gy = 200; gy < WH; gy += 60) for (var gx = ((gy / 60) % 2) * 40; gx < WW; gx += 80) html += '<div class="pt" style="left:' + gx + 'px;top:' + gy + 'px;width:78px;height:56px;border-radius:6px;background:rgba(120,98,60,.12)"></div>';
-    html += '<div class="pt" style="left:230px;top:380px;width:300px;height:200px;background:radial-gradient(closest-side,rgba(255,255,255,.35),transparent)"></div>';
+    var w = $('world'), rr = rng(4242), html = '', TW = 1500, TH = 1300;
+    setWorld(TW, TH); w.classList.remove('cave');
+    w.style.background = 'linear-gradient(180deg,#8fd0ee 0,#cfeaf3 170px,#d8cfa8 171px,#cdbf94 100%)';
+    for (var gy = 230; gy < TH; gy += 60) for (var gx = ((gy / 60) % 2) * 40; gx < TW; gx += 80) html += '<div class="pt" style="left:' + gx + 'px;top:' + gy + 'px;width:78px;height:56px;border-radius:6px;background:rgba(120,98,60,.12)"></div>';
+    html += '<div class="pt" style="left:500px;top:640px;width:500px;height:340px;background:radial-gradient(closest-side,rgba(255,255,255,.4),transparent)"></div>';
     var put = function (k, x, y, wd, ht) { html += '<div class="dc" style="left:' + x + 'px;top:' + y + 'px;width:' + wd + 'px;height:' + ht + 'px;z-index:' + Math.round(y) + '">' + townSVG(k) + '</div>'; };
-    put('shop', 150, 300, 190, 168); put('house', 380, 290, 160, 160); put('house', 610, 300, 150, 150);
-    put('fount', 380, 600, 190, 142);
-    [[60, 520], [700, 520], [80, 820], [690, 840], [250, 760], [520, 760], [40, 330]].forEach(function (q) { put('tree', q[0], q[1], 64, 88); });
-    [[220, 560], [540, 560], [200, 850], [560, 850]].forEach(function (q) { put('lamp', q[0], q[1], 24, 82); });
-    html += '<div style="position:absolute;left:0;top:0;width:760px;height:150px;pointer-events:none;background:linear-gradient(180deg,#7ec3e6,rgba(255,255,255,0));z-index:1"></div>';
+    var lbl = function (t, x, y) { html += '<div class="tlbl" style="left:' + x + 'px;top:' + y + 'px">' + t + '</div>'; };
+    put('shop', 330, 470, 210, 186); lbl('ショップ', 330, 262);
+    put('hall', 750, 470, 280, 222); lbl('ギルド', 750, 232);
+    put('house', 1170, 470, 170, 170); put('house', 120, 640, 150, 150); put('house', 1380, 650, 150, 150);
+    put('fount', 750, 930, 240, 180);
+    DOORS = [{ k: 'shop', x: 330, y: 470, w: 200, h: 180 }, { k: 'guild', x: 750, y: 470, w: 270, h: 210 }];
+    [[60, 420], [1440, 420], [540, 500], [960, 500], [90, 900], [1410, 920], [280, 1130], [1220, 1130], [600, 1200], [900, 1200], [500, 760], [1000, 760]].forEach(function (q) { put('tree', q[0], q[1], 70, 96); });
+    [[560, 780], [940, 780], [420, 1040], [1080, 1040], [200, 560], [1300, 560], [650, 1180], [850, 1180]].forEach(function (q) { put('lamp', q[0], q[1], 24, 82); });
+    [[300, 760], [1200, 760], [750, 640], [180, 1000], [1320, 1000]].forEach(function (q) { put('flower', q[0], q[1], 90, 40); });
+    html += '<div style="position:absolute;left:0;top:0;width:' + TW + 'px;height:170px;pointer-events:none;background:linear-gradient(180deg,#7ec3e6,rgba(255,255,255,0));z-index:1"></div>';
     html += '<div id="hero2"><div class="hs"></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
-    hero.x = 380; hero.y = 820; hero.dir = 1; ftarget = null;
+    hero.x = TW / 2; hero.y = 1130; hero.dir = 1; ftarget = null; fz = zoomT;
     $('hb').innerHTML = heroHTML(); applyAura(); updHero();
   }
+  function townDoorAt(wx, wy) { for (var i = 0; i < DOORS.length; i++) { var d = DOORS[i]; if (Math.abs(wx - d.x) < d.w / 2 + 10 && wy < d.y + 40 && wy > d.y - d.h) return d; } return null; }
+  function openDoor(k) {
+    if (k === 'shop') { sfx(2); $('fBag').click(); }
+    else if (k === 'guild') { sfx(2); openGuild(); }
+  }
+  /* ---------- ギルド（Lv10から。申請→運営が承認→みんなが入れる。最大30人） ---------- */
+  function gmsg(t) { var e = $('gBody'); if (e) { var m = document.createElement('p'); m.className = 'tiny'; m.style.color = '#ffd36a'; m.textContent = t; e.prepend(m); setTimeout(function () { m.remove(); }, 4000); } }
+  function openGuild() { $('gld').classList.add('on'); $('gBody').innerHTML = '<p class="tiny">しらべてるで…</p>'; BGM.duck(false); loadGuild(); }
+  function loadGuild() {
+    api({ action: 'guild_my' }).then(function (j) { renderGuild(j); }).catch(function () { $('gBody').innerHTML = '<p class="tiny">つながらへんかった。もう一回開いてな</p>'; });
+  }
+  function esc(t) { var d = document.createElement('div'); d.textContent = t == null ? '' : String(t); return d.innerHTML; }
+  function renderGuild(j) {
+    var b = $('gBody'), lv = j.lv || 1, h = '';
+    if (j.guild) {
+      var g = j.guild, lead = g.leader === myMid;
+      h += '<h3>🏰 ' + esc(g.name) + '</h3>';
+      if (g.status !== 'approved') h += '<p>📮 <b>審査中</b>や。運営（マイケル）が見て、OKが出たら、みんなが入れるようになるで。</p>';
+      else h += '<p class="tiny">メンバー ' + g.members.length + ' / ' + g.max + ' 人</p>';
+      h += '<div class="gm">' + g.members.map(function (m) { return '<div>' + (m.id === g.leader ? '👑 ' : '') + esc(m.name) + ' <span class="tiny">Lv' + m.lv + '</span></div>'; }).join('') + '</div>';
+      h += '<button class="gbtn dim" id="gLeave" type="button">' + (lead && g.members.length > 1 ? 'リーダーは、最後の1人になるまで抜けられへん' : 'ギルドをぬける') + '</button>';
+    } else if (lv < 10) {
+      h += '<h3>🏰 ギルドの部屋</h3><p>ギルドは <b>Lv10</b> から作れる・入れるで。</p><p class="tiny">いまは Lv ' + lv + ' や。石を掘って、経験値をためような。</p>';
+    } else {
+      h += '<h3>🏰 ギルドの部屋</h3><p class="tiny">ギルドは、仲間が最大30人。まず、申請してな。運営が見て、OKが出たら作れる。</p>';
+      h += '<div class="grow"><input id="gName" maxlength="12" placeholder="ギルドの名前（2〜12字）"><button class="gbtn" id="gApply" type="button">申請する</button></div>';
+      h += '<h4>入れるギルド</h4>';
+      if (!j.list || !j.list.length) h += '<p class="tiny">まだ、承認されたギルドはないで。</p>';
+      else h += j.list.map(function (g) { return '<div class="grow"><span>🏰 ' + esc(g.name) + ' <span class="tiny">' + g.n + '/' + (j.max || 30) + '</span></span><button class="gbtn" data-j="' + g.id + '" type="button"' + (g.n >= (j.max || 30) ? ' disabled' : '') + '>入る</button></div>'; }).join('');
+    }
+    b.innerHTML = h;
+  }
+  $('gClose').addEventListener('click', function () { $('gld').classList.remove('on'); });
+  $('gBody').addEventListener('click', function (e) {
+    var t = e.target.closest('button'); if (!t || t.disabled) return;
+    if (t.id === 'gApply') { var nm = $('gName').value; t.disabled = true; api({ action: 'guild_apply', name: nm }).then(function (j) { if (j.error) { t.disabled = false; gmsg(j.message || 'うまくいかんかった'); } else renderGuild(j); }); }
+    else if (t.dataset.j) { t.disabled = true; api({ action: 'guild_join', guild: t.dataset.j }).then(function (j) { if (j.error) { t.disabled = false; gmsg(j.message || 'うまくいかんかった'); } else renderGuild(j); }); }
+    else if (t.id === 'gLeave') { if (t.classList.contains('dim') && /最後/.test(t.textContent)) return; if (!t.dataset.arm) { t.dataset.arm = 1; t.textContent = '本当に？もう1回タップ'; return; } api({ action: 'guild_leave' }).then(function (j) { if (j.error) gmsg(j.message || 'うまくいかんかった'); else renderGuild(j); }); }
+  });
   function tlogAdd(name, text) {
     var d = document.createElement('div'), b = document.createElement('b'); b.textContent = name; d.appendChild(b); d.appendChild(document.createTextNode(text));
     var l = $('tlog'); l.appendChild(d); while (l.children.length > 5) l.removeChild(l.firstChild);
@@ -1384,16 +1446,16 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var b = document.createElement('div'); b.className = 'bub'; b.textContent = text; host.appendChild(b); host._bt && clearTimeout(host._bt); host._bt = setTimeout(function () { b.remove(); }, 6000);
   }
   function openTown() {
-    inTown = true; shared = false; curMine = null;
+    inTown = true; shared = false; curMine = null; fz = zoomT = .62;
     $('field').classList.add('town'); $('fTtl').textContent = 'オパ会の町';
-    buildTown(); show('field'); closeSheets(); digUI(false); BGM.set('map');
+    zoomT = .62; buildTown(); show('field'); closeSheets(); digUI(false); BGM.set('town');
     $('fhud').innerHTML = '<span style="flex:1;text-align:center">町では、みんなと歩いて話せるで（ことばは保存されへん）</span>';
-    var tip = $('ftip'); tip.style.opacity = 1; tip.textContent = '歩きたい場所をタップ！ 下の欄から、ひとこと話せるで'; clearTimeout(tipT); tipT = setTimeout(function () { tip.style.opacity = 0; }, 6000);
+    var tip = $('ftip'); tip.style.opacity = 1; tip.textContent = '歩きたい場所をタップ！ ショップやギルドは、建物をタップ。下の欄から、ひとこと話せるで'; clearTimeout(tipT); tipT = setTimeout(function () { tip.style.opacity = 0; }, 6000);
     $('tlog').innerHTML = '';
     var me = { id: myMid, n: (player.avatar && player.avatar.name) || '', av: player.avatar };
     RT.join('town', me, { onMsg: rtMsg, onPeers: rtPeers }, function (ok) { if (ok) { rtOn = true; rtLast = 0; rtSend({ t: 'pos', x: Math.round(hero.x), y: Math.round(hero.y), d: hero.dir }); } else toast('つながらへんかった。町には一人だけやで'); });
   }
-  function leaveTown() { inTown = false; $('field').classList.remove('town'); rtStop(); }
+  function leaveTown() { inTown = false; zoomT = 1; fz = 1; $('field').classList.remove('town'); rtStop(); setWorld(760, 1000); }
   function sendChat() {
     var inp = $('tin'), t = String(inp.value || '').replace(/\s+/g, ' ').trim().slice(0, 40); if (!t) return;
     var now = Date.now(); if (now - tChatAt < 1800) { toast('ちょっと待ってな'); return; } tChatAt = now;
@@ -1754,6 +1816,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   /* ---------- フィールド（歩いて、掘る場所を選ぶ） ---------- */
   var WW = 760, WH = 1000, SPEED = 200;
+  function setWorld(w, h) { WW = w; WH = h; var el = $('world'); el.style.width = w + 'px'; el.style.height = h + 'px'; }
   var hero = { x: 380, y: 900, dir: 1 }, fz = 1, zoomT = 1, camX = 0, camY = 0, ftarget = null, fieldOn = false, fraf = 0, flast = 0;
   var spots = [], curSpot = null, spotSeq = 0, spotKind = 'a', tipT = 0;
   var SPOTTAPS = { a: 10, b: 14, c: 18 };
@@ -1875,7 +1938,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function buildField() {
     var m = MBY[curMine], w = $('world'), rr = rng(hash(m.id)), html = '';
-    w.classList.add('cave');
+    setWorld(760, 1000); w.classList.add('cave');
     w.style.background = 'radial-gradient(ellipse at 50% 72%,' + shade(m.gc, -.55) + ' 0,#201729 48%,#0c0812 100%)';
     html += ceilingSVG();
     for (var i = 0; i < 10; i++) { var sz = 160 + rr() * 220; html += '<div class="pt" style="left:' + (rr() * WW - sz / 2) + 'px;top:' + (260 + rr() * (WH - 300) - sz / 2) + 'px;width:' + sz + 'px;height:' + (sz * .7) + 'px;background:radial-gradient(closest-side,rgba(255,255,255,.07),transparent)"></div>'; }
@@ -1924,7 +1987,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var hh = $('hero2'), moved = false;
     if (ftarget) {
       var dx = ftarget.x - hero.x, dy = ftarget.y - hero.y, d = Math.hypot(dx, dy), step = SPEED * dt;
-      if (d <= step) { hero.x = ftarget.x; hero.y = ftarget.y; var sp = ftarget.spot; ftarget = null; if (hh) hh.classList.remove('walk'); updHero(); if (sp && !sp.used) { startDig(sp); } }
+      if (d <= step) { hero.x = ftarget.x; hero.y = ftarget.y; var sp = ftarget.spot, dk = ftarget.door; ftarget = null; if (hh) hh.classList.remove('walk'); updHero(); if (sp && !sp.used) { startDig(sp); } else if (dk) openDoor(dk); }
       else { hero.x += dx / d * step; hero.y += dy / d * step; if (Math.abs(dx) > 3) hero.dir = dx > 0 ? 1 : -1; moved = true; if (hh) hh.classList.add('walk'); updHero(); }
     }
     ghostsTick(dt, moved); foesTick(dt);
@@ -1943,14 +2006,15 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (curSpot) { swing(e); return; }
     var r = this.getBoundingClientRect(), wx = (e.clientX - r.left) / fz + camX, wy = (e.clientY - r.top) / fz + camY, hit = null, best = 58;
     if (hitFoeAt(wx, wy)) return;
+    if (inTown) { var dr = townDoorAt(wx, wy); if (dr) { var pg0 = document.createElement('i'); pg0.className = 'ping'; pg0.style.left = wx + 'px'; pg0.style.top = wy + 'px'; $('world').appendChild(pg0); setTimeout(function () { pg0.remove(); }, 520); ftarget = { x: dr.x, y: dr.y + 46, spot: null, door: dr.k }; $('ftip').style.opacity = 0; return; } }
     spots.forEach(function (s) { if (s.used || (s.by && s.by !== myMid)) return; var d = Math.hypot(wx - s.x, wy - (s.y - 12)); if (d < best) { best = d; hit = s; } });
     var pg = document.createElement('i'); pg.className = 'ping'; pg.style.left = wx + 'px'; pg.style.top = wy + 'px'; $('world').appendChild(pg); setTimeout(function () { pg.remove(); }, 520);
     if (hit) ftarget = { x: hit.x - 58, y: hit.y + 26, spot: hit };
-    else ftarget = { x: clamp(wx, 30, WW - 30), y: clamp(wy, 200, WH - 40), spot: null };
+    else ftarget = { x: clamp(wx, 30, WW - 30), y: clamp(wy, inTown ? 260 : 200, WH - 40), spot: null };
     $('ftip').style.opacity = 0;
   });
   function digUI(on) {
-    $('field').classList.toggle('digging', !!on); zoomT = on ? 1.55 : 1;
+    $('field').classList.toggle('digging', !!on); zoomT = on ? 1.55 : (inTown ? .62 : 1);
     if (!on) { $('hint').textContent = ''; }
   }
   function startDig(sp) {
