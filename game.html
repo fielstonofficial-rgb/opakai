@@ -403,7 +403,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ（ショップ・ギルド・取引所あり）</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v21（オープニング刷新）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ（ショップ・ギルド・取引所あり）</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v22（売る・ドロップ）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所や（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -450,7 +450,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     <div class="sheet" id="bag">
       <div class="bar"><span style="width:42px"></span><h1>もちもの・ショップ</h1><button class="ib" data-close="bag" type="button" aria-label="とじる">✕</button></div>
       <div class="coinbar" id="coinBar"></div>
-      <div class="tabs" id="bagTabs"><button type="button" data-t="0" class="on">🎒 もちもの</button><button type="button" data-t="1">🛍️ ショップ</button></div>
+      <div class="tabs" id="bagTabs"><button type="button" data-t="0" class="on">🎒 もちもの</button><button type="button" data-t="1">🛍️ ショップ</button><button type="button" data-t="2">💰 売る</button></div>
       <div class="body" id="bagBody"></div>
     </div>
     <div class="sheet" id="mkt">
@@ -1038,7 +1038,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     swingAnim(); dustW(monster.x, monster.y - 30);
     $('monHp').style.width = Math.max(0, monster.hp / monster.max * 100) + '%';
     if (monster.hp > 0) { $('hint').textContent = '「' + monster.d.nm + '」HP ' + monster.hp + '/' + monster.max + '！'; return; }
-    var nm = monster.d.nm; clearInterval(monTimer); monTimer = 0; monster = null;
+    var nm = monster.d.nm; dropRoll(monster.d && monster.d.tier); clearInterval(monTimer); monTimer = 0; monster = null;
     m.classList.remove('hit', 'atk'); void m.offsetWidth; m.classList.add('flee'); sfx(2);
     $('hint').textContent = '追いはらったで！つづけて掘ろう（あと ' + (TAPS - taps) + ' 回）';
     toast(nm + 'を追いはらった！');
@@ -1252,6 +1252,21 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       if (!tl.length) h += '<p class="tiny">まだ持ってへんで。石を掘ってるとき、ごくまれに出るかも。レア・超レア・激レアの3種類や。</p>';
       tl.forEach(function (t) { var k = TKN[t.kind] || TKN.r;
         h += '<div class="it"><div class="ic">' + k.ic + '</div><div class="tx"><b>' + k.nm + '</b><span class="rt" style="color:' + k.col + '">' + k.rk + '</span><br>' + k.ds.split('。')[0] + '。<br>番号 <b>' + t.code + '</b>　' + tkDate(t.created_at) + ' にゲット</div></div>'; });
+    } else if (bagTab === 2) {
+      h += '<p class="tiny">掘った石と、ひろった武器・防具を、ゲームマネーに換えられるで。レア度が高いほど高く売れる。図鑑の記録は減らへんから安心してな。</p>';
+      var gr = player.grades || {}, so = player.sold || {}, rows = 0;
+      h += '<div class="sec">石</div>';
+      STONES.forEach(function (s) { for (var g = 3; g >= 0; g--) {
+        var have2 = ((gr[s.id] || [])[g] || 0) - (((so[s.id] || [])[g]) || 0); if (have2 <= 0) continue; rows++;
+        var pr = stonePrice(s.id, g), key = s.id + ':' + g;
+        h += '<div class="it"><div class="ic" style="width:44px">' + gemEl(s.id, '', g) + '</div><div class="tx"><b>' + s.nm + '</b><span class="rt ' + TIERS[g].c + '">' + gname(s, g) + '</span><br>×' + have2 + '　1個 🪙' + pr.toLocaleString() + '</div><button type="button" data-ss="' + key + ':1">売る</button>' + (have2 > 1 ? '<button type="button" data-ss="' + key + ':all">' + (sellArm === key ? 'ほんまに？' : '全部 🪙' + (pr * have2).toLocaleString()) + '</button>' : '') + '</div>';
+      } });
+      if (!rows) h += '<p class="tiny">売れる石は、まだないで。掘って集めてな。</p>';
+      h += '<div class="sec">武器・盾・防具</div>';
+      var gl = ITEMS.filter(function (i) { return ['weapon', 'shield', 'armor'].indexOf(i.slot) >= 0 && have.indexOf(i.id) >= 0; });
+      gl.forEach(function (i) { var arm = sellArm === i.id, on = ((player.equip || {})[i.slot]) === i.id;
+        h += '<div class="it"><div class="ic">' + i.ic + '</div><div class="tx"><b>' + i.nm + '</b><span class="rt" style="color:' + TIERCOL[i.tier] + '">' + TIERS[i.tier].n + '</span>' + (on ? '　（そうび中）' : '') + '<br>🪙 ' + Math.round(i.price * .3).toLocaleString() + '</div><button type="button" data-si="' + i.id + '">' + (arm ? 'ほんまに？' : '売る') + '</button></div>'; });
+      if (!gl.length) h += '<p class="tiny">売れる装備は、まだ持ってへんで。</p>';
     } else {
       h += '<p class="tiny">ゲームマネーは、石を掘ると貯まるで（お金では買えへん）。いいランクの石ほど、たくさんもらえるよ。</p>';
       SLOTS.forEach(function (slot) {
@@ -1264,13 +1279,31 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     }
     $('bagBody').innerHTML = h;
   }
+  var sellArm = null;
+  var SBASE = [4, 12, 32, 100], SMULT = { quartz: 1, amethyst: 1, citrine: 1, garnet: 1, peridot: 1, sapphire: 1.5, emerald: 1.5, ruby: 1.5, diamond: 1.5, whiteopal: 1.5, paraiba: 2.5, alexandrite: 2.5, colordiamond: 2.5, crystalopal: 2.5, boulderopal: 4, fireopal: 4, blackopal: 4 };
+  function stonePrice(id, g) { return Math.round(SBASE[g] * (SMULT[id] || 1)); }
   var TIERCOL = ['#9db0b8', '#58a6ff', '#b583ff', '#ffd36a'];
-  function openBag(tab) { bagTab = tab || 0; buyArm = null; renderBag(); $('bag').classList.add('on'); }
+  function openBag(tab) { bagTab = tab || 0; buyArm = null; sellArm = null; renderBag(); $('bag').classList.add('on'); }
   ['bagBtn', 'fBag'].forEach(function (id) { if ($(id)) $(id).addEventListener('click', function () { openBag(0); }); });
-  $('bagTabs').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; bagTab = +b.dataset.t; buyArm = null; renderBag(); });
+  $('bagTabs').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; bagTab = +b.dataset.t; buyArm = null; sellArm = null; renderBag(); });
   $('bagBody').addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b || b.disabled) return;
-    if (b.dataset.buy) {
+    if (b.dataset.ss) {
+      var sp = b.dataset.ss.split(':'), key = sp[0] + ':' + sp[1];
+      if (sp[2] === 'all' && sellArm !== key) { sellArm = key; renderBag(); return; }
+      sellArm = null; b.disabled = true;
+      api({ action: 'game_sell_stone', stone: sp[0], grade: +sp[1], n: sp[2] === 'all' ? 'all' : 1 }).then(function (j) {
+        if (j.player) { player = j.player; toast('🪙' + j.got.toLocaleString() + ' で売れたで'); sfx(1); renderPlay(); } else toast(j.message || 'うまく売れへんかった');
+        renderBag();
+      });
+    } else if (b.dataset.si) {
+      if (sellArm !== b.dataset.si) { sellArm = b.dataset.si; renderBag(); return; }
+      sellArm = null; b.disabled = true;
+      api({ action: 'game_sell_item', item: b.dataset.si }).then(function (j) {
+        if (j.player) { player = j.player; applyAura(); gearUi(); hpUi(); toast('🪙' + j.got.toLocaleString() + ' で売れたで'); sfx(1); } else toast(j.message || 'うまく売れへんかった');
+        renderBag();
+      });
+    } else if (b.dataset.buy) {
       if (buyArm !== b.dataset.buy) { buyArm = b.dataset.buy; renderBag(); return; }
       buyArm = null; b.disabled = true;
       api({ action: 'game_buy', item: b.dataset.buy }).then(function (j) {
@@ -2147,9 +2180,10 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function hpUi() {
     var mx = hpMaxNow();
-    if (!hp.ready) { hp.cur = mx; hp.ready = true; hp.max = mx; }
-    if (mx !== hp.max) { if (mx > hp.max) hp.cur += mx - hp.max; hp.max = mx; }
+    if (!hp.ready) { var sv = LSget('opa_game_hp_' + myMid); hp.cur = (sv !== null && sv !== '' && isFinite(+sv)) ? Math.max(1, Math.min(mx, Math.round(+sv))) : mx; hp.ready = true; hp.max = mx; }
+    if (mx !== hp.max) hp.max = mx;
     if (hp.cur > hp.max) hp.cur = hp.max;
+    LSset('opa_game_hp_' + myMid, String(hp.cur));
     var r = hp.max ? hp.cur / hp.max : 1, ph = $('phud'); if (!ph) return;
     $('phI').style.width = Math.max(0, r * 100) + '%'; $('phTx').textContent = 'HP ' + hp.cur + '/' + hp.max; ph.classList.toggle('low', r <= .3);
     var hh = $('hero2'); if (hh) { var b = hh.querySelector('.hhp'); if (b) { b.classList.toggle('on', r < 1); b.firstChild.style.width = (r * 100) + '%'; b.firstChild.style.background = r <= .3 ? '#ff5a5a' : '#4fd68a'; } hh.classList.toggle('down', hp.down); }
@@ -2247,8 +2281,15 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var f = { id: nf ? nf.id : ++foeSeq, di: MONS.indexOf(d), nx: x, ny: y, d: d, st: st, cd: 0, hp: h0, max: m0, x: x, y: y, hx: x, hy: y, tx: x, ty: y, t: 0, mode: 'idle', el: el, fi: el.querySelector('.fi'), bar: el.querySelector('.fhp i'), dir: 1 };
     f.bar.style.width = Math.max(0, h0 / m0 * 100) + '%'; foes.push(f); placeEl(el, x, y); return f;
   }
+  function dropRoll(tier) {
+    if (!curMine || inTown || !token) return;
+    api({ action: 'game_drop', mine: curMine, tier: tier || 0 }).then(function (j) {
+      if (!j || !j.gear) return; player = j.player; var gi = IBY[j.gear.id]; applyAura(); gearUi(); hpUi(); sfx(3); vib([40, 30, 40]);
+      toast(gi ? (j.gear.dup ? '「' + gi.nm + '」を落とした！ もう持ってるから 🪙' + j.gear.coins + ' になったで' : '✨ モンスターが「' + gi.nm + '」を落としたで！もちものに入ったよ') : '✨ 装備を落としたで！');
+    }).catch(function () {});
+  }
   function killFoe(f, delay) {
-    f.mode = 'dead'; var g = fgen; if (f.tel) { f.tel.remove(); f.tel = null; }
+    f.mode = 'dead'; if (!f.noDrop && !f.boss) dropRoll(f.d && f.d.tier); var g = fgen; if (f.tel) { f.tel.remove(); f.tel = null; }
     if (amFoeHost() && netFoes()) { if (f.boss) { rtSend({ t: 'bk' }); claimBoss(); } else { kills++; if (kills >= 6 && Object.keys(peers).length >= 1 && !foes.some(function (x) { return x.boss && x.mode !== 'dead'; })) { kills = 0; setTimeout(spawnBoss, 3000); } } }
     setTimeout(function () { if (f.el) f.el.remove(); var i = foes.indexOf(f); if (i >= 0) foes.splice(i, 1); }, 620);
     f.el.classList.add('flee');
@@ -2272,7 +2313,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         sp = f.d.nm === 'コウモリ' ? 125 : (f.d.tier === 2 ? 78 : 96); ux = dx / dist; uy = dy / dist;
         if (dist < 36) {
           if (best.me) {
-            if (curSpot && !monster && !netFoes()) { var d0 = f.d; killFoe(f, 22000); spawnMon(d0); return; }
+            if (curSpot && !monster && !netFoes()) { var d0 = f.d; f.noDrop = true; killFoe(f, 22000); spawnMon(d0); return; }
             if (f.cd <= 0 && (!curSpot || netFoes())) {
               f.cd = 1.4; hurtMe(f.st.atk);
               if (!curSpot) { hero.x = clamp(hero.x + ux * 60, 30, WW - 30); hero.y = clamp(hero.y + uy * 60, 230, WH - 30); ftarget = null; updHero(); }
