@@ -450,7 +450,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v29（掘ったあとも止まらへん）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v30（武器のとどく距離）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所や（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -1273,15 +1273,15 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     { id: 't2', slot: 'tool', nm: '遊色ルーペつきつるはし', price: 2000, tier: 1, ic: '🔍', cut: .10, fx: '掘る回数が 10% へる' },
     { id: 't3', slot: 'tool', nm: 'オパール専用の発掘機', price: 8000, tier: 2, ic: '⚙️', cut: .15, fx: '掘る回数が 15% へる' },
     { id: 't4', slot: 'tool', nm: '星の輝きの採掘用具', price: 25000, tier: 3, ic: '🌟', cut: .20, fx: '掘る回数が 20% へる' },
-    { id: 'w1', slot: 'weapon', kind: 'sword', nm: '木の剣', price: 500, tier: 0, ic: '🗡️', atk: 3, fx: '剣：こうげき +3（近くの敵をたたく）' },
+    { id: 'w1', slot: 'weapon', kind: 'sword', nm: '木の剣', price: 500, tier: 0, ic: '🗡️', atk: 3, fx: '剣：こうげき +3。2マス先までたたける' },
     { id: 'w2', slot: 'weapon', kind: 'sword', nm: '鉄の剣', price: 2500, tier: 1, ic: '🗡️', atk: 7, fx: '剣：こうげき +7' },
     { id: 'w3', slot: 'weapon', kind: 'sword', nm: '銀の長剣', price: 9000, tier: 2, ic: '⚔️', atk: 12, fx: '剣：こうげき +12' },
     { id: 'w4', slot: 'weapon', kind: 'sword', nm: '星屑の聖剣', price: 24000, tier: 3, ic: '⚔️', atk: 20, drop: true, fx: '剣：こうげき +20（店では売ってへん）' },
-    { id: 'b1', slot: 'weapon', kind: 'bow', nm: 'ハンターの弓', price: 600, tier: 0, ic: '🏹', atk: 3, rng: 300, cd: 450, fx: '弓：こうげき +3。とおくの敵を射てる' },
-    { id: 'b2', slot: 'weapon', kind: 'bow', nm: 'エルフの長弓', price: 3000, tier: 1, ic: '🏹', atk: 8, rng: 330, cd: 450, fx: '弓：こうげき +8。とおくから射てる' },
-    { id: 'b3', slot: 'weapon', kind: 'bow', nm: '月光の弓', price: 22000, tier: 3, ic: '🏹', atk: 14, rng: 360, cd: 400, drop: true, fx: '弓：こうげき +14（店では売ってへん）' },
-    { id: 'g1', slot: 'weapon', kind: 'gun', nm: '火縄銃', price: 3500, tier: 1, ic: '🔫', atk: 9, rng: 340, cd: 1100, fx: '銃：1発が重い +9。うつのに時間がかかる' },
-    { id: 'g2', slot: 'weapon', kind: 'gun', nm: '魔導ライフル', price: 26000, tier: 3, ic: '🔫', atk: 22, rng: 380, cd: 900, drop: true, fx: '銃：1発 +22（店では売ってへん）' },
+    { id: 'b1', slot: 'weapon', kind: 'bow', nm: 'ハンターの弓', price: 600, tier: 0, ic: '🏹', atk: 2, rng: 225, cd: 450, fx: '弓：こうげき +2。3マス先まで射てる（剣よりは弱め）' },
+    { id: 'b2', slot: 'weapon', kind: 'bow', nm: 'エルフの長弓', price: 3000, tier: 1, ic: '🏹', atk: 5, rng: 225, cd: 450, fx: '弓：こうげき +5。3マス先まで射てる（剣よりは弱め）' },
+    { id: 'b3', slot: 'weapon', kind: 'bow', nm: '月光の弓', price: 22000, tier: 3, ic: '🏹', atk: 13, rng: 225, cd: 400, drop: true, fx: '弓：こうげき +13。3マス先まで（店では売ってへん）' },
+    { id: 'g1', slot: 'weapon', kind: 'gun', nm: '火縄銃', price: 3500, tier: 1, ic: '🔫', atk: 5, rng: 300, cd: 1100, fx: '銃：こうげき +5。4マス先まで。うつのに時間がかかる' },
+    { id: 'g2', slot: 'weapon', kind: 'gun', nm: '魔導ライフル', price: 26000, tier: 3, ic: '🔫', atk: 15, rng: 300, cd: 900, drop: true, fx: '銃：こうげき +15。4マス先まで（店では売ってへん）' },
     { id: 's1', slot: 'shield', nm: '木の盾', price: 400, tier: 0, ic: '🛡️', def: .10, fx: '受けるダメージ 10% カット。ガードでさらに軽く' },
     { id: 's2', slot: 'shield', nm: '鉄の盾', price: 2200, tier: 1, ic: '🛡️', def: .20, fx: '受けるダメージ 20% カット' },
     { id: 's3', slot: 'shield', nm: '銀鏡の盾', price: 8500, tier: 2, ic: '🛡️', def: .30, fx: '受けるダメージ 30% カット' },
@@ -1313,7 +1313,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var GMI = {
     outfit: { id: 'gm_o', slot: 'outfit', nm: '黄金のローブ', tier: 3, ic: '👑' },
     tool: { id: 'gm_t', slot: 'tool', nm: '黄金のつるはし', cut: .2, ic: '⛏️' },
-    weapon: { id: 'gm_w', slot: 'weapon', kind: 'bow', nm: '黄金の神弓', atk: 9999999, rng: 560, cd: 220, ic: '🏹' },
+    weapon: { id: 'gm_w', slot: 'weapon', kind: 'bow', nm: '黄金の神弓', atk: 9999999, rng: 99999, cd: 220, ic: '🏹' },
     shield: { id: 'gm_s', slot: 'shield', nm: '黄金の盾', def: .85, ic: '🛡️' },
     armor: { id: 'gm_a', slot: 'armor', nm: '黄金の鎧', hp: 0, ic: '🐉' },
     helm: { id: 'gm_h', slot: 'helm', nm: '黄金の兜', def: .05, ic: '⛑️' }
@@ -2286,7 +2286,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var hp = { cur: 0, max: 0, down: false, inv: 0, ready: false }, downT = 0, downLeft = 0;
   function plv() { return Math.max(1, (player && player.lv) || 1); }
   function hpMaxNow() { if (isGM()) return 9999; var a = eqItem('armor'); return 80 + 10 * plv() + (a ? a.hp : 0); }
-  function atkP() { var w = curW(); if (!w) return Math.max(1, Math.round(1 + Math.min(plv(), 60) / 12)); return Math.round(6 + 1.5 * plv()) + w.atk; }
+  function atkP() { var w = curW(); if (!w) return Math.max(1, Math.round(1 + Math.min(plv(), 60) / 12)); return Math.round((Math.round(6 + 1.5 * plv()) + w.atk) * (w.rng && !isGM() ? .8 : 1)); }
   var guard = false, atkAt = 0;
   function defP() { var s = eqItem('shield'), h = isGM() ? GMI.helm : null; return Math.min(.85, (s ? s.def : 0) + (h ? h.def : 0) + (guard ? .4 : 0)); }
   function atkReady() { var w = curW(), n = performance.now(); if (n < atkAt) return false; atkAt = n + (w && w.cd ? w.cd : 0); return true; }
