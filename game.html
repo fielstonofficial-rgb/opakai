@@ -282,6 +282,16 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #downov b{display:block;font-size:18px;margin-bottom:4px}
 #downov p{margin:0 0 10px;font-size:13px;color:#e8d6dc}
 #guardBtn{position:absolute;right:12px;bottom:96px;z-index:25;display:none;padding:10px 14px;border-radius:999px;border:2px solid #7fd6ff;background:rgba(8,20,30,.85);color:#bfe9ff;font-weight:800;font-size:13px}
+#swBtn{position:absolute;right:12px;bottom:144px;z-index:25;display:none;padding:10px 14px;border-radius:999px;border:2px solid #ffd36a;background:rgba(30,22,6,.88);color:#ffe9a8;font-weight:800;font-size:13px}
+#qcBtn{position:absolute;right:12px;bottom:192px;z-index:40;display:none;padding:10px 14px;border-radius:999px;border:2px solid #9ff0c0;background:rgba(6,30,20,.88);color:#c9ffe0;font-weight:800;font-size:13px}
+#qcPanel{position:absolute;right:12px;bottom:240px;z-index:41;display:none;grid-template-columns:1fr 1fr;gap:6px;padding:8px;border-radius:16px;background:rgba(8,16,22,.94);border:1px solid rgba(159,240,192,.5);width:226px}
+#qcPanel.on{display:grid}
+#qcPanel button{padding:11px 4px;border-radius:12px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff;font-weight:800;font-size:13px}
+#qcPanel button.hl{border-color:#ff7a8a;background:rgba(255,80,100,.22)}
+.gh.gmg .hb{filter:drop-shadow(0 0 7px #ffd36a) drop-shadow(0 0 16px #ffd36a)}
+.gh.gmg .gname{color:#ffd36a;font-weight:900}
+.gh.gmhit .hb{animation:gmh .35s}
+@keyframes gmh{30%{transform:translateX(8px) rotate(6deg);filter:brightness(2)}}
 #guardBtn.on{background:#2c7fb8;color:#fff;border-color:#fff}
 #hero2.guard::before{content:"🛡";position:absolute;left:50%;top:18%;transform:translateX(-50%);font-size:26px;z-index:5;filter:drop-shadow(0 0 6px #7fd6ff)}
 .prj{position:absolute;z-index:99997;width:20px;height:3px;margin:-2px 0 0 -10px;background:#ffe9a8;border-radius:3px;transition:left .17s linear,top .17s linear;pointer-events:none;box-shadow:0 0 6px #ffe9a8}
@@ -425,7 +435,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v26（採掘の曲・モンスター増加）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v27（持ちかえ・ひとこと・GM）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所や（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -433,7 +443,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   <div id="cfm"><div class="gc"><h3>ゲームをとじる？</h3><p class="tiny">とじても、ここまでの記録は残るで。</p><div class="rw" style="display:flex;gap:8px;margin-top:12px"><button id="cfmNo" type="button" class="gbtn" style="flex:1">つづける</button><button id="cfmYes" type="button" class="gbtn dim" style="flex:1;margin-top:0">とじる</button></div></div></div>
   <section class="scr" id="field">
     <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="もちもの・ショップ">🎒</button><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
-    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><button id="guardBtn" type="button">🛡 ガード</button><div id="downov"><b>たおれてしもた…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="fCancel" type="button">やめる</button></div></div>
+    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><button id="guardBtn" type="button">🛡 ガード</button><button id="swBtn" type="button">🔁 持ちかえ</button><button id="qcBtn" type="button">💬 ひとこと</button><div id="qcPanel"></div><div id="downov"><b>たおれてしもた…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="fCancel" type="button">やめる</button></div></div>
         <div id="gld"><div class="gc"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="tiny">ギルドの部屋</span><button id="gClose" type="button" class="gbtn" style="padding:6px 12px">とじる</button></div><div id="gBody"></div></div></div>
     <div id="tchat"><div id="tlog"></div><div id="trow"><input id="tin" type="text" maxlength="40" placeholder="ひとこと話す（40字まで）" autocomplete="off"><button id="tsend" type="button">送る</button></div></div>
     <div class="fhud" id="fhud"></div>
@@ -576,8 +586,10 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function api(body) {
     body.token = token;
     return fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
-      .then(function (r) { return r.json().then(function (j) { j._s = r.status; return j; }); });
+      .then(function (r) { return r.json().then(function (j) { j._s = r.status; if (j && j.player && (j.me === GM_ID || myMidG === GM_ID)) { j.player.lv = 999; j.player.gm = true; } return j; }); });
   }
+  var GM_ID = '4a324658-8414-4361-9962-9a6963982a39', myMidG = '';
+  function lvS(x) { return x && x.id === GM_ID ? 999 : (x ? x.lv : 1); }
   var tt;
   function toast(m) { var t = $('toast'); t.textContent = m; t.style.display = 'block'; clearTimeout(tt); tt = setTimeout(function () { t.style.display = 'none'; }, 3200); }
   function show(id) { ['load', 'open', 'make', 'map', 'field', 'play'].forEach(function (x) { $(x).classList.toggle('on', x === id); }); fieldOn = (id === 'field'); if (fieldOn) startLoop(); if (typeof BGM !== 'undefined' && BGM) if (id !== 'open') themeStop(); BGM.set(({ field: (inTown ? 'town' : 'field'), play: 'dig' })[id] || (id === 'open' && !THEME.on && THEME.failed ? 'map' : null)); }
@@ -1081,8 +1093,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function hitMon() {
     var m = $('mon'); if (!m || !monster) return;
     if (!canAttack()) return;
-    var wq = eqItem('weapon'); if (wq && wq.rng) shootFx(monster.x, monster.y, wq.kind);
-    var dm = atkP(); monster.hp -= dm; sfx('hit'); vib(20); floatTxt(monster.x, monster.y - 80, '-' + dm, 'y'); var mv = $('monV'); if (mv) mv.textContent = Math.max(0, monster.hp) + '/' + monster.max;
+    var wq = curW(); if (wq && wq.rng) shootFx(monster.x, monster.y, wq.kind);
+    var dm = atkP(); monster.hp -= dm; sfx('hit'); vib(20); floatTxt(monster.x, monster.y - 80, isGM() ? '一撃！' : '-' + dm, 'y'); var mv = $('monV'); if (mv) mv.textContent = Math.max(0, monster.hp) + '/' + monster.max;
     m.classList.remove('hit', 'atk'); void m.offsetWidth; m.classList.add('hit');
     swingAnim(); dustW(monster.x, monster.y - 30);
     $('monHp').style.width = Math.max(0, monster.hp / monster.max * 100) + '%';
@@ -1282,7 +1294,18 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     el.classList.add('on'); sfx(3); vib([80, 60, 80, 60, 80, 60, 200]);
   }
   $('tkOk').addEventListener('click', function () { $('tkov').classList.remove('on'); openBag(0); });
-  function eqItem(slot) { var id = ((player || {}).equip || {})[slot]; return id ? IBY[id] : null; }
+  var GMI = {
+    outfit: { id: 'gm_o', slot: 'outfit', nm: '黄金のローブ', tier: 3, ic: '👑' },
+    tool: { id: 'gm_t', slot: 'tool', nm: '黄金のつるはし', cut: .2, ic: '⛏️' },
+    weapon: { id: 'gm_w', slot: 'weapon', kind: 'bow', nm: '黄金の神弓', atk: 9999999, rng: 560, cd: 220, ic: '🏹' },
+    shield: { id: 'gm_s', slot: 'shield', nm: '黄金の盾', def: .85, ic: '🛡️' },
+    armor: { id: 'gm_a', slot: 'armor', nm: '黄金の鎧', hp: 99999, ic: '🐉' }
+  };
+  function isGM() { return !!(player && player.gm); }
+  function eqItem(slot) { if (isGM() && GMI[slot]) return GMI[slot]; var id = ((player || {}).equip || {})[slot]; return id ? IBY[id] : null; }
+  var wHand = 'weapon';
+  function handW() { return !!eqItem('weapon') && (!!monster || (wHand === 'weapon' && !curSpot)); }
+  function curW() { return handW() ? eqItem('weapon') : null; }
   function toolCut() { var t = eqItem('tool'); return t ? t.cut : 0; }
   function aura() { var o = eqItem('outfit'); return o ? 'drop-shadow(0 0 10px ' + AURA[o.tier] + ') drop-shadow(0 0 22px ' + AURA[o.tier] + ')' : ''; }
   function applyAura() { var a = aura(); if ($('hb')) $('hb').style.filter = a; if ($('hero')) $('hero').style.filter = a; }
@@ -1482,7 +1505,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var h = '<p class="tiny">' + (amHost() ? '仲間を呼んで、みんなの「準備OK」がそろったら、はじめるを押してな。1人でもはじめられるで。' : 'ホストが、はじめるのを待ってな。準備ができたら「準備OK」を押してな。') + '</p>';
     room.members.forEach(function (x) {
       var isHost = x.id === room.host;
-      h += '<div class="it"><div class="ic">' + (isHost ? '👑' : '⛏️') + '</div><div class="tx"><b>' + esc(x.name) + '</b>Lv ' + x.lv + (isHost ? '<span class="chip ok">ホスト</span>' : (x.ready ? '<span class="chip ok">準備OK</span>' : '<span class="chip">まだ</span>')) + '</div>' +
+      h += '<div class="it"><div class="ic">' + (isHost ? '👑' : '⛏️') + '</div><div class="tx"><b>' + esc(x.name) + '</b>Lv ' + lvS(x) + (isHost ? '<span class="chip ok">ホスト</span>' : (x.ready ? '<span class="chip ok">準備OK</span>' : '<span class="chip">まだ</span>')) + '</div>' +
         (amHost() && !isHost ? '<button type="button" data-kick="' + x.id + '">外す</button>' : '') + '</div>';
     });
     h += '<p class="tiny">' + room.members.length + ' / ' + room.max + ' 人</p>';
@@ -1502,7 +1525,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('lbHost').addEventListener('click', function (e) {
     var f = e.target.closest('#lbFind'), iv = e.target.closest('[data-inv]');
     if (f) { var q = $('lbQ').value.trim(); if (!q) return; api({ action: 'game_find', q: q }).then(function (j) {
-      var r = j.found || []; $('lbRes').innerHTML = r.length ? r.map(function (x) { return '<div class="it"><div class="ic">⛏️</div><div class="tx"><b>' + esc(x.name) + '</b>Lv ' + x.lv + '</div><button type="button" data-inv="' + x.id + '">誘う</button></div>'; }).join('') : '<p class="tiny">見つからへんかった。名前を確かめてな。</p>'; }); }
+      var r = j.found || []; $('lbRes').innerHTML = r.length ? r.map(function (x) { return '<div class="it"><div class="ic">⛏️</div><div class="tx"><b>' + esc(x.name) + '</b>Lv ' + lvS(x) + '</div><button type="button" data-inv="' + x.id + '">誘う</button></div>'; }).join('') : '<p class="tiny">見つからへんかった。名前を確かめてな。</p>'; }); }
     if (iv) { iv.disabled = true; api({ action: 'room_invite', room: room.id, to: iv.dataset.inv }).then(function (j) { toast(j.ok ? '誘ったで！返事を待ってな' : (j.message || 'うまく誘えへんかった')); iv.textContent = j.ok ? '誘った' : '誘う'; if (!j.ok) iv.disabled = false; }); }
   });
   $('lbBtns').addEventListener('click', function (e) {
@@ -1581,6 +1604,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     function leave() { if (cur) { try { cur.leave(); } catch (e) {} cur = null; } }
     return { join: join, leave: leave, send: function (p) { if (cur) cur.send(p); }, on: function () { return !!cur; } };
   })();
+  var gmTalkAt = 0;
   var rtOn = false, peers = {}, rtLast = 0, rtWas = false, shared = false;
   function rtSend(m) { if (rtOn) { m.f = myMid; RT.send(m); } }
   function ghostEl(pr) {
@@ -1596,19 +1620,20 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     Object.keys(peers).forEach(function (id) { if (!seen[id]) { if (peers[id].el) peers[id].el.remove(); delete peers[id]; spots.forEach(function (sp) { if (sp.by === id) rtFree(sp); }); } });
     partyShown();
   }
-  function partyShown() { var n = Object.keys(peers).length; var t = $('ftip'); if (t && !curSpot && n > 0 && !t.dataset.shown) { t.dataset.shown = 1; t.style.opacity = 1; t.textContent = '仲間が ' + n + ' 人！ 盾で敵を引きつける人と、掘る人に分かれると楽やで'; clearTimeout(tipT); tipT = setTimeout(function () { t.style.opacity = 0; }, 4000); } }
+  function partyShown() { gearUi(); var n = Object.keys(peers).length; var t = $('ftip'); if (t && !curSpot && n > 0 && !t.dataset.shown) { t.dataset.shown = 1; t.style.opacity = 1; t.textContent = '仲間が ' + n + ' 人！ 盾で敵を引きつける人と、掘る人に分かれると楽やで'; clearTimeout(tipT); tipT = setTimeout(function () { t.style.opacity = 0; }, 4000); } }
   function findSpot(i, g) { for (var k = 0; k < spots.length; k++) if (spots[k].i === i && (spots[k].g || 0) === g) return spots[k]; return null; }
   function rtFree(sp) { sp.by = null; sp.el.classList.remove('taken'); var b = sp.el.querySelector('.by'); if (b) b.remove(); }
   function rtMsg(m) {
     if (!m || m.f === myMid) return;
     var pr = peers[m.f];
-    if (m.t === 'pos') { if (!pr) pr = peers[m.f] = { id: m.f, x: m.x, y: m.y, tx: m.x, ty: m.y, dir: m.d || 1, got: false }; if (!pr.got) { pr.x = m.x; pr.y = m.y; pr.got = true; } pr.tx = m.x; pr.ty = m.y; pr.dir = m.d || 1; pr.h = m.h == null ? 100 : m.h; pr.dn = m.dn ? 1 : 0; ghostEl(pr); return; }
+    if (m.t === 'pos') { if (!pr) pr = peers[m.f] = { id: m.f, x: m.x, y: m.y, tx: m.x, ty: m.y, dir: m.d || 1, got: false }; if (!pr.got) { pr.x = m.x; pr.y = m.y; pr.got = true; } pr.tx = m.x; pr.ty = m.y; pr.dir = m.d || 1; pr.h = m.h == null ? 100 : m.h; pr.dn = m.dn ? 1 : 0; pr.gm = m.gm ? 1 : 0; ghostEl(pr); if (pr.gm && pr.el && !pr.el.classList.contains('gmg')) { pr.el.classList.add('gmg'); var gn = pr.el.querySelector('.gname'); if (gn) gn.textContent = '👑GM ' + (pr.n || ''); } return; }
     if (m.t === 'rev') { if (m.to === myMid && hp.down) reviveMe(pr && pr.n); return; }
     if (m.t === 'fs') { if (!amFoeHost()) applyFoeState(m.fl || []); return; }
-    if (m.t === 'hit') { if (amFoeHost() && netFoes()) { var hf = null; foes.forEach(function (x) { if (x.id === m.i) hf = x; }); if (hf) applyFoeDamage(hf, Math.max(1, Math.min(500, Math.round(m.d || 1)))); } return; }
+    if (m.t === 'hit') { if (amFoeHost() && netFoes()) { var hf = null; foes.forEach(function (x) { if (x.id === m.i) hf = x; }); if (hf) applyFoeDamage(hf, Math.max(1, Math.min((pr && pr.gm) ? 1e8 : 500, Math.round(m.d || 1)))); } return; }
+    if (m.t === 'gmhit') { if (m.to === myMid && isGM()) { var gd = Math.max(1, Math.min(9999, Math.round(m.d || 1))); floatTxt(hero.x, hero.y - 74, '-' + gd, 'y'); var now2 = Date.now(); if (now2 - gmTalkAt > 2500) { gmTalkAt = now2; var gl = ['いてっ！', '効かんなぁ😎', 'ええパンチやで！', 'もっとこい！', 'それで全力か〜？', 'ナイス攻撃！']; bubble($('hero2'), gl[Math.floor(Math.random() * gl.length)]); } var hb2 = $('hb'); if (hb2) { hb2.classList.remove('hurt'); void hb2.offsetWidth; hb2.classList.add('hurt'); } } return; }
     if (m.t === 'dmg') { if (m.to === myMid) hurtMe(m.d || 1); return; }
     if (m.t === 'bk') { if (!amFoeHost()) claimBoss(); return; }
-    if (m.t === 'chat') { var cn = (pr && pr.n) || '仲間'; if (tMuted[m.f]) return; var tx = String(m.x || '').slice(0, 40); tlogAdd(cn, tx); if (pr && pr.el) bubble(pr.el, tx); return; }
+    if (m.t === 'chat') { var cn = (pr && pr.n) || '仲間'; if (tMuted[m.f]) return; var tx = String(m.x || '').slice(0, 40); tlogAdd(cn, tx); if (pr && pr.el) bubble(pr.el, tx); if (m.q && !inTown) { toast(cn + '：' + tx); if (/たすけ|ヘルプ/.test(tx)) { sfx(1); vib([40, 30, 40]); } } return; }
     var sp = findSpot(m.i, m.g || 0);
     if (m.t === 'claim' && sp && !sp.used) { if (curSpot === sp) return; sp.by = m.f; sp.el.classList.add('taken'); if (!sp.el.querySelector('.by')) { var b = document.createElement('div'); b.className = 'by'; b.textContent = ((pr && pr.n) || '仲間') + ' が掘り中'; sp.el.appendChild(b); } }
     else if (m.t === 'free' && sp && sp.by === m.f) rtFree(sp);
@@ -1849,7 +1874,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   /* 招待の受け取り（ゲームを開いている間、15秒ごとに確認） */
   function startInvPoll() {
     if (invStarted) return; invStarted = true;
-    if (!myMid) api({ action: 'game_load' }).then(function (j) { myMid = j.me || ''; });
+    if (!myMid) api({ action: 'game_load' }).then(function (j) { myMid = j.me || ''; myMidG = myMid; });
     setInterval(function () {
       if (document.hidden || room) return;
       api({ action: 'room_inbox' }).then(function (j) {
@@ -2238,12 +2263,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   /* ---------- HP・戦い・病院・たすけ合い ---------- */
   var hp = { cur: 0, max: 0, down: false, inv: 0, ready: false }, downT = 0, downLeft = 0;
   function plv() { return Math.max(1, (player && player.lv) || 1); }
-  function hpMaxNow() { var a = eqItem('armor'); return 80 + 10 * plv() + (a ? a.hp : 0); }
-  function atkP() { var w = eqItem('weapon'); return Math.round(6 + 1.5 * plv()) + (w ? w.atk : 0); }
+  function hpMaxNow() { if (isGM()) return 999999; var a = eqItem('armor'); return 80 + 10 * plv() + (a ? a.hp : 0); }
+  function atkP() { var w = curW(); if (!w) return Math.max(1, Math.round(1 + Math.min(plv(), 60) / 12)); return Math.round(6 + 1.5 * plv()) + w.atk; }
   var guard = false, atkAt = 0;
   function defP() { var s = eqItem('shield'); return Math.min(.85, (s ? s.def : 0) + (guard ? .4 : 0)); }
-  function atkReady() { var w = eqItem('weapon'), n = performance.now(); if (n < atkAt) return false; atkAt = n + (w && w.cd ? w.cd : 0); return true; }
-  function atkRange() { var w = eqItem('weapon'); return w && w.rng ? w.rng : 150; }
+  function atkReady() { var w = curW(), n = performance.now(); if (n < atkAt) return false; atkAt = n + (w && w.cd ? w.cd : 0); return true; }
+  function atkRange() { var w = curW(); return w && w.rng ? w.rng : 150; }
   function diffN() { var m = (curMine && MBY[curMine]) ? MBY[curMine].lv : 1; return Math.max(0, Math.min(1, (m - 1) / 60)); }
   function foeCap() { return 5 + Math.round(diffN() * 7); }
   function foeAlive() { return foes.filter(function (x) { return x.mode !== 'dead' && !x.boss; }).length; }
@@ -2262,9 +2287,10 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var hh = $('hero2'); if (hh) { var b = hh.querySelector('.hhp'); if (b) { b.classList.toggle('on', r < 1); b.firstChild.style.width = (r * 100) + '%'; b.firstChild.style.background = r <= .3 ? '#ff5a5a' : '#4fd68a'; } hh.classList.toggle('down', hp.down); }
   }
   function floatTxt(x, y, t, c) { var e = document.createElement('div'); e.className = 'ftxt' + (c ? ' ' + c : ''); e.textContent = t; e.style.left = x + 'px'; e.style.top = y + 'px'; $('world').appendChild(e); setTimeout(function () { e.remove(); }, 850); }
-  function posMsg() { return { t: 'pos', x: Math.round(hero.x), y: Math.round(hero.y), d: hero.dir, h: Math.round(hp.cur / Math.max(1, hp.max) * 100), dn: hp.down ? 1 : 0 }; }
+  function posMsg() { return { t: 'pos', x: Math.round(hero.x), y: Math.round(hero.y), d: hero.dir, h: Math.round(hp.cur / Math.max(1, hp.max) * 100), dn: hp.down ? 1 : 0, gm: isGM() ? 1 : 0 }; }
   function rtHp() { if (rtOn) { rtLast = 0; } }
   function hurtMe(dmg) {
+    if (isGM()) return false;
     if (hp.down || inTown || busy) return false;
     var now = performance.now(); if (now < hp.inv) return false; hp.inv = now + 650;
     dmg = Math.max(1, Math.round(dmg * (1 - defP()))); hp.cur = Math.max(0, hp.cur - dmg);
@@ -2315,7 +2341,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function handUi() {
     var pk = $('fpick'); if (!pk || !player) return;
-    var w = eqItem('weapon'), mode = ((curSpot && !monster) || !w) ? 'pick' : w.kind;
+    var w = curW(), mode = !w ? 'pick' : w.kind;
     if (pk.dataset.m === mode) return; pk.dataset.m = mode;
     pk.innerHTML = mode === 'pick' ? pickHTML(SKIN[normAv(player.avatar).skin]) : weaponSVG(mode);
   }
@@ -2323,6 +2349,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var g = $('guardBtn'); if (!g) return; var has = !!eqItem('shield');
     g.style.display = (has && fieldOn) ? 'block' : 'none'; g.classList.toggle('on', guard); g.textContent = guard ? '🛡 ガード中（もう一度でやめる）' : '🛡 ガード';
     var hh = $('hero2'); if (hh) hh.classList.toggle('guard', guard);
+    var sw = $('swBtn'); if (sw) { sw.style.display = (fieldOn && !inTown && eqItem('weapon')) ? 'block' : 'none'; sw.textContent = handW() ? '🔁 つるはしに持ちかえ' : '🔁 武器に持ちかえ'; }
+    var qb = $('qcBtn'); if (qb) { var qs = fieldOn && !inTown && rtOn; qb.style.display = qs ? 'block' : 'none'; if (!qs) $('qcPanel').classList.remove('on'); }
     handUi();
   }
   function shootFx(fx, fy, kind) {
@@ -2334,6 +2362,16 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (guard) { toast('ガード中は、たたけへんで'); return false; }
     return atkReady();
   }
+  $('swBtn').addEventListener('click', function () { wHand = (wHand === 'weapon' && !curSpot) ? 'pick' : 'weapon'; if (curSpot && !monster) toast('掘るときは つるはし やで。モンスターが来たら 武器に持ちかえるで'); else toast(wHand === 'weapon' ? '武器に持ちかえた！' : 'つるはしに持ちかえた（敵にはほとんど効かへんで）'); gearUi(); sfx(2); });
+  var QC = [['🆘 たすけて！', 'たすけて！', 1], ['❗ ヘルプ！', 'ヘルプ！', 1], ['👍 ナイス！', 'ナイス！'], ['🙌 グッジョブ！', 'グッジョブ！'], ['👉 こっち！', 'こっち来て！'], ['🙏 ありがとう', 'ありがとう！'], ['🆗 りょうかい', 'りょうかい！'], ['⚠️ きをつけて', '気をつけて！']];
+  $('qcPanel').innerHTML = QC.map(function (q, i) { return '<button type="button" data-q="' + i + '"' + (q[2] ? ' class="hl"' : '') + '>' + q[0] + '</button>'; }).join('');
+  $('qcBtn').addEventListener('click', function () { $('qcPanel').classList.toggle('on'); });
+  $('qcPanel').addEventListener('click', function (e) {
+    var b = e.target.closest && e.target.closest('button[data-q]'); if (!b) return; var q = QC[+b.dataset.q];
+    var now = Date.now(); if (now - tChatAt < 1000) return; tChatAt = now; $('qcPanel').classList.remove('on');
+    bubble($('hero2'), q[1]); if (rtOn) rtSend({ t: 'chat', x: q[1], q: 1 }); sfx(0);
+  });
+  ['swBtn', 'qcBtn', 'qcPanel'].forEach(function (id) { $(id).addEventListener('pointerdown', function (e) { e.stopPropagation(); }); });
   $('guardBtn').addEventListener('click', function () { guard = !guard; gearUi(); sfx(2); });
   $('guardBtn').addEventListener('pointerdown', function (e) { e.stopPropagation(); });
   var foes = [], fgen = 0;
@@ -2470,14 +2508,24 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (f.hp <= 0) { sfx(2); killFoe(f, 25000); }
     else if (!f.boss) { f.mode = 'stun'; f.t = 1.1; f.el.classList.remove('alert'); }
   }
+  function hitGmAt(wx, wy) {
+    var g = null; Object.keys(peers).forEach(function (id) { var q = peers[id]; if (q.gm && q.el && Math.hypot(wx - q.x, wy - (q.y - 32)) < 64) g = q; });
+    if (!g || hp.down) return false;
+    if (Math.hypot(hero.x - g.x, hero.y - g.y) > atkRange()) { toast('もうちょっと近づいてな'); return true; }
+    if (!canAttack()) return true;
+    var wq = curW(); if (wq && wq.rng) shootFx(g.x, g.y, wq.kind);
+    var dm = atkP(); sfx('hit'); vib(20); swingAnim(); floatTxt(g.x, g.y - 80, '-' + dm, 'y');
+    g.el.classList.remove('gmhit'); void g.el.offsetWidth; g.el.classList.add('gmhit');
+    rtSend({ t: 'gmhit', to: g.id, d: dm }); return true;
+  }
   function hitFoeAt(wx, wy) {
     var best = 56, hit = null;
     foes.forEach(function (f) { if (f.mode === 'dead') return; var yo = f.boss ? 70 : 26, d = Math.hypot(wx - f.x, wy - (f.y - yo)) - (f.boss ? 70 : 0); if (d < best && Math.hypot(hero.x - f.x, hero.y - f.y) < atkRange() + (f.boss ? 60 : 0)) { best = d; hit = f; } });
     if (!hit) return false;
     if (hp.down) return true;
     if (!canAttack()) return true;
-    var wq = eqItem('weapon'); if (wq && wq.rng) shootFx(hit.x, hit.y, wq.kind);
-    var dm = atkP(); sfx('hit'); vib(20); swingAnim(); dustW(hit.x, hit.y - 30); floatTxt(hit.x, hit.y - 80, '-' + dm, 'y');
+    var wq = curW(); if (wq && wq.rng) shootFx(hit.x, hit.y, wq.kind);
+    var dm = atkP(); sfx('hit'); vib(20); swingAnim(); dustW(hit.x, hit.y - 30); floatTxt(hit.x, hit.y - 80, isGM() ? '一撃！' : '-' + dm, 'y');
     if (amFoeHost()) { var was = hit.hp; applyFoeDamage(hit, dm); if (hit.hp <= 0 && was > 0) toast(hit.d.nm + 'を追いはらった！'); }
     else { rtSend({ t: 'hit', i: hit.id, d: dm }); hit.el.classList.remove('hit'); void hit.el.offsetWidth; hit.el.classList.add('hit'); }
     return true;
@@ -2576,6 +2624,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (curSpot) { swing(e); return; }
     var r = this.getBoundingClientRect(), wx = (e.clientX - r.left) / fz + camX, wy = (e.clientY - r.top) / fz + camY, hit = null, best = 58;
     if (hitFoeAt(wx, wy)) return;
+    if (!isGM() && hitGmAt(wx, wy)) return;
     var gpr = null; Object.keys(peers).forEach(function (id) { var q = peers[id]; if (q.dn && Math.hypot(wx - q.x, wy - (q.y - 32)) < 70) gpr = q; });
     if (gpr) { doRevive(gpr.id); return; }
     if (inTown) { var dr = townDoorAt(wx, wy); if (dr) { var pg0 = document.createElement('i'); pg0.className = 'ping'; pg0.style.left = wx + 'px'; pg0.style.top = wy + 'px'; $('world').appendChild(pg0); setTimeout(function () { pg0.remove(); }, 520); ftarget = { x: dr.x, y: dr.y + 46, spot: null, door: dr.k }; $('ftip').style.opacity = 0; return; } }
@@ -2636,7 +2685,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!token) { $('loadMsg').textContent = '先にオパ会に入ってから、ゲームを開いてな'; document.querySelector('#load .spin').style.display = 'none'; return; }
     api({ action: 'game_load' }).then(function (j) {
       if (j._s === 401) { $('loadMsg').textContent = 'オパ会の入り直しが必要みたい。チャットに入ってから開いてな'; document.querySelector('#load .spin').style.display = 'none'; return; }
-      nick = j.nickname || ''; myMid = j.me || '';
+      nick = j.nickname || ''; myMid = j.me || ''; myMidG = myMid;
       if (j.player) { player = j.player; tickets = j.tickets || []; }
       playOpening();
     }).catch(function () { $('loadMsg').textContent = 'つながらへんかった。いったん閉じて、もう一回開いてな'; document.querySelector('#load .spin').style.display = 'none'; });
