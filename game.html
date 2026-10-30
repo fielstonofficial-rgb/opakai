@@ -261,6 +261,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 .prj{position:absolute;z-index:99997;width:20px;height:3px;margin:-2px 0 0 -10px;background:#ffe9a8;border-radius:3px;transition:left .17s linear,top .17s linear;pointer-events:none;box-shadow:0 0 6px #ffe9a8}
 .prj.bow{width:26px;background:#c9a36a;box-shadow:none}
 .prj.gun{width:9px;height:9px;margin:-4px 0 0 -4px;border-radius:50%;background:#fff3a0;box-shadow:0 0 10px #ffd36a}
+.foe.boss{width:150px;height:150px}
+.foe.boss .fnm{top:-18px;font-size:13px;color:#ffd36a}
+.foe.boss .fhp{top:-4px;height:8px;left:0;right:0}
+.slam{position:absolute;width:260px;height:260px;margin:-130px 0 0 -130px;border-radius:50%;border:4px solid rgba(255,70,70,.9);background:radial-gradient(circle,rgba(255,60,60,.35),rgba(255,60,60,.08));pointer-events:none;z-index:99996;display:none;animation:slamp .5s ease-in-out infinite alternate}
+@keyframes slamp{from{opacity:.55}to{opacity:1}}
 #cfm{position:fixed;inset:0;z-index:400;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px}
 #cfm.on{display:flex}
 #cfm .gc{width:100%;max-width:340px;background:#1b2230;color:#fff;border-radius:18px;padding:18px;box-shadow:0 10px 40px rgba(0,0,0,.6)}
@@ -391,7 +396,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ（ショップ・ギルド・取引所あり）</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v17（武器・防具・取引所）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ（ショップ・ギルド・取引所あり）</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v19（ボス戦）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所や（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -1470,7 +1475,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     Object.keys(peers).forEach(function (id) { if (!seen[id]) { if (peers[id].el) peers[id].el.remove(); delete peers[id]; spots.forEach(function (sp) { if (sp.by === id) rtFree(sp); }); } });
     partyShown();
   }
-  function partyShown() { var n = Object.keys(peers).length; var t = $('ftip'); if (t && !curSpot && n > 0 && !t.dataset.shown) { t.dataset.shown = 1; t.style.opacity = 1; t.textContent = '仲間が ' + n + ' 人、ここにおるで！'; clearTimeout(tipT); tipT = setTimeout(function () { t.style.opacity = 0; }, 4000); } }
+  function partyShown() { var n = Object.keys(peers).length; var t = $('ftip'); if (t && !curSpot && n > 0 && !t.dataset.shown) { t.dataset.shown = 1; t.style.opacity = 1; t.textContent = '仲間が ' + n + ' 人！ 盾で敵を引きつける人と、掘る人に分かれると楽やで'; clearTimeout(tipT); tipT = setTimeout(function () { t.style.opacity = 0; }, 4000); } }
   function findSpot(i, g) { for (var k = 0; k < spots.length; k++) if (spots[k].i === i && (spots[k].g || 0) === g) return spots[k]; return null; }
   function rtFree(sp) { sp.by = null; sp.el.classList.remove('taken'); var b = sp.el.querySelector('.by'); if (b) b.remove(); }
   function rtMsg(m) {
@@ -1478,6 +1483,10 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var pr = peers[m.f];
     if (m.t === 'pos') { if (!pr) pr = peers[m.f] = { id: m.f, x: m.x, y: m.y, tx: m.x, ty: m.y, dir: m.d || 1, got: false }; if (!pr.got) { pr.x = m.x; pr.y = m.y; pr.got = true; } pr.tx = m.x; pr.ty = m.y; pr.dir = m.d || 1; pr.h = m.h == null ? 100 : m.h; pr.dn = m.dn ? 1 : 0; ghostEl(pr); return; }
     if (m.t === 'rev') { if (m.to === myMid && hp.down) reviveMe(pr && pr.n); return; }
+    if (m.t === 'fs') { if (!amFoeHost()) applyFoeState(m.fl || []); return; }
+    if (m.t === 'hit') { if (amFoeHost() && netFoes()) { var hf = null; foes.forEach(function (x) { if (x.id === m.i) hf = x; }); if (hf) applyFoeDamage(hf, Math.max(1, Math.min(500, Math.round(m.d || 1)))); } return; }
+    if (m.t === 'dmg') { if (m.to === myMid) hurtMe(m.d || 1); return; }
+    if (m.t === 'bk') { if (!amFoeHost()) claimBoss(); return; }
     if (m.t === 'chat') { var cn = (pr && pr.n) || '仲間'; if (tMuted[m.f]) return; var tx = String(m.x || '').slice(0, 40); tlogAdd(cn, tx); if (pr && pr.el) bubble(pr.el, tx); return; }
     var sp = findSpot(m.i, m.g || 0);
     if (m.t === 'claim' && sp && !sp.used) { if (curSpot === sp) return; sp.by = m.f; sp.el.classList.add('taken'); if (!sp.el.querySelector('.by')) { var b = document.createElement('div'); b.className = 'by'; b.textContent = ((pr && pr.n) || '仲間') + ' が掘り中'; sp.el.appendChild(b); } }
@@ -1708,7 +1717,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function rtStart() {
     rtStop(); if (!room || !myMid) return; shared = true;
     var me = { id: myMid, n: (player.avatar && player.avatar.name) || '', av: player.avatar };
-    RT.join(room.id, me, { onMsg: rtMsg, onPeers: rtPeers }, function (ok) { if (ok) { rtOn = true; rtLast = 0; rtSend(posMsg()); } else toast('仲間の動きは、つながらへんかった（一人で掘れるで）'); });
+    RT.join(room.id, me, { onMsg: rtMsg, onPeers: rtPeers }, function (ok) { if (ok) { rtOn = true; rtLast = 0; rtSend(posMsg()); } else { shared = false; if (!foes.length) for (var q2 = 0; q2 < 5; q2++) addFoe(); toast('仲間の動きは、つながらへんかった（一人で掘れるで）'); } });
   }
   if (window.__RT_MOCK) window.__rtTest = function (r) { room = r; partyN = r.members.length; enterMine(r.mine); };
   function rtStop() {
@@ -2208,38 +2217,50 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var pool = MONS.filter(function (x) { return x.tier === tier; });
     return pool[Math.floor(Math.random() * pool.length)];
   }
-  function addFoe(x, y) {
+  var foeSeq = 0, fsAt = 0;
+  function netFoes() { return shared && rtOn; }
+  function amFoeHost() { return !netFoes() || amHost(); }
+  function addFoe(x, y, nf) {
     if (x == null) for (var n = 0; n < 30; n++) { x = 60 + Math.random() * (WW - 120); y = 300 + Math.random() * (WH - 380); if (Math.hypot(x - hero.x, y - hero.y) > 280) break; }
-    var d = foeDef(), st = foeStat(d.tier), el = document.createElement('div'); el.className = 'foe';
-    el.innerHTML = '<div class="fnm">' + d.nm + ' <span class="fv">' + st.hp + '/' + st.hp + '</span></div><div class="fhp"><i></i></div><div class="fi">' + d.svg.replace(/@SH@/g, '<ellipse cx="50" cy="93" rx="36" ry="6" fill="rgba(0,0,0,.3)"/>') + '</div>';
+    var d = nf ? MONS[nf.di] : foeDef(), st = foeStat(d.tier), el = document.createElement('div'); el.className = 'foe';
+    var h0 = nf ? nf.h : st.hp, m0 = nf ? nf.m : st.hp;
+    el.innerHTML = '<div class="fnm">' + d.nm + ' <span class="fv">' + h0 + '/' + m0 + '</span></div><div class="fhp"><i></i></div><div class="fi">' + d.svg.replace(/@SH@/g, '<ellipse cx="50" cy="93" rx="36" ry="6" fill="rgba(0,0,0,.3)"/>') + '</div>';
     $('world').appendChild(el);
-    var f = { d: d, st: st, cd: 0, hp: st.hp, max: st.hp, x: x, y: y, hx: x, hy: y, tx: x, ty: y, t: 0, mode: 'idle', el: el, fi: el.querySelector('.fi'), bar: el.querySelector('.fhp i'), dir: 1 };
-    foes.push(f); placeEl(el, x, y); return f;
+    var f = { id: nf ? nf.id : ++foeSeq, di: MONS.indexOf(d), nx: x, ny: y, d: d, st: st, cd: 0, hp: h0, max: m0, x: x, y: y, hx: x, hy: y, tx: x, ty: y, t: 0, mode: 'idle', el: el, fi: el.querySelector('.fi'), bar: el.querySelector('.fhp i'), dir: 1 };
+    f.bar.style.width = Math.max(0, h0 / m0 * 100) + '%'; foes.push(f); placeEl(el, x, y); return f;
   }
   function killFoe(f, delay) {
-    f.mode = 'dead'; var g = fgen;
+    f.mode = 'dead'; var g = fgen; if (f.tel) { f.tel.remove(); f.tel = null; }
+    if (amFoeHost() && netFoes()) { if (f.boss) { rtSend({ t: 'bk' }); claimBoss(); } else { kills++; if (kills >= 6 && Object.keys(peers).length >= 1 && !foes.some(function (x) { return x.boss && x.mode !== 'dead'; })) { kills = 0; setTimeout(spawnBoss, 3000); } } }
     setTimeout(function () { if (f.el) f.el.remove(); var i = foes.indexOf(f); if (i >= 0) foes.splice(i, 1); }, 620);
     f.el.classList.add('flee');
-    setTimeout(function () { if (g === fgen && fieldOn) addFoe(); }, delay || 25000);
+    if (amFoeHost() && !f.boss) setTimeout(function () { if (g === fgen && fieldOn && amFoeHost() && !inTown) addFoe(); }, delay || 25000);
   }
   function foesTick(dt) {
-    if (busy) return;
+    if (!amFoeHost()) { netFoesTick(dt); return; }
+    if (busy && !netFoes()) return;
+    var tg = [];
+    if (!hp.down) tg.push({ id: myMid, x: hero.x, y: hero.y, me: true });
+    if (netFoes()) Object.keys(peers).forEach(function (id) { var q = peers[id]; if (!q.dn && q.got) tg.push({ id: id, x: q.x, y: q.y }); });
     foes.forEach(function (f) {
       if (f.mode === 'dead') return;
-      var dx = hero.x - f.x, dy = hero.y - f.y, dist = Math.hypot(dx, dy) || 1, sp = 0, ux = 0, uy = 0;
+      if (f.boss) { bossTick(f, dt, tg); return; }
       if (f.cd > 0) f.cd -= dt;
-      if (hp.down && f.mode === 'chase') { f.mode = 'idle'; f.el.classList.remove('alert'); }
-      if (f.mode === 'stun') { f.t -= dt; sp = 80; ux = -dx / dist; uy = -dy / dist; if (f.t <= 0) f.mode = 'idle'; }
-      else if (dist < 200 && !monster && !hp.down) {
+      var best = null, bd = 1e9; tg.forEach(function (t) { var d0 = Math.hypot(t.x - f.x, t.y - f.y); if (d0 < bd) { bd = d0; best = t; } });
+      var dx = best ? best.x - f.x : 0, dy = best ? best.y - f.y : 0, dist = best ? (bd || 1) : 9999, sp = 0, ux = 0, uy = 0;
+      if (f.mode === 'stun') { f.t -= dt; sp = 80; if (best) { ux = -dx / dist; uy = -dy / dist; } if (f.t <= 0) f.mode = 'idle'; }
+      else if (best && dist < 200 && !monster) {
         if (f.mode !== 'chase') { f.mode = 'chase'; f.el.classList.add('alert'); }
         sp = f.d.nm === 'コウモリ' ? 125 : (f.d.tier === 2 ? 78 : 96); ux = dx / dist; uy = dy / dist;
         if (dist < 36) {
-          if (curSpot && !monster) { var d0 = f.d; killFoe(f, 22000); spawnMon(d0); return; }
-          if (!curSpot) {
-            hurtMe(f.st.atk);
-            hero.x = clamp(hero.x + ux * 60, 30, WW - 30); hero.y = clamp(hero.y + uy * 60, 230, WH - 30); ftarget = null; updHero();
-            f.mode = 'stun'; f.t = 1.6; f.el.classList.remove('alert');
-          }
+          if (best.me) {
+            if (curSpot && !monster && !netFoes()) { var d0 = f.d; killFoe(f, 22000); spawnMon(d0); return; }
+            if (f.cd <= 0 && (!curSpot || netFoes())) {
+              f.cd = 1.4; hurtMe(f.st.atk);
+              if (!curSpot) { hero.x = clamp(hero.x + ux * 60, 30, WW - 30); hero.y = clamp(hero.y + uy * 60, 230, WH - 30); ftarget = null; updHero(); }
+              f.mode = 'stun'; f.t = 1.0; f.el.classList.remove('alert');
+            }
+          } else if (f.cd <= 0) { f.cd = 1.4; rtSend({ t: 'dmg', to: best.id, d: f.st.atk }); f.mode = 'stun'; f.t = 1.0; f.el.classList.remove('alert'); }
         }
       } else {
         if (f.mode === 'chase') { f.mode = 'idle'; f.el.classList.remove('alert'); }
@@ -2248,19 +2269,84 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       }
       if (sp) { f.x = clamp(f.x + ux * sp * dt, 30, WW - 30); f.y = clamp(f.y + uy * sp * dt, 250, WH - 20); if (Math.abs(ux) > .2) { f.dir = ux > 0 ? 1 : -1; f.fi.style.transform = f.dir < 0 ? 'scaleX(-1)' : ''; } placeEl(f.el, f.x, f.y); }
     });
+    if (netFoes()) {
+      var now = performance.now();
+      if (now - fsAt > 140) { fsAt = now; rtSend({ t: 'fs', fl: foes.filter(function (f) { return f.mode !== 'dead'; }).map(function (f) { return [f.id, f.di, Math.round(f.x), Math.round(f.y), Math.max(0, Math.round(f.hp)), f.max, f.mode === 'chase' ? 1 : 0, f.dir, f.boss ? 1 : 0, f.slt > 0 ? 1 : 0, Math.round(f.slx || 0), Math.round(f.sly || 0)]; }) }); }
+    }
+  }
+  var kills = 0;
+  function decorBoss(f) {
+    f.el.classList.add('boss'); var nm = f.el.querySelector('.fnm'); if (nm && nm.firstChild) nm.firstChild.nodeValue = '⚠ ボス ' + f.d.nm + ' ';
+  }
+  function slamUi(f) {
+    if (!f.tel) { f.tel = document.createElement('div'); f.tel.className = 'slam'; $('world').appendChild(f.tel); }
+    if (f.slt > 0) { f.tel.style.display = 'block'; f.tel.style.left = f.slx + 'px'; f.tel.style.top = f.sly + 'px'; f.tel.style.zIndex = 5; } else f.tel.style.display = 'none';
+  }
+  function spawnBoss() {
+    if (!fieldOn || inTown || !netFoes() || !amHost()) return;
+    if (foes.some(function (x) { return x.boss && x.mode !== 'dead'; })) return;
+    var pool = MONS.filter(function (x) { return x.tier === 2; }), d = pool[Math.floor(Math.random() * pool.length)], n = 1 + Object.keys(peers).length, base = foeStat(2);
+    var hpv = Math.round(base.hp * 4 * (.6 + .4 * n));
+    var f = addFoe(WW / 2, 420, { id: ++foeSeq, di: MONS.indexOf(d), h: hpv, m: hpv });
+    f.boss = true; f.st = { hp: hpv, atk: Math.round(base.atk * 1.6) }; f.sl = 2.5; f.slt = 0; decorBoss(f);
+    toast('⚠ ボスが出た！みんなで力を合わせよう'); sfx(1);
+  }
+  function bossTick(f, dt, tg) {
+    var best = null, bd = 1e9; tg.forEach(function (t) { var d0 = Math.hypot(t.x - f.x, t.y - f.y); if (d0 < bd) { bd = d0; best = t; } });
+    if (best && bd > 110) { var ux = (best.x - f.x) / bd, uy = (best.y - f.y) / bd; f.x = clamp(f.x + ux * 38 * dt, 40, WW - 40); f.y = clamp(f.y + uy * 38 * dt, 260, WH - 30); if (Math.abs(ux) > .2) f.dir = ux > 0 ? 1 : -1; f.fi.style.transform = f.dir < 0 ? 'scaleX(-1)' : ''; placeEl(f.el, f.x, f.y); f.mode = 'chase'; } else f.mode = 'idle';
+    if (f.slt > 0) {
+      f.slt -= dt;
+      if (f.slt <= 0) { f.slt = 0; f.sl = 3.4; tg.forEach(function (t) { if (Math.hypot(t.x - f.slx, t.y - f.sly) < 130) { if (t.me) hurtMe(f.st.atk); else rtSend({ t: 'dmg', to: t.id, d: f.st.atk }); } }); }
+    } else { f.sl -= dt; if (f.sl <= 0 && best) { f.slx = best.x; f.sly = best.y; f.slt = 1.1; } }
+    slamUi(f);
+  }
+  function claimBoss() {
+    api({ action: 'game_boss', mine: curMine }).then(function (j) {
+      if (j.ok) { player = j.player; hpUi(); toast('🎉 ボスをたおした！ 🪙' + j.coins + ' と 経験値 ' + j.xp + ' をもらったで' + (j.gear ? '（装備もひろった！）' : '')); sfx(3); }
+      else if (j.message) toast(j.message);
+    }).catch(function () {});
+  }
+  function setFoeHp(f, h) {
+    if (h < f.hp) { f.el.classList.remove('hit'); void f.el.offsetWidth; f.el.classList.add('hit'); }
+    f.hp = h; f.bar.style.width = Math.max(0, h / f.max * 100) + '%'; var fv = f.el.querySelector('.fv'); if (fv) fv.textContent = Math.max(0, h) + '/' + f.max;
+  }
+  function netFoesTick(dt) {
+    var k = Math.min(1, dt * 9);
+    foes.forEach(function (f) {
+      if (f.mode === 'dead') return;
+      f.x += (f.nx - f.x) * k; f.y += (f.ny - f.y) * k;
+      f.fi.style.transform = f.dir < 0 ? 'scaleX(-1)' : ''; placeEl(f.el, f.x, f.y);
+    });
+  }
+  function applyFoeState(list) {
+    if (inTown || !fieldOn) return;
+    var seen = {};
+    list.forEach(function (a) {
+      seen[a[0]] = 1; var f = null; foes.forEach(function (x) { if (x.id === a[0] && x.mode !== 'dead') f = x; });
+      if (!f) { if (!MONS[a[1]]) return; f = addFoe(a[2], a[3], { id: a[0], di: a[1], h: a[4], m: a[5] }); }
+      if (a[8] && !f.boss) { f.boss = true; decorBoss(f); toast('⚠ ボスが出た！みんなで力を合わせよう'); sfx(1); }
+      f.nx = a[2]; f.ny = a[3]; f.dir = a[7] || 1; f.max = a[5]; if (a[4] !== f.hp) setFoeHp(f, a[4]);
+      if (f.boss) { f.slt = a[9] ? 1 : 0; f.slx = a[10]; f.sly = a[11]; slamUi(f); }
+      f.mode = a[6] === 1 ? 'chase' : 'idle'; f.el.classList.toggle('alert', a[6] === 1);
+    });
+    foes.slice().forEach(function (f) { if (!seen[f.id] && f.mode !== 'dead') killFoe(f, 0); });
+  }
+  function applyFoeDamage(f, dm) {
+    if (f.mode === 'dead') return;
+    setFoeHp(f, f.hp - dm);
+    if (f.hp <= 0) { sfx(2); killFoe(f, 25000); }
+    else if (!f.boss) { f.mode = 'stun'; f.t = 1.1; f.el.classList.remove('alert'); }
   }
   function hitFoeAt(wx, wy) {
     var best = 56, hit = null;
-    foes.forEach(function (f) { if (f.mode === 'dead') return; var d = Math.hypot(wx - f.x, wy - (f.y - 26)); if (d < best && Math.hypot(hero.x - f.x, hero.y - f.y) < atkRange()) { best = d; hit = f; } });
+    foes.forEach(function (f) { if (f.mode === 'dead') return; var yo = f.boss ? 70 : 26, d = Math.hypot(wx - f.x, wy - (f.y - yo)) - (f.boss ? 70 : 0); if (d < best && Math.hypot(hero.x - f.x, hero.y - f.y) < atkRange() + (f.boss ? 60 : 0)) { best = d; hit = f; } });
     if (!hit) return false;
     if (hp.down) return true;
     if (!canAttack()) return true;
     var wq = eqItem('weapon'); if (wq && wq.rng) shootFx(hit.x, hit.y, wq.kind);
-    var dm = atkP(); hit.hp -= dm; sfx('hit'); vib(20); swingAnim(); dustW(hit.x, hit.y - 30); floatTxt(hit.x, hit.y - 80, '-' + dm, 'y');
-    hit.bar.style.width = Math.max(0, hit.hp / hit.max * 100) + '%'; var fv = hit.el.querySelector('.fv'); if (fv) fv.textContent = Math.max(0, hit.hp) + '/' + hit.max;
-    hit.el.classList.remove('hit'); void hit.el.offsetWidth; hit.el.classList.add('hit');
-    if (hit.hp <= 0) { toast(hit.d.nm + 'を追いはらった！'); sfx(2); killFoe(hit, 25000); }
-    else { hit.mode = 'stun'; hit.t = 1.1; hit.el.classList.remove('alert'); }
+    var dm = atkP(); sfx('hit'); vib(20); swingAnim(); dustW(hit.x, hit.y - 30); floatTxt(hit.x, hit.y - 80, '-' + dm, 'y');
+    if (amFoeHost()) { var was = hit.hp; applyFoeDamage(hit, dm); if (hit.hp <= 0 && was > 0) toast(hit.d.nm + 'を追いはらった！'); }
+    else { rtSend({ t: 'hit', i: hit.id, d: dm }); hit.el.classList.remove('hit'); void hit.el.offsetWidth; hit.el.classList.add('hit'); }
     return true;
   }
 
@@ -2304,7 +2390,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     ['a', 'a', 'a', 'a', 'b', 'b', 'c'].forEach(function (k, i) { addSpot(k, i, 0); });
     hero.x = 380; hero.y = 900; hero.dir = 1; ftarget = null;
     $('hb').innerHTML = heroHTML(); applyAura();
-    for (var q = 0; q < 5; q++) addFoe();
+    if (!shared || amHost()) for (var q = 0; q < 5; q++) addFoe();
     updHero(); hpUi();
   }
   function charHTML(av, pid) {
