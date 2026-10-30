@@ -182,6 +182,38 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 .today{flex-wrap:wrap;font-size:12px;gap:6px 10px}
 .today .g{width:28px;height:28px}
+#field{background:#0a1216}
+#fview{position:relative;flex:1;min-height:0;overflow:hidden;touch-action:none;background:#2a2118;cursor:pointer}
+#world{position:absolute;left:0;top:0;width:760px;height:1000px;will-change:transform;overflow:hidden}
+#world::after{content:"";position:absolute;inset:0;box-shadow:inset 0 0 90px 36px rgba(0,0,0,.5);pointer-events:none;z-index:99999}
+#world .pt{position:absolute;border-radius:50%;pointer-events:none}
+#world .dc{position:absolute;pointer-events:none;transform:translate(-50%,-100%)}
+#world .dc svg{display:block;width:100%;height:100%}
+.spot{position:absolute;width:74px;height:62px;transform:translate(-50%,-70%);pointer-events:none}
+.spot svg{width:100%;height:100%;display:block}
+.spot.k-b::before,.spot.k-c::before{content:"";position:absolute;left:50%;top:48%;width:120%;height:120%;transform:translate(-50%,-50%);border-radius:50%;background:radial-gradient(closest-side,rgba(255,236,150,.55),transparent);animation:glow 1.5s ease-in-out infinite}
+.spot.k-c::before{background:radial-gradient(closest-side,rgba(190,140,255,.75),transparent);width:150%;height:150%}
+.spot .sp{position:absolute;width:8px;height:8px;background:#fff7c2;clip-path:polygon(50% 0,62% 38%,100% 50%,62% 62%,50% 100%,38% 62%,0 50%,38% 38%);animation:twk 1.3s ease-in-out infinite}
+.spot.used{opacity:.55;filter:grayscale(.6)}
+.spot.used::before,.spot.used .sp{display:none}
+@keyframes glow{0%,100%{opacity:.55;transform:translate(-50%,-50%) scale(.9)}50%{opacity:1;transform:translate(-50%,-50%) scale(1.1)}}
+@keyframes twk{0%,100%{opacity:0;transform:scale(.4)}50%{opacity:1;transform:scale(1)}}
+#hero2{position:absolute;width:64px;height:100px;transform:translate(-50%,-100%);pointer-events:none}
+#hero2 .hb{width:100%;height:100%;transform-origin:50% 100%}
+#hero2 .hb svg{height:100%;width:auto;display:block;margin:0 auto}
+#hero2.walk .hb{animation:bob .32s ease-in-out infinite}
+#hero2 .hs{position:absolute;left:50%;bottom:-3px;width:44px;height:12px;margin-left:-22px;border-radius:50%;background:rgba(0,0,0,.35);z-index:-1}
+@keyframes bob{0%,100%{transform:translateY(0) rotate(-2deg)}50%{transform:translateY(-6px) rotate(2deg)}}
+.ping{position:absolute;width:30px;height:30px;margin:-15px 0 0 -15px;border-radius:50%;border:3px solid rgba(255,255,255,.85);pointer-events:none;animation:pg .5s ease-out forwards;z-index:99998}
+@keyframes pg{from{transform:scale(.3);opacity:1}to{transform:scale(1.5);opacity:0}}
+#ftip{position:absolute;left:12px;right:12px;top:10px;padding:8px 12px;border-radius:12px;background:rgba(8,16,20,.78);border:1px solid var(--line);font-size:13px;text-align:center;pointer-events:none;transition:opacity .6s;z-index:5}
+.fhud{display:flex;justify-content:space-around;align-items:center;gap:8px;padding:10px 14px calc(12px + env(safe-area-inset-bottom));border-top:1px solid var(--line);background:rgba(10,18,22,.92);font-size:13px;color:var(--mut)}
+.fhud b{color:var(--ink);font-size:16px}
+#rev .tri{white-space:pre-line}
+.gem.nc .opal::before{opacity:0}
+.gem.nc .opal::after{background:radial-gradient(60% 40% at 32% 24%,rgba(255,255,255,.4),transparent 60%)}
+.gem.pl .opal::before{opacity:.38}
+.gem.nc .opal{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.28),inset 0 -9px 14px rgba(0,0,0,.4),0 4px 10px rgba(0,0,0,.4)}
 
 </style>
 </head>
@@ -215,6 +247,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     <p class="tiny" style="margin:6px 14px 0">ピンの位置は、見やすいように少しずらしてあるで</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
+  </section>
+  <section class="scr" id="field">
+    <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
+    <div id="fview"><div id="world"></div><div id="ftip"></div></div>
+    <div class="fhud" id="fhud"></div>
   </section>
 
   <section class="scr" id="play">
@@ -296,6 +333,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     { id: 'paraiba', t: 2, nm: 'パライバトルマリン', f: 'dia', c: ['#c9fff6', '#18d6d0', '#0a6f9a'], tri: 'ネオンのような青緑。1980年代にブラジルのパライバ州で見つかったんや。' },
     { id: 'alexandrite', t: 2, nm: 'アレキサンドライト', f: 'dia', c: ['#d6ffd9', '#3aa57a', '#7a2a6e'], tri: '光によって色が変わる、めずらしい石。昼は青緑、灯りの下では赤紫っぽくなるで。' },
     { id: 'colordiamond', t: 2, nm: 'カラーダイヤ', f: 'dia', c: ['#ffd6f0', '#ff6fb5', '#a5206a'], tri: '色のついた天然ダイヤ。ピンクや黄色は、とくに希少やで。' },
+    { id: 'whiteopal', t: 1, nm: 'ホワイトオパール', f: 'opal', o: ['#f4f1e8', '#ffb6d8', '#a6f0e0', '#b9c8ff', '#fff0a8'], tri: '白っぽい体色のオパール。やさしい遊色が出て、クーバーペディなどで知られてるんやで。' },
     { id: 'crystalopal', t: 2, nm: 'クリスタルオパール', f: 'opal', o: ['#cfe9ee', '#ff77b0', '#6cf2c8', '#7aa8ff', '#ffe27a'], tri: '透きとおった体色のオパール。向こう側が透けて、遊色が奥から光るんや。' },
     { id: 'boulderopal', t: 3, nm: 'ボルダーオパール', f: 'boulder', o: ['#5a3d28', '#33e0c0', '#3a7bff', '#9a5cff', '#a6ff6b'], tri: '鉄石（母岩）の上に、オパールの層が薄く走る石。クイーンズランドが産地として有名やで。' },
     { id: 'fireopal', t: 3, nm: 'ファイアオパール', f: 'opal', o: ['#e8561c', '#ffb02e', '#ff3b30', '#ffd86b', '#ff7a2e'], tri: 'オレンジから赤の体色。メキシコが有名で、遊色のない石もあるんやで。' },
@@ -338,7 +376,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   var tt;
   function toast(m) { var t = $('toast'); t.textContent = m; t.style.display = 'block'; clearTimeout(tt); tt = setTimeout(function () { t.style.display = 'none'; }, 3200); }
-  function show(id) { ['load', 'open', 'make', 'map', 'play'].forEach(function (x) { $(x).classList.toggle('on', x === id); }); }
+  function show(id) { ['load', 'open', 'make', 'map', 'field', 'play'].forEach(function (x) { $(x).classList.toggle('on', x === id); }); fieldOn = (id === 'field'); if (fieldOn) startLoop(); }
 
   /* ---------- 音・振動 ---------- */
   var ac = null;
@@ -377,7 +415,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     else { shape = '14,36 32,12 68,12 86,36 50,92'; facets = '<path d="M14 36L86 36M32 12L40 36L50 92L60 36L68 12M40 36L50 12L60 36" stroke="rgba(255,255,255,.6)" stroke-width="1.5" fill="none"/>'; }
     return '<svg viewBox="0 0 100 100" aria-hidden="true"><defs><linearGradient id="' + gid + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="' + c[0] + '"/><stop offset=".5" stop-color="' + c[1] + '"/><stop offset="1" stop-color="' + c[2] + '"/></linearGradient></defs><polygon points="' + shape + '" fill="url(#' + gid + ')" stroke="rgba(255,255,255,.65)" stroke-width="2" stroke-linejoin="round"/>' + facets + '<ellipse cx="36" cy="26" rx="9" ry="4" fill="rgba(255,255,255,.75)" transform="rotate(-25 36 26)"/></svg>';
   }
-  function gemEl(id, cls) { return '<span class="gem ' + (cls || '') + '" style="width:100%;height:100%">' + gemHTML(id) + '</span>'; }
+  var GF = ['grayscale(.85) brightness(.82)', 'saturate(.55) brightness(.95)', '', 'saturate(1.3) brightness(1.08)'];
+  function gemEl(id, cls, g) { var sp = BY[id], op = sp && (sp.f === 'opal' || sp.f === 'boulder'), k2 = (cls || '') + (op && g === 0 ? ' nc' : (op && g === 1 ? ' pl' : '')); return '<span class="gem ' + k2 + '" style="width:100%;height:100%' + (!op && g != null && GF[g] ? ';filter:' + GF[g] : (op && g === 3 ? ';filter:saturate(1.3) brightness(1.08)' : '')) + '">' + gemHTML(id) + '</span>'; }
 
   /* ---------- キャラのイラスト（全身・シュッとした等身） ---------- */
   var avN = 0;
@@ -558,8 +597,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function setProg() {
     $('progBar').style.width = Math.round(taps / TAPS * 100) + '%';
-    var cks = $('rock').querySelectorAll('.ck');
-    for (var i = 0; i < cks.length; i++) cks[i].setAttribute('opacity', i < taps ? '1' : '0');
+    var cks = $('rock').querySelectorAll('.ck'), shown = Math.floor(taps / TAPS * cks.length);
+    for (var i = 0; i < cks.length; i++) cks[i].setAttribute('opacity', i < shown ? '1' : '0');
   }
 
   /* ---------- 画面の組み立て ---------- */
@@ -568,7 +607,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     $('hero').innerHTML = avatarSVG(player.avatar);
     $('pick').innerHTML = PICK;
     $('rock').innerHTML = rockSVG(m.rk);
-    $('scene').style.setProperty('--sky', m.sky);
+    $('scene').style.setProperty('--sky', spotKind === 'c' ? 'rgba(190,140,255,.35)' : (spotKind === 'b' ? 'rgba(255,225,120,.30)' : m.sky));
     $('playTtl').textContent = m.nm;
     setProg(); stats();
     var sg = m.sig.map(function (id) { var n = (player.stones || {})[id] || 0; return '<span style="display:inline-flex;gap:6px;align-items:center;flex:none"><span class="g">' + gemEl(id) + '</span><span><b style="color:var(--ink)">' + BY[id].nm + '</b><br>' + (n ? '×' + n : 'まだ') + '</span></span>'; }).join('');
@@ -580,10 +619,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     $('sDigs').textContent = player.digs || 0; $('sKinds').textContent = k; $('sAll').textContent = STONES.length;
   }
   function renderBook() {
-    var g = $('bookGrid'), h = '', have = player.stones || {}, k = 0;
+    var g = $('bookGrid'), h = '', have = player.stones || {}, gr = player.grades || {}, k = 0;
     STONES.slice().sort(function (a, b) { return b.t - a.t; }).forEach(function (s) {
       var n = have[s.id] || 0; if (n) k++;
-      h += '<div class="card t' + s.t + '"><span class="t ' + TIERS[s.t].c + '">' + TIERS[s.t].n + '</span><span class="gem">' + (n ? gemEl(s.id) : '<div class="unk">？</div>') + '</span><div class="nm2">' + (n ? s.nm : '？？？') + '</div><div class="cnt">' + (n ? '×' + n : 'まだ見つけてへん') + '</div></div>';
+      var best = -1, gl = gr[s.id]; if (gl) { for (var i = 3; i >= 0; i--) { if (gl[i] > 0) { best = i; break; } } } if (n && best < 0) best = 1;
+      h += '<div class="card t' + (n ? best : 0) + '"><span class="t ' + (n ? TIERS[best].c : 'tN') + '">' + (n ? gname(s, best) : '？') + '</span><span class="gem">' + (n ? gemEl(s.id, '', best) : '<div class="unk">？</div>') + '</span><div class="nm2">' + (n ? s.nm : '？？？') + '</div><div class="cnt">' + (n ? '×' + n + '　最高：' + gname(s, best) : 'まだ見つけてへん') + '</div></div>';
     });
     g.innerHTML = h; $('bookTtl').textContent = '図鑑 ' + k + '/' + STONES.length;
   }
@@ -613,7 +653,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function doDig(retry) {
     busy = true; $('dig').disabled = true;
-    api({ action: 'game_dig', mine: curMine }).then(function (j) {
+    api({ action: 'game_dig', mine: curMine, spot: spotKind }).then(function (j) {
       if (j._s === 429 && j.waitMs && retry < 2) { setTimeout(function () { doDig(retry + 1); }, j.waitMs + 80); return; }
       if (j._s === 401) { busy = false; $('dig').disabled = false; toast('オパ会にもう一度入ってから、開いてな'); taps = TAPS - 1; setProg(); return; }
       if (j._s === 403) { busy = false; $('dig').disabled = false; taps = 0; setProg(); toast(j.message || 'まだ開いてへん鉱山やで'); openMap(); return; }
@@ -623,9 +663,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function reveal(st) {
     var s = BY[st.id], t = TIERS[st.tier], rv = $('rev');
-    $('revGem').innerHTML = gemEl(st.id); $('revGem').style.setProperty('--glow', t.glow);
-    var ti = $('revTier'); ti.textContent = t.n; ti.className = 'tier ' + t.c;
-    $('revName').textContent = s.nm; $('revNew').hidden = !st.isNew; $('revTri').textContent = s.tri;
+    $('revGem').innerHTML = gemEl(st.id, '', st.grade); $('revGem').style.setProperty('--glow', t.glow);
+    var ti = $('revTier'); ti.textContent = t.n + '｜' + gname(s, st.grade); ti.className = 'tier ' + t.c;
+    $('revName').textContent = s.nm; $('revNew').hidden = !(st.isNew || st.isNewGrade); $('revTri').textContent = gnote(s, st.grade) + '\n' + s.tri;
     rv.className = 'on' + (st.tier >= 1 ? ' f' + (st.tier === 3 ? 3 : 1) : '');
     var flash = rv.querySelector('.flash'); flash.style.animation = 'none'; void flash.offsetWidth; flash.style.animation = '';
     var olds = rv.querySelectorAll('.conf'); for (var i = 0; i < olds.length; i++) olds[i].remove();
@@ -641,7 +681,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   $('revOk').addEventListener('click', function () {
     $('rev').className = ''; busy = false; $('dig').disabled = false;
-    $('hint').textContent = '岩をたたいてな！';
+    leaveDig();
     afterReveal();
   });
 
@@ -703,7 +743,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     $('makeBack').hidden = mode !== 'edit';
     drawPanel(); drawPrev(); show('make');
   }
-  $('makeBack').addEventListener('click', function () { if (editFrom === 'play') show('play'); else openMap(); });
+  $('makeBack').addEventListener('click', function () { if (editFrom === 'play') show('play'); else if (editFrom === 'field') backToField(); else openMap(); });
   $('makeOk').addEventListener('click', function () {
     var btn = this; btn.disabled = true;
     var av = {}; for (var k in DEFAV) av[k] = draft[k];
@@ -713,7 +753,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       if (!j.player) { toast(j.message || 'うまく保存できへんかった。もう一回な'); return; }
       player = j.player; closeSheets();
       if (makeMode === 'create') { startGame(); return; }
-      renderPlay(); if (editFrom === 'play') show('play'); else openMap();
+      renderPlay(); if (editFrom === 'play') show('play'); else if (editFrom === 'field') backToField(); else openMap();
     }).catch(function () { btn.disabled = false; toast('つながらへんかった。もう一回な'); });
   });
 
@@ -740,7 +780,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('bookBtn').addEventListener('click', function () { renderBook(); $('book').classList.add('on'); });
   $('setBtn').addEventListener('click', function () { $('set').classList.add('on'); });
   document.addEventListener('click', function (e) { var b = e.target.closest('[data-close]'); if (b) $(b.dataset.close).classList.remove('on'); });
-  $('editAvatar').addEventListener('click', function () { editFrom = $('play').classList.contains('on') ? 'play' : 'map'; closeSheets(); openMake('edit'); });
+  $('editAvatar').addEventListener('click', function () { editFrom = $('play').classList.contains('on') ? 'play' : ($('field').classList.contains('on') ? 'field' : 'map'); closeSheets(); openMake('edit'); });
   function tg(btn, on) { btn.classList.toggle('on', on); btn.setAttribute('aria-pressed', String(on)); }
   tg($('tgSound'), soundOn); tg($('tgVib'), vibOn);
   $('tgSound').addEventListener('click', function () { soundOn = !soundOn; LSset('opa_game_sound', soundOn ? '1' : '0'); tg(this, soundOn); if (soundOn) { actx(); sfx(1); } });
@@ -748,7 +788,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function closeGame() { if (window.parent !== window) window.parent.postMessage({ type: 'opa-game-close' }, '*'); else history.back(); }
   $('mapClose').addEventListener('click', closeGame);
   $('closeGame').addEventListener('click', closeGame);
-  $('backMap').addEventListener('click', function () { openMap(curMine); });
+  $('backMap').addEventListener('click', function () { if (busy) return; taps = 0; setProg(); show('field'); });
   $('mapBook').addEventListener('click', function () { renderBook(); $('book').classList.add('on'); });
   $('mapSet').addEventListener('click', function () { $('setName').textContent = player.avatar.name + ' さん'; $('set').classList.add('on'); });
   $('rock').addEventListener('pointerdown', function (e) { e.preventDefault(); swing(e); });
@@ -762,7 +802,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var MINES = [
     { id: 'lr', nm: 'ライトニングリッジ', ct: 'オーストラリア・ニューサウスウェールズ州', lon: 151.0, lat: -31.5, need: 0, sig: ['blackopal', 'crystalopal'], ls: 'b',
       rk: ['#9aa0ad', '#575d6b', '#2b303b'], sky: 'rgba(120,140,255,.22)', about: 'ブラックオパールの産地として世界的に知られる町。',
-      intro: [N('赤茶けた大地に、掘り穴の山がぽつぽつと続いてる。ここがライトニングリッジ。ブラックオパールの産地として、世界に知られた町や。'), A('地面の下の砂岩の割れ目で、オパールは何百万年もかけてできるんやて。気の遠くなる話やね'), F('黒い体色に虹色が映える石…ここで探す“黒”が、いちばんの目当てですわ')],
+      intro: [N('赤茶けた大地に、掘り穴の山がぽつぽつと続いてる。ここがライトニングリッジ。ブラックオパールの産地として、世界に知られた町や。'), A('地面の下の砂岩の割れ目で、オパールは何百万年もかけてできるんやて。気の遠くなる話やね'), F('黒い体色に虹色が映える石…ここで探す“黒”が、いちばんの目当てですわ'), A('ただな、出てくるオパールの多くは、色が入ってへんのよ。遊色が入った石ほど、ぐっとレアになるんや'), F('だからこそ、色の乗った一粒に価値があるのですわ。光っている場所は、特に期待できますわよ')],
       done: [A('ブラックオパール、見つけたね。箱のくぼみが、ひとつぼうっと光ってる'), F('…まあ、悪くない掘りっぷりですわ')] },
     { id: 'koroit', nm: 'コロイッド', ct: 'オーストラリア・クイーンズランド州', lon: 140.5, lat: -24.5, need: 6, sig: ['boulderopal'], ls: 'l',
       rk: ['#b8805a', '#8a5538', '#4d2d1c'], sky: 'rgba(255,160,90,.20)', about: 'ボルダーオパールの産地のひとつ。',
@@ -800,23 +840,31 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       rk: ['#c7926a', '#975f3e', '#563421'], sky: 'rgba(130,230,200,.18)', about: '2000年代の終わりごろ、一気に有名になったオパールの産地。',
       intro: [N('エチオピア北部、ウェロ地方。2000年代の終わりごろに見つかって、あっという間に有名になったオパールの産地や。'), A('水を吸うと透明になったり、見え方が変わったりする性質の石も多いんよ'), F('扱いには注意が要りますわね。湿気も、油も')],
       done: [A('ウェロのオパールや。ええ色が出てる'), F('新しい産地が、これほどの石を出すとは…侮れませんわ')] },
-    { id: 'ural', nm: 'ウラル山脈', ct: 'ロシア', lon: 61.0, lat: 57.0, need: 150, sig: ['alexandrite', 'emerald'], ls: 'l',
+    { id: 'tz', nm: 'タンザニア', ct: 'タンザニア', lon: 35.5, lat: -6.0, need: 150, sig: ['garnet'], ls: 'r',
+      rk: ['#c9a27a', '#98683f', '#563623'], sky: 'rgba(255,100,90,.20)', about: 'さまざまな色のガーネットが見つかる国。',
+      intro: [N('東アフリカ、タンザニア。赤だけやなく、オレンジや緑まで、さまざまな色のガーネットが見つかる国や。'), A('ガーネットは赤いイメージやけど、色の幅はひろいんよ。1月の誕生石やで'), F('ありふれた石だと侮ってはいけませんわ。色の幅は、宝石の中でも指折りですのよ')],
+      done: [A('澄んだ色のガーネットや。夕焼けを閉じ込めたみたいやね'), F('…見直しましたわ。ガーネットも、立派な宝石です')] },
+    { id: 'ural', nm: 'ウラル山脈', ct: 'ロシア', lon: 61.0, lat: 57.0, need: 176, sig: ['alexandrite', 'emerald'], ls: 'l',
       rk: ['#aab6bf', '#6d7c88', '#34414b'], sky: 'rgba(180,255,210,.18)', about: 'アレキサンドライトが見つかった山脈。',
       intro: [N('ロシア、ウラル山脈。1830年代、ここでアレキサンドライトが見つかったと伝えられてる。'), A('名前は、のちの皇帝アレクサンドル2世にちなむ、と言われてるで'), F('昼は青緑、灯りの下では赤紫。二つの顔を持つ石ですわね')],
       done: [A('ウラルの石や。雪の山の下で眠ってたんやね'), F('寒さの中で掘り当てた石…格別ですわ')] },
-    { id: 'queretaro', nm: 'ケレタロ', ct: 'メキシコ', lon: -100.4, lat: 20.7, need: 176, sig: ['fireopal'], ls: 'r',
+    { id: 'sc', nm: 'サンカルロス', ct: 'アメリカ・アリゾナ州', lon: -110.4, lat: 33.3, need: 202, sig: ['peridot'], ls: 'l',
+      rk: ['#c4926a', '#935c3a', '#522f1e'], sky: 'rgba(170,230,60,.20)', about: 'ペリドットの産地として知られる土地。',
+      intro: [N('アメリカ南西部、アリゾナ州のサンカルロス。ペリドットの産地として知られる土地や。'), A('ペリドットは、地球の深いところで生まれる石やて。隕石の中から見つかることもあるんよ'), F('オリーブ色の輝き…8月の誕生石ですわね')],
+      done: [A('澄んだ黄緑のペリドットや。ええ色やね'), F('砂漠の中で、これほど瑞々しい色に出会えるとは')] },
+    { id: 'queretaro', nm: 'ケレタロ', ct: 'メキシコ', lon: -100.4, lat: 20.7, need: 230, sig: ['fireopal'], ls: 'r',
       rk: ['#b87a5a', '#8a4a35', '#4a2418'], sky: 'rgba(255,110,50,.22)', about: 'ファイアオパールの産地として知られる土地。',
       intro: [N('大西洋を越えて、メキシコ中部、ケレタロ州あたり。ここのファイアオパールは、燃えるような橙色が自慢や。'), A('古くから、この土地の人たちに親しまれてきた石やと言われてる'), F('遊色のないものも多い。色そのものを楽しむ石ですわ')],
       done: [A('ファイアオパールや。手のひらが温かくなりそうやね'), F('炎をそのまま閉じ込めたような色ですこと')] },
-    { id: 'muzo', nm: 'ムゾー鉱山', ct: 'コロンビア', lon: -74.1, lat: 5.5, need: 204, sig: ['emerald'], ls: 'l',
+    { id: 'muzo', nm: 'ムゾー鉱山', ct: 'コロンビア', lon: -74.1, lat: 5.5, need: 260, sig: ['emerald'], ls: 'l',
       rk: ['#6f9a7c', '#3e6a52', '#1b3a2c'], sky: 'rgba(50,220,130,.20)', about: 'エメラルドの名産地として世界に知られる鉱山。',
       intro: [N('南米、コロンビアのアンデス山地。ムゾー鉱山は、エメラルドの名産地として世界に知られてる。'), A('深い緑は、世界中の宝石商が憧れる色なんやて'), F('内側の細かな模様“ジャルダン”も、この石の味わいですわ')],
       done: [A('エメラルドや。森をぎゅっと詰めたみたいな緑やね'), F('ええ…素直に、きれいだと思いますわ')] },
-    { id: 'paraiba', nm: 'パライバ州', ct: 'ブラジル', lon: -36.8, lat: -7.0, need: 234, sig: ['paraiba'], ls: 'r',
+    { id: 'paraiba', nm: 'パライバ州', ct: 'ブラジル', lon: -36.8, lat: -7.0, need: 292, sig: ['paraiba'], ls: 'r',
       rk: ['#8ab0b4', '#4f7e86', '#244048'], sky: 'rgba(30,230,220,.22)', about: 'ネオンのような青緑のトルマリンが見つかった州。',
       intro: [N('ブラジル北東部、パライバ州。1980年代の終わりごろに、ネオンみたいな青緑のトルマリンが見つかった土地や。'), A('銅の成分が、あの不思議な色を生むんやて'), F('あの発見から、宝石の世界の景色が変わったのですわ。…大げさではありませんことよ')],
       done: [A('パライバトルマリンや。光る海を、そのまま切り取ったみたいや'), F('これを手にできる人は、そう多くありませんわ')] },
-    { id: 'rs', nm: 'リオグランデドスル', ct: 'ブラジル', lon: -53.2, lat: -27.4, need: 266, sig: ['amethyst'], ls: 'b',
+    { id: 'rs', nm: 'リオグランデドスル', ct: 'ブラジル', lon: -53.2, lat: -27.4, need: 326, sig: ['amethyst'], ls: 'b',
       rk: ['#9f8aa8', '#6a5478', '#33253f'], sky: 'rgba(180,120,255,.22)', about: 'アメジストの巨大な晶洞（ジオード）で有名な土地。',
       intro: [N('ブラジル南部、リオグランデドスル州。アメジストの巨大な晶洞（ジオード）で有名な土地や。'), A('岩の中が空洞になっていて、紫の結晶がびっしり。割った瞬間が、いちばんの楽しみやね'), F('旅の終わりにふさわしい、紫ですこと')],
       done: [A('紫の結晶や。旅の最後に、ええ色に会えたね'), F('…ここまで、よく掘り抜きましたわね')] }
@@ -825,13 +873,13 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var REGS = [
     { id: 'au', nm: 'オーストラリア', cx: 140, cy: -24, w: 100, ids: ['lr', 'koroit', 'yowah', 'winton', 'cp', 'argyle'] },
     { id: 'asia', nm: 'アジア', cx: 88.5, cy: 14, w: 110, ids: ['mogok', 'ratnapura'] },
-    { id: 'africa', nm: 'アフリカ', cx: 32.5, cy: -5, w: 130, ids: ['welo', 'orapa'] },
+    { id: 'africa', nm: 'アフリカ', cx: 32.5, cy: -5, w: 130, ids: ['welo', 'tz', 'orapa'] },
     { id: 'ru', nm: 'ロシア', ids: ['ural'] },
-    { id: 'na', nm: 'メキシコ', ids: ['queretaro'] },
+    { id: 'na', nm: '北アメリカ', cx: -105, cy: 27, w: 90, ids: ['sc', 'queretaro'] },
     { id: 'sa', nm: '南アメリカ', cx: -55, cy: -11, w: 150, ids: ['muzo', 'paraiba', 'rs'] }
   ];
   var PROLOGUE = [
-    N('オパ会の店主の部屋に、古い宝石箱がひとつ。ふたを開けると、くぼみが16個。どれも空っぽや。'),
+    N('オパ会の店主の部屋に、古い宝石箱がひとつ。ふたを開けると、くぼみが17個。どれも空っぽや。'),
     A('来てくれたんやね。僕はアロン。この宝石箱の番をしてるんよ'),
     F('わたくしはフラン。…べつに、あなたを待っていたわけではありませんわ'),
     A('この箱には、世界のあちこちの鉱山で生まれた石が、ひとつずつ入るはずやった。けど石はみんな、地面の下へ帰ってしもたんや'),
@@ -841,12 +889,16 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     N('地図の鉱山は、掘れば掘るほど、次々に開いていく。')
   ];
   var ENDING = [
-    N('16個目の石が、宝石箱のくぼみにぴたりと収まった。箱じゅうの石が、いっせいに光りだす。'),
+    N('17個目の石が、宝石箱のくぼみにぴたりと収まった。箱じゅうの石が、いっせいに光りだす。'),
     A('そろったね。世界をひとまわりして、ぜんぶ取り戻してくれた。ほんまに、ありがとう'),
     F('…認めてあげます。あなたは立派な、オパ会の採掘師ですわ'),
     A('でもな、鉱山の旅は終わりやない。好きな産地で、また掘ってもええんよ'),
     N('称号「世界をめぐる採掘師」を手に入れた！')
   ];
+  var FK = { lr: 'bush', koroit: 'bush', yowah: 'bush', winton: 'bush', cp: 'rock', argyle: 'bush', mogok: 'palm', ratnapura: 'palm', orapa: 'bush', welo: 'bush', tz: 'bush', ural: 'pine', sc: 'cactus', queretaro: 'cactus', muzo: 'palm', paraiba: 'palm', rs: 'bush' };
+  MINES.forEach(function (m) { m.fk = FK[m.id]; });
+  var GC = { lr: '#8e5a3a', koroit: '#9a6a45', yowah: '#a67a4a', winton: '#a8553a', cp: '#c9b48a', argyle: '#8a6248', mogok: '#4f7a5e', ratnapura: '#4f7f58', orapa: '#a8956a', welo: '#a67a52', tz: '#9a7a4a', ural: '#6f7f8a', sc: '#a86f48', queretaro: '#9a5a3c', muzo: '#3f6f55', paraiba: '#5f8f8a', rs: '#7a6a8a' };
+  MINES.forEach(function (m) { m.gc = GC[m.id]; });
 
   /* ---------- 世界地図 ---------- */
   var WORLD = { x: 0, y: -87, w: 720, h: 450 }, VB = { x: 0, y: -87, w: 720, h: 450 };
@@ -961,7 +1013,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('mineGo').addEventListener('click', function () { $('mineSheet').classList.remove('on'); enterMine(sheetMine); });
   function enterMine(id) {
     curMine = id; var m = MBY[id];
-    function go() { renderPlay(); show('play'); closeSheets(); }
+    function go() { openField(id); }
     if (!hasSeen('in:' + id)) {
       var pages = [{ k: 'title', m: m, n: MINES.indexOf(m) + 1 }].concat(m.intro);
       storyStart(pages, function () { markSeen('in:' + id); go(); }, m);
@@ -1020,7 +1072,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function afterReveal() {
     var q = [], m = MBY[curMine];
-    if (lastStone && m && m.sig.indexOf(lastStone.id) >= 0 && !hasSeen('done:' + m.id)) q.push({ pages: m.done, key: 'done:' + m.id, mine: m });
+    if (lastStone && m && lastStone.grade >= 2 && lastStone.id === m.sig[0] && !hasSeen('done:' + m.id)) q.push({ pages: m.done, key: 'done:' + m.id, mine: m });
     if (pendingUnlock.length) {
       var nm = pendingUnlock.map(function (id) { return MBY[id].nm; }).join('と');
       q.push({ pages: [A('地図に、新しい印がついたで。' + nm + ' が開いたんよ'), F('行き先が増えましたわね。…べつに、楽しみにしてなどいませんわ')], key: null, mine: MBY[pendingUnlock[0]] });
@@ -1029,6 +1081,133 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (Object.keys(player.stones || {}).length >= STONES.length && !hasSeen('ending')) q.push({ pages: ENDING, key: 'ending', mine: null });
     pendingUnlock = []; lastStone = null;
     runQ(q);
+  }
+  /* ---------- フィールド（歩いて、掘る場所を選ぶ） ---------- */
+  var WW = 760, WH = 1000, SPEED = 200;
+  var hero = { x: 380, y: 900, dir: 1 }, camX = 0, camY = 0, ftarget = null, fieldOn = false, fraf = 0, flast = 0;
+  var spots = [], curSpot = null, spotSeq = 0, spotKind = 'a', tipT = 0;
+  var SPOTTAPS = { a: 10, b: 14, c: 18 };
+  function hash(str) { var h = 2166136261; for (var i = 0; i < str.length; i++) { h ^= str.charCodeAt(i); h = Math.imul(h, 16777619); } return h >>> 0; }
+  function rng(seed) { var s = seed >>> 0; return function () { s = (s + 0x6D2B79F5) >>> 0; var t = Math.imul(s ^ s >>> 15, 1 | s); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function clamp(v, a, b) { return Math.max(a, Math.min(b, v)); }
+  function decoSVG(k, c) {
+    if (k === 'cactus') return '<svg viewBox="0 0 60 90"><rect x="24" y="14" width="13" height="72" rx="6.5" fill="#3f7d4a"/><rect x="6" y="38" width="12" height="30" rx="6" fill="#3f7d4a"/><rect x="6" y="56" width="22" height="11" rx="5" fill="#3f7d4a"/><rect x="43" y="28" width="12" height="28" rx="6" fill="#3f7d4a"/><rect x="33" y="46" width="21" height="10" rx="5" fill="#3f7d4a"/><path d="M30 14V84" stroke="#2c5a35" stroke-width="2"/></svg>';
+    if (k === 'palm') return '<svg viewBox="0 0 90 110"><path d="M45 108Q42 70 48 36" stroke="#7a5230" stroke-width="7" fill="none" stroke-linecap="round"/><g fill="#2f8f55"><path d="M48 34Q20 20 6 40Q30 28 48 34Z"/><path d="M48 34Q76 18 88 40Q64 28 48 34Z"/><path d="M48 34Q30 4 14 8Q34 12 48 34Z"/><path d="M48 34Q66 4 82 8Q62 12 48 34Z"/><path d="M48 34Q48 8 48 0Q54 14 48 34Z"/></g></svg>';
+    if (k === 'pine') return '<svg viewBox="0 0 70 110"><rect x="31" y="86" width="8" height="22" fill="#5a3d28"/><path d="M35 6L58 44H46L64 72H6L24 44H12Z" fill="#2b6b50"/><path d="M35 6L46 44H35Z" fill="rgba(255,255,255,.18)"/></svg>';
+    if (k === 'rock') return '<svg viewBox="0 0 80 60"><path d="M6 56Q4 30 24 18Q44 4 62 22Q78 38 74 56Z" fill="' + c[1] + '"/><path d="M14 40Q26 26 44 24" stroke="rgba(255,255,255,.3)" stroke-width="4" fill="none" stroke-linecap="round"/><path d="M6 56Q4 30 24 18" stroke="rgba(0,0,0,.2)" stroke-width="3" fill="none"/></svg>';
+    return '<svg viewBox="0 0 70 56"><g fill="#4f7a4a"><circle cx="20" cy="38" r="16"/><circle cx="40" cy="30" r="20"/><circle cx="54" cy="40" r="14"/></g><g fill="rgba(255,255,255,.14)"><circle cx="34" cy="22" r="8"/></g></svg>';
+  }
+  function entranceSVG(nm) {
+    return '<svg viewBox="0 0 240 190"><rect x="20" y="60" width="200" height="124" rx="10" fill="#2a2018"/><path d="M46 184V96Q46 62 120 62Q194 62 194 96V184Z" fill="#0b0806"/><path d="M40 184V92Q40 54 120 54Q200 54 200 92V184" fill="none" stroke="#8a5a2b" stroke-width="12"/><rect x="30" y="86" width="16" height="98" fill="#8a5a2b"/><rect x="194" y="86" width="16" height="98" fill="#8a5a2b"/><rect x="50" y="8" width="140" height="34" rx="8" fill="#6b4421" stroke="#c89a58" stroke-width="3"/><text x="120" y="32" text-anchor="middle" font-size="16" font-weight="800" fill="#ffe9b8" font-family="system-ui,sans-serif">' + nm + '</text></svg>';
+  }
+  function spotSVG(k, c) {
+    if (k === 'c') return '<svg viewBox="0 0 74 62"><ellipse cx="37" cy="40" rx="30" ry="16" fill="#2a1f3a"/><ellipse cx="37" cy="38" rx="23" ry="11" fill="#0a0612"/><ellipse cx="37" cy="38" rx="23" ry="11" fill="none" stroke="#b58cff" stroke-width="2.5"/></svg>';
+    var body = '<path d="M6 54Q8 26 30 16Q50 8 64 28Q72 42 68 54Z" fill="' + c[1] + '" stroke="' + c[2] + '" stroke-width="2"/><path d="M18 34Q28 22 42 20" stroke="rgba(255,255,255,.35)" stroke-width="4" fill="none" stroke-linecap="round"/>';
+    if (k === 'b') body += '<path d="M30 28L38 38L32 48M46 24L52 36" stroke="#ffe28a" stroke-width="3" fill="none" stroke-linecap="round"/>';
+    return '<svg viewBox="0 0 74 62">' + body + '</svg>';
+  }
+  function placeEl(e, x, y) { e.style.left = x + 'px'; e.style.top = y + 'px'; e.style.zIndex = Math.round(y); }
+  function randSpot(kind) {
+    for (var n = 0; n < 60; n++) {
+      var x = 70 + Math.random() * (WW - 140), y = 250 + Math.random() * (WH - 420), ok = true;
+      if (Math.hypot(x - hero.x, y - hero.y) < 110) ok = false;
+      for (var i = 0; i < spots.length && ok; i++) if (Math.hypot(x - spots[i].x, y - spots[i].y) < 120) ok = false;
+      if (ok) return { x: x, y: y };
+    }
+    return { x: 100 + Math.random() * 560, y: 300 + Math.random() * 500 };
+  }
+  function addSpot(kind) {
+    var m = MBY[curMine], p = randSpot(kind), el = document.createElement('div');
+    el.className = 'spot k-' + kind; el.innerHTML = spotSVG(kind, m.rk) + (kind !== 'a' ? '<i class="sp" style="left:12%;top:8%"></i><i class="sp" style="left:70%;top:20%;animation-delay:.5s"></i><i class="sp" style="left:44%;top:-6%;animation-delay:.9s"></i>' : '');
+    placeEl(el, p.x, p.y); $('world').appendChild(el);
+    var sp = { id: ++spotSeq, kind: kind, x: p.x, y: p.y, used: false, el: el }; spots.push(sp); return sp;
+  }
+  function buildField() {
+    var m = MBY[curMine], w = $('world'), rr = rng(hash(m.id)), html = '';
+    w.style.background = 'linear-gradient(180deg,' + shade(m.gc, -.38) + ',' + shade(m.gc, -.08) + ' 38%,' + shade(m.gc, .08) + ')';
+    for (var i = 0; i < 16; i++) {
+      var sz = 140 + rr() * 220, lt = rr() < .5;
+      html += '<div class="pt" style="left:' + (rr() * WW - sz / 2) + 'px;top:' + (rr() * WH - sz / 2) + 'px;width:' + sz + 'px;height:' + (sz * .7) + 'px;background:radial-gradient(closest-side,' + (lt ? 'rgba(255,255,255,.10)' : 'rgba(0,0,0,.16)') + ',transparent)"></div>';
+    }
+    var fk = m.fk || 'bush';
+    for (var j = 0; j < 46; j++) {
+      var x = 30 + rr() * (WW - 60), y = 230 + rr() * (WH - 300);
+      if (Math.hypot(x - 380, y - 900) < 90) continue;
+      var kk = rr() < .28 ? 'rock' : fk, sc = .6 + rr() * .7, wd = (kk === 'palm' ? 80 : kk === 'pine' ? 56 : kk === 'cactus' ? 44 : 64) * sc, ht = (kk === 'palm' ? 98 : kk === 'pine' ? 86 : kk === 'cactus' ? 66 : 50) * sc;
+      html += '<div class="dc" style="left:' + x + 'px;top:' + y + 'px;width:' + wd + 'px;height:' + ht + 'px;z-index:' + Math.round(y) + '">' + decoSVG(kk, m.rk) + '</div>';
+    }
+    html += '<div class="dc" style="left:380px;top:200px;width:200px;height:158px;z-index:200">' + entranceSVG(m.nm.length > 8 ? m.nm.slice(0, 8) : m.nm) + '</div>';
+    html += '<div id="hero2"><div class="hs"></div><div class="hb" id="hb"></div></div>';
+    w.innerHTML = html; spots = []; spotSeq = 0;
+    ['a', 'a', 'a', 'a', 'b', 'b', 'c'].forEach(function (k) { addSpot(k); });
+    hero.x = 380; hero.y = 900; hero.dir = 1; ftarget = null;
+    $('hb').innerHTML = avatarSVG(player.avatar);
+    updHero();
+  }
+  function updHero() {
+    var h = $('hero2'); if (!h) return; placeEl(h, hero.x, hero.y);
+    $('hb').style.transform = hero.dir < 0 ? 'scaleX(-1)' : '';
+  }
+  function fieldHud() {
+    var k = Object.keys(player.stones || {}).length;
+    $('fhud').innerHTML = '<span>掘った回数 <b>' + (player.digs || 0) + '</b></span><span>見つけた石 <b>' + k + '</b>/' + STONES.length + '</span><span>ここで <b>' + (((player.mines || {})[curMine]) || 0) + '</b> 回</span>';
+  }
+  function openField(id) {
+    curMine = id; var m = MBY[id];
+    $('fTtl').textContent = m.nm;
+    buildField(); fieldHud(); show('field'); closeSheets();
+    var tip = $('ftip'); tip.style.opacity = 1; tip.textContent = '掘る場所をタップ！ ✨光ってる場所ほど、いい石が出やすいで';
+    clearTimeout(tipT); tipT = setTimeout(function () { tip.style.opacity = 0; }, 6500);
+  }
+  function startLoop() { if (fraf) return; flast = performance.now(); fraf = requestAnimationFrame(tick); }
+  function tick(t) {
+    fraf = 0; if (!fieldOn) return;
+    var dt = Math.min(.05, (t - flast) / 1000); flast = t;
+    var hh = $('hero2'), moved = false;
+    if (ftarget) {
+      var dx = ftarget.x - hero.x, dy = ftarget.y - hero.y, d = Math.hypot(dx, dy), step = SPEED * dt;
+      if (d <= step) { hero.x = ftarget.x; hero.y = ftarget.y; var sp = ftarget.spot; ftarget = null; if (hh) hh.classList.remove('walk'); updHero(); if (sp && !sp.used) { startDig(sp); return; } }
+      else { hero.x += dx / d * step; hero.y += dy / d * step; if (Math.abs(dx) > 3) hero.dir = dx > 0 ? 1 : -1; moved = true; if (hh) hh.classList.add('walk'); updHero(); }
+    }
+    var fv = $('fview'), vw = fv.clientWidth, vh = fv.clientHeight;
+    var cx = clamp(hero.x - vw / 2, 0, Math.max(0, WW - vw)), cy = clamp(hero.y - vh * .6, 0, Math.max(0, WH - vh));
+    var k = Math.min(1, dt * 9); camX += (cx - camX) * k; camY += (cy - camY) * k;
+    $('world').style.transform = 'translate3d(' + (-camX).toFixed(1) + 'px,' + (-camY).toFixed(1) + 'px,0)';
+    fraf = requestAnimationFrame(tick);
+  }
+  $('fview').addEventListener('pointerdown', function (e) {
+    if (!fieldOn) return; actx();
+    var r = this.getBoundingClientRect(), wx = e.clientX - r.left + camX, wy = e.clientY - r.top + camY, hit = null, best = 58;
+    spots.forEach(function (s) { if (s.used) return; var d = Math.hypot(wx - s.x, wy - (s.y - 12)); if (d < best) { best = d; hit = s; } });
+    var pg = document.createElement('i'); pg.className = 'ping'; pg.style.left = wx + 'px'; pg.style.top = wy + 'px'; $('world').appendChild(pg); setTimeout(function () { pg.remove(); }, 520);
+    if (hit) ftarget = { x: hit.x, y: hit.y + 30, spot: hit };
+    else ftarget = { x: clamp(wx, 30, WW - 30), y: clamp(wy, 200, WH - 40), spot: null };
+    $('ftip').style.opacity = 0;
+  });
+  function startDig(sp) {
+    curSpot = sp; spotKind = sp.kind; TAPS = SPOTTAPS[sp.kind]; taps = 0; busy = false;
+    renderPlay(); $('dig').disabled = false;
+    $('hint').textContent = sp.kind === 'c' ? '深い穴…なにかが眠ってるで。たたいてな' : (sp.kind === 'b' ? '光ってる！いい石の気配や。たたいてな' : '岩をたたいてな！');
+    show('play');
+  }
+  function leaveDig() {
+    var sp = curSpot; curSpot = null;
+    if (sp) {
+      sp.used = true; sp.el.classList.add('used');
+      setTimeout(function () { var i = spots.indexOf(sp); if (i < 0) return; spots.splice(i, 1); sp.el.remove(); addSpot(sp.kind); }, 14000);
+    }
+    taps = 0; setProg(); fieldHud(); show('field');
+  }
+  $('fBack').addEventListener('click', function () { openMap(curMine); });
+  $('fBook').addEventListener('click', function () { renderBook(); $('book').classList.add('on'); });
+  $('fSet').addEventListener('click', function () { $('setName').textContent = player.avatar.name + ' さん'; $('set').classList.add('on'); });
+
+  function backToField() { if ($('hb')) $('hb').innerHTML = avatarSVG(player.avatar); show('field'); }
+  function gname(s, g) { var op = (s.f === 'opal' || s.f === 'boulder'); return (op ? ['色なし', '遊色うすめ', '遊色あざやか', '極上の遊色'] : ['くすみ', 'ふつう', 'きれい', '極上'])[g] || ''; }
+  function gnote(s, g) {
+    var op = (s.f === 'opal' || s.f === 'boulder');
+    return (op ? ['色が入っていない“色なし”。オパールの多くはこれで、遊色が入る石はぐっと少ないんやで。', '遊色がうっすら入ってる。ここからがレアの入り口や。', '遊色がくっきり出てる、ええ石や。', '大きく鮮やかな遊色。めったに出会えへん極上品や。']
+      : ['色がくすんだ原石。磨いたら化けるかもしれんで。', 'ふつうの品質の石や。', '色が澄んだ、きれいな石や。', '色も透明感も申し分ない、極上品や。'])[g] || '';
   }
 
   /* ---------- 起動 ---------- */
