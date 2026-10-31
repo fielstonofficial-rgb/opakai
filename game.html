@@ -347,6 +347,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 @keyframes aoeP{to{transform:translate(-50%,-50%) scale(1);opacity:0}}
 .prj.gun{width:9px;height:9px;margin:-4px 0 0 -4px;border-radius:50%;background:#fff3a0;box-shadow:0 0 10px #ffd36a}
 .foe.boss{width:150px;height:150px}
+.slamL{position:absolute;transform-origin:0 50%;border:3px solid rgba(255,70,70,.9);background:linear-gradient(90deg,rgba(255,60,60,.45),rgba(255,60,60,.12));pointer-events:none;z-index:99996;display:none;animation:slamp .5s ease-in-out infinite alternate}
 .foe.big{width:118px;height:118px}
 .foe.big .fnm{top:-17px;font-size:12px;color:#ffb27a}
 .foe.big .fhp{top:-4px;height:7px}
@@ -1387,7 +1388,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function spawnMon(defArg, bigArg) {
     var mi = Math.max(0, MINES.indexOf(MBY[curMine]));
-    var tier = Math.min(2, (spotKind === 'c' ? 2 : (spotKind === 'b' ? 1 : 0)) + ((MBY[curMine] && MBY[curMine].lv >= 30) ? 1 : 0));
+    var tier = Math.min(2, (spotKind === 'c' ? 2 : (spotKind === 'b' ? 1 : 0)) + ((MBY[curMine] && (MBY[curMine].fl || MBY[curMine].lv) >= 30) ? 1 : 0));
     var pool = MONS.filter(function (x) { return x.tier === tier; });
     var def = defArg || pool[Math.floor(Math.random() * pool.length)];
     var mx = curSpot.x + 56, my = curSpot.y + 30;
@@ -2443,7 +2444,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   });
   $('lbBtns').addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b || b.disabled || !room) return;
-    if (b.id === 'lbStart') { b.disabled = true; api({ action: 'room_start', room: room.id }).then(function (j) { if (j.room) { room = j.room; beginParty(); } else { toast(j.message || 'まだはじめられません'); renderLobby(false); } }); }
+    if (b.id === 'lbStart') { var lm = MBY[room.mine]; if (lm && lm.bs && room.members.length < lm.pn) { bsNeed(lm); return; } b.disabled = true; api({ action: 'room_start', room: room.id }).then(function (j) { if (j.room) { room = j.room; beginParty(); } else { toast(j.message || 'まだはじめられません'); renderLobby(false); } }); }
     else if (b.id === 'lbReady') { var me = meRow(); api({ action: 'room_ready', room: room.id, ready: !(me && me.ready) }).then(function (j) { if (j.room) lobbyUp(j.room); }); }
     else if (b.id === 'lbLeave') { api({ action: 'room_leave', room: room.id }); closeLobby(); room = null; partyN = 1; }
   });
@@ -3293,7 +3294,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 53;
+  var GV = 54;
   (function () {
     var last = Date.now();
     function chk() {
@@ -3777,14 +3778,39 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       done: [A('紫の結晶です。旅の最後に、いい色に会えたね'), F('…ここまで、よく掘り抜きましたわね')] }
   ];
 
+
+  var AUOLD = { lr: 1, koroit: 1, yowah: 1, winton: 1, cp: 1, argyle: 1 };
+  MINES = MINES.filter(function (m) { return !AUOLD[m.id]; });
+  /* ---------- ボスステージ（オーストラリア・パーティー専用） ---------- */
+  var BOSSES = [
+    { bl: 30,  pn: 2, bn: 'サンドワーム',            zone: '赤砂の洞くつ',   di: 4, hue: 20,  sz: 1.0,  spd: 32, gap: 3.6, mult: 1, pat: ['slam', 'nova'], sig: ['boulderopal', 'whiteopal'], lon: 126, lat: -17, rk: ['#c9a27a', '#8a6244', '#4a3322'] },
+    { bl: 50,  pn: 2, bn: 'ダークウィング',          zone: '黒岩のほら穴',   di: 3, hue: 250, sz: 1.05, spd: 52, gap: 3.4, mult: 1, pat: ['slam', 'rain', 'nova'], sig: ['boulderopal', 'crystalopal'], lon: 134, lat: -15.5, rk: ['#8a8196', '#4f4860', '#241f2e'] },
+    { bl: 70,  pn: 2, bn: 'レッドゴーレム',          zone: '赤土の岩山',     di: 5, hue: 340, sz: 1.1,  spd: 30, gap: 3.2, mult: 1, pat: ['nova', 'beam', 'slam'], sig: ['whiteopal', 'crystalopal'], lon: 143, lat: -17, rk: ['#b86a50', '#7a3f30', '#3d1f19'] },
+    { bl: 100, pn: 3, bn: 'ライトニング・クロコ',    zone: '稲妻の沼地',     di: 2, hue: 200, sz: 1.2,  spd: 44, gap: 3.0, mult: 2, pat: ['beam', 'slam', 'rain'], sig: ['blackopal', 'crystalopal'], lon: 121, lat: -24, rk: ['#5f8f9a', '#34606b', '#16303a'] },
+    { bl: 120, pn: 3, bn: 'ボルダーキング',          zone: '巨岩の王座',     di: 5, hue: 90,  sz: 1.3,  spd: 30, gap: 3.0, mult: 2, pat: ['nova', 'beam', 'summon', 'slam'], sig: ['blackopal', 'boulderopal'], lon: 129, lat: -23, rk: ['#9a8a5f', '#665a3a', '#33291a'] },
+    { bl: 150, pn: 3, bn: 'ホワイトクイーン',        zone: '白い霧の谷',     di: 4, fx: 'grayscale(.8) brightness(1.55)', sz: 1.3, spd: 40, gap: 2.8, mult: 2, pat: ['rain', 'beam', 'nova', 'summon'], sig: ['diamond', 'blackopal'], lon: 138, lat: -24, rk: ['#d6dde6', '#9aa6b4', '#586270'] },
+    { bl: 180, pn: 4, bn: 'クリスタルドラゴン',      zone: '水晶の大空洞',   di: 2, hue: 280, sz: 1.4,  spd: 46, gap: 2.6, mult: 2, pat: ['beam', 'nova', 'rain', 'slam'], sig: ['colordiamond', 'diamond'], lon: 147, lat: -25, rk: ['#b69ad8', '#7a5aa8', '#392a55'] },
+    { bl: 200, pn: 5, bn: 'ブラックオパール・ガーディアン', zone: '漆黒の神殿', di: 5, fx: 'brightness(.5) contrast(1.4)', sz: 1.5, spd: 38, gap: 2.5, mult: 3, pat: ['nova', 'beam', 'rain', 'slam', 'summon'], sig: ['blackopal', 'colordiamond'], lon: 125, lat: -31, rk: ['#4a4560', '#2a2640', '#100e1c'] },
+    { bl: 250, pn: 5, bn: 'アーガイル・ヒュドラ',    zone: '虹の溶岩洞',     di: 4, hue: 300, sz: 1.6,  spd: 48, gap: 2.3, mult: 3, pat: ['nova', 'beam', 'rain', 'slam', 'summon'], sig: ['colordiamond', 'diamond'], lon: 135, lat: -31, rk: ['#d98a5a', '#a04a30', '#4a1c14'] },
+    { bl: 300, pn: 5, bn: 'オパールの守護神',        zone: '世界のはて',     di: 5, fx: 'hue-rotate(40deg) saturate(2) brightness(1.3)', sz: 1.8, spd: 42, gap: 2.1, mult: 3, pat: ['nova', 'beam', 'rain', 'slam', 'summon'], sig: ['blackopal', 'colordiamond', 'diamond'], lon: 146, lat: -33, rk: ['#8ad8c0', '#4a9a8a', '#1a4a50'] }
+  ];
+  var BSBY = {};
+  BOSSES.forEach(function (b, i) { b.i = i; b.id = 'bs' + (i + 1); BSBY[b.id] = b; });
   var NUDGE = { yowah: [-7, 5] };
-  var LVREQ = { queretaro: 1, sc: 6, muzo: 11, paraiba: 14, rs: 17, ural: 21, mogok: 31, ratnapura: 36, welo: 41, tz: 44, orapa: 47, lr: 50, koroit: 52, yowah: 54, winton: 56, cp: 58, argyle: 60 };
+  var LVREQ = { queretaro: 1, sc: 6, muzo: 11, paraiba: 14, rs: 17, ural: 50, mogok: 31, ratnapura: 36, welo: 41, tz: 44, orapa: 47, lr: 50, koroit: 52, yowah: 54, winton: 56, cp: 58, argyle: 60 };
   MINES.forEach(function (m) { m.lv = LVREQ[m.id] || 1; if (NUDGE[m.id]) { m.nx = NUDGE[m.id][0]; m.ny = NUDGE[m.id][1]; } });
   MINES.sort(function (a, b) { return a.lv - b.lv; });
+
+  BOSSES.forEach(function (b) {
+    MINES.push({ id: b.id, nm: b.zone, ct: 'オーストラリア・ボスステージ', lon: b.lon, lat: b.lat, need: 0, sig: b.sig, ls: 'b', rk: b.rk, sky: 'rgba(255,90,90,.22)',
+      about: 'パーティー専用。ボス「' + b.bn + '」が待っている。' + b.pn + '人以上で入れるよ。',
+      intro: [N('オーストラリアの奥地。ここは、仲間の力がなければ入れない、ボスの土地です。'), N('この先に「' + b.bn + '」がいる。範囲攻撃に気をつけて、みんなで力を合わせよう。')],
+      done: [A('ここの石も、そろったね。仲間と取った石は、格別です')], lv: 1, bs: true, bl: b.bl, pn: b.pn, fl: Math.min(100, b.bl) });
+  });
   var AREAS = [['na', 1, 10], ['sa', 11, 20], ['ru', 21, 30], ['asia', 31, 40], ['africa', 41, 49], ['au', 50, 99]];
   var MBY = {}; MINES.forEach(function (m) { MBY[m.id] = m; });
   var REGS = [
-    { id: 'au', nm: 'オーストラリア', cx: 138.5, cy: -21.5, w: 72, ids: ['lr', 'koroit', 'yowah', 'winton', 'cp', 'argyle'] },
+    { id: 'au', nm: 'オーストラリア', cx: 138.5, cy: -21.5, w: 72, ids: ['bs1', 'bs2', 'bs3', 'bs4', 'bs5', 'bs6', 'bs7', 'bs8', 'bs9', 'bs10'] },
     { id: 'asia', nm: 'アジア', cx: 88.5, cy: 14, w: 110, ids: ['mogok', 'ratnapura'] },
     { id: 'africa', nm: 'アフリカ', cx: 32.5, cy: -5, w: 130, ids: ['welo', 'tz', 'orapa'] },
     { id: 'ru', nm: 'ロシア', ids: ['ural'] },
@@ -3799,7 +3825,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     F('だから、あなたが掘って取り戻すのです。見習い採掘師として、ね'),
     A('道具はツルハシがひとつ。最初の行き先は、メキシコのケレタロ。ファイアオパールで有名な土地です'),
     F('オパ会にふさわしい、最初の一歩でしょう。さあ、地図を開きなさい'),
-    N('地図のエリアは、レベルが上がるほど、次々に開いていく。いちばん奥のオーストラリアは、Lv50から。')
+    N('地図のエリアは、レベルが上がるほど、次々に開いていく。いちばん奥のオーストラリアは、仲間と力を合わせて挑む、ボスだけの土地。')
   ];
   var ENDING = [
     N('17個目の石が、宝石箱のくぼみにぴたりと収まった。箱じゅうの石が、いっせいに光りだす。'),
@@ -3808,9 +3834,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     A('でもな、鉱山の旅は終わりやない。好きな産地で、また掘ってもいいのです'),
     N('称号「世界をめぐる採掘師」を手に入れた！')
   ];
-  var FK = { lr: 'bush', koroit: 'bush', yowah: 'bush', winton: 'bush', cp: 'rock', argyle: 'bush', mogok: 'palm', ratnapura: 'palm', orapa: 'bush', welo: 'bush', tz: 'bush', ural: 'pine', sc: 'cactus', queretaro: 'cactus', muzo: 'palm', paraiba: 'palm', rs: 'bush' };
+  var FK = { bs1: 'rock', bs2: 'rock', bs3: 'rock', bs4: 'bush', bs5: 'rock', bs6: 'pine', bs7: 'rock', bs8: 'rock', bs9: 'rock', bs10: 'rock', lr: 'bush', koroit: 'bush', yowah: 'bush', winton: 'bush', cp: 'rock', argyle: 'bush', mogok: 'palm', ratnapura: 'palm', orapa: 'bush', welo: 'bush', tz: 'bush', ural: 'pine', sc: 'cactus', queretaro: 'cactus', muzo: 'palm', paraiba: 'palm', rs: 'bush' };
   MINES.forEach(function (m) { m.fk = FK[m.id]; });
-  var GC = { lr: '#8e5a3a', koroit: '#9a6a45', yowah: '#a67a4a', winton: '#a8553a', cp: '#c9b48a', argyle: '#8a6248', mogok: '#4f7a5e', ratnapura: '#4f7f58', orapa: '#a8956a', welo: '#a67a52', tz: '#9a7a4a', ural: '#6f7f8a', sc: '#a86f48', queretaro: '#9a5a3c', muzo: '#3f6f55', paraiba: '#5f8f8a', rs: '#7a6a8a' };
+  var GC = { bs1: '#a8693a', bs2: '#4f4860', bs3: '#a8553a', bs4: '#34606b', bs5: '#7a6a3a', bs6: '#9aa6b4', bs7: '#7a5aa8', bs8: '#2a2640', bs9: '#a04a30', bs10: '#4a9a8a', lr: '#8e5a3a', koroit: '#9a6a45', yowah: '#a67a4a', winton: '#a8553a', cp: '#c9b48a', argyle: '#8a6248', mogok: '#4f7a5e', ratnapura: '#4f7f58', orapa: '#a8956a', welo: '#a67a52', tz: '#9a7a4a', ural: '#6f7f8a', sc: '#a86f48', queretaro: '#9a5a3c', muzo: '#3f6f55', paraiba: '#5f8f8a', rs: '#7a6a8a' };
   MINES.forEach(function (m) { m.gc = GC[m.id]; });
 
   /* ---------- 世界地図 ---------- */
@@ -3853,7 +3879,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function minePin(m) {
     var n = MINES.indexOf(m) + 1, st = !isOpen(m) ? 'lock' : (hasSeen('done:' + m.id) ? 'done' : (minesDug(m) === 0 && n > 1 ? 'new' : ''));
-    return '<button type="button" class="pin ls-' + m.ls + ' ' + st + '" data-m="' + m.id + '" data-x="' + (px(m.lon) + (m.nx || 0)) + '" data-y="' + (py(m.lat) + (m.ny || 0)) + '"><span class="dot">' + (st === 'lock' ? '🔒' : n) + '</span><span class="lb">' + m.nm + (st === 'lock' ? ' Lv' + m.lv : '') + '</span></button>';
+    return '<button type="button" class="pin ls-' + m.ls + ' ' + st + '" data-m="' + m.id + '" data-x="' + (px(m.lon) + (m.nx || 0)) + '" data-y="' + (py(m.lat) + (m.ny || 0)) + '"><span class="dot">' + (st === 'lock' ? '🔒' : (m.bs ? m.bl : n)) + '</span><span class="lb">' + m.nm + (st === 'lock' ? ' Lv' + m.lv : '') + '</span></button>';
   }
   function renderPins() {
     var h = '';
@@ -3863,7 +3889,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         if (ms.length === 1) { h += minePin(ms[0]); return; }
         var X = 0, Y = 0, op = 0;
         ms.forEach(function (m) { X += px(m.lon); Y += py(m.lat); if (isOpen(m)) op++; });
-        h += '<button type="button" class="pin reg" data-r="' + r.id + '" data-x="' + (X / ms.length) + '" data-y="' + (Y / ms.length) + '"><span class="dot">' + op + '/' + ms.length + '</span><span class="lb">' + r.nm + '<br>Lv' + Math.min.apply(null, ms.map(function (q) { return q.lv; })) + '〜</span></button>';
+        h += '<button type="button" class="pin reg" data-r="' + r.id + '" data-x="' + (X / ms.length) + '" data-y="' + (Y / ms.length) + '"><span class="dot">' + op + '/' + ms.length + '</span><span class="lb">' + r.nm + '<br>' + (r.id === 'au' ? 'ボス専用' : 'Lv' + Math.min.apply(null, ms.map(function (q) { return q.lv; })) + '〜') + '</span></button>';
       });
     } else {
       mapReg.ids.forEach(function (id) { h += minePin(MBY[id]); });
@@ -3917,15 +3943,19 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!isOpen(m)) { toast(m.nm + ' は、Lv' + m.lv + ' になると開くよ（いまは Lv' + (player.lv || 1) + '）'); return; }
     sheetMine = id;
     var sg = m.sig.map(function (sid) { var s = BY[sid], n = (player.stones || {})[sid] || 0; return '<div class="sg"><span class="gem">' + gemHTML(sid) + '</span><div><b>' + s.nm + '</b><br><span style="color:var(--mut);font-size:12px">' + (n ? '見つけた ×' + n : 'まだ見つけていません') + '</span></div></div>'; }).join('');
-    $('mineBody').innerHTML = '<h2>' + m.nm + '</h2><div class="ct">' + m.ct + '</div><div class="ab">' + m.about + '</div><div style="font-size:12px;color:var(--mut)">この鉱山の特産石</div>' + sg + '<div style="font-size:12px;color:var(--mut)">ここで掘った回数：' + minesDug(m) + '　／　目安 Lv' + m.lv + '〜（ここの敵は Lv' + m.lv + ' くらいの強さ）</div>';
+    $('mineBody').innerHTML = '<h2>' + m.nm + '</h2><div class="ct">' + m.ct + '</div><div class="ab">' + m.about + '</div><div style="font-size:12px;color:var(--mut)">この鉱山の特産石</div>' + sg + '<div style="font-size:12px;color:var(--mut)">ここで掘った回数：' + minesDug(m) + '　／　' + (m.bs ? '<b style="color:#ff9a9a">パーティー専用（' + m.pn + '人以上）</b>　ボス「' + BSBY[m.id].bn + '」＆強さの目安 Lv' + m.bl : '目安 Lv' + m.lv + '〜（ここの敵は Lv' + m.lv + ' くらいの強さ）') + '</div>';
     $('mineGo').textContent = hasSeen('in:' + id) ? '⛏️ 掘りに行く' : '▶ この鉱山へ（ストーリー）';
     $('mineSheet').classList.add('on');
   }
   $('mineSheet').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('on'); });
   $('mineCancel').addEventListener('click', function () { $('mineSheet').classList.remove('on'); });
-  $('mineGo').addEventListener('click', function () { $('mineSheet').classList.remove('on'); enterMine(sheetMine); });
+  $('mineGo').addEventListener('click', function () { var bm = MBY[sheetMine]; if (bm && bm.bs && !bsOk(bm)) { bsNeed(bm); return; } $('mineSheet').classList.remove('on'); enterMine(sheetMine); });
+
+  function bsOk(m) { return !!(room && room.mine === m.id && room.status !== 'closed' && room.members && room.members.length >= m.pn); }
+  function bsNeed(m) { toast('ここはパーティー専用。' + m.pn + '人以上で待合室に集まって、はじめてね'); }
   function enterMine(id) {
     curMine = id; var m = MBY[id];
+    if (m && m.bs && !bsOk(m)) { bsNeed(m); return; }
     function go() { openField(id); }
     if (!hasSeen('in:' + id)) {
       var pages = [{ k: 'title', m: m, n: MINES.indexOf(m) + 1 }].concat(m.intro);
@@ -4084,7 +4114,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function defP() { var s = eqItem('shield'), h = isGM() ? GMI.helm : null; return Math.min(.85, (s ? s.def : 0) + (h ? h.def : 0) + (guard ? .4 : 0) + (performance.now() < skGuardUntil ? .5 : 0)); }
   function atkReady() { var w = curW(), n = performance.now(); if (n < atkAt) return false; atkAt = n + (w && w.cd ? w.cd : 0); return true; }
   function atkRange() { var w = curW(); return w ? (w.rng || w.mr || 150) : 150; }
-  function mlv() { return (curMine && MBY[curMine]) ? MBY[curMine].lv : 1; }
+  function mlv() { return (curMine && MBY[curMine]) ? (MBY[curMine].fl || MBY[curMine].lv) : 1; }
   function diffN() { var m = mlv(); return m <= 10 ? Math.max(0, (m - 1) / 90) : Math.min(1, .35 + (m - 11) / 50 * .65); }
   function foeCap() { return 5 + Math.round(Math.pow(diffN(), 1.15) * 31) + (mlv() >= 11 ? 4 : 0); }
   function waveGap() { var d = diffN(); return (26 * Math.pow(1 - d, 1.5) + 1.2) * (mlv() >= 11 ? .7 : 1); }
@@ -4092,7 +4122,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function isAus() { var m = curMine && MBY[curMine]; return !!(m && /^オーストラリア/.test(m.ct)); }
   function bigChance() { if (!isAus()) return 0; return .35 + .3 * diffN(); }
   function foeStat(tier, big) {
-    var fl = ((curMine && MBY[curMine]) ? MBY[curMine].lv : 1) + [0, 2, 4][tier], k = big ? 1 : 0;
+    var fl = ((curMine && MBY[curMine]) ? (MBY[curMine].fl || MBY[curMine].lv) : 1) + [0, 2, 4][tier], k = big ? 1 : 0;
     var ml = mlv(), hB = ml >= 11 ? 1 + Math.min(1.5, (ml - 10) * .06) : 1, aB = ml >= 11 ? 1 + Math.min(1.2, (ml - 10) * .05) : 1;
     var eas = ml <= 11 ? Math.max(.25, .7 - Math.max(0, plv() - ml) * .02) : 1;
     return { hp: Math.round(eas * hB * (18 + 4 * fl) * [1, 1.6, 2.4][tier] * (k ? 3.5 : 1)), atk: Math.max(1, Math.round(eas * aB * (4 + .9 * fl) * [1, 1.3, 1.7][tier] * (k ? 1.7 : 1))) };
@@ -4383,7 +4413,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('guardBtn').addEventListener('pointerdown', function (e) { e.stopPropagation(); });
   var foes = [], fgen = 0;
   function foeDef() {
-    var mi = Math.max(0, MINES.indexOf(MBY[curMine])), tier = Math.min(2, (Math.random() < .45 ? 1 : 0) + ((MBY[curMine] && MBY[curMine].lv >= 30) ? 1 : 0) + ((MBY[curMine] && MBY[curMine].lv >= 11 && Math.random() < .35) ? 1 : 0) + (Math.random() < .12 ? 1 : 0));
+    var mi = Math.max(0, MINES.indexOf(MBY[curMine])), tier = Math.min(2, (Math.random() < .45 ? 1 : 0) + ((MBY[curMine] && (MBY[curMine].fl || MBY[curMine].lv) >= 30) ? 1 : 0) + ((MBY[curMine] && (MBY[curMine].fl || MBY[curMine].lv) >= 11 && Math.random() < .35) ? 1 : 0) + (Math.random() < .12 ? 1 : 0));
     var pool = MONS.filter(function (x) { return x.tier === tier; });
     return pool[Math.floor(Math.random() * pool.length)];
   }
@@ -4408,14 +4438,15 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     }).catch(function () {});
   }
   function killFoe(f, delay) {
-    f.mode = 'dead'; if (!f.noDrop && !f.boss) dropRoll(Math.min(2, ((f.d && f.d.tier) || 0) + (f.big ? 1 : 0))); var g = fgen; if (f.tel) { f.tel.remove(); f.tel = null; }
-    if (amFoeHost() && netFoes()) { if (f.boss) { rtSend({ t: 'bk' }); claimBoss(); } else { kills++; if (kills >= 6 && Object.keys(peers).length >= 1 && !foes.some(function (x) { return x.boss && x.mode !== 'dead'; })) { kills = 0; setTimeout(spawnBoss, 3000); } } }
+    f.mode = 'dead'; if (f.bs) { bsT = 22; clearTls(f); } if (!f.noDrop && !f.boss) dropRoll(Math.min(2, ((f.d && f.d.tier) || 0) + (f.big ? 1 : 0))); var g = fgen; if (f.tel) { f.tel.remove(); f.tel = null; }
+    if (amFoeHost() && netFoes()) { if (f.boss) { rtSend({ t: 'bk' }); claimBoss(); } else { kills++; if (kills >= 6 && !bsDef() && Object.keys(peers).length >= 1 && !foes.some(function (x) { return x.boss && x.mode !== 'dead'; })) { kills = 0; setTimeout(spawnBoss, 3000); } } }
     setTimeout(function () { if (f.el) f.el.remove(); var i = foes.indexOf(f); if (i >= 0) foes.splice(i, 1); }, 620);
     f.el.classList.add('flee');
     if (amFoeHost() && !f.boss) { var dd = diffN(), dl = Math.round((delay || 25000) * (1 - .9 * dd)); setTimeout(function () { if (g === fgen && fieldOn && amFoeHost() && !inTown) { var kn = 1 + (Math.random() < dd ? 1 : 0) + (Math.random() < dd * .5 ? 1 : 0); for (var ki = 0; ki < kn; ki++) if (foeAlive() < foeCap()) addFoe(); } }, dl); }
   }
   function foesTick(dt) {
     if (!amFoeHost()) { netFoesTick(dt); return; }
+    bsWatch(dt);
     if (!inTown && fieldOn) { var dw = diffN(); if (dw > .03) { waveT -= dt; if (waveT <= 0) { waveT = waveGap() * (.8 + Math.random() * .4); for (var wn = 0, wk = 1 + Math.floor(dw * 2.5) + (mlv() >= 11 ? 1 : 0); wn < wk; wn++) if (foeAlive() < foeCap()) addFoe(); } } }
     if (busy && !netFoes()) return;
     var tg = [];
@@ -4423,7 +4454,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (netFoes()) Object.keys(peers).forEach(function (id) { var q = peers[id]; if (!q.dn && q.got) tg.push({ id: id, x: q.x, y: q.y }); });
     foes.forEach(function (f) {
       if (f.mode === 'dead') return;
-      if (f.boss) { bossTick(f, dt, tg); return; }
+      if (f.boss) { if (f.bs) bsTick(f, dt, tg); else bossTick(f, dt, tg); return; }
       if (f.cd > 0) f.cd -= dt;
       var best = null, bd = 1e9; tg.forEach(function (t) { var d0 = Math.hypot(t.x - f.x, t.y - f.y); if (d0 < bd) { bd = d0; best = t; } });
       var dx = best ? best.x - f.x : 0, dy = best ? best.y - f.y : 0, dist = best ? (bd || 1) : 9999, sp = 0, ux = 0, uy = 0;
@@ -4449,12 +4480,68 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     });
     if (netFoes()) {
       var now = performance.now();
-      if (now - fsAt > 140) { fsAt = now; rtSend({ t: 'fs', fl: foes.filter(function (f) { return f.mode !== 'dead'; }).map(function (f) { return [f.id, f.di, Math.round(f.x), Math.round(f.y), Math.max(0, Math.round(f.hp)), f.max, f.mode === 'chase' ? 1 : 0, f.dir, f.boss ? 1 : 0, f.slt > 0 ? 1 : 0, Math.round(f.slx || 0), Math.round(f.sly || 0), f.big ? 1 : 0]; }) }); }
+      if (now - fsAt > 140) { fsAt = now; rtSend({ t: 'fs', fl: foes.filter(function (f) { return f.mode !== 'dead'; }).map(function (f) { return [f.id, f.di, Math.round(f.x), Math.round(f.y), Math.max(0, Math.round(f.hp)), f.max, f.mode === 'chase' ? 1 : 0, f.dir, f.boss ? 1 : 0, f.slt > 0 ? 1 : 0, Math.round(f.slx || 0), Math.round(f.sly || 0), f.big ? 1 : 0, (f.boss && f.tlc) ? f.tlc : 0, f.bs ? f.bs.i + 1 : 0]; }) }); }
     }
   }
   var kills = 0, waveT = 20, monWaves = 0;
   function decorBoss(f) {
-    f.el.classList.add('boss'); var nm = f.el.querySelector('.fnm'); if (nm && nm.firstChild) nm.firstChild.nodeValue = '⚠ ボス ' + f.d.nm + ' ';
+    f.el.classList.add('boss'); var nm = f.el.querySelector('.fnm'); if (nm && nm.firstChild) nm.firstChild.nodeValue = '⚠ ボス ' + (f.bs ? f.bs.bn : f.d.nm) + ' ';
+    if (f.bs) { var b = f.bs, sz = Math.round(150 * b.sz); f.el.style.width = f.el.style.height = sz + 'px'; f.fi.style.filter = (b.fx || ('hue-rotate(' + (b.hue || 0) + 'deg)')) + ' drop-shadow(0 0 12px rgba(255,90,90,.8))'; }
+  }
+  /* ---- ボスステージのボス：範囲攻撃（円・直線）を予告してから撃つ ---- */
+  var bsT = 5;
+  function bsDef() { return (curMine && BSBY[curMine]) || null; }
+  function bsStat(d, n) { var pl = Math.min(100, d.bl), pd = (6 + 1.5 * pl + Math.min(160, .55 * d.bl)) * 1.2, ref = 80 + 10 * pl + 120; return { hp: Math.round(pd * d.pn * 150 * (.55 + .45 * n / d.pn)), atk: Math.round(ref * (.34 + .16 * Math.min(1, d.bl / 150))) }; }
+  function bsWatch(dt) {
+    if (!bsDef() || !fieldOn || inTown || !netFoes() || !amHost()) return;
+    if (foes.some(function (x) { return x.boss && x.mode !== 'dead'; })) return;
+    bsT -= dt; if (bsT <= 0) { bsT = 999; spawnBsBoss(); }
+  }
+  function spawnBsBoss() {
+    var d = bsDef(); if (!d) return; var n = 1 + Object.keys(peers).length, s = bsStat(d, n);
+    var f = addFoe(WW / 2, 420, { id: ++foeSeq, di: d.di, h: s.hp, m: s.hp });
+    f.boss = true; f.bs = d; f.st = { hp: s.hp, atk: s.atk }; f.sl = 3; f.slt = 0; f.tls = []; f.tlc = []; f.nextA = 3; f.rage = 0; decorBoss(f);
+    toast('⚠ ボス「' + d.bn + '」があらわれた！'); sfx(1);
+  }
+  function bsCast(f, tg) {
+    var d = f.bs, A = f.st.atk * (f.rage ? 1.25 : 1), T = (1.3 - .35 * Math.min(1, d.bl / 300)) * (f.rage ? .85 : 1), pool = d.pat.slice(), n = d.mult + (f.rage && d.mult < 3 ? 1 : 0);
+    function rt() { return tg[Math.floor(Math.random() * tg.length)]; }
+    for (var i = 0; i < n && pool.length; i++) {
+      var pk = pool.splice(Math.floor(Math.random() * pool.length), 1)[0];
+      if (pk === 'slam') { var c = 1 + (d.bl >= 100 ? 1 : 0) + (d.bl >= 180 ? 1 : 0); for (var a = 0; a < c; a++) { var t = rt(); f.tls.push({ k: 0, x: t.x, y: t.y, r: 100 + (d.bl >= 150 ? 20 : 0), t: T * 1.1, d: A * .6 }); } }
+      else if (pk === 'nova') f.tls.push({ k: 0, x: f.x, y: f.y, r: 190 + (d.bl >= 120 ? 30 : 0), t: T * 1.5, d: A * .72 });
+      else if (pk === 'beam') { var tt = rt(), an = Math.atan2(tt.y - f.y, tt.x - f.x), offs = d.bl >= 180 ? [-.5, 0, .5] : (d.bl >= 70 ? [-.28, .28] : [0]); offs.forEach(function (o) { f.tls.push({ k: 1, x: f.x, y: f.y - 30, a: an + o, len: 1100, w: 90, t: T * 1.2, d: A * .64 }); }); }
+      else if (pk === 'rain') { var rc = 3 + tg.length + (d.bl >= 150 ? 3 : 0); for (var r = 0; r < rc; r++) { var tr = r < tg.length ? tg[r] : null; f.tls.push({ k: 0, x: clamp((tr ? tr.x : 60 + Math.random() * (WW - 120)) + (Math.random() - .5) * 140, 40, WW - 40), y: clamp((tr ? tr.y : 300 + Math.random() * (WH - 360)) + (Math.random() - .5) * 100, 270, WH - 40), r: 85, t: T * 1.3, d: A * .48 }); } }
+      else if (pk === 'summon') { if (foeAlive() < foeCap() + 8) { var sc = 2 + (d.bl >= 120 ? 1 : 0) + (f.rage ? 1 : 0); for (var q = 0; q < sc; q++) addFoe(); floatTxt(f.x, f.y - 150, 'よび出した！', 'y'); } }
+    }
+  }
+  function bsHit(f, tl, tg) {
+    tg.forEach(function (t) {
+      var hit = false;
+      if (tl.k === 0) hit = Math.hypot(t.x - tl.x, t.y - tl.y) < tl.r + 14;
+      else { var dx = Math.cos(tl.a), dy = Math.sin(tl.a), qx = t.x - tl.x, qy = t.y - tl.y, pr = qx * dx + qy * dy; if (pr > 0 && pr < tl.len) hit = Math.abs(qx * dy - qy * dx) < tl.w / 2 + 14; }
+      if (hit) { var dm = Math.round(tl.d); if (t.me) hurtMe(dm); else rtSend({ t: 'dmg', to: t.id, d: dm }); }
+    });
+  }
+  function renderTls(f, list) {
+    f.tlE = f.tlE || []; var L = list || [];
+    for (var i = 0; i < L.length; i++) {
+      var a = L[i], e = f.tlE[i]; if (!e) { e = f.tlE[i] = document.createElement('div'); $('world').appendChild(e); }
+      if (a[0] === 0) { e.className = 'slam'; e.style.width = e.style.height = (a[3] * 2) + 'px'; e.style.margin = (-a[3]) + 'px 0 0 ' + (-a[3]) + 'px'; e.style.transform = ''; }
+      else { e.className = 'slamL'; e.style.width = a[5] + 'px'; e.style.height = a[6] + 'px'; e.style.margin = (-a[6] / 2) + 'px 0 0 0'; e.style.transform = 'rotate(' + a[4] + 'rad)'; }
+      e.style.left = a[1] + 'px'; e.style.top = a[2] + 'px'; e.style.display = 'block'; e.style.zIndex = 5;
+    }
+    for (var j = L.length; j < f.tlE.length; j++) f.tlE[j].style.display = 'none';
+  }
+  function clearTls(f) { if (f.tlE) { f.tlE.forEach(function (e) { e.remove(); }); f.tlE = null; } }
+  function bsTick(f, dt, tg) {
+    var d = f.bs, best = null, bd = 1e9; tg.forEach(function (t) { var d0 = Math.hypot(t.x - f.x, t.y - f.y); if (d0 < bd) { bd = d0; best = t; } });
+    if (!f.rage && f.hp < f.max * .35) { f.rage = 1; floatTxt(f.x, f.y - 160, '怒った！', 'y'); sfx(1); f.el.style.filter = 'saturate(1.6) brightness(1.15)'; }
+    if (best && bd > 110) { var sp = d.spd * (f.rage ? 1.35 : 1), ux = (best.x - f.x) / bd, uy = (best.y - f.y) / bd; f.x = clamp(f.x + ux * sp * dt, 40, WW - 40); f.y = clamp(f.y + uy * sp * dt, 260, WH - 30); if (Math.abs(ux) > .2) f.dir = ux > 0 ? 1 : -1; f.fi.style.transform = f.dir < 0 ? 'scaleX(-1)' : ''; placeEl(f.el, f.x, f.y); f.mode = 'chase'; } else f.mode = 'idle';
+    f.nextA -= dt; if (f.nextA <= 0 && tg.length) { f.nextA = d.gap * (f.rage ? .7 : 1) + 1.4; bsCast(f, tg); }
+    var keep = []; f.tls.forEach(function (tl) { tl.t -= dt; if (tl.t > 0) keep.push(tl); else bsHit(f, tl, tg); }); f.tls = keep;
+    f.tlc = f.tls.map(function (t) { return [t.k, Math.round(t.x), Math.round(t.y), Math.round(t.r || 0), +(t.a || 0).toFixed(2), Math.round(t.len || 0), Math.round(t.w || 0)]; });
+    renderTls(f, f.tlc);
   }
   function slamUi(f) {
     if (!f.tel) { f.tel = document.createElement('div'); f.tel.className = 'slam'; $('world').appendChild(f.tel); }
@@ -4502,9 +4589,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     list.forEach(function (a) {
       seen[a[0]] = 1; var f = null; foes.forEach(function (x) { if (x.id === a[0] && x.mode !== 'dead') f = x; });
       if (!f) { if (!MONS[a[1]]) return; f = addFoe(a[2], a[3], { id: a[0], di: a[1], h: a[4], m: a[5], big: a[12] }); }
-      if (a[8] && !f.boss) { f.boss = true; decorBoss(f); toast('⚠ ボスが出た！みんなで力を合わせよう'); sfx(1); }
+      if (a[8] && !f.boss) { f.boss = true; if (a[14]) f.bs = BOSSES[a[14] - 1]; decorBoss(f); toast('⚠ ボスが出た！みんなで力を合わせよう'); sfx(1); }
       f.nx = a[2]; f.ny = a[3]; f.dir = a[7] || 1; f.max = a[5]; if (a[4] !== f.hp) setFoeHp(f, a[4]);
-      if (f.boss) { f.slt = a[9] ? 1 : 0; f.slx = a[10]; f.sly = a[11]; slamUi(f); }
+      if (f.boss) { f.slt = a[9] ? 1 : 0; f.slx = a[10]; f.sly = a[11]; slamUi(f); if (f.bs) renderTls(f, a[13] || []); }
       f.mode = a[6] === 1 ? 'chase' : 'idle'; f.el.classList.toggle('alert', a[6] === 1);
     });
     foes.slice().forEach(function (f) { if (!seen[f.id] && f.mode !== 'dead') killFoe(f, 0); });
@@ -4631,7 +4718,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var lastMine = LSget('opa_last_mine') || '';
   function openField(id) {
     lastMine = id; LSset('opa_last_mine', id);
-    if (inTown) leaveTown(); curMine = id; var m = MBY[id];
+    if (inTown) leaveTown(); curMine = id; var m = MBY[id]; bsT = 5;
     $('fTtl').textContent = m.nm;
     shared = !!(room && room.mine === id); buildField(); fieldHud(); show('field'); closeSheets(); gearUi(); if (shared) rtStart();
   }
@@ -4725,7 +4812,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('atkBtn').addEventListener('click', attackNearest);
   $('fCancel').addEventListener('click', function () { if (inArena) { arGiveUp(); return; } if (inPlaza) { leaveArena(); return; } if (!busy) cancelDig(); });
   $('goTown').addEventListener('click', function () { if (busy) return; if (curSpot) cancelDig(); leaveTown(); openTown(); });
-  $('goMine').addEventListener('click', function () { if (!lastMine || !MBY[lastMine]) return; leaveTown(); enterMine(lastMine); });
+  $('goMine').addEventListener('click', function () { if (!lastMine || !MBY[lastMine]) return; if (MBY[lastMine].bs && !bsOk(MBY[lastMine])) { bsNeed(MBY[lastMine]); return; } leaveTown(); enterMine(lastMine); });
   ['goTown', 'goMine'].forEach(function (id) { $(id).addEventListener('pointerdown', function (e) { e.stopPropagation(); }); });
   $('fBack').addEventListener('click', function () { if (inCafe) { leaveCafe(); return; } if (inArena) { arGiveUp(); return; } if (inPlaza) { leaveArena(); return; } if (curSpot) cancelDig(); var wasTown = inTown; leaveTown(); openMap(wasTown ? null : curMine); });
   $('fBook').addEventListener('click', function () { renderBook(); $('book').classList.add('on'); });
