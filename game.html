@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:42-->
+<!--GV:43-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -434,6 +434,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #npc .nin input{flex:1;min-width:0;border:0;border-radius:10px;padding:10px 12px;font-size:16px}
 .gh.npc .gname{color:#ffe08a;font-weight:900}
 .gh.npc{pointer-events:none}
+#hero2 .gname{position:absolute;left:50%;top:-16px;transform:translateX(-50%);white-space:nowrap;font-size:11px;font-weight:700;color:#cfeeff;text-shadow:0 1px 3px #000,0 0 2px #000;pointer-events:none}
 .gh.sit .hb,#hero2.sit .hb{clip-path:inset(-80px -80px 16% -80px)}
 .gh.sit.walk .hb{animation:none}
 .cup{position:absolute;left:20px;top:22px;font-size:20px;line-height:1;pointer-events:none;z-index:6;filter:drop-shadow(0 1px 1px rgba(0,0,0,.45));animation:sip 3.2s ease-in-out infinite}
@@ -569,7 +570,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v42（町が広く・カフェ）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v43（名前・服・武器・弾かれ）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所や（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -705,7 +706,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     { n: 'サンセット', g: ['#ffd36a', '#ff7a3c', '#e83a7a'] }, { n: 'ミント→ラベンダー', g: ['#7ff0c8', '#b79cff'] }
   ];
   var OUTC = ['#e0405f', '#f08a3c', '#f2cf3c', '#3fae6a', '#2f8ad8', '#7b5cc4', '#f4f1ea', '#c9ced3', '#8a6a4a', '#2e3a4a', '#16181d', '#ff8fb5'];
-  var BOTC = ['#2e3a4a', '#16181d', '#5b7fb5', '#8a6a4a', '#d8d1c4', '#7a2a3a', '#4a6a4a', '#c9ced3'];
+  var BOTC = ['#2e3a4a', '#16181d', '#5b7fb5', '#8a6a4a', '#d8d1c4', '#7a2a3a', '#4a6a4a', '#c9ced3', '#f4f1ea'];
   var FACEN = ['まる目', 'きれ長', 'たれ目', 'ぱっちり', 'ウィンク'];
   var HAIRN = [['ショート', 'マッシュ', 'ツーブロック', 'オールバック', 'ウルフ', '長髪'], ['ボブ', 'ロング', 'ポニーテール', 'お団子', 'ツインテール', 'ショート', 'ゆるふわ']];
   var OUTN = ['半袖Ｔ', 'Ｖネック', 'パーカー', 'ブルゾン', '革ジャン', 'ロングコート', 'ジャケット', 'カーディガン', 'ワンピース', 'ローブ'];
@@ -939,6 +940,13 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     o.face = Math.min(4, Math.max(0, o.face | 0)); o.acc = Math.min(7, Math.max(0, o.acc | 0));
     return o;
   }
+  /* 服：lk = [トップス, 色, 柄, 柄の色, ボトムス(男), ボトムス(女), ボトムスの色]。はじめは白い服 */
+  var DEFLK_F = [8, 6, 0, 6, 0, 2, 8], DEFLK_M = [0, 6, 0, 6, 3, 3, 8];
+  function dress(av, item) {
+    var a = normAv(av), o = {}; for (var k in a) o[k] = a[k];
+    var L = item && item.lk ? item.lk : (a.gender === 1 ? DEFLK_F : DEFLK_M);
+    o.outfit = L[0]; o.outfitColor = L[1]; o.pattern = L[2]; o.patColor = L[3]; o.bottom = a.gender === 1 ? L[5] : L[4]; o.bottomColor = L[6]; return o;
+  }
   function shade(hex, k) { // k>0 明るく / k<0 暗く
     var n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
     function f(v) { return Math.max(0, Math.min(255, Math.round(k >= 0 ? v + (255 - v) * k : v * (1 + k)))); }
@@ -1151,7 +1159,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function renderPlay() {
     var m = MBY[curMine] || MINES[0];
     var pa = normAv(player.avatar), hx = (pa.gender === 0 ? 86.9 : 82.1) / 120 * 100;
-    $('hero').innerHTML = avatarSVG(player.avatar, { crop: 222 }) + '<div class="pick" id="pick" style="left:' + (hx - 17.4).toFixed(1) + '%;top:47.1%">' + pickHTML(SKIN[pa.skin]) + '</div>';
+    $('hero').innerHTML = avatarSVG(dress(player.avatar, eqItem('outfit')), { crop: 222 }) + '<div class="pick" id="pick" style="left:' + (hx - 17.4).toFixed(1) + '%;top:47.1%">' + pickHTML(SKIN[pa.skin]) + '</div>';
     $('rock').innerHTML = rockSVG(m.rk);
     $('scene').style.setProperty('--sky', spotKind === 'c' ? 'rgba(190,140,255,.35)' : (spotKind === 'b' ? 'rgba(255,225,120,.30)' : m.sky));
     $('playTtl').textContent = m.nm;
@@ -1323,9 +1331,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     } else if (mkTab === 1) {
       h += pillsH('髪型', 'hair', HAIRN[draft.gender], draft.hair) + swH('髪の色（グラデーションもあるで）', 'hairColor', HAIRC, draft.hairColor);
     } else if (mkTab === 2) {
-      h += pillsH('トップス', 'outfit', OUTN, draft.outfit) + swH('色', 'outfitColor', OUTC, draft.outfitColor) + pillsH('柄', 'pattern', PATN, draft.pattern) + swH('柄の色', 'patColor', OUTC, draft.patColor);
+      h += '<div class="fld">服</div><p class="tiny" style="font-size:14px;line-height:1.7">はじめは、白い服からスタートや。服は、ゲームの中の「ショップ」で、いろいろ買えるで。</p>'; if (0) h += pillsH('トップス', 'outfit', OUTN, draft.outfit) + swH('色', 'outfitColor', OUTC, draft.outfitColor) + pillsH('柄', 'pattern', PATN, draft.pattern) + swH('柄の色', 'patColor', OUTC, draft.patColor);
     } else {
-      h += pillsH('ボトムス', 'bottom', BOTN, draft.bottom) + swH('ボトムスの色', 'bottomColor', BOTC, draft.bottomColor) + pillsH('小物', 'acc', ACCN, draft.acc);
+      h += pillsH('小物', 'acc', ACCN, draft.acc);
     }
     return h + '<p class="tiny">あとから、ゲームの中の「せってい」でいつでも変えられるで。</p>';
   }
@@ -1334,7 +1342,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var ni = $('nameIn'); if (ni) { ni.value = draft.name; ni.addEventListener('input', function () { draft.name = this.value; }); }
     var ts = $('mkTabs').querySelectorAll('button'); for (var i = 0; i < ts.length; i++) ts[i].classList.toggle('on', +ts[i].dataset.t === mkTab);
   }
-  function drawPrev() { $('prev').innerHTML = avatarSVG(draft); }
+  function drawPrev() { $('prev').innerHTML = avatarSVG(dress(draft, null)); }
   $('mkTabs').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; mkTab = +b.dataset.t; drawPanel(); $('mkBody').scrollTop = 0; });
   $('mkBody').addEventListener('click', function (e) {
     var b = e.target.closest('[data-i]'); if (!b) return;
@@ -1395,6 +1403,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
   /* ---------- ゲームマネー・もちもの・ショップ ---------- */
   var SPD = {
+    k_dagger: { nm: '連続突き', ds: 'すぐそばの敵（1.5マス以内）を、すばやく突いて大ダメージ（×2.2）', t: 'ring', r: 110, m: 2.2 },
     k_sword: { nm: '円月斬', ds: 'まわりの3マス以内の敵をまとめて斬る（×2.5）', t: 'ring', r: 225, m: 2.5 },
     k_bow: { nm: '三連矢', ds: 'ねらった敵に、矢を3本つづけて射る（×1.2を3回）', t: 'multi', r: 300, n: 3, m: 1.2 },
     k_gun: { nm: '貫通弾', ds: 'まっすぐ飛ぶ弾で、ならんだ敵をまとめて貫く（×2.4）', t: 'line', len: 450, m: 2.4 },
@@ -1407,10 +1416,21 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     cannon: { nm: '魔王砲', ds: 'ねらった敵に超ダメージ（×6）。まわりの敵にも、はんぶん', t: 'blast', r: 450, m: 6, sr: 150 }
   };
   var ITEMS = [
-    { id: 'o1', slot: 'outfit', nm: '作業エプロン', price: 300, tier: 0, ic: '🧑‍🔧', fx: '見た目：うっすら光るオーラ' },
-    { id: 'o2', slot: 'outfit', nm: '鑑定士のジャケット', price: 1500, tier: 1, ic: '🧥', fx: '見た目：青いオーラ' },
-    { id: 'o3', slot: 'outfit', nm: '遊色ドレス', price: 6000, tier: 2, ic: '👗', fx: '見た目：紫のオーラ' },
-    { id: 'o4', slot: 'outfit', nm: 'AMON特別ローブ', price: 20000, tier: 3, ic: '👑', fx: '見た目：金色のオーラ' },
+    { id: 'o1', slot: 'outfit', nm: '作業エプロン', price: 300, tier: 0, ic: '🧑‍🔧', lk: [0, 8, 0, 6, 0, 2, 3], fx: '見た目：茶色のシャツ＋うっすら光るオーラ' },
+    { id: 'o2', slot: 'outfit', nm: '鑑定士のジャケット', price: 1500, tier: 1, ic: '🧥', lk: [6, 4, 0, 6, 0, 2, 2], fx: '見た目：青いジャケット＋青いオーラ' },
+    { id: 'o3', slot: 'outfit', nm: '遊色ドレス', price: 6000, tier: 2, ic: '👗', lk: [8, 5, 3, 6, 2, 2, 0], fx: '見た目：紫の水玉ドレス＋紫のオーラ' },
+    { id: 'o4', slot: 'outfit', nm: 'AMON特別ローブ', price: 20000, tier: 3, ic: '👑', lk: [9, 2, 0, 6, 0, 0, 1], fx: '見た目：金色のローブ＋金色のオーラ' },
+    { id: 'o5', slot: 'outfit', nm: '青ボーダーのＴシャツ', price: 350, tier: 0, na: 1, ic: '👕', lk: [0, 4, 2, 6, 1, 2, 2], fx: '見た目：青いボーダーのＴシャツ' },
+    { id: 'o6', slot: 'outfit', nm: 'グレーのパーカー', price: 700, tier: 0, na: 1, ic: '🧥', lk: [2, 7, 0, 6, 1, 1, 2], fx: '見た目：グレーのパーカー' },
+    { id: 'o7', slot: 'outfit', nm: 'ピンクのＶネック', price: 800, tier: 0, na: 1, ic: '👚', lk: [1, 11, 0, 6, 0, 2, 4], fx: '見た目：ピンクのＶネック' },
+    { id: 'o8', slot: 'outfit', nm: 'チェックのカーディガン', price: 1200, tier: 0, na: 1, ic: '🧶', lk: [7, 0, 4, 9, 1, 2, 1], fx: '見た目：赤いチェックのカーディガン' },
+    { id: 'o9', slot: 'outfit', nm: 'ネイビーのブルゾン', price: 2000, tier: 0, na: 1, ic: '🧥', lk: [3, 9, 0, 6, 1, 1, 4], fx: '見た目：ネイビーのブルゾン' },
+    { id: 'o10', slot: 'outfit', nm: '黒の革ジャン', price: 3500, tier: 0, na: 1, ic: '🧥', lk: [4, 10, 0, 6, 1, 1, 1], fx: '見た目：黒い革ジャン' },
+    { id: 'o11', slot: 'outfit', nm: 'ブラウンのロングコート', price: 4500, tier: 0, na: 1, ic: '🧥', lk: [5, 8, 0, 6, 0, 0, 1], fx: '見た目：ブラウンのロングコート' },
+    { id: 'o12', slot: 'outfit', nm: '花柄ワンピース', price: 1800, tier: 0, na: 1, ic: '👗', lk: [8, 11, 3, 6, 2, 2, 0], fx: '見た目：ピンクの花柄ワンピース' },
+    { id: 'o13', slot: 'outfit', nm: '青いワンピース', price: 1500, tier: 0, na: 1, ic: '👗', lk: [8, 4, 0, 6, 2, 2, 0], fx: '見た目：青いワンピース' },
+    { id: 'o14', slot: 'outfit', nm: '赤いワンピース', price: 1500, tier: 0, na: 1, ic: '👗', lk: [8, 0, 0, 6, 2, 2, 0], fx: '見た目：赤いワンピース' },
+    { id: 'o15', slot: 'outfit', nm: '紺のジャケット', price: 3000, tier: 0, na: 1, ic: '🤵', lk: [6, 9, 1, 6, 0, 2, 1], fx: '見た目：紺のストライプジャケット' },
     { id: 't1', slot: 'tool', nm: '銀のつるはし', price: 400, tier: 0, ic: '⛏️', cut: .05, fx: '掘る回数が 5% へる' },
     { id: 't2', slot: 'tool', nm: '遊色ルーペつきつるはし', price: 2000, tier: 1, ic: '🔍', cut: .10, fx: '掘る回数が 10% へる' },
     { id: 't3', slot: 'tool', nm: 'オパール専用の発掘機', price: 8000, tier: 2, ic: '⚙️', cut: .15, fx: '掘る回数が 15% へる' },
@@ -1419,10 +1439,10 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     { id: 'w2', slot: 'weapon', kind: 'sword', nm: '鉄の剣', price: 2500, tier: 1, ic: '🗡️', atk: 7, fx: '剣：こうげき +7' },
     { id: 'w3', slot: 'weapon', kind: 'sword', nm: '銀の長剣', price: 9000, tier: 2, ic: '⚔️', atk: 12, fx: '剣：こうげき +12' },
     { id: 'w4', slot: 'weapon', kind: 'sword', nm: '星屑の聖剣', price: 24000, tier: 3, ic: '⚔️', atk: 20, drop: true, fx: '剣：こうげき +20（店では売ってへん）' },
-    { id: 'b1', slot: 'weapon', kind: 'bow', nm: 'ハンターの弓', price: 600, tier: 0, ic: '🏹', atk: 2, rng: 225, cd: 450, fx: '弓：こうげき +2。3マス先まで射てる（剣よりは弱め）' },
-    { id: 'b2', slot: 'weapon', kind: 'bow', nm: 'エルフの長弓', price: 3000, tier: 1, ic: '🏹', atk: 5, rng: 225, cd: 450, fx: '弓：こうげき +5。3マス先まで射てる（剣よりは弱め）' },
+    { id: 'b1', slot: 'weapon', kind: 'bow', nm: 'ハンターの弓', price: 12000, tier: 1, ic: '🏹', atk: 2, rng: 225, cd: 450, fx: '弓：こうげき +2。3マス先まで射てる（剣よりは弱め）' },
+    { id: 'b2', slot: 'weapon', kind: 'bow', nm: 'エルフの長弓', price: 30000, tier: 2, ic: '🏹', atk: 5, rng: 225, cd: 450, fx: '弓：こうげき +5。3マス先まで射てる（剣よりは弱め）' },
     { id: 'b3', slot: 'weapon', kind: 'bow', nm: '月光の弓', price: 22000, tier: 3, ic: '🏹', atk: 13, rng: 225, cd: 400, drop: true, fx: '弓：こうげき +13。3マス先まで（店では売ってへん）' },
-    { id: 'g1', slot: 'weapon', kind: 'gun', nm: '火縄銃', price: 3500, tier: 1, ic: '🔫', atk: 5, rng: 300, cd: 1100, fx: '銃：こうげき +5。4マス先まで。うつのに時間がかかる' },
+    { id: 'g1', slot: 'weapon', kind: 'gun', nm: '火縄銃', price: 35000, tier: 2, ic: '🔫', atk: 5, rng: 300, cd: 1100, fx: '銃：こうげき +5。4マス先まで。うつのに時間がかかる' },
     { id: 'w5', slot: 'weapon', kind: 'sword', nm: 'ほむらの大剣', price: 40000, tier: 3, ic: '🔥', atk: 26, drop: true, sr: true, sp: 'flame', fx: '剣：こうげき +26（強い敵から、ごくまれに落ちる）' },
     { id: 'w6', slot: 'weapon', kind: 'sword', nm: '影縫いの双牙', price: 38000, tier: 3, ic: '🌑', atk: 22, drop: true, sr: true, sp: 'shadow', fx: '剣：こうげき +22（強い敵から、ごくまれに落ちる）' },
     { id: 'b4', slot: 'weapon', kind: 'bow', nm: '嵐呼びの弓', price: 40000, tier: 3, ic: '🌪️', atk: 18, rng: 225, cd: 380, drop: true, sr: true, sp: 'storm', fx: '弓：こうげき +18。3マス先まで（強い敵から、ごくまれに落ちる）' },
@@ -1443,6 +1463,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var SLOTS = ['outfit', 'tool', 'weapon', 'shield', 'armor'], SLN = { outfit: '衣装', tool: '採掘道具', weapon: '武器（剣・弓・銃）', shield: '盾', armor: '防具' };
   ITEMS.forEach(function (i) { if (i.slot !== 'weapon') return; var d = SPD[i.sp || ('k_' + i.kind)]; if (i.kind === 'sword') i.fx += ' ／ 近距離ボーナス：ダメージ +15%'; if (d) i.fx += ' ／ 必殺技「' + d.nm + '」：' + d.ds; });
   var IBY = {}; ITEMS.forEach(function (i) { IBY[i.id] = i; });
+  var DAG = { id: 'w0', slot: 'weapon', kind: 'dagger', nm: '短剣（はじめの武器）', tier: 0, ic: '🗡️', atk: 2, mr: 75, fx: '短剣：こうげき +2。1マス先までしか届かへん。ダメージ +15%。必殺技「連続突き」' };
   var AURA = ['rgba(255,255,255,.35)', 'rgba(88,166,255,.8)', 'rgba(181,131,255,.85)', 'rgba(255,211,106,.95)'];
   var bagTab = 0, buyArm = null, lastGain = 0, lastXp = 0, lastLvUp = 0;
   var tickets = [], pendingTicket = null;
@@ -1461,7 +1482,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   $('tkOk').addEventListener('click', function () { $('tkov').classList.remove('on'); openBag(0); });
   var GMI = {
-    outfit: { id: 'gm_o', slot: 'outfit', nm: '黄金のローブ', tier: 3, ic: '👑' },
+    outfit: { id: 'gm_o', slot: 'outfit', nm: '黄金のローブ', tier: 3, ic: '👑', lk: [9, 2, 0, 6, 0, 0, 1] },
     tool: { id: 'gm_t', slot: 'tool', nm: '黄金のつるはし', cut: .2, ic: '⛏️' },
     weapon: { id: 'gm_w', slot: 'weapon', kind: 'bow', nm: '黄金の神弓', atk: 9999999, rng: 99999, cd: 220, ic: '🏹' },
     shield: { id: 'gm_s', slot: 'shield', nm: '黄金の盾', def: .85, ic: '🛡️' },
@@ -1480,12 +1501,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     toast(gmOn ? '👑 マスターに変身した！' : '🙂 一般プレイヤー（Lv' + GEN_LV + '・' + GEN_NAME + '）に変身した');
   }
   var GMLIST = ['weapon', 'helm', 'armor', 'shield', 'outfit', 'tool'];
-  function eqItem(slot) { if (isGM() && GMI[slot]) return GMI[slot]; var id = ((player || {}).equip || {})[slot]; return id ? IBY[id] : null; }
+  function eqItem(slot) { if (isGM() && GMI[slot]) return GMI[slot]; var id = ((player || {}).equip || {})[slot]; if (!id && slot === 'weapon') return DAG; return id ? IBY[id] : null; }
   var wHand = 'weapon';
   function handW() { return !!eqItem('weapon') && wHand === 'weapon'; }
   function curW() { return handW() ? eqItem('weapon') : null; }
   function toolCut() { var t = eqItem('tool'); return t ? t.cut : 0; }
-  function aura() { var o = eqItem('outfit'); return o ? 'drop-shadow(0 0 10px ' + AURA[o.tier] + ') drop-shadow(0 0 22px ' + AURA[o.tier] + ')' : ''; }
+  function aura() { var o = eqItem('outfit'); return (o && !o.na) ? 'drop-shadow(0 0 10px ' + AURA[o.tier] + ') drop-shadow(0 0 22px ' + AURA[o.tier] + ')' : ''; }
   function applyAura() { var a = aura(); if ($('hb')) $('hb').style.filter = a; if ($('hero')) $('hero').style.filter = a; }
   function renderBag() {
     var coins = (player || {}).coins || 0, have = (player || {}).items || [], h = '';
@@ -1791,7 +1812,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function rtSend(m) { if (rtOn) { m.f = myMid; RT.send(m); } }
   function ghostEl(pr) {
     if (pr.el || !pr.av) return;
-    var e = document.createElement('div'); e.className = 'gh'; e.innerHTML = '<div class="hs"></div><div class="hb">' + charHTML(pr.av) + '</div><div class="gname"></div>';
+    var e = document.createElement('div'); e.className = 'gh'; e.innerHTML = '<div class="hs"></div><div class="hb">' + charHTML(dress(pr.av, peerItem(pr))) + '</div><div class="gname"></div>';
     e.insertAdjacentHTML('afterbegin', '<div class="hhp"><i></i></div>'); e.querySelector('.gname').textContent = pr.n || ''; $('world').appendChild(e); pr.el = e; pr.hb = e.querySelector('.hb'); pr.pk = e.querySelector('.fpk');
     placeEl(e, pr.x, pr.y);
   }
@@ -1844,7 +1865,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       var dx = pr.tx - pr.x, dy = pr.ty - pr.y; pr.x += dx * k; pr.y += dy * k;
       var mv = Math.hypot(dx, dy) > 3; pr.el.classList.toggle('walk', mv);
       pr.hb.style.transform = pr.dir < 0 ? 'scaleX(-1)' : ''; placeEl(pr.el, pr.x, pr.y);
-      pr.el.classList.toggle('sit', pr.st > 0); if ((pr.cupE || '') !== (pr.dk || '')) ghCup(pr);
+      ghLook(pr); pr.el.classList.toggle('sit', pr.st > 0); if ((pr.cupE || '') !== (pr.dk || '')) ghCup(pr);
       pr.el.classList.toggle('dn', !!pr.dn); var gb = pr.el.querySelector('.hhp'); if (gb) { var pc = pr.h == null ? 100 : pr.h; gb.classList.toggle('on', pc < 100 || !!pr.dn); gb.firstChild.style.width = pc + '%'; gb.firstChild.style.background = pc <= 30 ? '#ff5a5a' : '#4fd68a'; }
     });
   }
@@ -2467,7 +2488,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 42;
+  var GV = 43;
   (function () {
     var last = Date.now();
     function chk() {
@@ -2491,7 +2512,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         { q: 'ドリンクは？', k: ['ドリンク', '飲', 'のみ', 'ジュース', 'コーヒー', '無料', 'タダ', 'お金'], a: 'ぜんぶ無料で、何杯でも飲める。ゲームマネーも要らん。見た目を楽しむドリンクで、ステータスは変わらへんけどな。飲んでる姿は、友達にも見えるで。' },
         { q: '外に出るには？', k: ['出', '帰', '戻', '町', '出口'], a: '画面の「🚪 町へ」ボタンか、お店の下にある「出口」をタップしたら、町に戻れるで。' }
       ] },
-    kanon: { nm: '闘技場の解説 カノン', where: 'plaza', x: 210, y: 140, av: { name: 'カノン', gender: 1, skin: 1, face: 1, hair: 4, hairColor: 5, outfit: 7, outfitColor: 2, pattern: 0, patColor: 6, bottom: 1, bottomColor: 3, acc: 3 },
+    kanon: { nm: '闘技場の解説 カノン', where: 'plaza', wk: 'sword', x: 210, y: 140, av: { name: 'カノン', gender: 1, skin: 1, face: 1, hair: 4, hairColor: 5, outfit: 7, outfitColor: 2, pattern: 0, patColor: 6, bottom: 1, bottomColor: 3, acc: 3 },
       hi: 'いらっしゃい！ 闘技場の解説係のカノンや。ここのルールや、戦い方のコツを、全部教えるで。下の質問をタップか、聞きたいことを打ってな。',
       faq: [
         { q: '闘技場って？', k: ['闘技', 'ここ', 'とは', '何'], a: '闘技場は、プレイヤー同士で戦えるゲーム内で唯一の場所や。上の観客席は、だれにも攻撃されへん。柵の入口から下に降りると、闘技場の中に入る。中では、近くにいるだれからでも攻撃されるし、だれでも攻撃できるで。報酬は出えへん、遊びと練習の場や。' },
@@ -2506,15 +2527,15 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         { q: 'チャットは？', k: ['チャット', '話', '短縮', 'あいさつ', '挨拶'], a: '下の「💬 チャット」を押すと、入力欄が出る。戦いの邪魔にならんように、普段はたたんであるんや。「💬」だけのボタンは短縮チャットで、「たすけて！」「ナイス！」みたいなのを、一回のタップで送れるで。' },
         { q: '超レアな武器は？', k: ['レア', '超レア', 'ボス', '必殺技つき', '新武器', '手に入'], a: '必殺技つきの超レア武器は、強い敵からごくまれに落ちる。ボス限定の武器は、2人以上のパーティーでボスを倒したときのごほうびで出ることがあるで。店では売ってへん。ちなみに、もう持ってる武器が落ちたら、ゲームマネーに換わるんや。' }
       ] },
-    garo: { nm: '練習相手の手配師 ガロ', where: 'plaza', x: 690, y: 140, spar: true, av: { name: 'ガロ', gender: 0, skin: 2, face: 3, hair: 2, hairColor: 8, outfit: 4, outfitColor: 7, pattern: 1, patColor: 3, bottom: 2, bottomColor: 4, acc: 1 },
+    garo: { nm: '練習相手の手配師 ガロ', where: 'plaza', wk: 'gun', x: 690, y: 140, spar: true, av: { name: 'ガロ', gender: 0, skin: 2, face: 3, hair: 2, hairColor: 8, outfit: 4, outfitColor: 7, pattern: 1, patColor: 3, bottom: 2, bottomColor: 4, acc: 1 },
       hi: 'おう、手配師のガロや。闘技場の中で戦ってくれる練習相手を、派遣するで。レベルは10〜40で、好きに決めてな。高いほど強いだけやなくて、ガードやダッシュ、必殺技も上手くなる。倒してもごほうびは出えへん、練習用やで。',
       faq: [
-        { q: 'レベルでどう違う？', k: ['レベル', '違い', '強さ', 'ちがい'], a: 'Lv10〜19：ただ近づいて斬ってくる。動きは遅めや。\nLv20〜29：横に回り込んだり、ガードしたり、ダッシュで距離を詰めてくる。\nLv30〜40：さらに、攻撃をダッシュでかわす。必殺技も使ってくる（光る輪が出てから当たるから、ダッシュで避けられるで）。\nレベルが上がるほど、HP・攻撃・動きも速くなる。' },
+        { q: 'レベルでどう違う？', k: ['レベル', '違い', '強さ', 'ちがい'], a: '練習相手は、剣・短剣・弓・銃のどれかを持って来る（毎回ランダム）。剣は2マス、短剣は1マス、弓は3マス、銃は4マスまでしか届かへん。\nLv10〜19：ただ近づいて斬ってくる。動きは遅めや。\nLv20〜29：横に回り込んだり、ガードしたり、ダッシュで距離を詰めてくる。\nLv30〜40：さらに、攻撃をダッシュでかわす。剣と短剣は必殺技も使ってくる（光る輪が出てから、輪の中だけに当たるから、ダッシュで避けられるで）。\nレベルが上がるほど、HP・攻撃・動きも速くなる。' },
         { q: 'ごほうびは？', k: ['ほうび', '報酬', '経験値', 'お金', 'コイン'], a: '練習用やから、ごほうびは出えへん。経験値もお金もないで。そのかわり、何回でも、タダで遊べる。' },
         { q: '自分だけに見える？', k: ['みえ', '見え', 'ほかの', '他', '一人'], a: '練習相手は、呼んだあなたの画面だけに出るんや。ほかの人の邪魔にならんで。倒れたら、自動でいなくなる。' },
         { q: '練習のコツは？', k: ['コツ', '練習', '勝てない', '勝て'], a: 'まず Lv10 で、ダッシュと必殺技のゲージ溜めに慣れるとええ。次に Lv25 で、ガードされる感じを覚える。Lv35 以上は、必殺技の光る輪が出たら、ダッシュで避けるんや。避けたらジャスト回避でゲージも溜まるで。' }
       ] },
-    guide: { nm: '案内役 ミミ', x: 640, y: 1150, av: { name: 'ミミ', gender: 1, skin: 1, face: 2, hair: 3, hairColor: 2, outfit: 5, outfitColor: 9, pattern: 0, patColor: 6, bottom: 1, bottomColor: 2, acc: 3 },
+    guide: { nm: '案内役 ミミ', wk: 'bow', x: 640, y: 1150, av: { name: 'ミミ', gender: 1, skin: 1, face: 2, hair: 3, hairColor: 2, outfit: 5, outfitColor: 9, pattern: 0, patColor: 6, bottom: 1, bottomColor: 2, acc: 3 },
       hi: 'こんにちは！ うちは案内役のミミや。プレイでわからんことがあったら、なんでも聞いてな。下の質問をタップか、聞きたいことを打ってや。',
       faq: [
         { q: '歩き方・掘り方', k: ['歩', '掘り方', 'あるき', 'ほり方', 'はじめ', '操作', '使い方'], a: '行きたい所をタップしたら歩くで。光ってる鉱脈をタップしたら、そこまで歩いて掘れる状態になるから、「掘る！」を何回もタップしてな。ゲージがたまったら石が出てくるで。' },
@@ -2534,7 +2555,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         { q: 'ひとこと（クイックチャット）', k: ['チャット', 'ひとこと', '話', '会話', '助けて', 'メッセージ'], a: '町や協力プレイでは、画面の下の「💬」ボタンで、「たすけて」「ナイス」をワンタッチで送れるで。町では、文字を打って話すこともできる（ことばは保存されへん）。' },
         { q: '音や振動を切りたい', k: ['音', 'bgm', '音楽', '振動', 'うるさ', '消'], a: '右上の⚙で、BGM、効果音、振動を、それぞれオンオフできるで。' }
       ] },
-    rcp: { nm: '闘技場の受付 レオ', x: 270, y: 1075, av: { name: 'レオ', gender: 0, skin: 2, face: 1, hair: 1, hairColor: 0, outfit: 7, outfitColor: 1, pattern: 1, patColor: 8, bottom: 0, bottomColor: 1, acc: 0 },
+    rcp: { nm: '闘技場の受付 レオ', wk: 'dagger', x: 270, y: 1075, av: { name: 'レオ', gender: 0, skin: 2, face: 1, hair: 1, hairColor: 0, outfit: 7, outfitColor: 1, pattern: 1, patColor: 8, bottom: 0, bottomColor: 1, acc: 0 },
       hi: 'いらっしゃい！ 闘技場の受付のレオや。観客席は安全、闘技場内は何でもありやで。ルールを知りたいなら、下を見てな。',
       enter: true,
       faq: [
@@ -2548,7 +2569,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     where = where || 'town';
     Object.keys(NPCS).forEach(function (k) {
       var n = NPCS[k]; if ((n.where || 'town') !== where) return; var e = document.createElement('div'); e.className = 'gh npc'; e.dataset.npc = k;
-      e.innerHTML = '<div class="hs"></div><div class="hb">' + charHTML(n.av) + '</div><div class="gname"></div>'; e.querySelector('.gname').textContent = '💬 ' + n.nm;
+      e.innerHTML = '<div class="hs"></div><div class="hb">' + charHTML(n.av) + '</div><div class="gname"></div>'; e.querySelector('.gname').textContent = '💬 ' + n.nm; var npk = e.querySelector('.fpk'); if (npk) { if (n.wk) npk.innerHTML = weaponSVG(n.wk); else npk.remove(); }
       placeEl(e, n.x, n.y); $('world').appendChild(e);
     });
   }
@@ -2576,17 +2597,18 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function botSpawn(lv) {
     if (!inPlaza) { toast('闘技場の中で、呼んでな'); return; }
-    botStop(); var st = botStats(lv);
+    botStop(); var st = botStats(lv), wk = ['sword', 'sword', 'dagger', 'bow', 'gun'][Math.floor(Math.random() * 5)];
     var av = { name: '練習相手', gender: lv % 2, skin: 1 + lv % 3, face: lv % 5, hair: lv % 6, hairColor: (lv * 3) % 14, outfit: lv % 10, outfitColor: (lv * 5) % 12, pattern: lv % 5, patColor: (lv * 7) % 12, bottom: lv % 4, bottomColor: lv % 8, acc: 0 };
     var e = document.createElement('div'); e.className = 'gh npc bot'; e.innerHTML = '<div class="hs"></div><div class="hb">' + charHTML(av) + '</div><div class="gname"></div>';
-    var x = 450, y = FLOOR_Y + 330; placeEl(e, x, y); $('world').appendChild(e);
-    bot = { lv: lv, st: st, hp: st.max, max: st.max, x: x, y: y, el: e, dn: false, cdAt: performance.now() + 1200, dashAt: 0, gauge: 0, wind: 0, sp: 0, sdir: 1, sdirAt: 0 };
+    var x = 450, y = FLOOR_Y + 330; placeEl(e, x, y); $('world').appendChild(e); var bpk = e.querySelector('.fpk'); if (bpk) bpk.innerHTML = weaponSVG(wk);
+    bot = { wk: wk, lv: lv, st: st, hp: st.max, max: st.max, x: x, y: y, el: e, dn: false, cdAt: performance.now() + 1200, dashAt: 0, gauge: 0, wind: 0, sp: 0, sdir: 1, sdirAt: 0 };
     botLabel(); botTimer = setInterval(botTick, 50); sfx(3);
     var rg = document.createElement('i'); rg.className = 'spfx'; rg.style.left = x + 'px'; rg.style.top = (y - 20) + 'px'; rg.style.width = rg.style.height = '240px'; $('world').appendChild(rg); setTimeout(function () { rg.remove(); }, 600);
     toast('練習相手（Lv' + lv + '）が、闘技場に来たで！ 闘技場の中に入って、タップで攻撃や');
   }
   var bot = null, botTimer = 0;
-  function botLabel() { if (bot) bot.el.querySelector('.gname').textContent = '練習相手 Lv' + bot.lv + ' ♥' + Math.max(0, Math.ceil(bot.hp)) + '/' + bot.max; }
+  var WK = { sword: { nm: '剣', reach: 150, go: 110, init: 125, cd: 1, wind: 1, atk: 1.1 }, dagger: { nm: '短剣', reach: 85, go: 55, init: 75, cd: .65, wind: .7, atk: .7 }, bow: { nm: '弓', reach: 225, go: 185, init: 225, cd: .9, wind: 1, atk: .8, rg: 1 }, gun: { nm: '銃', reach: 300, go: 250, init: 300, cd: 1.4, wind: 1.3, atk: 1.25, rg: 1 } };
+  function botLabel() { if (bot) bot.el.querySelector('.gname').textContent = '練習相手 Lv' + bot.lv + '（' + WK[bot.wk].nm + '）' + ' ♥' + Math.max(0, Math.ceil(bot.hp)) + '/' + bot.max; }
   function botStop(msg) { clearInterval(botTimer); botTimer = 0; if (bot && bot.el) bot.el.remove(); bot = null; if (msg === true) return; }
   function botHitHero(d) {
     if (hp.down || hero.y < FLOOR_Y || !inPlaza) return false; if (evadeHit()) return false;
@@ -2600,20 +2622,26 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var b = bot; if (!b || !inPlaza || b.dn) { if (!inPlaza) botStop(); return; }
     var now = performance.now(), dt = .05, st = b.st;
     if (hp.down || hero.y < FLOOR_Y) { b.wind = 0; b.sp = 0; placeEl(b.el, b.x, b.y); return; }
-    var dx = hero.x - b.x, dy = hero.y - b.y, d = Math.hypot(dx, dy) || 1;
-    if (b.wind && now >= b.wind) { b.wind = 0; b.el.classList.remove('lunge'); if (Math.hypot(hero.x - b.x, hero.y - b.y) <= 160 && botHitHero(st.atk)) b.gauge = Math.min(100, b.gauge + 12); }
-    if (b.sp && now >= b.sp) { b.sp = 0; if (Math.hypot(hero.x - b.x, hero.y - b.y) <= 235) botHitHero(Math.round(st.atk * 2.5)); }
+    var dx = hero.x - b.x, dy = hero.y - b.y, d = Math.hypot(dx, dy) || 1, W = WK[b.wk] || WK.sword, spR = b.wk === 'dagger' ? 110 : 150;
+    if (b.wind && now >= b.wind) { b.wind = 0; b.el.classList.remove('lunge'); if (Math.hypot(hero.x - b.x, hero.y - b.y) <= W.reach + 15 && botHitHero(Math.max(1, Math.round(st.atk * W.atk)))) b.gauge = Math.min(100, b.gauge + 12); }
+    if (b.sp && now >= b.sp) { b.sp = 0; if (Math.hypot(hero.x - b.x, hero.y - b.y) <= spR + 10) botHitHero(Math.round(st.atk * 2.5)); }
     if (!b.wind && !b.sp) {
-      if (st.dashOk && d > 330 && now > b.dashAt) botDash(b, dx, dy, Math.min(d - 100, 420));
-      else if (d > 100) { b.x += dx / d * st.spd * dt; b.y += dy / d * st.spd * dt; }
+      if (st.dashOk && d > W.reach + 180 && now > b.dashAt) botDash(b, dx, dy, Math.min(d - W.go, 420));
+      else if (d > W.go) { b.x += dx / d * st.spd * dt; b.y += dy / d * st.spd * dt; }
+      else if (W.rg && d < W.go * .55) { b.x -= dx / d * st.spd * dt; b.y -= dy / d * st.spd * dt; }
       else if (st.lv >= 20) { if (now > b.sdirAt) { b.sdir = Math.random() < .5 ? 1 : -1; b.sdirAt = now + 1200 + Math.random() * 1200; } b.x += (-dy / d) * st.spd * .45 * dt * b.sdir; b.y += (dx / d) * st.spd * .45 * dt * b.sdir; }
       botClamp(b);
-      if (d < 135 && now > b.cdAt) {
-        if (st.spOk && b.gauge >= 100) { b.gauge = 0; b.sp = now + 750; b.cdAt = now + 1500; var rg = document.createElement('i'); rg.className = 'spfx warn'; rg.style.left = b.x + 'px'; rg.style.top = (b.y - 20) + 'px'; rg.style.width = rg.style.height = '450px'; $('world').appendChild(rg); setTimeout(function () { rg.remove(); }, 600); floatTxt(b.x, b.y - 90, '✨ 円月斬！', 'y'); }
-        else { b.wind = now + st.wind; b.cdAt = now + st.cd; b.el.classList.add('lunge'); }
+      if (d < W.init && now > b.cdAt) {
+        if (st.spOk && !W.rg && b.gauge >= 100) { b.gauge = 0; b.sp = now + 750; b.cdAt = now + 1500; var rg = document.createElement('i'); rg.className = 'spfx warn'; rg.style.left = b.x + 'px'; rg.style.top = (b.y - 20) + 'px'; rg.style.width = rg.style.height = (spR * 2) + 'px'; $('world').appendChild(rg); setTimeout(function () { rg.remove(); }, 600); floatTxt(b.x, b.y - 90, '✨ 円月斬！', 'y'); }
+        else { b.wind = now + st.wind * W.wind; b.cdAt = now + st.cd * W.cd; b.el.classList.add('lunge'); if (W.rg) botShoot(b, b.wk); }
       }
     }
     placeEl(b.el, b.x, b.y);
+  }
+  function botShoot(b, kind) {
+    var e = document.createElement('i'); e.className = 'prj ' + kind; var x0 = b.x, y0 = b.y - 46, x1 = hero.x, y1 = hero.y - 28;
+    e.style.left = x0 + 'px'; e.style.top = y0 + 'px'; e.style.transform = 'rotate(' + Math.atan2(y1 - y0, x1 - x0) + 'rad)'; $('world').appendChild(e); void e.offsetWidth;
+    e.style.left = x1 + 'px'; e.style.top = y1 + 'px'; setTimeout(function () { e.remove(); }, 260);
   }
   function botHurt(dm) {
     var b = bot; if (!b || b.dn) return; var st = b.st, now = performance.now();
@@ -3054,7 +3082,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var guard = false, atkAt = 0;
   function defP() { var s = eqItem('shield'), h = isGM() ? GMI.helm : null; return Math.min(.85, (s ? s.def : 0) + (h ? h.def : 0) + (guard ? .4 : 0)); }
   function atkReady() { var w = curW(), n = performance.now(); if (n < atkAt) return false; atkAt = n + (w && w.cd ? w.cd : 0); return true; }
-  function atkRange() { var w = curW(); return w && w.rng ? w.rng : 150; }
+  function atkRange() { var w = curW(); return w ? (w.rng || w.mr || 150) : 150; }
   function mlv() { return (curMine && MBY[curMine]) ? MBY[curMine].lv : 1; }
   function diffN() { var m = mlv(); return m <= 10 ? Math.max(0, (m - 1) / 90) : Math.min(1, .35 + (m - 11) / 50 * .65); }
   function foeCap() { return 5 + Math.round(Math.pow(diffN(), 1.15) * 31) + (mlv() >= 11 ? 4 : 0); }
@@ -3174,8 +3202,18 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     floatTxt(hero.x, hero.y - 74, '-' + dmg); sfx(1); vib([30, 20, 30]);
     var hb = $('hb'); if (hb) { hb.classList.remove('lunge', 'hurt'); void hb.offsetWidth; hb.classList.add('hurt'); }
     hpUi(); rtHp();
-    if (hp.cur <= 0) goDown();
+    if (hp.cur <= 0) goDown(); else if (curSpot) knockFromDig();
     return true;
+  }
+  var kb = null;
+  function knockFromDig() {
+    var sp = curSpot; if (!sp) return; var ex = sp.x, ey = sp.y, bd = 1e9;
+    foes.forEach(function (f) { if (f.mode === 'dead') return; var d = Math.hypot(hero.x - f.x, hero.y - f.y); if (d < bd) { bd = d; ex = f.x; ey = f.y; } });
+    if (bd > 320) { ex = sp.x; ey = sp.y; }
+    var dx = hero.x - ex, dy = hero.y - ey, L = Math.hypot(dx, dy); if (L < 1) { dx = 1; dy = 0; L = 1; }
+    sp.tp = taps; cancelDig(); guard = false;
+    kb = { x0: hero.x, y0: hero.y, x1: clamp(hero.x + dx / L * 150, 30, WW - 30), y1: clamp(hero.y + dy / L * 150, 200, WH - 40), t0: performance.now() }; ftarget = null;
+    floatTxt(hero.x, hero.y - 96, '💥 掘るのが中断！', 'y'); toast('攻撃を受けて、弾き飛ばされた！ 敵を倒してから、また掘ろな（進み具合は残るで）');
   }
   function goDown() {
     hp.down = true; guard = false; skG = 0; gearUi(); removeMon(); if (curSpot) cancelDig(); ftarget = null; var hh = $('hero2'); if (hh) hh.classList.remove('walk');
@@ -3212,6 +3250,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('dnGo').addEventListener('click', function () { respawnHospital(); });
 
   function weaponSVG(k) {
+    if (k === 'dagger') return '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M42 62L70 34" stroke="#dfe7ee" stroke-width="8" stroke-linecap="round"/><path d="M42 62L70 34" stroke="#aebbc6" stroke-width="2.6" stroke-linecap="round"/><path d="M33 58L47 72" stroke="#c9a23a" stroke-width="7" stroke-linecap="round"/><path d="M37 70L25 84" stroke="#6b3a2a" stroke-width="7" stroke-linecap="round"/></svg>';
     if (k === 'bow') return '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M30 8Q96 50 30 92" fill="none" stroke="#8a5a2b" stroke-width="7" stroke-linecap="round"/><path d="M30 8L30 92" stroke="#f3ead2" stroke-width="2"/><path d="M30 50H84" stroke="#c9a36a" stroke-width="3"/><path d="M84 50l-9-5v10z" fill="#9aa7b0"/></svg>';
     if (k === 'gun') return '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M14 58L26 44H40V54H22L24 70H10Z" fill="#6b4a2c"/><rect x="34" y="42" width="60" height="12" rx="3" fill="#3b3d4a"/><rect x="86" y="40" width="8" height="16" rx="2" fill="#23252e"/><path d="M42 54V64H50V54" fill="#2f313c"/></svg>';
     return '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M30 74L84 20" stroke="#dfe7ee" stroke-width="9" stroke-linecap="round"/><path d="M30 74L84 20" stroke="#aebbc6" stroke-width="3" stroke-linecap="round"/><path d="M20 66L40 86" stroke="#c9a23a" stroke-width="8" stroke-linecap="round"/><path d="M26 80L14 92" stroke="#6b3a2a" stroke-width="8" stroke-linecap="round"/></svg>';
@@ -3225,7 +3264,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('gmTog').addEventListener('click', function () { gmOn = !gmOn; LSset('opa_gm_off', gmOn ? '0' : '1'); applyGmMode(); });
   $('gmTog').addEventListener('pointerdown', function (e) { e.stopPropagation(); });
   function gearUi() {
-    var g = $('guardBtn'); if (!g) return; var has = !!eqItem('shield');
+    lookSync(); var g = $('guardBtn'); if (!g) return; var has = !!eqItem('shield');
     g.style.display = (has && fieldOn) ? 'block' : 'none'; g.classList.toggle('on', guard); g.textContent = guard ? '🛡 ガード中' : '🛡 ガード';
     var hh = $('hero2'); if (hh) hh.classList.toggle('guard', guard);
     var sw = $('swBtn'); if (sw) { sw.style.display = (fieldOn && !inTown && eqItem('weapon')) ? 'block' : 'none'; sw.textContent = handW() ? '🔁 つるはし' : '🔁 武器'; }
@@ -3397,7 +3436,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function openProfile(pr) {
     var ids = String(pr.eq || '').split(','), eqh = '';
     EQSL.forEach(function (sl, i) { if (sl === 'helm' && !pr.gm) return; var q = ids[i] ? (IBY[ids[i]] || GMBY[ids[i]]) : null; eqh += '<div><span>' + EQN[sl] + '</span><br><b>' + (q ? q.ic + ' ' + q.nm : (pr.eq == null ? '？' : '— なし —')) + '</b></div>'; });
-    var box = $('pfc'); box.innerHTML = '<div class="pfav"><div class="hb2">' + charHTML(pr.av) + '</div></div><h3></h3><span class="lvc">Lv ' + (pr.lv != null ? pr.lv : '？') + '</span>' + (pr.gm ? ' <span class="lvc">👑 ゲームマスター</span>' : '') + '<div class="eqg">' + eqh + '</div><div><button type="button" id="pfX">とじる</button>' + (pr.gm && !isGM() && !inPlaza ? '<button type="button" class="atk" id="pfA">⚔ こうげきしてみる</button>' : '') + (inPlaza ? '<button type="button" class="atk" id="pfD">⚔ 戦いを挑む</button>' : '') + '</div>';
+    var box = $('pfc'); box.innerHTML = '<div class="pfav"><div class="hb2">' + charHTML(dress(pr.av, peerItem(pr))) + '</div></div><h3></h3><span class="lvc">Lv ' + (pr.lv != null ? pr.lv : '？') + '</span>' + (pr.gm ? ' <span class="lvc">👑 ゲームマスター</span>' : '') + '<div class="eqg">' + eqh + '</div><div><button type="button" id="pfX">とじる</button>' + (pr.gm && !isGM() && !inPlaza ? '<button type="button" class="atk" id="pfA">⚔ こうげきしてみる</button>' : '') + (inPlaza ? '<button type="button" class="atk" id="pfD">⚔ 戦いを挑む</button>' : '') + '</div>';
     box.querySelector('h3').textContent = pr.n || 'だれか';
     $('pf').classList.add('on');
     $('pfX').onclick = function () { $('pf').classList.remove('on'); };
@@ -3476,9 +3515,20 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var pa = normAv(av), hx0 = pa.gender === 0 ? 53.0 : 50.5, hx = ((((hx0 - 7.6) / 62.7 * 120) - 60) / .96 + 60) / 120 * 64;
     return avatarSVG(av, FLDT) + '<div class="fpk"' + (pid ? ' id="' + pid + '"' : '') + ' style="left:' + (hx - 16.2).toFixed(1) + 'px;top:31px">' + pickHTML(SKIN[pa.skin]) + '</div>';
   }
-  function heroHTML() { return charHTML(player.avatar, 'fpick'); }
+  function heroHTML() { return charHTML(dress(player.avatar, eqItem('outfit')), 'fpick'); }
+  function lookSync() {
+    if (!player || !player.avatar) return; var o = eqItem('outfit'), k = (o ? o.id : '') + '|' + player.avatar.gender; if (k === window.__lkk) return; window.__lkk = k;
+    if ($('hb')) { $('hb').innerHTML = heroHTML(); applyAura(); }
+  }
+  function peerItem(pr) { return pr.gm ? GMI.outfit : (IBY[String(pr.eq || '').split(',')[3]] || null); }
+  function ghLook(pr) {
+    if (!pr.hb || !pr.av) return; var q = String(pr.eq || '').split(','), key = (pr.gm ? 'gm' : q[3] || '') + '|' + (q[0] || '');
+    if (pr.lkk === key) return; pr.lkk = key; pr.hb.innerHTML = charHTML(dress(pr.av, peerItem(pr)));
+    pr.pk = pr.hb.querySelector('.fpk'); var wi = pr.gm ? GMI.weapon : IBY[q[0]]; if (pr.pk) pr.pk.innerHTML = weaponSVG(wi ? wi.kind : 'dagger');
+  }
   function updHero() {
-    var h = $('hero2'); if (!h) return; placeEl(h, hero.x, hero.y); var ln = $('lant'); if (ln) { ln.style.left = (hero.x - 1000) + 'px'; ln.style.top = (hero.y - 1060) + 'px'; }
+    var h = $('hero2'); if (!h) return; placeEl(h, hero.x, hero.y);
+    var gn = h.querySelector('.gname'); if (!gn) { gn = document.createElement('div'); gn.className = 'gname'; h.appendChild(gn); } var nm0 = (player && player.avatar && player.avatar.name) || ''; if (gn.textContent !== nm0) gn.textContent = nm0; var ln = $('lant'); if (ln) { ln.style.left = (hero.x - 1000) + 'px'; ln.style.top = (hero.y - 1060) + 'px'; }
     $('hb').style.transform = hero.dir < 0 ? 'scaleX(-1)' : '';
   }
   function fieldHud() {
@@ -3500,6 +3550,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var bl = inArena ? '🏳 あきらめる' : ((inPlaza || inCafe) ? '🚪 町へ' : (inTown ? '🚪 マップへ' : '🚪 鉱山を出る')); if (bl !== window.__bl) { window.__bl = bl; var bb = $('fBack'); bb.className = 'ib wide'; bb.textContent = bl; }
     var dt = Math.min(.05, (t - flast) / 1000); flast = t;
     var hh = $('hero2'), moved = false;
+    if (kb) { var kt = Math.min(1, (t - kb.t0) / 200); hero.x = kb.x0 + (kb.x1 - kb.x0) * kt; hero.y = kb.y0 + (kb.y1 - kb.y0) * kt; updHero(); ftarget = null; moved = true; if (kt >= 1) kb = null; }
     if (ftarget) {
       if (hero.sit != null) standUp(); var dx = ftarget.x - hero.x, dy = ftarget.y - hero.y, d = Math.hypot(dx, dy), step = SPEED * dt;
       if (d <= step) { hero.x = ftarget.x; hero.y = ftarget.y; var sp = ftarget.spot, dk = ftarget.door, rv = ftarget.rev; ftarget = null; if (hh) hh.classList.remove('walk'); updHero(); if (sp && !sp.used) { startDig(sp); } else if (dk) openDoor(dk); else if (rv) doRevive(rv); }
@@ -3547,7 +3598,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!on) { $('hint').textContent = ''; }
   }
   function startDig(sp) {
-    removeMon(); monWaves = 0; monTried = false; curSpot = sp; spotKind = sp.kind; TAPS = Math.max(3, Math.round(SPOTTAPS[sp.kind] * (1 - toolCut()) / (MULT[Math.min(partyN, 5) - 1] || 1))); taps = 0; busy = false;
+    removeMon(); monWaves = 0; monTried = false; curSpot = sp; spotKind = sp.kind; TAPS = Math.max(3, Math.round(SPOTTAPS[sp.kind] * (1 - toolCut()) / (MULT[Math.min(partyN, 5) - 1] || 1))); taps = Math.min(sp.tp || 0, TAPS - 1); busy = false;
     hero.dir = 1; updHero(); $('dig').disabled = false; $('dig').innerHTML = '⛏️ 掘る！';
     sp.el.classList.add('dg'); var pr = document.createElement('div'); pr.className = 'dprog'; pr.innerHTML = '<i></i>'; sp.el.appendChild(pr);
     setProg(); digUI(true); BGM.set('dig'); if (shared && sp.i != null) rtSend({ t: 'claim', i: sp.i, g: sp.g });
