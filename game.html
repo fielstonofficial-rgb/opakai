@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:45-->
+<!--GV:46-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -361,6 +361,17 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #gld input{flex:1;min-width:0;border:0;border-radius:10px;padding:10px 12px;font-size:16px}
 .gbtn{border:0;border-radius:12px;padding:10px 14px;font-weight:800;background:#ffd36a;color:#3a2a08}
 .gbtn.dim{background:#3a4458;color:#cfd6e4;width:100%;margin-top:12px}.gbtn:disabled{opacity:.5}
+#trBar{position:absolute;left:10px;right:10px;top:calc(76px + env(safe-area-inset-top));z-index:61;display:none;padding:12px 14px;border-radius:16px;border:1px solid var(--gold);background:rgba(16,34,43,.97);box-shadow:0 8px 24px rgba(0,0,0,.5);font-size:14px}
+#trBar.on{display:block}
+#trBar .rw{display:flex;gap:8px;margin-top:10px}
+#trBar button{flex:1;padding:10px;border-radius:12px;border:1px solid var(--gold);background:rgba(232,196,106,.16);font-size:14px;font-weight:700}
+#pf button.trd{border-color:var(--gold);background:rgba(232,196,106,.16);color:var(--gold)}
+#trd .trsum{margin:12px 0;padding:10px 12px;border-radius:12px;background:rgba(232,196,106,.1);border:1px solid var(--gold);font-size:13px;line-height:1.6}
+#trd .trst{font-size:13px;margin:8px 0;display:flex;justify-content:space-between;gap:8px}
+#trd .trc{display:flex;align-items:center;justify-content:space-between;gap:8px;margin:8px 0;font-size:14px}
+#trd .trc input{width:150px;padding:9px;border-radius:10px;border:1px solid var(--line);background:#0c1519;color:#fff;font-size:16px;text-align:right}
+#trd .trbtn{width:100%;margin-top:8px}
+#trd .tre{padding:10px;border:1px dashed var(--line);border-radius:12px;font-size:12px;color:var(--mut);margin-bottom:8px}
 
 #arn{position:fixed;inset:0;z-index:305;background:linear-gradient(180deg,#2a1420,#1b1226 60%,#120c1a);color:#fff;display:none;flex-direction:column;padding:12px 14px calc(14px + env(safe-area-inset-bottom));overflow:auto}
 #arn.on{display:flex}
@@ -577,7 +588,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v45（HPゲージ・マスターを黄金装備に）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v46（プレイヤー同士のトレード）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所です（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -636,6 +647,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <div class="tabs" id="mxTabs"><button type="button" data-t="0" class="on">🔎 買う</button><button type="button" data-t="1">➕ 出す</button><button type="button" data-t="2">📋 出品中</button></div>
       <div class="body" id="mxBody"></div>
     </div>
+    <div class="sheet" id="trd">
+      <div class="bar"><span style="width:42px"></span><h1 id="trTtl">トレード</h1><button class="ib" id="trX" type="button" aria-label="やめる">✕</button></div>
+      <div class="coinbar" id="trCoin"></div>
+      <div class="body" id="trBody"></div>
+    </div>
+    <div id="trBar"></div>
     <div class="sheet" id="set">
       <div class="bar"><span style="width:42px"></span><h1>せってい</h1><button class="ib" data-close="set" type="button" aria-label="とじる">✕</button></div>
       <div class="body">
@@ -2524,7 +2541,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 45;
+  var GV = 46;
   (function () {
     var last = Date.now();
     function chk() {
@@ -2723,7 +2740,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
   /* 招待の受け取り（ゲームを開いている間、15秒ごとに確認） */
   function startInvPoll() {
-    if (invStarted) return; invStarted = true;
+    if (invStarted) return; invStarted = true; trGlobalStart();
     if (!myMid) api({ action: 'game_load' }).then(function (j) { myMid = j.me || ''; myMidG = myMid; });
     setInterval(function () {
       if (document.hidden || room) return;
@@ -2740,6 +2757,157 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var a = e.target.closest('[data-ia]'), d = e.target.closest('[data-id]'); if (!a && !d) return; this.classList.remove('on');
     if (a) api({ action: 'room_accept', invite: a.dataset.ia }).then(function (j) { if (j.room) openLobby(j.room); else toast(j.message || '入れませんでした'); });
     else api({ action: 'room_decline', invite: d.dataset.id });
+  });
+
+
+  /* ---------- プレイヤー同士のトレード（お互いの承認で成立。ゲームマネーを0にすると、無料のプレゼント） ---------- */
+  var trade = null, trDraft = { items: [], tickets: [], coins: 0 }, trDirty = false, trPick = false, trBusy = false, trSig = '', trTimer = 0, trGl = 0;
+  function uuidish(s) { return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(s || '')); }
+  function trMineDraft() { return { items: trade.mine.items.slice(), tickets: trade.mine.tickets.map(function (x) { return x.id; }), coins: trade.mine.coins }; }
+  function trSameDraft() { var m = trMineDraft(); return m.coins === trDraft.coins && m.items.slice().sort().join() === trDraft.items.slice().sort().join() && m.tickets.slice().sort().join() === trDraft.tickets.slice().sort().join(); }
+  function trOffJ(o) { return JSON.stringify([o.items, o.tickets.map(function (x) { return x.id; }), o.coins]); }
+  function trSet(t) {
+    var prev = trade; trade = t; if (!t) return;
+    if (!prev || prev.id !== t.id) { trDraft = trMineDraft(); trDirty = false; trPick = false; }
+    else {
+      if (prev.status === 'open' && trOffJ(prev.theirs) !== trOffJ(t.theirs)) toast(t.other.name + ' さんが内容を変えました。承認はやり直しです');
+      if (!trDirty) trDraft = trMineDraft();
+    }
+  }
+  function trCoinUi() { $('trCoin').innerHTML = '<span>🪙 あなたのゲームマネー</span><b>' + (((player || {}).coins) || 0).toLocaleString() + '</b>'; }
+  function trShow() { $('trd').classList.add('on'); trSig = ''; trCoinUi(); trRender(); clearInterval(trTimer); trTimer = setInterval(trPoll, 2500); }
+  function trClose() { clearInterval(trTimer); trTimer = 0; trade = null; trDirty = false; trPick = false; $('trd').classList.remove('on'); }
+  function trStart(pr) {
+    if (trBusy) return; trBusy = true;
+    api({ action: 'trade_start', to: pr.id }).then(function (j) {
+      trBusy = false;
+      if (j.trade) { trade = null; trSet(j.trade); trShow(); } else toast(j.message || 'トレードを申し込めませんでした');
+    }).catch(function () { trBusy = false; toast('つながりませんでした'); });
+  }
+  function trItemCard(id, btn) { var inf = mkInfo({ kind: 'item', item: id }), eq = ((player || {}).equip) || {}, on = false; for (var k in eq) if (eq[k] === id) on = true; return mkCard(inf, btn || '', on ? '（いまつけてる）' : ''); }
+  function trTkCard(tk, btn) { return mkCard(mkInfo({ kind: 'ticket', tk: tk.kind }), btn || '', tk.code ? '番号 ' + esc(tk.code) : ''); }
+  function trDesc(o) {
+    var a = [];
+    o.items.forEach(function (id) { var i = IBY[id]; a.push(i ? i.nm : id); });
+    o.tickets.forEach(function (x) { var k = TKN[x.kind] || TKN.r; a.push(k.nm); });
+    if (o.coins > 0) a.push('🪙 ' + o.coins.toLocaleString());
+    return a.length ? a.join('、') : 'なし';
+  }
+  function trEmpty(o) { return !o.items.length && !o.tickets.length && !(o.coins > 0); }
+  function trRender() {
+    var t = trade, body = $('trBody'); if (!t) return; var nm = esc(t.other.name), h = '';
+    trCoinUi(); trSig = JSON.stringify([t, trPick, trDirty, trDraft]);
+    if (t.status === 'pending') { body.innerHTML = '<p class="tiny">' + nm + ' さんに申し込みました。返事を待っています…</p><button class="gbtn dim" id="trCancel" type="button">申し込みをやめる</button>'; return; }
+    if (trPick) {
+      var have = ((player || {}).items) || [];
+      h += '<p class="tiny">出したいものを選んでください（装備・アイテムとチケットは、合わせて10個まで）。</p><div class="sec">装備・アイテム</div>';
+      var n = 0; ITEMS.forEach(function (i) { if (have.indexOf(i.id) < 0) return; n++; var on = trDraft.items.indexOf(i.id) >= 0; h += trItemCard(i.id, '<button type="button" class="' + (on ? 'eq' : '') + '" data-tg="i:' + i.id + '">' + (on ? '選んでる' : '選ぶ') + '</button>'); });
+      if (!n) h += '<p class="tiny">出せる装備・アイテムはありません。</p>';
+      h += '<div class="sec">チケット</div>';
+      var tl = (tickets || []).filter(function (x) { return x.status === 'have'; });
+      if (!tl.length) h += '<p class="tiny">出せるチケットはありません。</p>';
+      tl.forEach(function (x) { var on = trDraft.tickets.indexOf(x.id) >= 0; h += trTkCard(x, '<button type="button" class="' + (on ? 'eq' : '') + '" data-tg="t:' + x.id + '">' + (on ? '選んでる' : '選ぶ') + '</button>'); });
+      h += '<button class="gbtn trbtn" id="trBack" type="button">選び終わった</button>';
+      body.innerHTML = h; return;
+    }
+    h += '<p class="tiny">お互いが「承認」を押すと、トレードが成立します。内容を変えると、承認はやり直しになります。ゲームマネーを 0 にすると、無料のプレゼントになります。</p>';
+    h += '<div class="sec">あなたが出すもの</div>';
+    var any = false;
+    trDraft.items.forEach(function (id) { any = true; h += trItemCard(id, '<button type="button" data-rm="i:' + id + '">はずす</button>'); });
+    trDraft.tickets.forEach(function (id) { var x = (tickets || []).filter(function (q) { return q.id === id; })[0]; if (!x) return; any = true; h += trTkCard(x, '<button type="button" data-rm="t:' + id + '">はずす</button>'); });
+    if (!any) h += '<div class="tre">装備・アイテム・チケットは、まだ出していません</div>';
+    h += '<button class="gbtn dim" id="trAdd" type="button" style="margin-top:0">＋ 装備・アイテム・チケットを選ぶ</button>';
+    h += '<div class="trc"><span>ゲームマネー 🪙</span><input id="trCoinIn" type="number" inputmode="numeric" min="0" value="' + (trDraft.coins || 0) + '"></div>';
+    h += '<button class="gbtn trbtn" id="trSend" type="button"' + (trDirty ? '' : ' style="display:none"') + '>この内容にする</button>';
+    h += '<div class="sec">' + nm + ' さんが出すもの</div>';
+    var oa = false;
+    t.theirs.items.forEach(function (id) { oa = true; h += trItemCard(id, ''); });
+    t.theirs.tickets.forEach(function (x) { oa = true; h += trTkCard(x, ''); });
+    if (t.theirs.coins > 0) { oa = true; h += '<div class="trc"><span>ゲームマネー</span><b>🪙 ' + t.theirs.coins.toLocaleString() + '</b></div>'; }
+    if (!oa) h += '<div class="tre">まだ何も出していません</div>';
+    var sum = '渡すもの：' + esc(trDesc(t.mine)) + '<br>もらうもの：' + esc(trDesc(t.theirs));
+    if (trEmpty(t.theirs) && !trEmpty(t.mine)) sum += '<br>🎁 無料のプレゼント（あなたから ' + nm + ' さんへ）';
+    else if (trEmpty(t.mine) && !trEmpty(t.theirs)) sum += '<br>🎁 無料でもらえます（' + nm + ' さんから）';
+    h += '<div class="trsum">' + sum + '</div>';
+    h += '<div class="trst"><span>あなた：' + (t.mine.ok ? '承認ずみ ✅' : '未承認') + '</span><span>' + nm + ' さん：' + (t.theirs.ok ? '承認ずみ ✅' : '未承認') + '</span></div>';
+    h += '<button class="gbtn trbtn" id="trOk" type="button">' + (t.mine.ok ? '承認を取り消す' : '承認する') + '</button>';
+    h += '<button class="gbtn dim" id="trCancel" type="button">トレードをやめる</button>';
+    body.innerHTML = h; trBtnUi();
+  }
+  function trBtnUi() {
+    var ok = $('trOk'), sd = $('trSend'); if (!trade || !ok) return;
+    if (sd) sd.style.display = trDirty ? '' : 'none';
+    ok.disabled = trDirty || (!trade.mine.ok && trEmpty(trade.mine) && trEmpty(trade.theirs));
+    ok.textContent = trDirty ? '先に「この内容にする」を押してください' : (trade.mine.ok ? '承認を取り消す' : '承認する');
+  }
+  function trEnded(msg) {
+    api({ action: 'game_load' }).then(function (j) { if (j && j.player) { player = j.player; tickets = j.tickets || []; applyAura(); gearUi(); hpUi(); } });
+    trClose(); toast(msg);
+  }
+  function trDone(j) { if (j.player) { player = j.player; applyAura(); gearUi(); hpUi(); } if (j.tickets) tickets = j.tickets; trClose(); sfx(1); toast('トレード成立！もちものを見てみてください'); }
+  function trPoll() {
+    if (!trade || trBusy) return;
+    api({ action: 'trade_get', id: trade.id }).then(function (j) {
+      if (!trade) return;
+      if (!j.trade) { trEnded('トレードは終わりました'); return; }
+      if (j.trade.status === 'done') { trEnded('トレード成立！もちものを見てみてください'); sfx(1); return; }
+      if (j.trade.status === 'cancelled') { trEnded('トレードは中止されました'); return; }
+      trSet(j.trade); if (JSON.stringify([trade, trPick, trDirty, trDraft]) !== trSig && document.activeElement !== $('trCoinIn')) trRender(); else trCoinUi();
+    });
+  }
+  $('trBody').addEventListener('input', function (e) {
+    if (e.target.id !== 'trCoinIn') return;
+    var v = Math.floor(+e.target.value); trDraft.coins = (v > 0 ? Math.min(v, 999999999) : 0); trDirty = !trSameDraft(); trBtnUi();
+  });
+  $('trBody').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b || !trade) return;
+    if (b.dataset.tg || b.dataset.rm) {
+      var pr = (b.dataset.tg || b.dataset.rm).split(':'), arr = pr[0] === 'i' ? trDraft.items : trDraft.tickets, ix = arr.indexOf(pr[1]);
+      if (ix >= 0) arr.splice(ix, 1); else if (b.dataset.tg) { if (trDraft.items.length + trDraft.tickets.length >= 10) { toast('出せるのは10個までです'); return; } arr.push(pr[1]); }
+      trDirty = !trSameDraft(); trRender(); return;
+    }
+    if (b.id === 'trAdd') { trPick = true; trRender(); return; }
+    if (b.id === 'trBack') { trPick = false; trRender(); return; }
+    if (b.id === 'trCancel') { api({ action: 'trade_cancel', id: trade.id }); trClose(); toast('トレードをやめました'); return; }
+    if (b.disabled || trBusy) return;
+    if (b.id === 'trSend') {
+      trBusy = true;
+      api({ action: 'trade_offer', id: trade.id, items: trDraft.items, tickets: trDraft.tickets, coins: trDraft.coins }).then(function (j) {
+        trBusy = false;
+        if (j.trade) { trDirty = false; var p0 = trade; trade = j.trade; trDraft = trMineDraft(); trRender(); toast('内容を送りました。相手の承認を待ちましょう'); }
+        else { toast(j.message || 'うまくいきませんでした'); if (j.error === 'gone') trEnded('トレードは終わりました'); }
+      }).catch(function () { trBusy = false; toast('つながりませんでした'); });
+    } else if (b.id === 'trOk') {
+      trBusy = true;
+      api({ action: 'trade_confirm', id: trade.id, rev: trade.rev, ok: !trade.mine.ok }).then(function (j) {
+        trBusy = false;
+        if (j.done) { trDone(j); return; }
+        if (j.trade) { trSet(j.trade); trRender(); }
+        else { toast(j.message || 'うまくいきませんでした'); if (j.error === 'gone') trEnded('トレードは終わりました'); else trPoll(); }
+      }).catch(function () { trBusy = false; toast('つながりませんでした'); });
+    }
+  });
+  $('trX').addEventListener('click', function () { if (trade) api({ action: 'trade_cancel', id: trade.id }); trClose(); toast('トレードをやめました'); });
+  /* 申し込みの受け取り（ゲームを開いている間、6秒ごとに確認） */
+  function trGlobalStart() {
+    if (trGl) return;
+    trGl = setInterval(function () {
+      if (document.hidden || $('trd').classList.contains('on')) return;
+      api({ action: 'trade_my' }).then(function (j) {
+        if ($('trd').classList.contains('on')) return;
+        var bar = $('trBar');
+        if (j.trade && j.trade.status === 'open') { bar.classList.remove('on'); trSet(j.trade); trShow(); return; }
+        var i = j.invites && j.invites[0];
+        if (!i) { bar.classList.remove('on'); return; }
+        bar.innerHTML = '<b>' + esc(i.from) + '</b> さんが、トレードを申し込んでいます。<div class="rw"><button type="button" data-ta="' + i.id + '">はじめる</button><button type="button" data-td="' + i.id + '">ことわる</button></div>';
+        bar.classList.add('on');
+      }).catch(function () {});
+    }, 6000);
+  }
+  $('trBar').addEventListener('click', function (e) {
+    var a = e.target.closest('[data-ta]'), d = e.target.closest('[data-td]'); if (!a && !d) return; this.classList.remove('on');
+    if (a) api({ action: 'trade_accept', id: a.dataset.ta }).then(function (j) { if (j.trade) { trade = null; trSet(j.trade); trShow(); } else toast(j.message || 'はじめられませんでした'); });
+    else api({ action: 'trade_cancel', id: d.dataset.td });
   });
 
   /* ---------- つなぎ・設定 ---------- */
@@ -3473,12 +3641,13 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function openProfile(pr) {
     var ids = String(pr.eq || '').split(','), eqh = '';
     EQSL.forEach(function (sl, i) { if (sl === 'helm' && !pr.gm) return; var q = ids[i] ? (IBY[ids[i]] || GMBY[ids[i]]) : null; eqh += '<div><span>' + EQN[sl] + '</span><br><b>' + (q ? q.ic + ' ' + q.nm : (pr.eq == null ? '？' : '— なし —')) + '</b></div>'; });
-    var box = $('pfc'); box.innerHTML = '<div class="pfav"><div class="hb2">' + charHTML(dress(pr.av, peerItem(pr))) + '</div></div><h3></h3><span class="lvc">Lv ' + (pr.lv != null ? pr.lv : '？') + '</span>' + (pr.gm ? ' <span class="lvc">👑 ゲームマスター</span>' : '') + '<div class="eqg">' + eqh + '</div><div><button type="button" id="pfX">とじる</button>' + (pr.gm && !isGM() && !inPlaza ? '<button type="button" class="atk" id="pfA">⚔ こうげきしてみる</button>' : '') + (inPlaza ? '<button type="button" class="atk" id="pfD">⚔ 戦いを挑む</button>' : '') + '</div>';
+    var box = $('pfc'); box.innerHTML = '<div class="pfav"><div class="hb2">' + charHTML(dress(pr.av, peerItem(pr))) + '</div></div><h3></h3><span class="lvc">Lv ' + (pr.lv != null ? pr.lv : '？') + '</span>' + (pr.gm ? ' <span class="lvc">👑 ゲームマスター</span>' : '') + '<div class="eqg">' + eqh + '</div><div><button type="button" id="pfX">とじる</button>' + (pr.gm && !isGM() && !inPlaza ? '<button type="button" class="atk" id="pfA">⚔ こうげきしてみる</button>' : '') + (inPlaza ? '<button type="button" class="atk" id="pfD">⚔ 戦いを挑む</button>' : '') + (uuidish(pr.id) && pr.id !== myMid && !pr.bot ? '<button type="button" class="trd" id="pfT">🤝 トレード</button>' : '') + '</div>';
     box.querySelector('h3').textContent = pr.n || 'だれか';
     $('pf').classList.add('on');
     $('pfX').onclick = function () { $('pf').classList.remove('on'); };
     if ($('pfD')) $('pfD').onclick = function () { $('pf').classList.remove('on'); arChallenge(pr); };
     if ($('pfA')) $('pfA').onclick = function () { $('pf').classList.remove('on'); hitGmPeer(pr); };
+    if ($('pfT')) $('pfT').onclick = function () { $('pf').classList.remove('on'); trStart(pr); };
   }
   $('pf').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('on'); });
   function hitGmAt(wx, wy) { var g = peerAt(wx, wy); return !!(g && g.gm && hitGmPeer(g)); }
