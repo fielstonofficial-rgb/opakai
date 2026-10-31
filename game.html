@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:51-->
+<!--GV:52-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -464,6 +464,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 .gh.sit .hb,#hero2.sit .hb{clip-path:inset(-80px -80px 16% -80px)}
 .gh.sit.walk .hb{animation:none}
 .fhud:empty{display:none}
+.hcup{position:absolute;left:36px;top:8px;font-size:20px;line-height:1;z-index:7;pointer-events:none;filter:drop-shadow(0 1px 1px rgba(0,0,0,.45))}
 .tcup{position:absolute;font-size:22px;line-height:1;transform:translate(-50%,-82%);pointer-events:none;filter:drop-shadow(0 2px 1px rgba(0,0,0,.35))}
 .cup{position:absolute;left:20px;top:22px;font-size:20px;line-height:1;pointer-events:none;z-index:6;filter:drop-shadow(0 1px 1px rgba(0,0,0,.45));animation:sip 3.2s ease-in-out infinite}
 @keyframes sip{0%,52%,100%{transform:none}64%,82%{transform:translate(-5px,-14px) rotate(-24deg)}}
@@ -640,7 +641,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v51（採掘は武器をしまってから・銃の値段とドロップ・低Lvの難易度・ギルド・町⇄鉱山ボタン）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v52（カフェの配膳・店に剣／刀／斧／槍／ハンマーを追加・遠距離武器を値上げ・武器の特性）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所です（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -1408,7 +1409,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var m = $('mon'); if (!m || !monster) return;
     if (!canAttack()) return;
     var wq = curW(); if (wq && wq.rng) shootFx(monster.x, monster.y, wq.kind);
-    var dm = atkP(); monster.hp -= dm; sfx('hit'); vib(20); floatTxt(monster.x, monster.y - 80, isGM() ? '一撃！' : '-' + dm, 'y'); var mv = $('monV'); if (mv) mv.textContent = Math.max(0, monster.hp) + '/' + monster.max;
+    var trm = trHit(monster, atkP()), dm = trm.dm; trDone(trm, monster); monster.hp -= dm; sfx('hit'); vib(20); floatTxt(monster.x, monster.y - 80, isGM() ? '一撃！' : '-' + dm, 'y'); var mv = $('monV'); if (mv) mv.textContent = Math.max(0, monster.hp) + '/' + monster.max;
     m.classList.remove('hit', 'atk'); void m.offsetWidth; m.classList.add('hit');
     swingAnim(); dustW(monster.x, monster.y - 30);
     $('monHp').style.width = Math.max(0, monster.hp / monster.max * 100) + '%';
@@ -1986,7 +1987,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var SLOTS = ['outfit', 'tool', 'weapon', 'shield', 'armor'], SLN = { outfit: '衣装', tool: '採掘道具', weapon: '武器', shield: '盾', armor: '防具' };
 
   /* ---------- レア度の整理：店で売るのは「ノーマル」だけ。レア＝ふつうの敵がまれに／超レア＝強い敵だけ／激レア＝ボスだけ ---------- */
-  var WRE = {"wx113":[10000,0],"g1":[10000,0],"wx115":[10600,0],"wx129":[10600,0],"wx127":[11600,0],"wx114":[11600,0],"wx117":[12100,0],"wx118":[12500,0],"wx119":[12500,0],"wx131":[12500,0],"wx116":[13800,0],"wx130":[13800,0],"wx135":[15600,0],"wx137":[15900,0],"wx120":[15900,0],"wx122":[15900,0],"wx133":[16600,0],"wx123":[16600,0],"wx132":[17200,0],"wx128":[17500,0],"wx121":[17800,0],"wx136":[18100,0],"wx125":[19200,0],"wx126":[19700,0],"g2":[20000,0],"wx124":[83200,2],"wx155":[21700,0],"wx134":[22100,0],"wx139":[25100,0],"g3":[83200,2],"b1":[3500,0],"wx087":[3500,0],"wx138":[83200,2],"wx141":[29200,0],"wx086":[4400,0],"b2":[4800,0],"wx085":[4800,0],"wx100":[4900,0],"wx156":[32000,0],"wx089":[5300,0],"wx091":[5300,0],"wx099":[5400,0],"wx157":[33700,0],"g4":[126800,3],"wx142":[33700,0],"wx143":[33700,0],"wx101":[6000,0],"wx140":[37300,0],"wx071":[7000,0],"wx072":[7000,0],"wx088":[7600,0],"wx090":[7600,0],"wx102":[8000,0],"wx104":[8000,0],"wx144":[39900,0],"wx145":[39900,0],"wx146":[39900,0],"wx147":[39900,0],"wx073":[8600,0],"wx103":[8700,1],"wx105":[8700,1],"wx092":[9100,1],"wx093":[9100,1],"wx075":[9400,1],"wx149":[43300,1],"wx058":[9800,1],"wx095":[9800,1],"wx076":[10400,1],"wx077":[10400,1],"wx108":[10400,1],"wx150":[45000,1],"wx158":[46500,1],"wx106":[11300,1],"wx094":[11600,1],"wx057":[11900,1],"wx059":[11900,1],"wx148":[48500,1],"wx151":[48500,1],"wx074":[12400,1],"wx061":[13200,1],"wx062":[13200,1],"wx109":[13300,1],"wx159":[50800,1],"b3":[14000,1],"wx096":[40000,2],"wx078":[14800,1],"wx079":[14800,1],"wx030":[14900,1],"wx107":[15600,1],"wx097":[15600,1],"wx060":[15900,1],"wx031":[16500,1],"wx098":[16800,1],"wx080":[17500,1],"wx161":[57500,1],"wx112":[18200,1],"wx063":[19000,1],"wx029":[20200,1],"wx154":[61800,1],"wx111":[21000,1],"wx081":[22200,1],"wx033":[22200,1],"wx066":[22500,1],"wx162":[64700,1],"b4":[40000,2],"wx067":[24400,1],"wx032":[24400,1],"wx002":[25700,1],"wx045":[25700,1],"wx083":[25800,1],"wx160":[68800,1],"wx064":[26500,2],"w1":[28500,2],"wx152":[83200,2],"wx084":[29900,2],"wx163":[74000,2],"wx065":[31000,2],"wx001":[32000,2],"wx003":[32000,2],"wx034":[32000,2],"wx035":[32000,2],"wx153":[126800,3],"wx110":[40000,2],"wx043":[35000,2],"wx044":[35000,2],"wx037":[35000,2],"wx038":[35000,2],"wx164":[78200,2],"wx007":[38000,2],"wx165":[82200,2],"wx017":[39000,2],"w2":[42000,2],"wx015":[44000,2],"wx039":[45000,2],"wx005":[46000,2],"wx006":[46000,2],"wx046":[46000,2],"wx047":[46000,2],"wx049":[46000,2],"b5":[100000,3],"wx004":[51000,2],"wx048":[51000,2],"wx070":[51000,2],"wx036":[52000,2],"wx016":[54000,2],"wx082":[54000,2],"wx068":[59000,2],"wx009":[60000,2],"wx053":[60000,2],"w3":[66000,2],"wx040":[66000,2],"wx018":[71000,2],"wx011":[71000,2],"wx069":[100000,3],"wx050":[77000,2],"wx020":[78000,2],"wx021":[78000,2],"wx166":[113800,2],"wx010":[84000,2],"wx051":[84000,3],"wx019":[85000,3],"wx008":[90000,3],"wx052":[90000,3],"wx023":[93000,3],"wx022":[119000,3],"wx041":[120000,3],"w4":[122000,3],"wx168":[140000,3],"wx024":[128000,3],"wx025":[128000,3],"wx042":[136000,3],"w6":[140000,3],"wx014":[150000,3],"wx054":[150000,3],"w5":[183000,3],"wx012":[183000,3],"wx028":[201000,3],"wx013":[208000,3],"wx055":[208000,3],"wx167":[185600,3],"wx027":[231000,3],"wx056":[235000,3],"w7":[265000,3],"wx026":[300000,3]}, SRE = {"sx01":0,"sx02":0,"sx03":0,"sx04":0,"sx05":1,"sx06":1,"sx07":1,"sx08":1,"sx09":2,"sx10":2,"sx11":2,"sx12":2,"sx13":3,"sx14":3,"sx15":3,"sx16":3,"ax01":0,"ax02":0,"ax03":0,"ax04":0,"ax05":1,"ax06":1,"ax07":1,"ax08":1,"ax09":2,"ax10":2,"ax11":2,"ax12":2,"ax13":3,"ax14":3,"ax15":3,"ax16":3,"s1":0,"s2":1,"s3":2,"s4":3,"a1":0,"a2":1,"a3":2,"a4":3};
+  var WRE = {"wx113":[12000,0],"g1":[13000,0],"wx115":[14400,0],"wx114":[16700,0],"wx117":[18600,0],"wx118":[20800,0],"wx119":[22400,0],"wx116":[25900,1],"wx120":[32000,1],"wx122":[35000,1],"wx123":[39000,1],"wx121":[45000,1],"wx125":[52000,2],"wx126":[58000,2],"g2":[63000,2],"wx124":[72000,2],"g3":[97000,3],"g4":[150000,3],"wx129":[15000,0],"wx127":[17300,0],"wx131":[20000,0],"wx130":[23100,0],"wx135":[27500,0],"wx137":[31000,1],"wx133":[34000,1],"wx132":[39000,1],"wx128":[43000,1],"wx136":[48000,1],"wx134":[62000,2],"wx139":[76000,2],"wx138":[91000,2],"wx140":[140000,3],"wx155":[30000,0],"wx156":[37000,0],"wx157":[41000,0],"wx158":[51000,0],"wx159":[58000,1],"wx161":[67000,1],"wx162":[77000,1],"wx160":[87000,1],"wx163":[98000,1],"wx164":[111000,2],"wx165":[124000,2],"wx166":[166000,2],"wx168":[211000,3],"wx167":[290000,3],"b1":[8000,0],"wx087":[8700,0],"wx086":[10200,0],"b2":[11500,0],"wx085":[12500,0],"wx089":[14100,0],"wx091":[15200,0],"wx088":[19500,0],"wx090":[21100,1],"wx092":[24800,1],"wx093":[26800,1],"wx095":[30000,1],"wx094":[36000,1],"b3":[43000,2],"wx096":[47000,2],"wx097":[53000,2],"wx098":[60000,2],"b4":[81000,3],"b5":[140000,3],"wx141":[18000,0],"wx142":[22500,0],"wx143":[24500,0],"wx144":[32000,0],"wx145":[35000,0],"wx146":[38000,1],"wx147":[42000,1],"wx149":[50000,1],"wx150":[57000,1],"wx148":[68000,1],"wx151":[74000,2],"wx154":[111000,2],"wx152":[151000,2],"wx153":[180000,3],"wx100":[10000,0],"wx099":[11600,0],"wx101":[13400,0],"wx102":[17300,0],"wx104":[19000,0],"wx103":[22000,1],"wx105":[24200,1],"wx108":[29500,1],"wx106":[34000,1],"wx109":[42000,1],"wx107":[51000,2],"wx112":[62000,2],"wx111":[76000,2],"wx110":[120000,3],"wx071":[700,0],"wx072":[850,0],"wx073":[1150,0],"wx075":[1500,0],"wx076":[1950,0],"wx077":[2300,1],"wx074":[3300,1],"wx078":[4600,1],"wx079":[5500,1],"wx080":[7700,1],"wx081":[20000,2],"wx083":[20000,2],"wx084":[23400,2],"wx082":[60000,3],"wx058":[1800,0],"wx057":[2450,0],"wx059":[2900,0],"wx061":[3600,0],"wx062":[4200,0],"wx060":[5800,1],"wx063":[8000,1],"wx066":[10900,1],"wx067":[13800,1],"wx064":[17500,1],"wx065":[24000,2],"wx070":[49000,2],"wx068":[67000,2],"wx069":[100000,3],"wx030":[1500,0],"wx031":[1950,0],"wx029":[2750,0],"wx033":[3500,0],"wx032":[4600,0],"wx034":[7000,1],"wx035":[8400,1],"wx037":[10900,1],"wx038":[13000,1],"wx039":[19800,1],"wx036":[27900,2],"wx040":[43000,2],"wx041":[107000,3],"wx042":[150000,3],"wx002":[900,0],"w1":[1150,0],"wx001":[1450,0],"wx003":[1650,0],"wx007":[2300,0],"w2":[2950,0],"wx005":[3700,0],"wx006":[4300,0],"wx004":[5400,1],"wx009":[7600,1],"w3":[9600,1],"wx011":[12200,1],"wx010":[17000,1],"wx008":[21500,1],"w4":[36000,2],"w6":[50000,2],"wx014":[64000,2],"w5":[98000,2],"wx012":[113000,2],"wx013":[157000,3],"w7":[265000,3],"wx045":[1500,0],"wx043":[2400,0],"wx044":[2900,0],"wx046":[4600,0],"wx047":[5600,0],"wx049":[6800,1],"wx048":[9100,1],"wx053":[13200,1],"wx050":[21000,1],"wx051":[27900,1],"wx052":[37000,2],"wx054":[85000,2],"wx055":[162000,3],"wx056":[235000,3],"wx017":[3000,0],"wx015":[3900,0],"wx016":[5600,0],"wx018":[8900,0],"wx020":[11600,0],"wx021":[13900,1],"wx019":[18100,1],"wx023":[23700,1],"wx022":[37000,1],"wx024":[49000,1],"wx025":[58000,2],"wx028":[121000,2],"wx027":[174000,2],"wx026":[300000,3]}, SRE = {"sx01":0,"sx02":0,"sx03":0,"sx04":0,"sx05":1,"sx06":1,"sx07":1,"sx08":1,"sx09":2,"sx10":2,"sx11":2,"sx12":2,"sx13":3,"sx14":3,"sx15":3,"sx16":3,"ax01":0,"ax02":0,"ax03":0,"ax04":0,"ax05":1,"ax06":1,"ax07":1,"ax08":1,"ax09":2,"ax10":2,"ax11":2,"ax12":2,"ax13":3,"ax14":3,"ax15":3,"ax16":3,"s1":0,"s2":1,"s3":2,"s4":3,"a1":0,"a2":1,"a3":2,"a4":3};
   var RFX = ['', ' ／ 店では売っていません（モンスターが、まれに落とす）', ' ／ 強い敵から、ごくまれに落ちる', ' ／ ボスだけが落とす'];
   ITEMS.forEach(function (i) {
     var r = i.slot === 'weapon' ? WRE[i.id] : (SRE[i.id] != null ? [i.price, SRE[i.id]] : null); if (!r) return;
@@ -2041,6 +2042,37 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   ITEMS.forEach(function (i) { if (i.slot === 'outfit') i.ic = gSVG(i); else if (i.slot === 'tool') i.ic = toolSVG(i); });
   ITEMS.forEach(function (i) { if (i.slot !== 'weapon') return; var d = SPD[i.sp || ('k_' + i.kind)]; if (i.kind === 'sword') i.fx += ' ／ 近距離ボーナス：ダメージ +15%'; if (d) i.fx += ' ／ 必殺技「' + d.nm + '」：' + d.ds; });
+
+
+  /* ---------- 武器の特性：武器ごとに1〜2個。距離・HP・連続ヒットなどで、戦い方が変わる ---------- */
+  var TRD = {
+    crit: { nm: '会心', b: .10, p: .035, ds: function (v) { return Math.round(v * 100) + '%の確率で、ダメージが2倍'; } },
+    exec: { nm: '追い討ち', b: .30, p: .09, ds: function (v) { return 'HP30%以下の敵に +' + Math.round(v * 100) + '%'; } },
+    opener: { nm: '先制', b: .35, p: .10, ds: function (v) { return 'HPがまんたんの敵への一撃が +' + Math.round(v * 100) + '%'; } },
+    combo: { nm: '連撃', b: .04, p: .012, ds: function (v) { return '1.8秒以内につづけて当てると、1回ごとに +' + Math.round(v * 100) + '%（最大5回ぶん）'; } },
+    snipe: { nm: '遠撃', b: .30, p: .10, ds: function (v) { return '近すぎると×0.9、最大射程だと +' + Math.round(v * 100) + '%。離れて撃つほど強い'; } },
+    close: { nm: '近撃', b: .40, p: .12, ds: function (v) { return '遠いと×0.85、ゼロ距離だと +' + Math.round(v * 100) + '%。近づいて撃つほど強い'; } },
+    drain: { nm: '吸収', b: .06, p: .02, ds: function (v) { return '与えたダメージの' + Math.round(v * 100) + '%ぶん、HPが回復（1回で最大HPの5%まで）'; } },
+    cleave: { nm: '薙ぎ払い', b: .45, p: .08, ds: function (v) { return '当てた敵のまわり（約1.7マス）の敵にも、' + Math.round(v * 100) + '%のダメージ'; } },
+    pierce: { nm: '貫通', b: .55, p: .08, ds: function (v) { return '当てた敵の後ろにならんだ敵にも、' + Math.round(v * 100) + '%のダメージ'; } }
+  };
+  var TRP = {
+    sword: ['crit', 'exec', 'drain', 'opener', 'combo'], katana: ['crit', 'combo', 'opener', 'exec'], axe: ['cleave', 'exec', 'crit'],
+    spear: ['pierce', 'opener', 'combo'], hammer: ['cleave', 'exec', 'crit'], dagger: ['combo', 'crit', 'drain', 'opener'],
+    bow: ['snipe', 'pierce', 'crit', 'exec'], cbow: ['snipe', 'crit', 'exec', 'opener'], gun: ['opener', 'crit', 'snipe', 'pierce'],
+    smg: ['combo', 'drain', 'close'], shotgun: ['close', 'cleave', 'opener'], rifle: ['snipe', 'pierce', 'exec', 'crit']
+  };
+  ITEMS.forEach(function (i) {
+    if (i.slot !== 'weapon') return; var pool = TRP[i.kind]; if (!pool) return;
+    var h = 0; for (var q = 0; q < i.id.length; q++) h = (h * 31 + i.id.charCodeAt(q)) >>> 0;
+    var n = (i.tier || 0) >= 2 ? 2 : 1, tr = [], trv = [], txt = '';
+    for (var k = 0; k < n; k++) {
+      var key = pool[(h + k * 2 + (k ? 1 : 0)) % pool.length]; if (tr.indexOf(key) >= 0) key = pool[(h + k + 1) % pool.length]; if (tr.indexOf(key) >= 0) continue;
+      var d = TRD[key], v = d.b + d.p * (i.tier || 0); if (key === 'crit') v = Math.min(.35, v);
+      tr.push(key); trv.push(v); txt += ' ／ 特性「' + d.nm + '」：' + d.ds(v);
+    }
+    i.tr = tr; i.trv = trv; i.fx += txt;
+  });
 
   /* ---------- 盾・防具のデザイン（色つきのイラスト） ---------- */
   function shSVG(cl, sh) {
@@ -2828,7 +2860,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function cafeTable() {
     return '<svg viewBox="0 0 120 70"><ellipse cx="60" cy="60" rx="46" ry="8" fill="rgba(0,0,0,.2)"/><rect x="54" y="38" width="12" height="22" fill="#7c4c27"/><ellipse cx="60" cy="36" rx="54" ry="24" fill="#8a5a33"/><ellipse cx="60" cy="30" rx="54" ry="24" fill="#c98f58" stroke="#8a5a33" stroke-width="2.4"/><ellipse cx="60" cy="30" rx="44" ry="18" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="2"/>' +
-      '<ellipse cx="42" cy="32" rx="9" ry="4" fill="#fff"/><ellipse cx="42" cy="30" rx="6" ry="2.6" fill="#7a4a2b"/><ellipse cx="80" cy="28" rx="9" ry="4" fill="#fff"/><ellipse cx="80" cy="26" rx="6" ry="2.6" fill="#7a4a2b"/><circle cx="62" cy="24" r="4" fill="#ff8fa8"/><rect x="61" y="26" width="2" height="6" fill="#4f9a47"/></svg>';
+      '</svg>';
   }
   function cafeCounter() {
     return '<svg viewBox="0 0 500 70"><rect x="0" y="0" width="500" height="18" rx="5" fill="#e0b27a" stroke="#8a5a33" stroke-width="3"/><rect x="6" y="18" width="488" height="50" fill="#a9703f" stroke="#7c4c27" stroke-width="3"/>' +
@@ -2861,6 +2893,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var sa = SEATS[i]; if (!sa || !inCafe) return;
     if (seatTaken(i)) { toast('そこは、先に座ってる人がいるよ'); return; }
     hero.x = sa.x; hero.y = sa.y; hero.dir = sa.d; hero.sit = i; hero.lastSeat = i; var h = $('hero2'); if (h) { h.classList.remove('walk'); h.classList.add('sit'); } updHero(); sfx(0);
+    if (hero.order) setTimeout(serveDrink, 600);
     if (rtOn) rtSend(posMsg());
   }
   function standUp() { if (hero.sit == null) return; hero.sit = null; var h = $('hero2'); if (h) h.classList.remove('sit'); if (rtOn) rtSend(posMsg()); }
@@ -2888,12 +2921,46 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (rtOn) rtSend(posMsg());
   }
   function ghCup(pr) { pr.cupE = pr.dk || ''; pr.cupS = pr.ds; cupShow(pr.id, pr.cupE, pr.ds); }
-  function drinkUI() { return '<div class="drk">' + DRINKS.map(function (d, i) { return '<button type="button" data-dk="' + i + '"><b>' + d.e + '</b>' + esc(d.nm) + '</button>'; }).join('') + '</div><p class="tiny" style="margin-top:8px">ぜんぶ無料です。選ぶと、近くのテーブルに置かれます。</p>'; }
+  function drinkUI() { return '<div class="drk">' + DRINKS.map(function (d, i) { return '<button type="button" data-dk="' + i + '"><b>' + d.e + '</b>' + esc(d.nm) + '</button>'; }).join('') + '</div><p class="tiny" style="margin-top:8px">ぜんぶ無料です。選んで椅子に座ると、ユイがテーブルまで運んでくれます。</p>'; }
+  var cafeBusy = false;
+  function waiterEl() { return document.querySelector('.gh.npc[data-npc="yui"]'); }
+  function wMove(el, x, y, cb) {
+    var cx = parseFloat(el.style.left) || x, cy = parseFloat(el.style.top) || y, d = Math.hypot(x - cx, y - cy), sec = Math.max(.05, d / 240);
+    el.style.transition = 'left ' + sec + 's linear, top ' + sec + 's linear'; el.style.left = x + 'px'; el.style.top = y + 'px'; el.style.zIndex = Math.round(Math.max(y, cy));
+    setTimeout(cb, sec * 1000 + 40);
+  }
+  function wRun(el, path, done) { var i = 0; (function nx() { if (!inCafe || !el.isConnected) { done(false); return; } if (i >= path.length) { done(true); return; } var q = path[i++]; wMove(el, q[0], q[1], nx); })(); }
+  function serveDrink() {
+    var od = hero.order; if (!od || hero.sit == null || !inCafe || cafeBusy) return;
+    if (Date.now() - od.at > 600000) { hero.order = null; return; }
+    var el = waiterEl(), s = hero.sit; hero.order = null;
+    if (!el) { setCup(od.e, s); return; }
+    cafeBusy = true;
+    var p = cupXY(s), home = NPCS.yui, stool = s >= 24, side = (!stool && (s & 3) === 3) ? -1 : 1;
+    var gx = stool ? p.x : p.x + side * 30, gy = stool ? 232 : p.y + 34, lx = home.x - 26;
+    var go = stool ? [[gx, 232]] : [[lx, home.y], [lx, 352], [gx, 352], [gx, gy]];
+    var back = stool ? [[home.x, home.y]] : [[gx, 352], [lx, 352], [lx, home.y], [home.x, home.y]];
+    var cup = document.createElement('i'); cup.className = 'hcup'; cup.textContent = od.e; el.appendChild(cup);
+    el.classList.add('walk'); bubble(el, 'お待たせしました〜！');
+    function fin() { el.classList.remove('walk'); el.style.transition = ''; if (cup.parentNode) cup.remove(); cafeBusy = false; }
+    wRun(el, go, function (ok) {
+      if (!ok) { fin(); return; }
+      setTimeout(function () {
+        if (cup.parentNode) cup.remove();
+        if (inCafe) { setCup(od.e, s); sfx(2); bubble(el, 'ごゆっくりどうぞ〜！'); tlogAdd('ユイ', 'ごゆっくりどうぞ〜！'); }
+        setTimeout(function () { wRun(el, back, function () { fin(); }); }, 1400);
+      }, 450);
+    });
+  }
   function takeDrink(i) {
-    var d = DRINKS[i]; if (!d) return; $('npc').classList.remove('on'); var s = cupPick(); if (s < 0) { toast('テーブルがいっぱいです'); return; } sfx(2); setCup(d.e, s);
+    var d = DRINKS[i]; if (!d) return; $('npc').classList.remove('on');
+    if (cafeBusy) { toast('いま、ほかのドリンクを運んでいるよ。ちょっと待ってね'); return; }
+    hero.order = { e: d.e, nm: d.nm, at: Date.now() }; sfx(2); var by = waiterEl();
+    if (hero.sit != null) { bubble(by, 'かしこまりました〜！'); setTimeout(serveDrink, 700); }
+    else { bubble(by, 'かしこまりました〜！お好きな席で、お待ちくださいね'); toast('お好きな椅子に座ってね。座ると、ユイが「' + d.nm + '」を運んでくれます'); }
   }
   function openCafe() {
-    inTown = true; inCafe = true; shared = false; curMine = null; hero.cup = ''; hero.cupS = -1; hero.lastSeat = null;
+    inTown = true; inCafe = true; shared = false; curMine = null; hero.cup = ''; hero.cupS = -1; hero.lastSeat = null; hero.order = null; cafeBusy = false;
     rtStop(); $('field').classList.remove('chat'); $('field').classList.add('town'); $('fTtl').textContent = 'カフェ'; fz = zoomT = .8;
     buildCafe(); show('field'); closeSheets(); digUI(false); BGM.set('town'); gearUi();
     $('fhud').innerHTML = '';
@@ -2903,7 +2970,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     RT.join('cafe', me, { onMsg: rtMsg, onPeers: rtPeers }, function (ok) { if (ok) { rtOn = true; rtLast = 0; rtSend(posMsg()); } else toast('つながりませんでした。カフェには一人だけですよ'); });
   }
   function leaveCafe() {
-    standUp(); setCup(''); inCafe = false; rtStop(); openTown(); hero.x = 1760; hero.y = 530; hero.dir = 1; ftarget = null; updHero(); camX = hero.x - 300; camY = hero.y - 400;
+    standUp(); setCup(''); hero.order = null; inCafe = false; cafeBusy = false; rtStop(); openTown(); hero.x = 1760; hero.y = 530; hero.dir = 1; ftarget = null; updHero(); camX = hero.x - 300; camY = hero.y - 400;
   }
   function leaveTown() { inCafe = false; inTown = false; zoomT = ZW; fz = ZW; $('field').classList.remove('town'); rtStop(); setWorld(760, 1000); }
   function sendChat() {
@@ -3222,7 +3289,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 51;
+  var GV = 52;
   (function () {
     var last = Date.now();
     function chk() {
@@ -3238,12 +3305,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   /* ---------- 町のNPC（案内役ミミ・闘技場の受付レオ） ---------- */
   var NPCS = {
     yui: { nm: 'カフェの店員 ユイ', where: 'cafe', x: 310, y: 232, drinks: true, av: { name: 'ユイ', gender: 1, skin: 1, face: 3, hair: 5, hairColor: 3, outfit: 2, outfitColor: 6, pattern: 0, patColor: 6, bottom: 1, bottomColor: 5, acc: 0 },
-      hi: 'いらっしゃいませ〜！ カフェの店員のユイです。ドリンクは、ぜんぶタダで、何杯でもどうぞ。下から好きなのを選んでください。選んだドリンクは、近くのテーブルにお置きします。',
+      hi: 'いらっしゃいませ〜！ カフェの店員のユイです。ドリンクは、ぜんぶタダで、何杯でもどうぞ。下から好きなのを選んで、椅子に座ってお待ちください。ユイがテーブルまでお持ちします。',
       faq: [
         { q: 'ここは、どんな場所？', k: ['カフェ', 'ここ', 'とは', '何', '場所'], a: 'オパ会のカフェです。仲のいい友達と、椅子に座って、ゆっくり話すための場所ですよ。店の中は、自由に歩ける。ドリンクも、ぜんぶタダです。' },
         { q: '椅子に座るには？', k: ['座', 'すわ', '椅子', 'いす', 'イス', '席'], a: '座りたい椅子をタップすると、そこまで歩いて座ります。座っている姿は、ほかの人にも見えます。立つときは、行きたい所をタップするだけです。先に座ってる人がいる椅子には、座られません。' },
         { q: '友達と話すには？', k: ['話', '友達', 'ともだち', 'チャット', '会話', 'おしゃべり'], a: '同じ時間にカフェにいる人と、話せる。下の「💬」ボタンで、文字を打って話せるし、短縮チャットなら、ワンタップで送れる。ことばは保存されませんから、安心してください。同じテーブルに座ると、話しやすいで。' },
-        { q: 'ドリンクは？', k: ['ドリンク', '飲', 'のみ', 'ジュース', 'コーヒー', '無料', 'タダ', 'お金'], a: 'ぜんぶ無料で、何杯でもどうぞ。ゲームマネーは要りません。選んだドリンクは、近くのテーブルに置かれます（座っていれば、自分の席の前です）。見た目を楽しむドリンクで、ステータスは変わりません。テーブルのドリンクは、友達にも見えます。' },
+        { q: 'ドリンクは？', k: ['ドリンク', '飲', 'のみ', 'ジュース', 'コーヒー', '無料', 'タダ', 'お金'], a: 'ぜんぶ無料で、何杯でもどうぞ。ゲームマネーは要りません。ドリンクを選んで椅子に座ると、私がテーブルまでお持ちします（先に座っていれば、すぐお持ちします）。見た目を楽しむドリンクで、ステータスは変わりません。テーブルのドリンクは、友達にも見えます。' },
         { q: '外に出るには？', k: ['出', '帰', '戻', '町', '出口'], a: '画面の「🚪 町へ」ボタンか、お店の下にある「出口」をタップしたら、町に戻れるよ。' }
       ] },
     kanon: { nm: '闘技場の解説 カノン', where: 'plaza', wk: 'sword', x: 210, y: 140, av: { name: 'カノン', gender: 1, skin: 1, face: 1, hair: 4, hairColor: 5, outfit: 7, outfitColor: 2, pattern: 0, patColor: 6, bottom: 1, bottomColor: 3, acc: 3 },
@@ -3974,6 +4041,40 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function plv() { return Math.max(1, (player && player.lv) || 1); }
   function hpMaxNow() { if (isGM()) return 9999; var a = eqItem('armor'); return 80 + 10 * plv() + (a ? a.hp : 0); }
   function atkP() { var v = atkP0(); return performance.now() < skAtkUntil ? Math.round(v * 1.4) : v; }
+
+  var trComboN = 0, trComboAt = 0;
+  function trHit(tg, dm) {
+    var r = { dm: dm, tags: [], heal: 0, cleave: 0, pierce: 0 }, w = curW();
+    if (!w || !w.tr || isGM() || inArena || inPlaza) return r;
+    var d = Math.hypot(hero.x - tg.x, hero.y - tg.y), mult = 1, now = performance.now();
+    w.tr.forEach(function (k, i) {
+      var v = w.trv[i];
+      if (k === 'crit') { if (Math.random() < v) { mult *= 2; r.tags.push('会心！'); } }
+      else if (k === 'exec') { if (tg.hp <= tg.max * .3) { mult *= 1 + v; r.tags.push('追い討ち！'); } }
+      else if (k === 'opener') { if (tg.hp >= tg.max) { mult *= 1 + v; r.tags.push('先制！'); } }
+      else if (k === 'combo') { if (now - trComboAt < 1800) trComboN = Math.min(5, trComboN + 1); else trComboN = 0; trComboAt = now; if (trComboN > 0) { mult *= 1 + v * trComboN; if (trComboN >= 3) r.tags.push('連撃×' + trComboN); } }
+      else if (k === 'snipe') { var f = Math.max(0, Math.min(1, d / (w.rng || 225))); mult *= .9 + v * f; if (f > .75) r.tags.push('遠撃！'); }
+      else if (k === 'close') { var g = 1 - Math.max(0, Math.min(1, d / (w.rng || 170))); mult *= .85 + v * g; if (g > .7) r.tags.push('近撃！'); }
+      else if (k === 'drain') r.heal = v;
+      else if (k === 'cleave') r.cleave = v;
+      else if (k === 'pierce') r.pierce = v;
+    });
+    r.dm = Math.max(1, Math.round(dm * mult)); r.heal = r.heal ? Math.max(1, Math.round(r.dm * r.heal)) : 0; return r;
+  }
+  function trDone(r, tg) {
+    if (r.tags.length) floatTxt(tg.x, tg.y - 112, r.tags.join(' '), 'y');
+    if (r.heal > 0 && !hp.down && hp.cur < hp.max) { var a = Math.min(r.heal, Math.ceil(hp.max * .05)); hp.cur = Math.min(hp.max, hp.cur + a); hpUi(); rtHp(); floatTxt(hero.x + 24, hero.y - 64, '+' + a, 'g'); }
+  }
+  function trExtra(hit, r, base) {
+    var o = base.slice();
+    function add(f, m) { for (var i = 0; i < o.length; i++) if (o[i].f === f) { o[i].m = Math.max(o[i].m, m); return; } o.push({ f: f, m: m }); }
+    if (r.cleave) { foes.forEach(function (f) { if (f !== hit && f.mode !== 'dead' && Math.hypot(f.x - hit.x, f.y - hit.y) < 130) add(f, r.cleave); }); var af = document.createElement('i'); af.className = 'aoefx'; af.style.cssText = 'left:' + hit.x + 'px;top:' + (hit.y - 30) + 'px;width:260px;height:260px'; $('world').appendChild(af); setTimeout(function () { af.remove(); }, 400); }
+    if (r.pierce) {
+      var ux = hit.x - hero.x, uy = hit.y - hero.y, L = Math.hypot(ux, uy) || 1; ux /= L; uy /= L;
+      foes.forEach(function (f) { if (f === hit || f.mode === 'dead') return; var px = f.x - hit.x, py = f.y - hit.y, tt = px * ux + py * uy, pd = Math.abs(px * uy - py * ux); if (tt > 0 && tt < 240 && pd < 55) add(f, r.pierce); });
+    }
+    return o;
+  }
   function atkP0() { var w = curW(); if (!w) return Math.max(1, Math.round(1 + Math.min(plv(), 60) / 12)); return Math.round((Math.round(6 + 1.5 * plv()) + w.atk) * (isGM() ? 1 : (w.rng ? .8 : 1.15)) * (isGM() ? 1 : (w.pw || 1))); }
   var guard = false, atkAt = 0;
   function defP() { var s = eqItem('shield'), h = isGM() ? GMI.helm : null; return Math.min(.85, (s ? s.def : 0) + (h ? h.def : 0) + (guard ? .4 : 0) + (performance.now() < skGuardUntil ? .5 : 0)); }
@@ -4443,10 +4544,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (eqItem('weapon') && wHand === 'pick') { wHand = 'weapon'; gearUi(); handUi(); toast('武器に持ちかえた！'); }
     if (!canAttack()) return true;
     var wq = curW(); if (wq && wq.rng) shootFx(hit.x, hit.y, wq.kind);
-    var dm = atkP(); impactSnd(); vib(20); swingAnim(); dustW(hit.x, hit.y - 30); floatTxt(hit.x, hit.y - 80, isGM() ? '一撃！' : '-' + dm, 'y');
+    var trr = trHit(hit, atkP()), dm = trr.dm; impactSnd(); vib(20); swingAnim(); dustW(hit.x, hit.y - 30); floatTxt(hit.x, hit.y - 80, isGM() ? '一撃！' : '-' + dm, 'y'); trDone(trr, hit);
     var aoeL = []; if (wq && wq.aoe) { aoeL = foes.filter(function (f) { return f !== hit && f.mode !== 'dead' && Math.hypot(f.x - hit.x, f.y - hit.y) < wq.aoe; }); var af = document.createElement('i'); af.className = 'aoefx'; af.style.cssText = 'left:' + hit.x + 'px;top:' + (hit.y - 30) + 'px;width:' + (wq.aoe * 2) + 'px;height:' + (wq.aoe * 2) + 'px'; $('world').appendChild(af); setTimeout(function () { af.remove(); }, 400); }
-    if (amFoeHost()) { var was = hit.hp; applyFoeDamage(hit, dm); if (hit.hp <= 0 && was > 0) toast(hit.d.nm + 'を追いはらった！'); aoeL.forEach(function (f) { applyFoeDamage(f, Math.round(dm * .7)); }); }
-    else { rtSend({ t: 'hit', i: hit.id, d: dm }); hit.el.classList.remove('hit'); void hit.el.offsetWidth; hit.el.classList.add('hit'); aoeL.forEach(function (f) { rtSend({ t: 'hit', i: f.id, d: Math.round(dm * .7) }); }); }
+    var exL = trExtra(hit, trr, aoeL.map(function (f) { return { f: f, m: .7 }; }));
+    if (amFoeHost()) { var was = hit.hp; applyFoeDamage(hit, dm); if (hit.hp <= 0 && was > 0) toast(hit.d.nm + 'を追いはらった！'); exL.forEach(function (o) { applyFoeDamage(o.f, Math.round(dm * o.m)); }); }
+    else { rtSend({ t: 'hit', i: hit.id, d: dm }); hit.el.classList.remove('hit'); void hit.el.offsetWidth; hit.el.classList.add('hit'); exL.forEach(function (o) { rtSend({ t: 'hit', i: o.f.id, d: Math.round(dm * o.m) }); }); }
     return true;
   }
 
