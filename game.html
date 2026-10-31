@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:47-->
+<!--GV:48-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -567,6 +567,33 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 .gem.pl .opal::before{opacity:.38}
 .gem.nc .opal{box-shadow:inset 0 0 0 1.5px rgba(255,255,255,.28),inset 0 -9px 14px rgba(0,0,0,.4),0 4px 10px rgba(0,0,0,.4)}
 
+
+.eqstage{display:grid;grid-template-columns:78px 1fr 78px;gap:8px;align-items:stretch;margin:6px 0 10px}
+.eqcol{display:flex;flex-direction:column;gap:8px}
+.eqs{position:relative;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;padding:6px 3px;min-height:76px;border-radius:14px;border:1.5px solid var(--line);background:rgba(255,255,255,.05);color:var(--ink);font-size:10.5px;text-align:center}
+.eqs small{font-size:10px;color:var(--mut)}
+.eqs i{font-style:normal;min-width:34px;height:38px;display:grid;place-items:center;font-size:24px}
+.eqs em{font-style:normal;line-height:1.15;max-width:72px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-size:10px}
+.eqs.has{border-color:rgba(232,196,106,.55);background:rgba(232,196,106,.08)}
+.eqs.on{border-color:var(--gold);box-shadow:0 0 0 2px rgba(232,196,106,.35)}
+.eqmid{display:flex;flex-direction:column;align-items:center;justify-content:flex-end;gap:2px;border-radius:18px;background:radial-gradient(ellipse at 50% 92%,rgba(232,196,106,.28),transparent 70%),rgba(255,255,255,.03);border:1px solid var(--line);padding:8px 0 10px;overflow:hidden;min-height:250px}
+#eqChar{position:relative;width:96px;height:178px;margin-bottom:4px}
+#eqChar .hb{width:64px;height:118px;zoom:1.5;position:relative}
+#eqChar .hb svg{height:100%;width:auto;display:block;margin:0 auto}
+#eqChar .hb .fpk{position:absolute;width:58px;height:58px;transform-origin:28% 76%;transform:rotate(-6deg);pointer-events:none}
+#eqChar .hb .fpk svg{width:100%;height:100%;display:block}
+.hb .far{position:absolute;left:14px;top:48px;width:36px;height:36px;pointer-events:none}
+.hb .fsh{position:absolute;left:-2px;top:62px;width:19px;height:23px;pointer-events:none}
+#hero2.down .hb .far,#hero2.down .hb .fsh,.gh.dn .hb .far,.gh.dn .hb .fsh{display:none}
+.hb .far svg,.hb .fsh svg{width:100%;height:100%}
+ #eqPicker{position:sticky;bottom:0;margin:8px -16px -24px;padding:6px 16px 18px;max-height:30vh;overflow:auto;background:#0b161c;border-top:1px solid var(--gold);border-radius:16px 16px 0 0;box-shadow:0 -8px 20px rgba(0,0,0,.55);z-index:3}
+#eqPicker .sec{margin-top:6px}
+.eqst{border-radius:12px;background:rgba(255,255,255,.05);padding:6px 7px;font-size:10.5px;line-height:1.5;color:var(--mut)}
+.eqst b{color:var(--gold);float:right}
+.sks{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:6px 0}
+#fTools .skb{display:none;border:1.5px solid #c9a6ff;background:rgba(30,16,50,.82);color:#eadcff}
+#fTools .skb.cd{opacity:.55}
+#fTools .skb.act{border-color:#ffd36a;background:linear-gradient(#7a4ad0,#4a2a90);color:#fff;box-shadow:0 0 10px #b583ff}
 </style>
 </head>
 <body>
@@ -598,7 +625,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v47（長押し採掘・武器と服を大増量・ショットガン／ライフル）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v48（装備画面・スキル10種と販売所・盾と防具を大増量・闘技場の修正）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所です（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -606,7 +633,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   <div id="cfm"><div class="gc"><h3>ゲームをとじる？</h3><p class="tiny">とじても、ここまでの記録は残るよ。</p><div class="rw" style="display:flex;gap:8px;margin-top:12px"><button id="cfmNo" type="button" class="gbtn" style="flex:1">つづける</button><button id="cfmYes" type="button" class="gbtn dim" style="flex:1;margin-top:0">とじる</button></div></div></div>
   <section class="scr" id="field">
     <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="装備・もちもの">🎒<small>装備・持物</small></button><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
-    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="plDown"><span>やられた…（このままチャットもできるよ）</span><button type="button" class="gbtn" id="plDownGo">🏥 病院へ向かう</button></div><div id="fTools"><button id="plChat" type="button">💬 チャット</button><button id="dashBtn" type="button">💨 ダッシュ</button><button id="spBtn" type="button">✨ 0%</button><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">💬</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしまった…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
+    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="plDown"><span>やられた…（このままチャットもできるよ）</span><button type="button" class="gbtn" id="plDownGo">🏥 病院へ向かう</button></div><div id="fTools"><button id="plChat" type="button">💬 チャット</button><button id="dashBtn" type="button">💨 ダッシュ</button><button id="spBtn" type="button">✨ 0%</button><button id="sk0" class="skb" type="button"></button><button id="sk1" class="skb" type="button"></button><button id="sk2" class="skb" type="button"></button><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">💬</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしまった…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
         <div id="gld"><div class="gc"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="tiny">ギルドの部屋</span><button id="gClose" type="button" class="gbtn" style="padding:6px 12px">とじる</button></div><div id="gBody"></div></div></div>
         <div id="npc"><div class="nc"><div class="nh"><b id="npcN"></b><button type="button" class="gbtn" id="npcX" style="padding:6px 12px">とじる</button></div><div id="npcSay"></div><div id="npcQs"></div><div class="nin"><input id="npcIn" maxlength="30" placeholder="聞きたいこと（例：HP、闘技場、売る）" autocomplete="off"><button type="button" class="gbtn" id="npcGo">きく</button></div><div id="npcAct"></div></div></div><div id="arInv"><b id="arInvT"></b><div><button type="button" class="abtn" id="arInvY">受ける</button><button type="button" class="gbtn" id="arInvN">ことわる</button></div></div><div id="updBar" role="button">🔄 新しい版があるよ。ここをタップして更新</div>
         <div id="arBig"></div>
@@ -646,9 +673,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     <div id="invBar"></div>
     <div id="tkov"><div class="tkc" id="tkCard"><div class="tkic" id="tkIc">🎫</div><div class="tkrk" id="tkRk"></div><div class="tknm" id="tkNm"></div><div class="tkcode" id="tkCode"></div><p class="tkds" id="tkDs"></p><button class="big" id="tkOk" type="button">もちものを見る</button></div></div>
     <div class="sheet" id="bag">
-      <div class="bar"><span style="width:42px"></span><h1>装備・もちもの・ショップ</h1><button class="ib" data-close="bag" type="button" aria-label="とじる">✕</button></div>
+      <div class="bar"><span style="width:42px"></span><h1>そうび・スキル・ショップ</h1><button class="ib" data-close="bag" type="button" aria-label="とじる">✕</button></div>
       <div class="coinbar" id="coinBar"></div>
-      <div class="tabs" id="bagTabs"><button type="button" data-t="0" class="on">⚔️ 装備</button><button type="button" data-t="1">🛍️ ショップ</button><button type="button" data-t="2">💰 売る</button></div>
+      <div class="tabs" id="bagTabs"><button type="button" data-t="0" class="on">⚔️ 装備</button><button type="button" data-t="1">🛍️ ショップ</button><button type="button" data-t="2">💰 売る</button><button type="button" data-t="3">🔮 スキル</button></div>
       <div class="body" id="bagBody"></div>
     </div>
     <div class="sheet" id="mkt">
@@ -1525,6 +1552,38 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     { id: 'a2', slot: 'armor', nm: '革の鎧', price: 2400, tier: 1, ic: '🥋', hp: 60, fx: 'HP +60' },
     { id: 'a3', slot: 'armor', nm: '鋼の鎧', price: 9000, tier: 2, ic: '🥋', hp: 120, fx: 'HP +120' },
     { id: 'a4', slot: 'armor', nm: '竜鱗の鎧', price: 25000, tier: 3, ic: '🐉', hp: 220, drop: true, fx: 'HP +220（店では売っていません）' },
+    { id: 'sx01', slot: 'shield', nm: '桜花のバックラー', price: 500, tier: 0, ic: '🛡️', def: .08, cl: ['#f3a6c0', '#ffffff'], sh: 0, fx: '受けるダメージ 8% カット' },
+    { id: 'sx02', slot: 'shield', nm: '青海波の小盾', price: 650, tier: 0, ic: '🛡️', def: .09, cl: ['#4a8ae0', '#cfe8ff'], sh: 0, fx: '受けるダメージ 9% カット' },
+    { id: 'sx03', slot: 'shield', nm: '若葉の丸盾', price: 700, tier: 0, ic: '🛡️', def: .11, cl: ['#6cc47a', '#e8ffd0'], sh: 0, fx: '受けるダメージ 11% カット' },
+    { id: 'sx04', slot: 'shield', nm: '琥珀の菱盾', price: 900, tier: 0, ic: '🛡️', def: .12, cl: ['#e0a040', '#fff0c0'], sh: 4, fx: '受けるダメージ 12% カット' },
+    { id: 'sx05', slot: 'shield', nm: '月光のカイトシールド', price: 1600, tier: 1, ic: '🛡️', def: .17, cl: ['#c9d6ff', '#7a8ad0'], sh: 2, fx: '受けるダメージ 17% カット' },
+    { id: 'sx06', slot: 'shield', nm: '紅蓮のヒーターシールド', price: 2000, tier: 1, ic: '🛡️', def: .19, cl: ['#d8403a', '#ffd36a'], sh: 1, fx: '受けるダメージ 19% カット' },
+    { id: 'sx07', slot: 'shield', nm: '翡翠の菱盾', price: 2600, tier: 1, ic: '🛡️', def: .21, cl: ['#2fa58a', '#d0fff0'], sh: 4, fx: '受けるダメージ 21% カット' },
+    { id: 'sx08', slot: 'shield', nm: '藤色の花紋盾', price: 3200, tier: 1, ic: '🛡️', def: .23, cl: ['#9a6ad0', '#f0e0ff'], sh: 0, fx: '受けるダメージ 23% カット' },
+    { id: 'sx09', slot: 'shield', nm: '夜空の星盾', price: 6500, tier: 2, ic: '🛡️', def: .27, cl: ['#1a2a5a', '#ffe08a'], sh: 1, fx: '受けるダメージ 27% カット' },
+    { id: 'sx10', slot: 'shield', nm: '白銀の翼盾', price: 8500, tier: 2, ic: '🛡️', def: .30, cl: ['#e8eef4', '#9db0b8'], sh: 2, fx: '受けるダメージ 30% カット' },
+    { id: 'sx11', slot: 'shield', nm: '薔薇十字の盾', price: 11000, tier: 2, ic: '🛡️', def: .33, cl: ['#a02a4a', '#f0c0d0'], sh: 1, fx: '受けるダメージ 33% カット' },
+    { id: 'sx12', slot: 'shield', nm: '黄金の太陽盾', price: 14000, tier: 2, ic: '🛡️', def: .35, cl: ['#e8b030', '#fff2b0'], sh: 0, fx: '受けるダメージ 35% カット' },
+    { id: 'sx13', slot: 'shield', nm: '蒼穹の聖盾', price: 28000, tier: 3, ic: '🛡️', def: .46, cl: ['#58b0ff', '#ffffff'], sh: 3, drop: true, fx: '受けるダメージ 46% カット（店では売っていません）' },
+    { id: 'sx14', slot: 'shield', nm: '黒曜の魔盾', price: 30000, tier: 3, ic: '🛡️', def: .48, cl: ['#201830', '#b583ff'], sh: 1, drop: true, fx: '受けるダメージ 48% カット（店では売っていません）' },
+    { id: 'sx15', slot: 'shield', nm: '虹彩のオパール盾', price: 36000, tier: 3, ic: '🛡️', def: .52, cl: ['#7ae0d0', '#ff9ad0'], sh: 0, drop: true, fx: '受けるダメージ 52% カット（店では売っていません）' },
+    { id: 'sx16', slot: 'shield', nm: '天上の神盾', price: 42000, tier: 3, ic: '🛡️', def: .56, cl: ['#fff2c0', '#ffd36a'], sh: 3, drop: true, fx: '受けるダメージ 56% カット（店では売っていません）' },
+    { id: 'ax01', slot: 'armor', nm: '麻の旅装', price: 400, tier: 0, ic: '👕', hp: 30, cl: ['#d8c8a0', '#8a6a3a'], sty: 0, fx: 'HP +30' },
+    { id: 'ax02', slot: 'armor', nm: '桜色のハーフコート', price: 500, tier: 0, ic: '👕', hp: 35, cl: ['#f3a6c0', '#ffffff'], sty: 2, fx: 'HP +35' },
+    { id: 'ax03', slot: 'armor', nm: '藍染めの羽織', price: 650, tier: 0, ic: '👕', hp: 40, cl: ['#2a4a8a', '#cfe0ff'], sty: 3, fx: 'HP +40' },
+    { id: 'ax04', slot: 'armor', nm: '森のレンジャーベスト', price: 800, tier: 0, ic: '👕', hp: 45, cl: ['#4a8a4a', '#c0e0a0'], sty: 0, fx: 'HP +45' },
+    { id: 'ax05', slot: 'armor', nm: '夕焼けのマント', price: 1900, tier: 1, ic: '👕', hp: 70, cl: ['#e0703a', '#ffd090'], sty: 2, fx: 'HP +70' },
+    { id: 'ax06', slot: 'armor', nm: '銀糸のジャケット', price: 2400, tier: 1, ic: '👕', hp: 80, cl: ['#9db0b8', '#ffffff'], sty: 0, fx: 'HP +80' },
+    { id: 'ax07', slot: 'armor', nm: '紅の袴着', price: 2900, tier: 1, ic: '👕', hp: 90, cl: ['#c03a4a', '#fff0f0'], sty: 3, fx: 'HP +90' },
+    { id: 'ax08', slot: 'armor', nm: '藍鉄のレザーメイル', price: 3400, tier: 1, ic: '👕', hp: 100, cl: ['#3a4a6a', '#a0b0d0'], sty: 1, fx: 'HP +100' },
+    { id: 'ax09', slot: 'armor', nm: '星屑のローブ', price: 6500, tier: 2, ic: '👕', hp: 130, cl: ['#2a2a6a', '#ffe08a'], sty: 0, fx: 'HP +130' },
+    { id: 'ax10', slot: 'armor', nm: '白銀の騎士鎧', price: 8500, tier: 2, ic: '👕', hp: 150, cl: ['#e8eef4', '#8a9ab0'], sty: 1, fx: 'HP +150' },
+    { id: 'ax11', slot: 'armor', nm: '深紅のロングコート', price: 11000, tier: 2, ic: '👕', hp: 165, cl: ['#8a1a3a', '#f0c0c0'], sty: 2, fx: 'HP +165' },
+    { id: 'ax12', slot: 'armor', nm: '金糸の十二単', price: 14000, tier: 2, ic: '👕', hp: 180, cl: ['#e8c060', '#c03a4a'], sty: 3, fx: 'HP +180' },
+    { id: 'ax13', slot: 'armor', nm: '蒼穹のドレスアーマー', price: 28000, tier: 3, ic: '👕', hp: 250, cl: ['#58b0ff', '#ffffff'], sty: 1, drop: true, fx: 'HP +250（店では売っていません）' },
+    { id: 'ax14', slot: 'armor', nm: '黒曜の夜会服', price: 30000, tier: 3, ic: '👕', hp: 270, cl: ['#201830', '#b583ff'], sty: 0, drop: true, fx: 'HP +270（店では売っていません）' },
+    { id: 'ax15', slot: 'armor', nm: '虹彩の天衣', price: 36000, tier: 3, ic: '👕', hp: 300, cl: ['#7ae0d0', '#ff9ad0'], sty: 3, drop: true, fx: 'HP +300（店では売っていません）' },
+    { id: 'ax16', slot: 'armor', nm: '天上の聖衣', price: 42000, tier: 3, ic: '👕', hp: 330, cl: ['#fff2c0', '#ffd36a'], sty: 2, drop: true, fx: 'HP +330（店では売っていません）' },
     {"id":"wx001","slot":"weapon","kind":"sword","nm":"小さな剣","price":600,"tier":0,"ic":"🗡️","atk":4,"cd":0,"hu":0,"fx":"剣：こうげき +4"},
     {"id":"wx002","slot":"weapon","kind":"sword","nm":"竹の細剣","price":400,"tier":0,"ic":"🗡️","atk":2,"cd":0,"hu":163,"fx":"剣：こうげき +2"},
     {"id":"wx003","slot":"weapon","kind":"sword","nm":"手作りの大剣","price":700,"tier":0,"ic":"🗡️","atk":4,"cd":0,"hu":29,"fx":"剣：こうげき +4"},
@@ -1836,6 +1895,31 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   ];
   var SLOTS = ['outfit', 'tool', 'weapon', 'shield', 'armor'], SLN = { outfit: '衣装', tool: '採掘道具', weapon: '武器', shield: '盾', armor: '防具' };
   ITEMS.forEach(function (i) { if (i.slot !== 'weapon') return; var d = SPD[i.sp || ('k_' + i.kind)]; if (i.kind === 'sword') i.fx += ' ／ 近距離ボーナス：ダメージ +15%'; if (d) i.fx += ' ／ 必殺技「' + d.nm + '」：' + d.ds; });
+
+  /* ---------- 盾・防具のデザイン（色つきのイラスト） ---------- */
+  function shSVG(cl, sh) {
+    var a = cl[0], b = cl[1], body;
+    if (sh === 0) body = '<circle cx="20" cy="24" r="17" fill="' + a + '" stroke="' + b + '" stroke-width="2.5"/><circle cx="20" cy="24" r="11" fill="none" stroke="' + b + '" stroke-width="1.5" opacity=".8"/><circle cx="20" cy="24" r="4.5" fill="' + b + '"/>';
+    else if (sh === 1) body = '<path d="M5 6H35V26Q35 41 20 46Q5 41 5 26Z" fill="' + a + '" stroke="' + b + '" stroke-width="2.5" stroke-linejoin="round"/><path d="M20 11V40M10 20H30" stroke="' + b + '" stroke-width="3" stroke-linecap="round"/>';
+    else if (sh === 2) body = '<path d="M20 2L36 13L31 39L20 47L9 39L4 13Z" fill="' + a + '" stroke="' + b + '" stroke-width="2.5" stroke-linejoin="round"/><path d="M20 10L27 22L20 38L13 22Z" fill="' + b + '" opacity=".9"/>';
+    else if (sh === 3) body = '<rect x="7" y="3" width="26" height="42" rx="7" fill="' + a + '" stroke="' + b + '" stroke-width="2.5"/><path d="M20 9V39M13 17H27" stroke="' + b + '" stroke-width="3" stroke-linecap="round"/><circle cx="20" cy="17" r="3" fill="' + b + '"/>';
+    else body = '<path d="M20 2L38 24L20 46L2 24Z" fill="' + a + '" stroke="' + b + '" stroke-width="2.5" stroke-linejoin="round"/><path d="M20 12L29 24L20 36L11 24Z" fill="none" stroke="' + b + '" stroke-width="2"/><circle cx="20" cy="24" r="3" fill="' + b + '"/>';
+    return '<svg viewBox="0 0 40 48" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.5))">' + body + '</svg>';
+  }
+  function arSVG(cl, sty) {
+    var a = cl[0], b = cl[1], body;
+    if (sty === 0) body = '<path d="M13 6L24 11L35 6L41 18L35 22V43H13V22L7 18Z" fill="' + a + '" stroke="' + b + '" stroke-width="2" stroke-linejoin="round"/><rect x="13" y="30" width="22" height="4" fill="' + b + '"/><path d="M24 11V30" stroke="' + b + '" stroke-width="1.5"/>';
+    else if (sty === 1) body = '<path d="M14 7Q24 3 34 7L40 16L37 24L35 43H13L11 24L8 16Z" fill="' + a + '" stroke="' + b + '" stroke-width="2" stroke-linejoin="round"/><circle cx="9" cy="14" r="6" fill="' + b + '"/><circle cx="39" cy="14" r="6" fill="' + b + '"/><path d="M24 8V43M16 22Q24 28 32 22" stroke="' + b + '" stroke-width="2" fill="none"/>';
+    else if (sty === 2) body = '<path d="M15 5H33L41 44H7Z" fill="' + a + '" stroke="' + b + '" stroke-width="2" stroke-linejoin="round"/><path d="M15 5L24 22L33 5" fill="none" stroke="' + b + '" stroke-width="3" stroke-linejoin="round"/><circle cx="24" cy="30" r="2" fill="' + b + '"/><circle cx="24" cy="37" r="2" fill="' + b + '"/>';
+    else body = '<path d="M10 5L24 13L38 5L42 44H6Z" fill="' + a + '" stroke="' + b + '" stroke-width="2" stroke-linejoin="round"/><path d="M10 5L24 26L38 5" fill="none" stroke="' + b + '" stroke-width="3" stroke-linejoin="round"/><rect x="8" y="30" width="32" height="7" fill="' + b + '"/>';
+    return '<svg viewBox="0 0 48 48" xmlns="http://www.w3.org/2000/svg" style="width:100%;height:100%;display:block;filter:drop-shadow(0 1px 2px rgba(0,0,0,.45))">' + body + '</svg>';
+  }
+  var SHDEF = { s1: [['#9a6a3a', '#d8b070'], 0], s2: [['#8a98a8', '#e0e8f0'], 1], s3: [['#c9d6ff', '#6a7ad0'], 2], s4: [['#2f9a6a', '#ffd36a'], 3] };
+  var ARDEF = { a1: [['#d8d0c0', '#9a8a6a'], 0], a2: [['#8a5a3a', '#d8b070'], 2], a3: [['#8a98a8', '#e0e8f0'], 1], a4: [['#2f9a6a', '#ffd36a'], 1] };
+  ITEMS.forEach(function (i) {
+    if (i.slot === 'shield') { if (SHDEF[i.id]) { i.cl = SHDEF[i.id][0]; i.sh = SHDEF[i.id][1]; } if (i.cl) i.ic = '<span style="display:block;width:32px;height:38px">' + shSVG(i.cl, i.sh) + '</span>'; }
+    if (i.slot === 'armor') { if (ARDEF[i.id]) { i.cl = ARDEF[i.id][0]; i.sty = ARDEF[i.id][1]; } if (i.cl) i.ic = '<span style="display:block;width:38px;height:38px">' + arSVG(i.cl, i.sty) + '</span>'; }
+  });
   var IBY = {}; ITEMS.forEach(function (i) { IBY[i.id] = i; });
   var DAG = { id: 'w0', slot: 'weapon', kind: 'dagger', nm: '短剣（はじめの武器）', tier: 0, ic: '🗡️', atk: 2, mr: 75, fx: '短剣：こうげき +2。1マス先までしか届きません。ダメージ +15%。必殺技「連続突き」' };
   var AURA = ['rgba(255,255,255,.35)', 'rgba(88,166,255,.8)', 'rgba(181,131,255,.85)', 'rgba(255,211,106,.95)'];
@@ -1890,21 +1974,19 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (bagTab === 0) {
       var any = false;
       var SLALL = isGM() ? GMLIST : SLOTS;
-      h += '<div class="sec">いま つけてる装備　<span style="color:var(--gold)">Lv ' + (player.lv || 1) + (isGM() ? '（👑マスター）' : '') + '　HP ' + hpMaxNow() + '</span></div><div class="it" style="display:block"><div style="display:grid;grid-template-columns:1fr 1fr;gap:6px">' + SLALL.map(function (sl) { var q = eqItem(sl); return '<div style="padding:6px 8px;border-radius:10px;background:rgba(255,255,255,.06);font-size:12px"><span style="color:var(--mut)">' + (sl === 'helm' ? '兜' : SLN[sl].split('（')[0]) + '</span><br><b>' + (q ? q.ic + ' ' + q.nm : '— なし —') + '</b></div>'; }).join('') + '</div></div>';
-      if (isGM()) h += '<p class="tiny">👑 ゲームマスター装備は、ぜんぶ黄金で固定です（弓は飛び道具。つるはしは、掘る専用）。</p>';
-      SLOTS.forEach(function (slot) {
-        if (isGM()) return;
-        var list = ITEMS.filter(function (i) { return i.slot === slot && have.indexOf(i.id) >= 0; });
-        h += '<div class="sec">' + SLN[slot] + '</div>';
-        if (!list.length) h += '<p class="tiny">まだ持っていません。ショップで買えるよ。</p>';
-        list.forEach(function (i) { any = true; var on = ((player.equip || {})[slot]) === i.id;
-          h += '<div class="it"><div class="ic">' + i.ic + '</div><div class="tx"><b>' + i.nm + '</b><span class="rt" style="color:' + TIERCOL[i.tier] + '">' + TIERS[i.tier].n + '</span>　' + i.fx + '</div><button class="' + (on ? 'eq' : '') + '" type="button" data-eq="' + i.id + '">' + (on ? 'つけてる' : 'つける') + '</button></div>'; });
-      });
+      h += eqStage();
       h += '<div class="sec">スペシャルチケット</div>';
       var tl = (tickets || []).filter(function (t) { return t.status === 'have'; });
       if (!tl.length) h += '<p class="tiny">まだ持っていません。石を掘ってるとき、ごくまれに出るかも。レア・超レア・激レアの3種類です。</p>';
       tl.forEach(function (t) { var k = TKN[t.kind] || TKN.r;
         h += '<div class="it"><div class="ic">' + k.ic + '</div><div class="tx"><b>' + k.nm + '</b><span class="rt" style="color:' + k.col + '">' + k.rk + '</span><br>' + k.ds.split('。')[0] + '。<br>番号 <b>' + t.code + '</b>　' + tkDate(t.created_at) + ' にゲット</div></div>'; });
+    } else if (bagTab === 3) {
+      h += '<p class="tiny">スキルは、ゲームマネーで買えるよ。買ったら「装備」タブのスキル枠にセットして、戦いで使ってね。使ったあとは、クールタイム（もう一度使えるまでの時間）があります。</p>';
+      var haveS = player.skills || [], eqS = player.skEq || [];
+      SKD.slice().sort(function (a, b) { return a.price - b.price; }).forEach(function (d) {
+        var own = haveS.indexOf(d.id) >= 0, poorS = coins < d.price, armS = skArm === d.id, sl = eqS.indexOf(d.id);
+        h += '<div class="it"><div class="ic">' + d.ic + '</div><div class="tx"><b>' + d.nm + '</b><span class="rt" style="color:#b583ff">クール ' + (d.cd / 1000) + '秒</span>' + (sl >= 0 ? '　（スキル' + (sl + 1) + 'にセット中）' : '') + '<br>' + d.ds + '<br>🪙 ' + d.price.toLocaleString() + '</div><button type="button" data-skb="' + d.id + '"' + (own || poorS ? ' disabled' : '') + '>' + (own ? '持ってる' : (poorS ? '足りない' : (armS ? '本当に買う？' : '買う'))) + '</button></div>';
+      });
     } else if (bagTab === 2) {
       h += '<p class="tiny">掘った石と、ひろった武器・防具を、ゲームマネーに換えられるよ。レア度が高いほど高く売れる。図鑑の記録は減りませんから安心してください。</p>';
       var gr = player.grades || {}, so = player.sold || {}, rows = 0;
@@ -1934,17 +2016,70 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         });
       });
     }
-    $('bagBody').innerHTML = h;
+    $('bagBody').innerHTML = h; fillEqChar();
   }
-  var sellArm = null;
+  var sellArm = null, skArm = null, eqPick = null, eqScroll = false;
+  function eqSlotBtn(sl, lab) {
+    var q = eqItem(sl);
+    return '<button type="button" class="eqs' + (eqPick === sl ? ' on' : '') + (q ? ' has' : '') + '" data-pk="' + sl + '"><small>' + lab + '</small><i>' + (q ? q.ic : '＋') + '</i><em>' + (q ? esc(q.nm) : 'なし') + '</em></button>';
+  }
+  function eqStage() {
+    var h = '', own = player.skills || [], eqS = player.skEq || [];
+    var def = Math.round((((eqItem('shield') || {}).def) || 0) * 100);
+    h += '<div class="eqstage"><div class="eqcol">' + eqSlotBtn('weapon', '武器') + eqSlotBtn('shield', '盾') + eqSlotBtn('armor', '防具') + '</div>';
+    h += '<div class="eqmid"><div id="eqChar"><div class="hb">' + charHTML(dress(player.avatar, eqItem('outfit')), null, exMine()) + '</div></div><b style="font-size:13px">' + esc((player.avatar || {}).name || '') + '</b><span class="tiny" style="margin:0">Lv ' + (player.lv || 1) + (isGM() ? '（👑）' : '') + '</span></div>';
+    h += '<div class="eqcol">' + eqSlotBtn('outfit', '衣装') + eqSlotBtn('tool', '採掘道具') + '<div class="eqst"><div>HP <b>' + hpMaxNow() + '</b></div><div>こうげき <b>' + atkP0() + '</b></div><div>ぼうぎょ <b>' + def + '%</b></div></div></div></div>';
+    h += '<div class="sec">スキル枠　<span class="tiny" style="margin:0">（戦いのとき、画面のボタンで使えるよ）</span></div><div class="sks">';
+    for (var i = 0; i < 3; i++) { var d = SKBY[eqS[i]]; h += '<button type="button" class="eqs' + (eqPick === 'sk' + i ? ' on' : '') + (d ? ' has' : '') + '" data-pk="sk' + i + '"><small>スキル' + (i + 1) + '</small><i>' + (d ? d.ic : '＋') + '</i><em>' + (d ? d.nm : 'なし') + '</em></button>'; }
+    h += '</div><button type="button" class="gbtn" data-go="skshop" style="width:100%;margin:2px 0 6px">🔮 スキル販売所へ（' + own.length + '/' + SKD.length + ' 種類 持ってる）</button>';
+    if (isGM()) return h + '<p class="tiny">👑 ゲームマスター装備は、ぜんぶ黄金で固定です。</p>';
+    if (eqPick) {
+      h += '<div id="eqPicker">';
+      if (eqPick.indexOf('sk') === 0) {
+        var si = +eqPick.slice(2);
+        h += '<div class="sec">スキル' + (si + 1) + 'にセットするスキル</div>';
+        if (!own.length) h += '<p class="tiny">まだスキルを持っていません。「スキル販売所」で買えるよ。</p>';
+        own.forEach(function (id) { var d2 = SKBY[id]; if (!d2) return; var on = eqS[si] === id;
+          h += '<div class="it"><div class="ic">' + d2.ic + '</div><div class="tx"><b>' + d2.nm + '</b><span class="rt" style="color:#b583ff">クール ' + (d2.cd / 1000) + '秒</span><br>' + d2.ds + '</div><button class="' + (on ? 'eq' : '') + '" type="button" data-ske="' + si + ':' + id + '">' + (on ? 'はずす' : 'セット') + '</button></div>'; });
+      } else {
+        var have = player.items || [], list = ITEMS.filter(function (i2) { return i2.slot === eqPick && have.indexOf(i2.id) >= 0; });
+        h += '<div class="sec">' + SLN[eqPick] + 'を えらぶ</div>';
+        if (eqPick === 'weapon') h += '<p class="tiny">何もつけないと、はじめの短剣になります。</p>';
+        if (!list.length) h += '<p class="tiny">まだ持っていません。ショップで買えるよ。</p>';
+        list.forEach(function (i2) { var on = ((player.equip || {})[eqPick]) === i2.id;
+          h += '<div class="it"><div class="ic">' + i2.ic + '</div><div class="tx"><b>' + esc(i2.nm) + '</b><span class="rt" style="color:' + TIERCOL[i2.tier] + '">' + TIERS[i2.tier].n + '</span>　' + i2.fx + '</div><button class="' + (on ? 'eq' : '') + '" type="button" data-eq="' + i2.id + '">' + (on ? 'はずす' : 'つける') + '</button></div>'; });
+      }
+      h += '</div>';
+    } else h += '<p class="tiny">マスをタップすると、持っている装備から選べるよ。まん中のキャラクターに、すぐ反映されます。</p>';
+    return h;
+  }
+  function fillEqChar() {
+    var c = $('eqChar'); if (!c || !player) return; var pk = c.querySelector('.fpk'); if (!pk) return;
+    var w = eqItem('weapon'), mode = !w ? 'pick' : (w.skin || w.kind);
+    pk.style.filter = (w && w.hu) ? 'hue-rotate(' + w.hu + 'deg) saturate(1.25)' : '';
+    pk.innerHTML = mode === 'pick' ? pickHTML(SKIN[normAv(player.avatar).skin]) : weaponSVG(mode);
+  }
   var SBASE = [4, 12, 32, 100], SMULT = { quartz: 1, amethyst: 1, citrine: 1, garnet: 1, peridot: 1, sapphire: 1.5, emerald: 1.5, ruby: 1.5, diamond: 1.5, whiteopal: 1.5, paraiba: 2.5, alexandrite: 2.5, colordiamond: 2.5, crystalopal: 2.5, boulderopal: 4, fireopal: 4, blackopal: 4 };
   function stonePrice(id, g) { return Math.round(SBASE[g] * (SMULT[id] || 1)); }
   var TIERCOL = ['#9db0b8', '#58a6ff', '#b583ff', '#ffd36a'];
-  function openBag(tab) { bagTab = tab || 0; buyArm = null; sellArm = null; renderBag(); $('bag').classList.add('on'); }
+  function openBag(tab) { bagTab = tab || 0; buyArm = null; sellArm = null; skArm = null; renderBag(); $('bag').classList.add('on'); }
   ['bagBtn', 'fBag'].forEach(function (id) { if ($(id)) $(id).addEventListener('click', function () { openBag(0); }); });
-  $('bagTabs').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; bagTab = +b.dataset.t; buyArm = null; sellArm = null; renderBag(); });
+  $('bagTabs').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; bagTab = +b.dataset.t; buyArm = null; sellArm = null; skArm = null; renderBag(); });
   $('bagBody').addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b || b.disabled) return;
+    if (b.dataset.pk) { eqPick = (eqPick === b.dataset.pk) ? null : b.dataset.pk; eqScroll = !!eqPick; sfx(0); renderBag(); return; }
+    if (b.dataset.go === 'skshop') { bagTab = 3; skArm = null; renderBag(); return; }
+    if (b.dataset.skb) {
+      if (skArm !== b.dataset.skb) { skArm = b.dataset.skb; renderBag(); return; }
+      skArm = null; b.disabled = true;
+      api({ action: 'skill_buy', id: b.dataset.skb }).then(function (j) { if (j.player) { player = j.player; toast('買えたよ！「装備」タブでセットしてね'); sfx(1); } else toast(j.message || 'うまく買えませんでした'); renderBag(); });
+      return;
+    }
+    if (b.dataset.ske) {
+      var sp2 = b.dataset.ske.split(':'), cur = (player.skEq || [])[+sp2[0]]; b.disabled = true;
+      api({ action: 'skill_equip', slot: +sp2[0], id: cur === sp2[1] ? null : sp2[1] }).then(function (j) { if (j.player) { player = j.player; skBtnUi(); sfx(2); } else toast(j.message || 'うまくいきませんでした'); renderBag(); });
+      return;
+    }
     if (b.dataset.shs) { shopSlot = b.dataset.shs; shopKind = 'all'; buyArm = null; renderBag(); return; }
     if (b.dataset.shk) { shopKind = b.dataset.shk; buyArm = null; renderBag(); return; }
     if (b.dataset.ss) {
@@ -2626,8 +2761,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var f = $('field'); f.classList.remove('town', 'arena', 'chat'); f.classList.add('plaza', 'safe'); $('fTtl').textContent = '闘技場'; $('fCancel').textContent = '町へ出る';
     addNpcs('plaza'); fz = zoomT = .6; $('ftip').dataset.shown = 1; $('ftip').style.opacity = 0; arena.zs = 0;
   }
+  var safeHeal = 0, safeFx = 0;
   function plZoneTick() {
-    if (!inPlaza) return; var fl = hero.y >= FLOOR_Y; if (arena.zs && fl === arena.floor) return;
+    if (!inPlaza) return; var fl = hero.y >= FLOOR_Y;
+    if (!fl && !hp.down && hp.cur < hp.max) {
+      var add = Math.max(1, Math.ceil(hp.max * .06)); hp.cur = Math.min(hp.max, hp.cur + add); hpUi(); rtHp(); safeHeal += add; var nw = performance.now();
+      if (nw - safeFx > 900 || hp.cur >= hp.max) { floatTxt(hero.x, hero.y - 74, '+' + safeHeal, 'g'); safeHeal = 0; safeFx = nw; if (hp.cur >= hp.max) toast('セーフティゾーンで、HPが全回復したよ'); }
+    }
+    if (arena.zs && fl === arena.floor) return;
     var first = !arena.zs; arena.floor = fl; arena.zs = 1; $('field').classList.toggle('safe', !fl);
     $('fhud').innerHTML = '';
   }
@@ -2882,7 +3023,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 47;
+  var GV = 48;
   (function () {
     var last = Date.now();
     function chk() {
@@ -3020,7 +3161,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (b.wind && now >= b.wind) { b.wind = 0; b.el.classList.remove('lunge'); if (Math.hypot(hero.x - b.x, hero.y - b.y) <= W.reach + 15 && botHitHero(Math.max(1, Math.round(st.atk * W.atk)))) b.gauge = Math.min(100, b.gauge + 12); }
     if (b.sp && now >= b.sp) { b.sp = 0; if (Math.hypot(hero.x - b.x, hero.y - b.y) <= spR + 10) botHitHero(Math.round(st.atk * 2.5)); }
     if (!b.wind && !b.sp) {
-      if (st.dashOk && d > W.reach + 180 && now > b.dashAt) botDash(b, dx, dy, Math.min(d - W.go, 420));
+      if (st.dashOk && d > W.reach + 180 && now > b.dashAt && now - heroDashT > 3500) botDash(b, dx, dy, Math.min(d - W.go, 420));
       else if (d > W.go) { b.x += dx / d * st.spd * dt; b.y += dy / d * st.spd * dt; }
       else if (W.rg && d < W.go * .55) { b.x -= dx / d * st.spd * dt; b.y -= dy / d * st.spd * dt; }
       else if (st.lv >= 20) { if (now > b.sdirAt) { b.sdir = Math.random() < .5 ? 1 : -1; b.sdirAt = now + 1200 + Math.random() * 1200; } b.x += (-dy / d) * st.spd * .45 * dt * b.sdir; b.y += (dx / d) * st.spd * .45 * dt * b.sdir; }
@@ -3633,9 +3774,10 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var hp = { cur: 0, max: 0, down: false, inv: 0, ready: false }, downT = 0, downLeft = 0;
   function plv() { return Math.max(1, (player && player.lv) || 1); }
   function hpMaxNow() { if (isGM()) return 9999; var a = eqItem('armor'); return 80 + 10 * plv() + (a ? a.hp : 0); }
-  function atkP() { var w = curW(); if (!w) return Math.max(1, Math.round(1 + Math.min(plv(), 60) / 12)); return Math.round((Math.round(6 + 1.5 * plv()) + w.atk) * (isGM() ? 1 : (w.rng ? .8 : 1.15)) * (isGM() ? 1 : (w.pw || 1))); }
+  function atkP() { var v = atkP0(); return performance.now() < skAtkUntil ? Math.round(v * 1.4) : v; }
+  function atkP0() { var w = curW(); if (!w) return Math.max(1, Math.round(1 + Math.min(plv(), 60) / 12)); return Math.round((Math.round(6 + 1.5 * plv()) + w.atk) * (isGM() ? 1 : (w.rng ? .8 : 1.15)) * (isGM() ? 1 : (w.pw || 1))); }
   var guard = false, atkAt = 0;
-  function defP() { var s = eqItem('shield'), h = isGM() ? GMI.helm : null; return Math.min(.85, (s ? s.def : 0) + (h ? h.def : 0) + (guard ? .4 : 0)); }
+  function defP() { var s = eqItem('shield'), h = isGM() ? GMI.helm : null; return Math.min(.85, (s ? s.def : 0) + (h ? h.def : 0) + (guard ? .4 : 0) + (performance.now() < skGuardUntil ? .5 : 0)); }
   function atkReady() { var w = curW(), n = performance.now(); if (n < atkAt) return false; atkAt = n + (w && w.cd ? w.cd : 0); return true; }
   function atkRange() { var w = curW(); return w ? (w.rng || w.mr || 150) : 150; }
   function mlv() { return (curMine && MBY[curMine]) ? MBY[curMine].lv : 1; }
@@ -3665,7 +3807,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var EQSL = ['weapon', 'shield', 'armor', 'outfit', 'tool', 'helm'];
   function rtHp() { if (rtOn) { rtLast = 0; } }
 
-  var skG = 0, dashAt = 0, dashInv = 0, guardAt = 0, jfxAt = 0, qcMode = '';
+  var skG = 0, dashAt = 0, dashInv = 0, guardAt = 0, jfxAt = 0, qcMode = '', heroDashT = 0, skAtkUntil = 0, skGuardUntil = 0, skHasteUntil = 0, skLeechUntil = 0, skCd = {};
   function skAdd(n) { if (isGM()) return; skG = Math.min(100, skG + n); skUi(); }
   function spDef() { var w = curW(); if (!w) return null; return SPD[w.sp || ('k_' + (w.kind || 'sword'))] || null; }
   function skUi() {
@@ -3676,7 +3818,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var b = $('dashBtn'); if (!b || b.style.display === 'none') return; var r = dashAt - performance.now();
     b.textContent = r > 0 ? '💨 ' + Math.ceil(r / 1000) : '💨 ダッシュ'; b.style.opacity = r > 0 ? .55 : 1;
   }
-  setInterval(function () { if (fieldOn) dashUi(); }, 200);
+  setInterval(function () { if (fieldOn) { dashUi(); skBtnUi(); } }, 200);
   function justFx(t, g) { var n = performance.now(); if (n - jfxAt < 500) return; jfxAt = n; floatTxt(hero.x, hero.y - 94, t, 'y'); skAdd(g); sfx(2); vib(15); }
   function evadeHit() {
     var n = performance.now();
@@ -3694,16 +3836,88 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function nearestE(list) { var b = null, bd = 1e9; list.forEach(function (e) { var d = Math.hypot(hero.x - e.x, hero.y - e.y) - e.r; if (d < bd) { bd = d; b = e; } }); return b ? { e: b, d: bd } : null; }
   function pvpMode() { return inPlaza || inArena; }
   function hitE(e, mult) {
-    var base = pvpMode() ? arDmg() : atkP(), dm = Math.round(base * mult); if (pvpMode() && !isGM()) dm = Math.min(500, dm);
+    var base = pvpMode() ? arDmg() : atkP(), dm = Math.round(base * mult); if (pvpMode() && !isGM()) dm = Math.min(500, dm); skLeechFx(dm);
     if (e.k === 'b') { botHurt(dm); return; }
     if (e.k === 'f') { floatTxt(e.x, e.y - 80, isGM() ? '一撃！' : '-' + dm, 'y'); dustW(e.x, e.y - 30); if (amFoeHost()) applyFoeDamage(e.o, dm); else rtSend({ t: 'hit', i: e.o.id, d: dm }); }
     else { floatTxt(e.x, e.y - 80, '-' + dm, 'y'); if (e.o.el) { e.o.el.classList.remove('gmhit'); void e.o.el.offsetWidth; e.o.el.classList.add('gmhit'); } if (e.k === 'p') arSend({ t: 'fhit', to: e.o.id, d: dm }); else arSend({ t: 'ahit', to: e.o.id, d: dm, mid: arena.m.mid }); }
   }
   function spRing(r) { var e = document.createElement('i'); e.className = 'spfx'; e.style.left = hero.x + 'px'; e.style.top = (hero.y - 20) + 'px'; e.style.width = e.style.height = (r * 2) + 'px'; $('world').appendChild(e); setTimeout(function () { e.remove(); }, 600); }
   function heroTo(x, y) {
+    heroDashT = performance.now(); if (bot) bot.dashAt = Math.max(bot.dashAt || 0, heroDashT + 3500);
     var mn = inPlaza ? 70 : (inArena ? 230 : 200); hero.x = clamp(x, 40, WW - 40); hero.y = clamp(y, mn, WH - 40); ftarget = null; updHero();
     var h = $('hero2'); if (h) { h.classList.add('dash'); setTimeout(function () { h.classList.remove('dash'); }, 260); }
   }
+
+  /* ---------- スキル（買ってセットして、戦いで使う。クールタイム制） ---------- */
+  var SKD = [
+    { id: 'sk01', nm: '旋風斬', ic: '🌀', price: 1200, cd: 7000, t: 'ring', r: 150, m: 1.3, ds: '自分のまわり2マスの敵を、ぐるっと全部斬る（×1.3）' },
+    { id: 'sk02', nm: '突進斬り', ic: '⚡', price: 2400, cd: 9000, t: 'rush', len: 320, m: 1.6, ds: 'まっすぐ突進して、通り道の敵を全員斬る（×1.6）。突進中は無敵' },
+    { id: 'sk03', nm: '落雷', ic: '🌩️', price: 3000, cd: 11000, t: 'bolt', r: 450, sr: 110, m: 2.6, ds: 'いちばん近い敵に雷を落とす（×2.6）。まわりにも少しダメージ' },
+    { id: 'sk04', nm: '五月雨撃ち', ic: '🎯', price: 3600, cd: 10000, t: 'volley', r: 500, n: 5, m: .8, ds: '遠くの敵にも5連続で攻撃（×0.8を5回）' },
+    { id: 'sk05', nm: '大地の怒り', ic: '🌋', price: 5200, cd: 14000, t: 'quake', r: 520, sr: 190, m: 2, ds: '離れた敵の足もとを爆発させる（×2）。広い範囲に当たる' },
+    { id: 'sk06', nm: '癒しの光', ic: '💚', price: 2800, cd: 28000, t: 'heal', m: .3, ds: 'HPを30%回復する（決闘中は使えません）' },
+    { id: 'sk07', nm: '鉄壁の構え', ic: '🧱', price: 2200, cd: 22000, t: 'guardUp', d: 5000, ds: '5秒間、受けるダメージを50%カットする' },
+    { id: 'sk08', nm: '闘気解放', ic: '🔥', price: 3200, cd: 24000, t: 'atkUp', d: 8000, ds: '8秒間、こうげき力が +40%' },
+    { id: 'sk09', nm: '疾風の足', ic: '🍃', price: 1800, cd: 18000, t: 'haste', d: 6000, ds: '6秒間、移動速度が +50%' },
+    { id: 'sk10', nm: '吸血の刃', ic: '🩸', price: 4800, cd: 26000, t: 'leech', d: 8000, ds: '8秒間、与えたダメージの12%ぶん、HPが回復する（決闘中は使えません）' }
+  ];
+  var SKBY = {}; SKD.forEach(function (d) { SKBY[d.id] = d; });
+  function skLeechFx(dm) {
+    var n = performance.now(); if (n >= skLeechUntil || hp.down || inArena || hp.cur >= hp.max) return;
+    var a = Math.min(Math.round(dm * .12), Math.ceil(hp.max * .06)); if (a <= 0) return;
+    hp.cur = Math.min(hp.max, hp.cur + a); hpUi(); rtHp(); floatTxt(hero.x + 24, hero.y - 64, '+' + a, 'g');
+  }
+  function skBtnUi() {
+    var eq = ((player || {}).skEq) || [], n = performance.now();
+    for (var i = 0; i < 3; i++) {
+      var b = $('sk' + i); if (!b) continue; var d = SKBY[eq[i]], show = !!(d && fieldOn && !inTown && !hp.down);
+      b.style.display = show ? 'block' : 'none'; if (!show) continue;
+      var r = (skCd[d.id] || 0) - n, act = (d.t === 'guardUp' && n < skGuardUntil) || (d.t === 'atkUp' && n < skAtkUntil) || (d.t === 'haste' && n < skHasteUntil) || (d.t === 'leech' && n < skLeechUntil);
+      b.classList.toggle('cd', r > 0 && !act); b.classList.toggle('act', act); b.textContent = d.ic + ' ' + (act ? '発動中' : (r > 0 ? Math.ceil(r / 1000) : d.nm));
+    }
+  }
+  function ringAt(x, y, r) { var e = document.createElement('i'); e.className = 'spfx'; e.style.left = x + 'px'; e.style.top = (y - 20) + 'px'; e.style.width = e.style.height = (r * 2) + 'px'; $('world').appendChild(e); setTimeout(function () { e.remove(); }, 700); }
+  function useSkill(i) {
+    var id = (((player || {}).skEq) || [])[i], d = SKBY[id]; if (!d || hp.down || busy || inTown) return;
+    var n = performance.now(); if (n < (skCd[id] || 0)) { toast('「' + d.nm + '」は、あと ' + Math.ceil((skCd[id] - n) / 1000) + ' 秒で使えるよ'); return; }
+    if (guard) { toast('ガード中は、使えません'); return; }
+    if (inArena && (d.t === 'heal' || d.t === 'leech')) { toast('決闘中は、回復のスキルは使えません'); return; }
+    var atk = ['ring', 'rush', 'bolt', 'volley', 'quake'].indexOf(d.t) >= 0, en = [], ne = null, k;
+    if (atk) {
+      en = enemies(); if (!en.length) { toast(pvpMode() ? 'ほかの人がいないよ' : '敵がいないよ'); return; }
+      ne = nearestE(en);
+    }
+    function alive(e) { return !((e.k === 'f' && e.o.mode === 'dead') || (e.k === 'b' && e.o.dn)); }
+    function fin(buff) { skCd[id] = performance.now() + d.cd; floatTxt(hero.x, hero.y - 100, d.ic + ' ' + d.nm + '！', 'y'); if (buff) sfx(2); else { sfx('hit'); swingAnim(); } vib([20, 20, 40]); skBtnUi(); }
+    if (d.t === 'ring') {
+      var hs = en.filter(function (e) { return Math.hypot(hero.x - e.x, hero.y - e.y) - e.r <= d.r; });
+      if (!hs.length) { toast('とどく敵がいないよ（もっと近づいてください）'); return; }
+      ringAt(hero.x, hero.y, d.r); hs.forEach(function (e) { hitE(e, d.m); }); fin();
+    } else if (d.t === 'rush') {
+      var dx = (ne.d < 460 ? ne.e.x - hero.x : hero.dir), dy = (ne.d < 460 ? ne.e.y - hero.y : 0), L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L, hits = 0;
+      hero.dir = ux >= 0 ? 1 : -1;
+      en.forEach(function (e) { var px = e.x - hero.x, py = e.y - hero.y, tt = px * ux + py * uy, pd = Math.abs(px * uy - py * ux); if (tt >= -20 && tt <= d.len + 40 && pd < 70 + e.r) { hits++; hitE(e, d.m); } });
+      heroTo(hero.x + ux * d.len, hero.y + uy * d.len); dashInv = performance.now() + 600; hp.inv = Math.max(hp.inv, dashInv); fin();
+    } else if (d.t === 'bolt') {
+      if (ne.d > d.r) { toast('とどく敵がいないよ（もっと近づいてください）'); return; }
+      var t1 = ne.e; ringAt(t1.x, t1.y, d.sr); hitE(t1, d.m); en.forEach(function (e) { if (e !== t1 && Math.hypot(e.x - t1.x, e.y - t1.y) <= d.sr) hitE(e, d.m * .4); }); fin();
+    } else if (d.t === 'volley') {
+      if (ne.d > d.r) { toast('とどく敵がいないよ（もっと近づいてください）'); return; }
+      var t2 = ne.e; hero.dir = t2.x >= hero.x ? 1 : -1; updHero();
+      for (k = 0; k < d.n; k++) (function (j) { setTimeout(function () { if (!alive(t2)) return; shootFx(t2.x, t2.y, 'bow'); hitE(t2, d.m); }, j * 190); })(k);
+      fin();
+    } else if (d.t === 'quake') {
+      if (ne.d > d.r) { toast('とどく敵がいないよ（もっと近づいてください）'); return; }
+      var t3 = ne.e; ringAt(t3.x, t3.y, d.sr); hitE(t3, d.m); en.forEach(function (e) { if (e !== t3 && Math.hypot(e.x - t3.x, e.y - t3.y) <= d.sr) hitE(e, d.m * .6); }); fin();
+    } else if (d.t === 'heal') {
+      var add = Math.min(hp.max - hp.cur, Math.round(hp.max * d.m)); if (add <= 0) { toast('HPは、もう満タンだよ'); return; }
+      hp.cur += add; hpUi(); rtHp(); floatTxt(hero.x, hero.y - 74, '+' + add, 'g'); fin(true);
+    } else if (d.t === 'guardUp') { skGuardUntil = n + d.d; fin(true); }
+    else if (d.t === 'atkUp') { skAtkUntil = n + d.d; fin(true); }
+    else if (d.t === 'haste') { skHasteUntil = n + d.d; fin(true); }
+    else if (d.t === 'leech') { skLeechUntil = n + d.d; fin(true); }
+  }
+  [0, 1, 2].forEach(function (i) { var b = $('sk' + i); b.addEventListener('click', function () { useSkill(i); }); b.addEventListener('pointerdown', function (e) { e.stopPropagation(); }); });
   function doDash() {
     var w = curW(); if (!w || hp.down || busy || inTown) return; var n = performance.now();
     if (n < dashAt) { toast('ダッシュは、あと ' + Math.ceil((dashAt - n) / 1000) + ' 秒で使えるよ'); return; }
@@ -3832,7 +4046,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     g.style.display = (has && fieldOn) ? 'block' : 'none'; g.classList.toggle('on', guard); g.textContent = guard ? '🛡 ガード中' : '🛡 ガード';
     var hh = $('hero2'); if (hh) hh.classList.toggle('guard', guard);
     var sw = $('swBtn'); if (sw) { sw.style.display = (fieldOn && !inTown && eqItem('weapon')) ? 'block' : 'none'; sw.textContent = handW() ? '🔁 つるはし' : '🔁 武器'; }
-    var hv = !!(fieldOn && !inTown && eqItem('weapon') && handW()); $('dashBtn').style.display = hv ? 'block' : 'none'; $('spBtn').style.display = hv ? 'block' : 'none'; skUi(); dashUi();
+    var hv = !!(fieldOn && !inTown && eqItem('weapon') && handW()); $('dashBtn').style.display = hv ? 'block' : 'none'; $('spBtn').style.display = hv ? 'block' : 'none'; skUi(); dashUi(); skBtnUi();
     var qb = $('qcBtn'); if (qb) { var qs = fieldOn; qb.style.display = qs ? 'block' : 'none'; if (!qs) $('qcPanel').classList.remove('on'); var wm = inTown ? 't' : 'b'; if (qcMode !== wm) { qcMode = wm; qcFill(); $('qcPanel').classList.remove('on'); } }
     handUi();
   }
@@ -4078,19 +4292,21 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     updHero(); hpUi();
   }
   var FLDT = { crop: 222, T: { HT: 'translate(60 74) scale(.8) translate(-60 -74)', LT: 'translate(0 0)', TT: 'translate(0 0)', AT: 'translate(0 0)', ST: 'translate(0 0)', HAT: 'translate(0 0)' } };
-  function charHTML(av, pid) {
+  function charHTML(av, pid, ex) {
     var pa = normAv(av), hx0 = pa.gender === 0 ? 53.0 : 50.5, hx = ((((hx0 - 7.6) / 62.7 * 120) - 60) / .96 + 60) / 120 * 64;
-    return avatarSVG(av, FLDT) + '<div class="fpk"' + (pid ? ' id="' + pid + '"' : '') + ' style="left:' + (hx - 16.2).toFixed(1) + 'px;top:31px">' + pickHTML(SKIN[pa.skin]) + '</div>';
+    var ov = ''; if (ex && ex.ar && ex.ar.cl) ov += '<div class="far">' + arSVG(ex.ar.cl, ex.ar.sty) + '</div>'; if (ex && ex.sh && ex.sh.cl) ov += '<div class="fsh">' + shSVG(ex.sh.cl, ex.sh.sh) + '</div>';
+    return avatarSVG(av, FLDT) + ov + '<div class="fpk"' + (pid ? ' id="' + pid + '"' : '') + ' style="left:' + (hx - 16.2).toFixed(1) + 'px;top:31px">' + pickHTML(SKIN[pa.skin]) + '</div>';
   }
-  function heroHTML() { return charHTML(dress(player.avatar, eqItem('outfit')), 'fpick'); }
+  function exMine() { return { sh: eqItem('shield'), ar: eqItem('armor') }; }
+  function heroHTML() { return charHTML(dress(player.avatar, eqItem('outfit')), 'fpick', exMine()); }
   function lookSync() {
-    if (!player || !player.avatar) return; var o = eqItem('outfit'), k = (o ? o.id : '') + '|' + player.avatar.gender; if (k === window.__lkk) return; window.__lkk = k;
+    if (!player || !player.avatar) return; var o = eqItem('outfit'), k = (o ? o.id : '') + '|' + player.avatar.gender + '|' + ((eqItem('shield') || {}).id || '') + '|' + ((eqItem('armor') || {}).id || ''); if (k === window.__lkk) return; window.__lkk = k;
     if ($('hb')) { $('hb').innerHTML = heroHTML(); applyAura(); }
   }
   function peerItem(pr) { return pr.gm ? GMI.outfit : (IBY[String(pr.eq || '').split(',')[3]] || null); }
   function ghLook(pr) {
-    if (!pr.hb || !pr.av) return; var q = String(pr.eq || '').split(','), key = (pr.gm ? 'gm' : q[3] || '') + '|' + (q[0] || '');
-    if (pr.lkk === key) return; pr.lkk = key; pr.hb.innerHTML = charHTML(dress(pr.av, peerItem(pr)));
+    if (!pr.hb || !pr.av) return; var q = String(pr.eq || '').split(','), key = (pr.gm ? 'gm' : q[3] || '') + '|' + (q[0] || '') + '|' + (q[1] || '') + '|' + (q[2] || '');
+    if (pr.lkk === key) return; pr.lkk = key; pr.hb.innerHTML = charHTML(dress(pr.av, peerItem(pr)), null, pr.gm ? null : { sh: IBY[q[1]] || null, ar: IBY[q[2]] || null });
     pr.pk = pr.hb.querySelector('.fpk'); var wi = pr.gm ? GMI.weapon : IBY[q[0]]; if (pr.pk) pr.pk.innerHTML = weaponSVG(wi ? (wi.skin || wi.kind) : 'dagger');
   }
   function updHero() {
@@ -4117,7 +4333,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var hh = $('hero2'), moved = false;
     if (kb) { var kt = Math.min(1, (t - kb.t0) / 200); hero.x = kb.x0 + (kb.x1 - kb.x0) * kt; hero.y = kb.y0 + (kb.y1 - kb.y0) * kt; updHero(); ftarget = null; moved = true; if (kt >= 1) kb = null; }
     if (ftarget) {
-      if (hero.sit != null) standUp(); var dx = ftarget.x - hero.x, dy = ftarget.y - hero.y, d = Math.hypot(dx, dy), step = SPEED * dt;
+      if (hero.sit != null) standUp(); var dx = ftarget.x - hero.x, dy = ftarget.y - hero.y, d = Math.hypot(dx, dy), step = SPEED * dt * (performance.now() < skHasteUntil ? 1.5 : 1);
       if (d <= step) { hero.x = ftarget.x; hero.y = ftarget.y; var sp = ftarget.spot, dk = ftarget.door, rv = ftarget.rev; ftarget = null; if (hh) hh.classList.remove('walk'); updHero(); if (sp && !sp.used) { startDig(sp); } else if (dk) openDoor(dk); else if (rv) doRevive(rv); }
       else { hero.x += dx / d * step; hero.y += dy / d * step; if (Math.abs(dx) > 3) hero.dir = dx > 0 ? 1 : -1; moved = true; if (hh) hh.classList.add('walk'); updHero(); }
     }
