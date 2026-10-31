@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:39-->
+<!--GV:40-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -324,7 +324,6 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #fTools #gmTog.on{border-color:#ffd36a;color:#ffe9a8;background:rgba(40,30,6,.88)}
 #field.digging #fTools{bottom:70px}
 #field.digging #qcPanel{bottom:108px}
-#field.town #fTools{bottom:134px}
 #qcPanel button{padding:11px 4px;border-radius:12px;border:1px solid rgba(255,255,255,.22);background:rgba(255,255,255,.08);color:#fff;font-weight:800;font-size:13px}
 #qcPanel button.hl{border-color:#ff7a8a;background:rgba(255,80,100,.22)}
 .gh.gmg .hb{filter:drop-shadow(0 0 7px #ffd36a) drop-shadow(0 0 16px #ffd36a)}
@@ -393,6 +392,23 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #fBack.wide{width:auto;height:42px;border-radius:999px;padding:0 13px;font-size:12px;font-weight:800;white-space:nowrap}
 #fBack.wide small{display:none}
 #field.plaza #tchat{display:none}
+#field.town #tchat{display:block;bottom:46px}
+#field.town:not(.chat) #trow{display:none}
+#field.town.chat #tchat{bottom:6px}
+#field.town #fTools{bottom:6px}
+#field.town.chat #fTools{bottom:62px}
+#field.town #qcPanel{bottom:44px}
+#field.town.chat #qcPanel{bottom:100px}
+#field.town #fTools #plChat{display:block}
+#field.town.chat #fTools #plChat{background:#ffd36a;color:#3a2a08;border-color:#ffd36a}
+#fTools{flex-wrap:wrap;row-gap:5px}
+#fTools #dashBtn{border:1.5px solid #b0e0ff;background:rgba(10,26,40,.82);color:#d6f1ff}
+#fTools #spBtn{border:1.5px solid #888;background:rgba(30,20,40,.82);color:#bbb}
+#fTools #spBtn.rdy{border-color:#ffd36a;background:linear-gradient(#ff9a3c,#ff5a3c);color:#fff;box-shadow:0 0 10px #ffb347;animation:spg .9s infinite alternate}
+@keyframes spg{to{box-shadow:0 0 20px #ff8a3c}}
+#hero2.dash{opacity:.45;filter:blur(1px)}
+.spfx{position:absolute;border-radius:50%;pointer-events:none;z-index:99998;border:6px solid #ffe08a;box-shadow:0 0 24px #ffb347,inset 0 0 24px #ffb347;transform:translate(-50%,-50%) scale(.15);animation:spr .55s ease-out forwards}
+@keyframes spr{to{transform:translate(-50%,-50%) scale(1);opacity:0}}
 #field.plaza.chat #tchat{display:block;bottom:6px}
 #field.plaza #tlog{display:none}
 #field.plaza #fTools{bottom:6px}
@@ -427,7 +443,6 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 .town-btn{display:block;margin:8px auto 0;width:auto;min-width:62%;padding:9px 22px;border:0;border-radius:14px;font-weight:800;font-size:14px;color:#3a2a08;background:linear-gradient(180deg,#ffe9a8,#f2c25a);box-shadow:0 3px 10px rgba(0,0,0,.35)}
 #tchat{position:absolute;left:8px;right:8px;bottom:78px;z-index:25;display:none;pointer-events:none}
 #field.town #world::after{box-shadow:inset 0 0 70px 14px rgba(0,0,0,.2)}
-#field.town #tchat{display:block}
 #field.town #fDigBar{display:none !important}
 #tlog{max-height:120px;overflow:hidden;display:flex;flex-direction:column;justify-content:flex-end;gap:3px;margin-bottom:6px}
 #tlog div{align-self:flex-start;max-width:86%;background:rgba(10,14,20,.72);color:#fff;border-radius:12px;padding:4px 10px;font-size:13px;line-height:1.35;word-break:break-all}
@@ -544,7 +559,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v39（闘技場の操作）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v40（ダッシュ・必殺技・新武器）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所や（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -552,7 +567,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   <div id="cfm"><div class="gc"><h3>ゲームをとじる？</h3><p class="tiny">とじても、ここまでの記録は残るで。</p><div class="rw" style="display:flex;gap:8px;margin-top:12px"><button id="cfmNo" type="button" class="gbtn" style="flex:1">つづける</button><button id="cfmYes" type="button" class="gbtn dim" style="flex:1;margin-top:0">とじる</button></div></div></div>
   <section class="scr" id="field">
     <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="装備・もちもの">🎒<small>装備・持物</small></button><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
-    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="plDown"><span>やられた…（このままチャットもできるで）</span><button type="button" class="gbtn" id="plDownGo">🏥 病院へ向かう</button></div><div id="fTools"><button id="plChat" type="button">💬 チャット</button><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">💬</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしもた…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
+    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="plDown"><span>やられた…（このままチャットもできるで）</span><button type="button" class="gbtn" id="plDownGo">🏥 病院へ向かう</button></div><div id="fTools"><button id="plChat" type="button">💬 チャット</button><button id="dashBtn" type="button">💨 ダッシュ</button><button id="spBtn" type="button">✨ 0%</button><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">💬</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしもた…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
         <div id="gld"><div class="gc"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="tiny">ギルドの部屋</span><button id="gClose" type="button" class="gbtn" style="padding:6px 12px">とじる</button></div><div id="gBody"></div></div></div>
         <div id="npc"><div class="nc"><div class="nh"><b id="npcN"></b><button type="button" class="gbtn" id="npcX" style="padding:6px 12px">とじる</button></div><div id="npcSay"></div><div id="npcQs"></div><div class="nin"><input id="npcIn" maxlength="30" placeholder="聞きたいこと（例：HP、闘技場、売る）" autocomplete="off"><button type="button" class="gbtn" id="npcGo">きく</button></div><div id="npcAct"></div></div></div><div id="arInv"><b id="arInvT"></b><div><button type="button" class="abtn" id="arInvY">受ける</button><button type="button" class="gbtn" id="arInvN">ことわる</button></div></div><div id="updBar" role="button">🔄 新しい版があるで。ここをタップして更新</div>
         <div id="arBig"></div>
@@ -1369,6 +1384,18 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('skip').addEventListener('click', fromOpening);
 
   /* ---------- ゲームマネー・もちもの・ショップ ---------- */
+  var SPD = {
+    k_sword: { nm: '円月斬', ds: 'まわりの3マス以内の敵をまとめて斬る（×2.5）', t: 'ring', r: 225, m: 2.5 },
+    k_bow: { nm: '三連矢', ds: 'ねらった敵に、矢を3本つづけて射る（×1.2を3回）', t: 'multi', r: 300, n: 3, m: 1.2 },
+    k_gun: { nm: '貫通弾', ds: 'まっすぐ飛ぶ弾で、ならんだ敵をまとめて貫く（×2.4）', t: 'line', len: 450, m: 2.4 },
+    flame: { nm: '業炎斬', ds: 'まわり4マス以内の敵を、炎でやきはらう（×3）', t: 'ring', r: 300, m: 3 },
+    shadow: { nm: '影縫い', ds: '敵のそばへ一瞬でとんで、3回斬りつける（×1.4を3回）', t: 'dashhit', r: 460, n: 3, m: 1.4 },
+    storm: { nm: '嵐の矢', ds: 'まわり4マス以内の敵に、矢の雨をふらせる（×2）', t: 'ring', r: 300, m: 2 },
+    thunder: { nm: '雷鳴砲', ds: '長いいかずちが、まっすぐ貫く（×3）', t: 'line', len: 700, m: 3 },
+    quake: { nm: '地割れ', ds: 'まわり3.5マス以内の敵に、大ダメージ（×3.5）', t: 'ring', r: 262, m: 3.5 },
+    dragon: { nm: '竜王の咆哮', ds: '画面ぜんたいの敵にダメージ（×2.2）', t: 'ring', r: 560, m: 2.2 },
+    cannon: { nm: '魔王砲', ds: 'ねらった敵に超ダメージ（×6）。まわりの敵にも、はんぶん', t: 'blast', r: 450, m: 6, sr: 150 }
+  };
   var ITEMS = [
     { id: 'o1', slot: 'outfit', nm: '作業エプロン', price: 300, tier: 0, ic: '🧑‍🔧', fx: '見た目：うっすら光るオーラ' },
     { id: 'o2', slot: 'outfit', nm: '鑑定士のジャケット', price: 1500, tier: 1, ic: '🧥', fx: '見た目：青いオーラ' },
@@ -1386,6 +1413,13 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     { id: 'b2', slot: 'weapon', kind: 'bow', nm: 'エルフの長弓', price: 3000, tier: 1, ic: '🏹', atk: 5, rng: 225, cd: 450, fx: '弓：こうげき +5。3マス先まで射てる（剣よりは弱め）' },
     { id: 'b3', slot: 'weapon', kind: 'bow', nm: '月光の弓', price: 22000, tier: 3, ic: '🏹', atk: 13, rng: 225, cd: 400, drop: true, fx: '弓：こうげき +13。3マス先まで（店では売ってへん）' },
     { id: 'g1', slot: 'weapon', kind: 'gun', nm: '火縄銃', price: 3500, tier: 1, ic: '🔫', atk: 5, rng: 300, cd: 1100, fx: '銃：こうげき +5。4マス先まで。うつのに時間がかかる' },
+    { id: 'w5', slot: 'weapon', kind: 'sword', nm: 'ほむらの大剣', price: 40000, tier: 3, ic: '🔥', atk: 26, drop: true, sr: true, sp: 'flame', fx: '剣：こうげき +26（強い敵から、ごくまれに落ちる）' },
+    { id: 'w6', slot: 'weapon', kind: 'sword', nm: '影縫いの双牙', price: 38000, tier: 3, ic: '🌑', atk: 22, drop: true, sr: true, sp: 'shadow', fx: '剣：こうげき +22（強い敵から、ごくまれに落ちる）' },
+    { id: 'b4', slot: 'weapon', kind: 'bow', nm: '嵐呼びの弓', price: 40000, tier: 3, ic: '🌪️', atk: 18, rng: 225, cd: 380, drop: true, sr: true, sp: 'storm', fx: '弓：こうげき +18。3マス先まで（強い敵から、ごくまれに落ちる）' },
+    { id: 'g3', slot: 'weapon', kind: 'gun', nm: '雷鳴の長銃', price: 42000, tier: 3, ic: '⚡', atk: 20, rng: 300, cd: 850, drop: true, sr: true, sp: 'thunder', fx: '銃：こうげき +20。4マス先まで（強い敵から、ごくまれに落ちる）' },
+    { id: 'w7', slot: 'weapon', kind: 'sword', nm: '覇王の剛剣', price: 60000, tier: 3, ic: '👑', atk: 32, drop: true, bo: true, sp: 'quake', fx: '剣：こうげき +32（ボスだけが落とす）' },
+    { id: 'b5', slot: 'weapon', kind: 'bow', nm: '竜王の神弓', price: 60000, tier: 3, ic: '🐲', atk: 24, rng: 225, cd: 350, drop: true, bo: true, sp: 'dragon', fx: '弓：こうげき +24。3マス先まで（ボスだけが落とす）' },
+    { id: 'g4', slot: 'weapon', kind: 'gun', nm: '魔王の大砲', price: 65000, tier: 3, ic: '💥', atk: 26, rng: 300, cd: 800, drop: true, bo: true, sp: 'cannon', fx: '銃：こうげき +26。4マス先まで（ボスだけが落とす）' },
     { id: 'g2', slot: 'weapon', kind: 'gun', nm: '魔導ライフル', price: 26000, tier: 3, ic: '🔫', atk: 15, rng: 300, cd: 900, drop: true, fx: '銃：こうげき +15。4マス先まで（店では売ってへん）' },
     { id: 's1', slot: 'shield', nm: '木の盾', price: 400, tier: 0, ic: '🛡️', def: .10, fx: '受けるダメージ 10% カット。ガードでさらに軽く' },
     { id: 's2', slot: 'shield', nm: '鉄の盾', price: 2200, tier: 1, ic: '🛡️', def: .20, fx: '受けるダメージ 20% カット' },
@@ -1397,6 +1431,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     { id: 'a4', slot: 'armor', nm: '竜鱗の鎧', price: 25000, tier: 3, ic: '🐉', hp: 220, drop: true, fx: 'HP +220（店では売ってへん）' }
   ];
   var SLOTS = ['outfit', 'tool', 'weapon', 'shield', 'armor'], SLN = { outfit: '衣装', tool: '採掘道具', weapon: '武器（剣・弓・銃）', shield: '盾', armor: '防具' };
+  ITEMS.forEach(function (i) { if (i.slot !== 'weapon') return; var d = SPD[i.sp || ('k_' + i.kind)]; if (i.kind === 'sword') i.fx += ' ／ 近距離ボーナス：ダメージ +15%'; if (d) i.fx += ' ／ 必殺技「' + d.nm + '」：' + d.ds; });
   var IBY = {}; ITEMS.forEach(function (i) { IBY[i.id] = i; });
   var AURA = ['rgba(255,255,255,.35)', 'rgba(88,166,255,.8)', 'rgba(181,131,255,.85)', 'rgba(255,211,106,.95)'];
   var bagTab = 0, buyArm = null, lastGain = 0, lastXp = 0, lastLvUp = 0;
@@ -1992,7 +2027,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function openTown() {
     inTown = true; shared = false; curMine = null; fz = zoomT = .62;
-    $('field').classList.add('town'); $('fTtl').textContent = 'オパ会の町';
+    $('field').classList.remove('chat'); $('field').classList.add('town'); $('fTtl').textContent = 'オパ会の町';
     zoomT = .62; buildTown(); show('field'); closeSheets(); digUI(false); BGM.set('town'); gearUi();
     $('fhud').innerHTML = '<span style="flex:1;text-align:center">町では、みんなと歩いて話せるで（ことばは保存されへん）</span>';
     var tip = $('ftip'); tip.style.opacity = 1; tip.textContent = '歩きたい場所をタップ！ ショップ・ギルド・病院（HP回復）・取引所・⚔闘技場（プレイヤー同士で戦えるのはここだけ）は、建物をタップ。下の欄から、ひとこと話せるで'; clearTimeout(tipT); tipT = setTimeout(function () { tip.style.opacity = 0; }, 6000);
@@ -2137,13 +2172,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var pr = peers[m.f]; if (!plInFloor(pr)) return;
     var now = performance.now(); if (now - (arena.hitAt[m.f] || 0) < 150) return; arena.hitAt[m.f] = now;
     if (Math.hypot(hero.x - pr.x, hero.y - pr.y) > 620) return;
+    if (evadeHit()) return;
     var d = Math.max(1, Math.min(500, Math.round(+m.d || 1))), dmg = Math.max(1, Math.round(d * (1 - defP())));
     hp.cur = Math.max(0, hp.cur - dmg); floatTxt(hero.x, hero.y - 74, '-' + dmg); sfx(1); vib([30, 20, 30]);
     var hb = $('hb'); if (hb) { hb.classList.remove('lunge', 'hurt'); void hb.offsetWidth; hb.classList.add('hurt'); }
     hpUi(); rtLast = 0; if (hp.cur <= 0) plKO();
   }
   function plKO() {
-    hp.cur = 0; hp.down = true; ftarget = null; hpUi(); rtLast = 0; bubble($('hero2'), 'やられた…'); $('plDown').classList.add('on');
+    hp.cur = 0; hp.down = true; skG = 0; ftarget = null; hpUi(); rtLast = 0; bubble($('hero2'), 'やられた…'); $('plDown').classList.add('on');
   }
   function plAttack(pr) {
     var rg = atkRange(), dist = Math.hypot(hero.x - pr.x, hero.y - pr.y);
@@ -2256,6 +2292,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (m.team[m0.f] === m.my) return; var pr = peers[m0.f]; if (!pr || pr.dn) return;
     var now = performance.now(); if (now - (m.hit[m0.f] || 0) < 150) return; m.hit[m0.f] = now;
     if (Math.hypot(hero.x - pr.x, hero.y - pr.y) > 620) return;
+    if (evadeHit()) return;
     var d = Math.max(1, Math.min(500, Math.round(+m0.d || 1))), dmg = Math.max(1, Math.round(d * (1 - defP())));
     hp.cur = Math.max(0, hp.cur - dmg); floatTxt(hero.x, hero.y - 74, '-' + dmg); sfx(1); vib([30, 20, 30]);
     var hb = $('hb'); if (hb) { hb.classList.remove('lunge', 'hurt'); void hb.offsetWidth; hb.classList.add('hurt'); }
@@ -2310,7 +2347,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 39;
+  var GV = 40;
   (function () {
     var last = Date.now();
     function chk() {
@@ -2787,20 +2824,22 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var hp = { cur: 0, max: 0, down: false, inv: 0, ready: false }, downT = 0, downLeft = 0;
   function plv() { return Math.max(1, (player && player.lv) || 1); }
   function hpMaxNow() { if (isGM()) return (inArena || inPlaza) ? 900 : 9999; var a = eqItem('armor'); return 80 + 10 * plv() + (a ? a.hp : 0); }
-  function atkP() { var w = curW(); if (!w) return Math.max(1, Math.round(1 + Math.min(plv(), 60) / 12)); return Math.round((Math.round(6 + 1.5 * plv()) + w.atk) * (w.rng && !isGM() ? .8 : 1)); }
+  function atkP() { var w = curW(); if (!w) return Math.max(1, Math.round(1 + Math.min(plv(), 60) / 12)); return Math.round((Math.round(6 + 1.5 * plv()) + w.atk) * (isGM() ? 1 : (w.rng ? .8 : 1.15))); }
   var guard = false, atkAt = 0;
   function defP() { var s = eqItem('shield'), h = isGM() ? GMI.helm : null; return Math.min(.85, (s ? s.def : 0) + (h ? h.def : 0) + (guard ? .4 : 0)); }
   function atkReady() { var w = curW(), n = performance.now(); if (n < atkAt) return false; atkAt = n + (w && w.cd ? w.cd : 0); return true; }
   function atkRange() { var w = curW(); return w && w.rng ? w.rng : 150; }
-  function diffN() { var m = (curMine && MBY[curMine]) ? MBY[curMine].lv : 1; return Math.max(0, Math.min(1, (m - 1) / 60)); }
-  function foeCap() { return 5 + Math.round(Math.pow(diffN(), 1.15) * 31); }
-  function waveGap() { var d = diffN(); return 26 * Math.pow(1 - d, 1.5) + 1.2; }
+  function mlv() { return (curMine && MBY[curMine]) ? MBY[curMine].lv : 1; }
+  function diffN() { var m = mlv(); return m <= 10 ? Math.max(0, (m - 1) / 90) : Math.min(1, .35 + (m - 11) / 50 * .65); }
+  function foeCap() { return 5 + Math.round(Math.pow(diffN(), 1.15) * 31) + (mlv() >= 11 ? 4 : 0); }
+  function waveGap() { var d = diffN(); return (26 * Math.pow(1 - d, 1.5) + 1.2) * (mlv() >= 11 ? .7 : 1); }
   function foeAlive() { return foes.filter(function (x) { return x.mode !== 'dead' && !x.boss; }).length; }
   function isAus() { var m = curMine && MBY[curMine]; return !!(m && /^オーストラリア/.test(m.ct)); }
   function bigChance() { if (!isAus()) return 0; return .35 + .3 * diffN(); }
   function foeStat(tier, big) {
     var fl = ((curMine && MBY[curMine]) ? MBY[curMine].lv : 1) + [0, 2, 4][tier], k = big ? 1 : 0;
-    return { hp: Math.round((18 + 4 * fl) * [1, 1.6, 2.4][tier] * (k ? 3.5 : 1)), atk: Math.round((4 + .9 * fl) * [1, 1.3, 1.7][tier] * (k ? 1.7 : 1)) };
+    var ml = mlv(), hB = ml >= 11 ? 1 + Math.min(1.5, (ml - 10) * .06) : 1, aB = ml >= 11 ? 1 + Math.min(1.2, (ml - 10) * .05) : 1;
+    return { hp: Math.round(hB * (18 + 4 * fl) * [1, 1.6, 2.4][tier] * (k ? 3.5 : 1)), atk: Math.round(aB * (4 + .9 * fl) * [1, 1.3, 1.7][tier] * (k ? 1.7 : 1)) };
   }
   function hpUi() {
     var mx = hpMaxNow();
@@ -2816,9 +2855,94 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function posMsg() { return { t: 'pos', x: Math.round(hero.x), y: Math.round(hero.y), d: hero.dir, h: Math.round(hp.cur / Math.max(1, hp.max) * 100), dn: hp.down ? 1 : 0, md: (arena && arena.m && !arena.m.over) ? arena.m.mid : 0, gm: isGM() ? 1 : 0, lv: (player && player.lv) || 1, eq: EQSL.map(function (sl) { var q = eqItem(sl); return q ? q.id : ''; }).join(',') }; }
   var EQSL = ['weapon', 'shield', 'armor', 'outfit', 'tool', 'helm'];
   function rtHp() { if (rtOn) { rtLast = 0; } }
+
+  var skG = 0, dashAt = 0, dashInv = 0, guardAt = 0, jfxAt = 0, qcMode = '';
+  function skAdd(n) { if (isGM()) return; skG = Math.min(100, skG + n); skUi(); }
+  function spDef() { var w = curW(); if (!w) return null; return SPD[w.sp || ('k_' + (w.kind || 'sword'))] || null; }
+  function skUi() {
+    var b = $('spBtn'); if (!b || b.style.display === 'none') return; var d = spDef(); if (!d) return;
+    var rdy = isGM() || skG >= 100; b.classList.toggle('rdy', rdy); b.textContent = rdy ? '✨ ' + d.nm : '✨ ' + Math.floor(skG) + '%';
+  }
+  function dashUi() {
+    var b = $('dashBtn'); if (!b || b.style.display === 'none') return; var r = dashAt - performance.now();
+    b.textContent = r > 0 ? '💨 ' + Math.ceil(r / 1000) : '💨 ダッシュ'; b.style.opacity = r > 0 ? .55 : 1;
+  }
+  setInterval(function () { if (fieldOn) dashUi(); }, 200);
+  function justFx(t, g) { var n = performance.now(); if (n - jfxAt < 500) return; jfxAt = n; floatTxt(hero.x, hero.y - 94, t, 'y'); skAdd(g); sfx(2); vib(15); }
+  function evadeHit() {
+    var n = performance.now();
+    if (n < dashInv) { justFx('ジャスト回避！', 15); return true; }
+    if (guard && n - guardAt < 350) { justFx('ジャストガード！', 30); return true; }
+    return false;
+  }
+  function enemies() {
+    var a = [];
+    if (inPlaza) { if (hero.y >= FLOOR_Y) Object.keys(peers).forEach(function (id) { var q = peers[id]; if (plInFloor(q) && !q.dn) a.push({ k: 'p', o: q, x: q.x, y: q.y, r: 0 }); }); }
+    else if (inArena) { var m = arena.m; if (m && m.live) m.ids.forEach(function (id) { var q = peers[id]; if (!q || id === myMid || m.team[id] === m.my || q.dn || m.ko[id]) return; a.push({ k: 'a', o: q, x: q.x, y: q.y, r: 0 }); }); }
+    else if (!inTown) foes.forEach(function (f) { if (f.mode !== 'dead') a.push({ k: 'f', o: f, x: f.x, y: f.y, r: f.boss ? 60 : (f.big ? 30 : 0) }); });
+    return a;
+  }
+  function nearestE(list) { var b = null, bd = 1e9; list.forEach(function (e) { var d = Math.hypot(hero.x - e.x, hero.y - e.y) - e.r; if (d < bd) { bd = d; b = e; } }); return b ? { e: b, d: bd } : null; }
+  function pvpMode() { return inPlaza || inArena; }
+  function hitE(e, mult) {
+    var base = pvpMode() ? arDmg() : atkP(), dm = Math.round(base * mult); if (pvpMode()) dm = Math.min(500, dm);
+    if (e.k === 'f') { floatTxt(e.x, e.y - 80, isGM() ? '一撃！' : '-' + dm, 'y'); dustW(e.x, e.y - 30); if (amFoeHost()) applyFoeDamage(e.o, dm); else rtSend({ t: 'hit', i: e.o.id, d: dm }); }
+    else { floatTxt(e.x, e.y - 80, '-' + dm, 'y'); if (e.o.el) { e.o.el.classList.remove('gmhit'); void e.o.el.offsetWidth; e.o.el.classList.add('gmhit'); } if (e.k === 'p') arSend({ t: 'fhit', to: e.o.id, d: dm }); else arSend({ t: 'ahit', to: e.o.id, d: dm, mid: arena.m.mid }); }
+  }
+  function spRing(r) { var e = document.createElement('i'); e.className = 'spfx'; e.style.left = hero.x + 'px'; e.style.top = (hero.y - 20) + 'px'; e.style.width = e.style.height = (r * 2) + 'px'; $('world').appendChild(e); setTimeout(function () { e.remove(); }, 600); }
+  function heroTo(x, y) {
+    var mn = inPlaza ? 70 : (inArena ? 230 : 200); hero.x = clamp(x, 40, WW - 40); hero.y = clamp(y, mn, WH - 40); ftarget = null; updHero();
+    var h = $('hero2'); if (h) { h.classList.add('dash'); setTimeout(function () { h.classList.remove('dash'); }, 260); }
+  }
+  function doDash() {
+    var w = curW(); if (!w || hp.down || busy || inTown) return; var n = performance.now();
+    if (n < dashAt) { toast('ダッシュは、あと ' + Math.ceil((dashAt - n) / 1000) + ' 秒で使えるで'); return; }
+    var en = enemies(), ne = nearestE(en), ranged = !!w.rng, nx, ny;
+    if (!ranged) {
+      if (ne && ne.d < 460 + 30) { var dx = ne.e.x - hero.x, dy = ne.e.y - hero.y, L = Math.hypot(dx, dy) || 1, mv = Math.max(0, Math.min(L - 70 - ne.e.r * .5, 460)); nx = hero.x + dx / L * mv; ny = hero.y + dy / L * mv; hero.dir = dx >= 0 ? 1 : -1; }
+      else { nx = hero.x + hero.dir * 170; ny = hero.y; }
+    } else {
+      if (ne && ne.d < 420) { var ex = hero.x - ne.e.x, ey = hero.y - ne.e.y, M = Math.hypot(ex, ey) || 1; nx = hero.x + ex / M * 190; ny = hero.y + ey / M * 190; }
+      else { nx = hero.x - hero.dir * 170; ny = hero.y; }
+    }
+    dashAt = n + (ranged ? 5000 : 4500); dashInv = n + 450; hp.inv = Math.max(hp.inv, n + 450); heroTo(nx, ny); sfx(2); vib(15); dashUi();
+  }
+  function doSpecial() {
+    var w = curW(); if (!w || hp.down || busy || inTown) return; var d = spDef(); if (!d) return;
+    if (!isGM() && skG < 100) { toast('「' + d.nm + '」は、ゲージがあと ' + (100 - Math.floor(skG)) + '% で使えるで（敵に当てると、たまる）'); return; }
+    if (guard) { toast('ガード中は、使えへんで'); return; }
+    var en = enemies(); if (!en.length) { toast(pvpMode() ? 'ほかの人がおらんで' : '敵がおらんで'); return; }
+    var ne = nearestE(en), done = false, i;
+    function fin() { skG = 0; skUi(); sfx('hit'); vib([30, 20, 60]); floatTxt(hero.x, hero.y - 100, '✨ ' + d.nm + '！', 'y'); swingAnim(); }
+    if (d.t === 'ring') {
+      var hs = en.filter(function (e) { return Math.hypot(hero.x - e.x, hero.y - e.y) - e.r <= d.r; });
+      if (!hs.length) { toast('とどく敵がおらんで（もっと近づいてな）'); return; }
+      spRing(d.r); hs.forEach(function (e) { hitE(e, d.m); }); done = true;
+    } else if (d.t === 'line') {
+      if (ne.d > d.len) { toast('とどく敵がおらんで（もっと近づいてな）'); return; }
+      var dx = ne.e.x - hero.x, dy = ne.e.y - hero.y, L = Math.hypot(dx, dy) || 1, ux = dx / L, uy = dy / L; hero.dir = dx >= 0 ? 1 : -1; updHero();
+      en.forEach(function (e) { var px = e.x - hero.x, py = e.y - hero.y, t = px * ux + py * uy, pd = Math.abs(px * uy - py * ux); if (t >= 0 && t <= d.len && pd < 60 + e.r) { shootFx(e.x, e.y, 'gun'); hitE(e, d.m); } }); done = true;
+    } else if (d.t === 'multi') {
+      if (ne.d > d.r) { toast('とどく敵がおらんで（もっと近づいてな）'); return; }
+      var tg = ne.e; hero.dir = tg.x >= hero.x ? 1 : -1; updHero();
+      for (i = 0; i < d.n; i++) (function (k) { setTimeout(function () { if (tg.k === 'f' && tg.o.mode === 'dead') return; shootFx(tg.x, tg.y, 'bow'); hitE(tg, d.m); }, k * 190); })(i); done = true;
+    } else if (d.t === 'dashhit') {
+      if (ne.d > d.r) { toast('とどく敵がおらんで（もっと近づいてな）'); return; }
+      var t2 = ne.e, ddx = t2.x - hero.x, ddy = t2.y - hero.y, LL = Math.hypot(ddx, ddy) || 1, mv = Math.max(0, LL - 70); heroTo(hero.x + ddx / LL * mv, hero.y + ddy / LL * mv); dashInv = performance.now() + 900; hp.inv = Math.max(hp.inv, dashInv);
+      for (i = 0; i < d.n; i++) (function (k) { setTimeout(function () { if (t2.k === 'f' && t2.o.mode === 'dead') return; hitE(t2, d.m); swingAnim(); }, 120 + k * 210); })(i); done = true;
+    } else if (d.t === 'blast') {
+      if (ne.d > d.r) { toast('とどく敵がおらんで（もっと近づいてな）'); return; }
+      var t3 = ne.e; shootFx(t3.x, t3.y, 'gun'); hitE(t3, d.m); en.forEach(function (e) { if (e !== t3 && Math.hypot(e.x - t3.x, e.y - t3.y) <= d.sr) hitE(e, d.m / 2); }); done = true;
+    }
+    if (done) fin();
+  }
+  $('dashBtn').addEventListener('click', doDash); $('spBtn').addEventListener('click', doSpecial);
+  ['dashBtn', 'spBtn', 'plChat'].forEach(function (id) { $(id).addEventListener('pointerdown', function (e) { e.stopPropagation(); }); });
   function hurtMe(dmg) {
     if (hp.down || inTown || busy) return false;
-    var now = performance.now(); if (now < hp.inv) return false; hp.inv = now + 650;
+    var now = performance.now(); if (now < hp.inv) { if (now < dashInv) justFx('ジャスト回避！', 15); return false; }
+    if (guard && now - guardAt < 350) { hp.inv = now + 650; justFx('ジャストガード！', 30); return false; }
+    hp.inv = now + 650;
     dmg = Math.max(1, Math.round(dmg * (1 - defP()))); hp.cur = Math.max(0, hp.cur - dmg);
     floatTxt(hero.x, hero.y - 74, '-' + dmg); sfx(1); vib([30, 20, 30]);
     var hb = $('hb'); if (hb) { hb.classList.remove('lunge', 'hurt'); void hb.offsetWidth; hb.classList.add('hurt'); }
@@ -2827,7 +2951,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     return true;
   }
   function goDown() {
-    hp.down = true; guard = false; gearUi(); removeMon(); if (curSpot) cancelDig(); ftarget = null; var hh = $('hero2'); if (hh) hh.classList.remove('walk');
+    hp.down = true; guard = false; skG = 0; gearUi(); removeMon(); if (curSpot) cancelDig(); ftarget = null; var hh = $('hero2'); if (hh) hh.classList.remove('walk');
     hpUi(); rtHp(); clearTimeout(downT);
     var n = Object.keys(peers).length;
     $('downov').classList.add('on');
@@ -2878,7 +3002,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     g.style.display = (has && fieldOn) ? 'block' : 'none'; g.classList.toggle('on', guard); g.textContent = guard ? '🛡 ガード中' : '🛡 ガード';
     var hh = $('hero2'); if (hh) hh.classList.toggle('guard', guard);
     var sw = $('swBtn'); if (sw) { sw.style.display = (fieldOn && !inTown && eqItem('weapon')) ? 'block' : 'none'; sw.textContent = handW() ? '🔁 つるはし' : '🔁 武器'; }
-    var qb = $('qcBtn'); if (qb) { var qs = fieldOn && !inTown && rtOn; qb.style.display = qs ? 'block' : 'none'; if (!qs) $('qcPanel').classList.remove('on'); }
+    var hv = !!(fieldOn && !inTown && eqItem('weapon') && handW()); $('dashBtn').style.display = hv ? 'block' : 'none'; $('spBtn').style.display = hv ? 'block' : 'none'; skUi(); dashUi();
+    var qb = $('qcBtn'); if (qb) { var qs = fieldOn; qb.style.display = qs ? 'block' : 'none'; if (!qs) $('qcPanel').classList.remove('on'); var wm = inTown ? 't' : 'b'; if (qcMode !== wm) { qcMode = wm; qcFill(); $('qcPanel').classList.remove('on'); } }
     handUi();
   }
   function shootFx(fx, fy, kind) {
@@ -2888,23 +3013,26 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function canAttack() {
     if (guard) { toast('ガード中は、たたけへんで'); return false; }
-    return atkReady();
+    if (!atkReady()) return false;
+    var w = curW(); skAdd(w && w.rng ? 9 : 12); return true;
   }
   $('swBtn').addEventListener('click', function () { wHand = wHand === 'weapon' ? 'pick' : 'weapon'; gearUi(); sfx(2); });
   var QC = [['🆘 たすけて！', 'たすけて！', 1], ['❗ ヘルプ！', 'ヘルプ！', 1], ['👍 ナイス！', 'ナイス！'], ['🙌 グッジョブ！', 'グッジョブ！'], ['👉 こっち！', 'こっち来て！'], ['🙏 ありがとう', 'ありがとう！'], ['🆗 りょうかい', 'りょうかい！'], ['⚠️ きをつけて', '気をつけて！']];
-  $('qcPanel').innerHTML = QC.map(function (q, i) { return '<button type="button" data-q="' + i + '"' + (q[2] ? ' class="hl"' : '') + '>' + q[0] + '</button>'; }).join('');
+  var QCT = [['👋 こんにちは！', 'こんにちは！'], ['🌅 おはよう！', 'おはよう！'], ['🌙 こんばんは！', 'こんばんは！'], ['😊 よろしくね！', 'よろしくね！'], ['✨ はじめまして！', 'はじめまして！'], ['🙏 ありがとう！', 'ありがとう！'], ['🎉 おめでとう！', 'おめでとう！'], ['👋 またね！', 'またね！']], QCcur = QC;
+  function qcFill() { QCcur = inTown ? QCT : QC; $('qcPanel').innerHTML = QCcur.map(function (q, i) { return '<button type="button" data-q="' + i + '"' + (q[2] ? ' class="hl"' : '') + '>' + q[0] + '</button>'; }).join(''); }
+  qcFill();
   $('qcBtn').addEventListener('click', function () { $('qcPanel').classList.toggle('on'); });
   $('qcPanel').addEventListener('click', function (e) {
-    var b = e.target.closest && e.target.closest('button[data-q]'); if (!b) return; var q = QC[+b.dataset.q];
+    var b = e.target.closest && e.target.closest('button[data-q]'); if (!b) return; var q = QCcur[+b.dataset.q];
     var now = Date.now(); if (now - tChatAt < 1000) return; tChatAt = now; $('qcPanel').classList.remove('on');
     bubble($('hero2'), q[1]); if (rtOn) rtSend({ t: 'chat', x: q[1], q: 1 }); sfx(0);
   });
   ['swBtn', 'qcBtn', 'qcPanel'].forEach(function (id) { $(id).addEventListener('pointerdown', function (e) { e.stopPropagation(); }); });
-  $('guardBtn').addEventListener('click', function () { guard = !guard; gearUi(); sfx(2); });
+  $('guardBtn').addEventListener('click', function () { guard = !guard; if (guard) guardAt = performance.now(); gearUi(); sfx(2); });
   $('guardBtn').addEventListener('pointerdown', function (e) { e.stopPropagation(); });
   var foes = [], fgen = 0;
   function foeDef() {
-    var mi = Math.max(0, MINES.indexOf(MBY[curMine])), tier = Math.min(2, (Math.random() < .45 ? 1 : 0) + ((MBY[curMine] && MBY[curMine].lv >= 30) ? 1 : 0) + (Math.random() < .12 ? 1 : 0));
+    var mi = Math.max(0, MINES.indexOf(MBY[curMine])), tier = Math.min(2, (Math.random() < .45 ? 1 : 0) + ((MBY[curMine] && MBY[curMine].lv >= 30) ? 1 : 0) + ((MBY[curMine] && MBY[curMine].lv >= 11 && Math.random() < .35) ? 1 : 0) + (Math.random() < .12 ? 1 : 0));
     var pool = MONS.filter(function (x) { return x.tier === tier; });
     return pool[Math.floor(Math.random() * pool.length)];
   }
@@ -2937,7 +3065,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function foesTick(dt) {
     if (!amFoeHost()) { netFoesTick(dt); return; }
-    if (!inTown && fieldOn) { var dw = diffN(); if (dw > .03) { waveT -= dt; if (waveT <= 0) { waveT = waveGap() * (.8 + Math.random() * .4); for (var wn = 0, wk = 1 + Math.floor(dw * 2.5); wn < wk; wn++) if (foeAlive() < foeCap()) addFoe(); } } }
+    if (!inTown && fieldOn) { var dw = diffN(); if (dw > .03) { waveT -= dt; if (waveT <= 0) { waveT = waveGap() * (.8 + Math.random() * .4); for (var wn = 0, wk = 1 + Math.floor(dw * 2.5) + (mlv() >= 11 ? 1 : 0); wn < wk; wn++) if (foeAlive() < foeCap()) addFoe(); } } }
     if (busy && !netFoes()) return;
     var tg = [];
     if (!hp.down) tg.push({ id: myMid, x: hero.x, y: hero.y, me: true });
