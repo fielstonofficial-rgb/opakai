@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:49-->
+<!--GV:50-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -603,6 +603,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 .skmaster{display:flex;gap:12px;align-items:flex-start;padding:12px;margin:6px 0 10px;border-radius:16px;border:1px solid #b583ff;background:linear-gradient(180deg,rgba(120,70,200,.22),rgba(60,30,110,.18))}
 .skm-ic{font-size:34px;flex:none}
 .skm-tx{font-size:13px;line-height:1.55}
+
+.oic{display:block;width:42px;height:42px}
+.oic svg{width:100%;height:100%;display:block}
+.eqg .wic,.eqg .oic{display:inline-block;width:20px;height:20px;vertical-align:middle}
+.eqs i .oic,.eqs i .wic{width:34px;height:34px}
 </style>
 </head>
 <body>
@@ -634,7 +639,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v49（武器の価格とレア度を見直し・武器アイコン・スキルの館）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v50（戦いの効果音・服と道具のアイコン・ショップでも着せ替え）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所です（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -831,6 +836,74 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     else if (kind === 2) { [523, 659, 784, 1047, 1319].forEach(function (f, i) { tone(f, i * .1, .45, 'triangle', .16); }); }
     else if (kind === 3) { [523, 659, 784, 1047, 1319, 1568, 2093].forEach(function (f, i) { tone(f, i * .09, .7, 'triangle', .18); tone(f * 2, i * .09 + .03, .5, 'sine', .07); }); }
   }
+
+  /* ---------- 戦いの効果音（ぜんぶ合成。音のファイルは使わない） ---------- */
+  var SND = { c: null, S: null, last: {} };
+  function sndBuild(a) {
+    var S = { c: a }, comp = a.createDynamicsCompressor(); comp.threshold.value = -16; comp.knee.value = 12; comp.ratio.value = 4; comp.attack.value = .002; comp.release.value = .18;
+    var out = a.createGain(); out.gain.value = .95; out.connect(comp); comp.connect(a.destination);
+    var len = Math.floor(a.sampleRate * .75), ib = a.createBuffer(2, len, a.sampleRate), ch, i, d;
+    for (ch = 0; ch < 2; ch++) { d = ib.getChannelData(ch); for (i = 0; i < len; i++) d[i] = (Math.random() * 2 - 1) * Math.pow(1 - i / len, 2.8); }
+    var rev = a.createConvolver(); rev.buffer = ib; var rg = a.createGain(); rg.gain.value = .26; rev.connect(rg); rg.connect(comp);
+    var nb = a.createBuffer(1, a.sampleRate, a.sampleRate); d = nb.getChannelData(0); for (i = 0; i < d.length; i++) d[i] = Math.random() * 2 - 1;
+    S.out = out; S.rev = rev; S.nb = nb; return S;
+  }
+  function vN(S, t, d, type, f0, f1, vol, q, wet) { // 色をつけた雑音（ふり・ばくはつ・風）
+    var c = S.c, s = c.createBufferSource(); s.buffer = S.nb; s.loop = true;
+    var f = c.createBiquadFilter(); f.type = type; f.Q.value = q || 1; f.frequency.setValueAtTime(Math.max(30, f0), t); f.frequency.exponentialRampToValueAtTime(Math.max(30, f1), t + d);
+    var g = c.createGain(); g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol * (S.m || 1), t + Math.min(.01, d / 3)); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    s.connect(f); f.connect(g); g.connect(S.out); if (wet) { var w = c.createGain(); w.gain.value = wet; g.connect(w); w.connect(S.rev); }
+    s.start(t, Math.random() * .4); s.stop(t + d + .03);
+  }
+  function vO(S, t, d, type, f0, f1, vol, wet, at) { // 音程が動く音（どん・ぴん・きん）
+    var c = S.c, o = c.createOscillator(), g = c.createGain(); o.type = type; o.frequency.setValueAtTime(Math.max(20, f0), t); if (f1 !== f0) o.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t + d);
+    g.gain.setValueAtTime(0.0001, t); g.gain.exponentialRampToValueAtTime(vol * (S.m || 1), t + (at || .006)); g.gain.exponentialRampToValueAtTime(0.0001, t + d);
+    o.connect(g); g.connect(S.out); if (wet) { var w = c.createGain(); w.gain.value = wet; g.connect(w); w.connect(S.rev); }
+    o.start(t); o.stop(t + d + .03);
+  }
+  function rr(a, b) { return a + Math.random() * (b - a); }
+  var SNDS = {
+    // --- 近づいて斬る・たたく ---
+    'm:sword': function (S, t) { var p = rr(.94, 1.08); vN(S, t, .13, 'bandpass', 1500 * p, 6500 * p, .2, 1.2); vO(S, t + .05, .3, 'sine', 2600 * p, 2550 * p, .035, .3); vO(S, t + .05, .22, 'sine', 3900 * p, 3880 * p, .02, .3); },
+    'm:katana': function (S, t) { var p = rr(.96, 1.06); vN(S, t, .16, 'bandpass', 3000 * p, 10000 * p, .17, 1.8); vO(S, t + .06, .5, 'sine', 4300 * p, 4260 * p, .045, .5); vO(S, t + .06, .35, 'sine', 6500 * p, 6450 * p, .02, .5); },
+    'm:dagger': function (S, t) { var p = rr(.95, 1.1); vN(S, t, .07, 'bandpass', 3500 * p, 9000 * p, .15, 1.5); vO(S, t + .03, .12, 'triangle', 3200 * p, 2800 * p, .03, 0); },
+    'm:axe': function (S, t) { var p = rr(.94, 1.06); vN(S, t, .18, 'bandpass', 500 * p, 1800 * p, .26, 1); vO(S, t + .1, .16, 'sine', 140, 60, .2, .1); },
+    'm:spear': function (S, t) { var p = rr(.95, 1.06); vN(S, t, .1, 'bandpass', 1400 * p, 4200 * p, .2, 2.2); vO(S, t + .07, .09, 'square', 1800 * p, 900, .03, 0); },
+    'm:hammer': function (S, t) { var p = rr(.94, 1.04); vN(S, t, .22, 'bandpass', 300 * p, 1100 * p, .25, 1); vO(S, t + .14, .42, 'sine', 100, 38, .42, .2); vN(S, t + .14, .12, 'lowpass', 900, 140, .26, .7, .1); },
+    // --- 遠くから撃つ ---
+    'w:bow': function (S, t) { var p = rr(.96, 1.06); vO(S, t, .22, 'triangle', 300 * p, 110, .22, .1); vN(S, t, .04, 'highpass', 3000, 6000, .08, 1); vN(S, t + .04, .16, 'bandpass', 3800 * p, 1400, .08, 2); },
+    'w:cbow': function (S, t) { var p = rr(.96, 1.05); vO(S, t, .1, 'square', 170 * p, 70, .16, 0); vN(S, t, .03, 'highpass', 3500, 7000, .13, 1); vO(S, t + .02, .2, 'triangle', 260 * p, 90, .16, .1); vN(S, t + .04, .14, 'bandpass', 2600, 900, .08, 1.8); },
+    'w:gun': function (S, t) { var p = rr(.95, 1.06); vN(S, t, .22, 'lowpass', 3800 * p, 260, .5, .8, .35); vN(S, t, .02, 'highpass', 2500, 6000, .4, 1); vO(S, t, .22, 'sine', 160 * p, 45, .5, .25); },
+    'w:smg': function (S, t) { var p = rr(.94, 1.1); vN(S, t, .07, 'lowpass', 4500 * p, 500, .38, .8, .15); vN(S, t, .012, 'highpass', 3000, 6000, .28, 1); vO(S, t, .07, 'sine', 210 * p, 80, .3, .1); },
+    'w:shotgun': function (S, t) { var p = rr(.96, 1.04); vN(S, t, .4, 'lowpass', 2600 * p, 160, .75, .7, .4); vN(S, t, .03, 'highpass', 2000, 5000, .5, 1); vO(S, t, .42, 'sine', 120, 32, .75, .3); vO(S, t + .02, .2, 'sawtooth', 190, 55, .22, .1); vN(S, t + .38, .05, 'bandpass', 1800, 2600, .12, 3); vN(S, t + .46, .06, 'bandpass', 1300, 1700, .14, 3); },
+    'w:rifle': function (S, t) { var p = rr(.97, 1.03); vN(S, t, .03, 'highpass', 4000, 9000, .65, 1); vN(S, t, .5, 'lowpass', 3000 * p, 110, .6, .6, .6); vO(S, t, .55, 'sine', 95, 30, .65, .35); vN(S, t + .02, .22, 'bandpass', 6000, 2200, .12, 3, .3); vO(S, t + .03, .25, 'sawtooth', 600, 120, .12, .3); },
+    // --- 当たった音・やられた音 ---
+    'imp': function (S, t, a) { var big = a ? 1.5 : 1, p = rr(.88, 1.15); vO(S, t, .11 * big, 'sine', 200 * p, 60, .3 * big, .05); vN(S, t, .09 * big, 'lowpass', 1800 * p, 260, .3 * big, .8); vN(S, t, .018, 'highpass', 2500, 5000, .2, 1); if (a) vO(S, t, .22, 'sine', 90, 40, .35, .2); },
+    'hurt': function (S, t) { vO(S, t, .26, 'sawtooth', 210, 62, .2, .12); vO(S, t, .22, 'sine', 140, 48, .36, .1); vN(S, t, .12, 'lowpass', 1400, 200, .26, .8); vO(S, t + .05, .3, 'square', 117, 52, .08, .1); },
+    // --- スキル ---
+    's:ring': function (S, t) { vN(S, t, .2, 'bandpass', 600, 4200, .26, 1.2); vN(S, t + .16, .22, 'bandpass', 4200, 700, .22, 1.2); vO(S, t + .05, .5, 'sine', 1760, 1750, .05, .5); vO(S, t + .05, .5, 'sine', 2637, 2630, .04, .5); },
+    's:rush': function (S, t) { vN(S, t, .26, 'bandpass', 500, 7500, .3, 1.5); vO(S, t, .26, 'sawtooth', 220, 1100, .07, 0); vO(S, t + .22, .25, 'sine', 120, 45, .4, .2); vN(S, t + .22, .08, 'highpass', 2500, 6000, .25, 1); },
+    's:bolt': function (S, t) { vN(S, t, .03, 'highpass', 3000, 9000, .7, 1, .4); vO(S, t, .22, 'sawtooth', 3200, 180, .16, .2); vN(S, t + .02, .7, 'lowpass', 600, 60, .55, .8, .5); vO(S, t + .02, .6, 'sine', 70, 28, .6, .3); vN(S, t + .06, .12, 'bandpass', 5000, 1500, .2, 4); },
+    's:volley': function (S, t) { vO(S, t, .22, 'triangle', 330, 740, .09, .15); vN(S, t, .2, 'bandpass', 1200, 3800, .1, 2); },
+    's:quake': function (S, t) { vO(S, t, .8, 'sine', 62, 26, .85, .3); vN(S, t, .8, 'lowpass', 420, 50, .55, .8, .45); var i; for (i = 0; i < 5; i++) vN(S, t + .08 + i * .07, .05, 'bandpass', rr(500, 1400), 300, .13, 2); vO(S, t + .02, .3, 'square', 90, 40, .12, .1); },
+    's:heal': function (S, t) { [659, 880, 1175, 1568].forEach(function (f, i) { vO(S, t + i * .085, .55, 'sine', f, f, .11, .5, .01); vO(S, t + i * .085, .4, 'triangle', f * 2, f * 2, .035, .5, .01); }); vN(S, t + .2, .5, 'highpass', 6000, 9000, .02, 1, .5); },
+    's:guardUp': function (S, t) { vO(S, t, .5, 'square', 310, 300, .09, .3); vO(S, t, .6, 'sine', 1240, 1230, .09, .4); vO(S, t, .5, 'sine', 1870, 1860, .06, .4); vO(S, t, .22, 'sine', 120, 55, .4, .1); vN(S, t, .05, 'highpass', 3000, 6000, .2, 1); },
+    's:atkUp': function (S, t) { vO(S, t, .4, 'sawtooth', 130, 520, .14, .25, .05); vN(S, t, .4, 'bandpass', 400, 3200, .13, 1.5); [392, 587, 784].forEach(function (f, i) { vO(S, t + .3 + i * .04, .5, 'triangle', f, f, .1, .4); }); vO(S, t + .3, .3, 'sine', 98, 60, .35, .1); },
+    's:haste': function (S, t) { vN(S, t, .45, 'bandpass', 1200, 3600, .2, 2.5, .2); vN(S, t + .12, .4, 'bandpass', 3000, 1500, .12, 2); vO(S, t + .05, .3, 'sine', 1319, 1760, .06, .4); },
+    's:leech': function (S, t) { vO(S, t, .5, 'sine', 420, 90, .3, .3); vO(S, t, .5, 'sawtooth', 215, 60, .1, .2); vN(S, t, .45, 'bandpass', 1800, 300, .15, 2); vO(S, t + .3, .3, 'sine', 523, 784, .07, .4); },
+    's:special': function (S, t) { vN(S, t, .05, 'highpass', 2500, 7000, .5, 1, .3); vO(S, t, .35, 'sawtooth', 200, 900, .16, .3, .03); vO(S, t + .05, .8, 'sine', 80, 30, .7, .3); [523, 659, 784, 1047].forEach(function (f, i) { vO(S, t + .12 + i * .05, .6, 'triangle', f, f, .11, .5); }); vN(S, t + .04, .5, 'lowpass', 1800, 150, .4, .8, .4); },
+    'dash': function (S, t) { vN(S, t, .17, 'bandpass', 400, 3000, .24, 1.3); vO(S, t, .15, 'sine', 300, 900, .06, 0); },
+    'parry': function (S, t) { vO(S, t, .35, 'sine', 2093, 2080, .13, .4); vO(S, t, .3, 'sine', 3136, 3120, .09, .4); vO(S, t, .22, 'square', 520, 500, .06, .1); vN(S, t, .03, 'highpass', 4000, 8000, .18, 1); }
+  };
+  var SNDV = { 'm:sword': 4, 'm:katana': 3, 'm:dagger': 5, 'm:axe': 1.3, 'm:spear': 5, 'm:hammer': .7, 'w:bow': 2.2, 'w:cbow': 2, 'w:gun': 1.1, 'w:smg': 1.6, 'w:shotgun': .8, 'w:rifle': .8, 'imp': 1.1, 's:ring': 1.5, 's:rush': .6, 's:volley': 4, 's:haste': 2.5, 's:special': .6, 's:atkUp': .7, 'dash': 5, 'parry': 1.3 };
+  function playK(S, k, t, a) { S.m = SNDV[k] || 1; SNDS[k](S, t, a); }
+  function snd(k, a) {
+    if (!soundOn) return; var A = actx(); if (!A) return;
+    if (SND.c !== A) { SND.c = A; SND.S = sndBuild(A); }
+    var n = performance.now(); if (n - (SND.last[k] || 0) < 30) return; SND.last[k] = n;
+    var f = SNDS[k]; if (!f) return; try { playK(SND.S, k, A.currentTime + .004, a); } catch (e) {}
+  }
+  function impactSnd() { var w = (typeof curW === 'function') ? curW() : null, heavy = w && (w.kind === 'hammer' || w.kind === 'axe' || w.kind === 'shotgun' || w.kind === 'rifle') ? 1 : 0, dl = w && w.rng ? 150 : 45; setTimeout(function () { snd('imp', heavy); }, dl); }
   function vib(p) { if (vibOn && navigator.vibrate) { try { navigator.vibrate(p); } catch (e) {} } }
 
   /* ---------- BGM（ファミコン風・オリジナル曲） ---------- */
@@ -1325,7 +1398,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       setTimeout(function () { if (monster && !busy) hurtMe(monster.st.atk); }, 220);
     }, 2400);
   }
-  function swingAnim() {
+  function swingAnim(mute) {
+    if (!mute) { var ws = curW(); if (ws && !ws.rng) snd('m:' + ws.kind); }
     var pk = $('fpick'); if (pk) { pk.classList.remove('sw1'); void pk.offsetWidth; pk.classList.add('sw1'); }
     var hb = $('hb'); if (hb) { hb.classList.remove('lunge', 'hurt'); void hb.offsetWidth; hb.classList.add('lunge'); }
   }
@@ -1925,6 +1999,45 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     return '<span class="wic" style="filter:' + (hu ? 'hue-rotate(' + hu + 'deg) saturate(1.2) ' : '') + 'drop-shadow(0 0 ' + (i.tier ? 4 : 1) + 'px ' + col + ')">' + weaponSVG(i.skin || i.kind) + '</span>' + (st ? '<span class="wst" style="color:' + col + '">' + '★'.repeat(i.tier) + '</span>' : '');
   }
   ITEMS.forEach(function (i) { if (i.slot === 'weapon') i.ic = wIc(i); });
+
+  /* ---------- 服と道具のアイコン（型×色×柄を、1着ずつ描く） ---------- */
+  var gN = 0, TCL = ['#9db0b8', '#58a6ff', '#b583ff', '#ffd36a'];
+  function gSVG(i) {
+    var L = i.lk || [0, 4, 0, 6], st = L[0], oc = OUTC[L[1]], pat = L[2], pc = OUTC[L[3]], id = 'gi' + (++gN), df = '', F = oc;
+    if (pat === 1) df = '<pattern id="' + id + 'p" patternUnits="userSpaceOnUse" width="7" height="7"><rect width="7" height="7" fill="' + oc + '"/><rect width="2.6" height="7" fill="' + pc + '"/></pattern>';
+    else if (pat === 2) df = '<pattern id="' + id + 'p" patternUnits="userSpaceOnUse" width="8" height="7"><rect width="8" height="7" fill="' + oc + '"/><rect y="2.4" width="8" height="2.6" fill="' + pc + '"/></pattern>';
+    else if (pat === 3) df = '<pattern id="' + id + 'p" patternUnits="userSpaceOnUse" width="8" height="8"><rect width="8" height="8" fill="' + oc + '"/><circle cx="2" cy="2" r="1.6" fill="' + pc + '"/><circle cx="6" cy="6" r="1.6" fill="' + pc + '"/></pattern>';
+    else if (pat === 4) df = '<pattern id="' + id + 'p" patternUnits="userSpaceOnUse" width="10" height="10"><rect width="10" height="10" fill="' + oc + '"/><rect width="4" height="10" fill="' + pc + '" opacity=".55"/><rect width="10" height="4" fill="' + pc + '" opacity=".55"/></pattern>';
+    if (pat > 0) F = 'url(#' + id + 'p)';
+    df += '<linearGradient id="' + id + 's" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff" stop-opacity=".28"/><stop offset=".5" stop-color="#fff" stop-opacity="0"/><stop offset="1" stop-color="#000" stop-opacity=".28"/></linearGradient>';
+    var ed = i.tier === 3 ? '#ffd36a' : 'rgba(0,0,0,.45)', dk = 'rgba(0,0,0,.32)', lt = 'rgba(255,255,255,.55)', body = '', top = '', d;
+    var LS = 'M21 10Q32 14 43 10L55 16L58 48L49 50L44 30V', LS2 = 'H20V30L15 50L6 48L9 16Z';
+    if (st === 0) { d = 'M22 8Q32 14 42 8L56 17L50 29L44 25V56H20V25L14 29L8 17Z'; top = '<path d="M23 8Q32 17 41 8Q32 13 23 8Z" fill="' + dk + '"/>'; }
+    else if (st === 1) { d = 'M22 8Q32 14 42 8L56 17L50 29L44 25V56H20V25L14 29L8 17Z'; top = '<path d="M24 8.5L32 22L40 8.5Q32 13 24 8.5Z" fill="#d9b48f"/><path d="M24 8.5L32 22L40 8.5" fill="none" stroke="' + dk + '" stroke-width="1.4"/>'; }
+    else if (st === 2) { d = LS + '56' + LS2; body = '<path d="M19 12Q20 -1 32 -1Q44 -1 45 12Q32 22 19 12Z" fill="' + oc + '" stroke="' + ed + '" stroke-width="1.6" stroke-linejoin="round"/>';
+      top = '<path d="M24 11Q32 21 40 11Q32 3 24 11Z" fill="' + dk + '"/><path d="M28 17V30M36 17V30" stroke="#f4f1ea" stroke-width="1.6" stroke-linecap="round"/><path d="M23 40H41L44 52H20Z" fill="none" stroke="' + dk + '" stroke-width="1.6" stroke-linejoin="round"/><path d="M6 48L9 52H17L15 50M58 48L55 52H47L49 50" fill="' + dk + '" opacity=".6"/>'; }
+    else if (st === 3) { d = LS + '50' + LS2; top = '<path d="M24 9L32 14L40 9V14L32 19L24 14Z" fill="' + dk + '"/><path d="M32 17V50" stroke="#e8e8ee" stroke-width="1.6"/><rect x="20" y="46" width="24" height="7" rx="1.5" fill="' + dk + '"/><rect x="5.5" y="44" width="9" height="6" rx="1.5" fill="' + dk + '"/><rect x="49.5" y="44" width="9" height="6" rx="1.5" fill="' + dk + '"/>'; }
+    else if (st === 4) { d = LS + '52' + LS2; top = '<path d="M24 9L31 24L21 27Z" fill="' + dk + '" stroke="' + lt + '" stroke-width=".8"/><path d="M40 9L33 24L43 27Z" fill="' + dk + '" stroke="' + lt + '" stroke-width=".8"/><path d="M32 22L41 52" stroke="#d8dbe3" stroke-width="1.8"/><path d="M20 44H44" stroke="' + dk + '" stroke-width="2"/><circle cx="14" cy="17" r="1.3" fill="#d8dbe3"/><circle cx="50" cy="17" r="1.3" fill="#d8dbe3"/><circle cx="19" cy="15" r="1.1" fill="#d8dbe3"/><circle cx="45" cy="15" r="1.1" fill="#d8dbe3"/><path d="M23 14L26 40" stroke="rgba(255,255,255,.28)" stroke-width="3" stroke-linecap="round"/><path d="M8 24L10 44" stroke="rgba(255,255,255,.22)" stroke-width="2.4" stroke-linecap="round"/>'; }
+    else if (st === 5) { d = 'M21 9Q32 14 43 9L55 15L58 52L49 54L44 32V62H20V32L15 54L6 52L9 15Z'; top = '<path d="M24 9L32 32L40 9V13L32 37L24 13Z" fill="' + dk + '"/><rect x="20" y="36" width="24" height="4" fill="' + dk + '"/><circle cx="32" cy="46" r="1.5" fill="#e8d9a8"/><circle cx="32" cy="54" r="1.5" fill="#e8d9a8"/><circle cx="29.4" cy="38" r="1.6" fill="#e8d9a8"/><path d="M20 62V32M44 62V32" stroke="rgba(0,0,0,.18)" stroke-width="1"/>'; }
+    else if (st === 6) { d = LS + '54' + LS2; top = '<path d="M27 9L32 26L37 9Z" fill="#f4f1ea"/><path d="M24 9L32 28L40 9L37 8L32 14L27 8Z" fill="' + dk + '"/><circle cx="32" cy="35" r="1.5" fill="#e8d9a8"/><circle cx="32" cy="43" r="1.5" fill="#e8d9a8"/><path d="M36 46H44" stroke="' + dk + '" stroke-width="1.6"/><path d="M20 46H28" stroke="' + dk + '" stroke-width="1.6"/>'; }
+    else if (st === 7) { d = LS + '56' + LS2; top = '<path d="M27 10L32 19L37 10L36.5 56H27.5Z" fill="#f4f1ea" stroke="' + ed + '" stroke-width="1"/><path d="M27.5 12V56M36.5 12V56" stroke="' + dk + '" stroke-width="1.4"/><circle cx="29.5" cy="26" r="1.4" fill="#e8d9a8" stroke="' + dk + '" stroke-width=".5"/><circle cx="29.5" cy="36" r="1.4" fill="#e8d9a8" stroke="' + dk + '" stroke-width=".5"/><circle cx="29.5" cy="46" r="1.4" fill="#e8d9a8" stroke="' + dk + '" stroke-width=".5"/>'; }
+    else if (st === 8) { d = 'M25 5L28 10Q32 16 36 10L39 5L44 12L42 27L51 59H13L22 27L20 12Z'; top = '<rect x="21" y="26" width="22" height="3.2" fill="' + dk + '"/><path d="M26 10Q32 20 38 10" fill="none" stroke="' + dk + '" stroke-width="1.4"/><path d="M28 29L22 58M32 29V59M36 29L42 58" stroke="rgba(0,0,0,.14)" stroke-width="1"/>'; }
+    else { d = 'M22 8Q32 14 42 8L52 14L62 52L52 53L47 30V60H17V30L12 53L2 52L12 14Z'; top = '<path d="M24 8Q32 18 40 8" fill="none" stroke="#ffd36a" stroke-width="2.2"/><path d="M32 16V60" stroke="#ffd36a" stroke-width="1.6"/><rect x="17" y="32" width="30" height="5" fill="#ffd36a" opacity=".9"/><path d="M17 59H47M3 51H12M52 51H61" stroke="#ffd36a" stroke-width="1.8"/><circle cx="32" cy="34.5" r="2.2" fill="' + dk + '"/>'; }
+    var star = i.tier >= 2 ? '<path d="M55 3L56.6 7.4L61 9L56.6 10.6L55 15L53.4 10.6L49 9L53.4 7.4Z" fill="' + TCL[i.tier] + '"/>' : '';
+    var col = TCL[i.tier || 0];
+    return '<span class="oic" style="filter:drop-shadow(0 0 ' + (i.tier ? 4 : 1) + 'px ' + col + ')"><svg viewBox="0 0 64 64"><defs>' + df + '</defs>' + body +
+      '<path d="' + d + '" fill="' + F + '" stroke="' + ed + '" stroke-width="1.6" stroke-linejoin="round"/><path d="' + d + '" fill="url(#' + id + 's)"/>' + top + star + '</svg></span>';
+  }
+  function toolSVG(i) {
+    var col = TCL[i.tier || 0], g = '<defs><linearGradient id="tg' + i.id + '" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#e9eef3"/><stop offset="1" stop-color="#8896a3"/></linearGradient><linearGradient id="tw' + i.id + '" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#9a6a3c"/><stop offset="1" stop-color="#6a4426"/></linearGradient><radialGradient id="to' + i.id + '" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff"/><stop offset=".5" stop-color="#8fd8ff"/><stop offset="1" stop-color="#b583ff"/></radialGradient></defs>', s;
+    var pick = '<path d="M14 58L40 20" stroke="url(#tw' + i.id + ')" stroke-width="5.5" stroke-linecap="round"/>';
+    if (i.id === 't1') s = pick + '<path d="M14 24Q36 4 58 26L52 30Q36 16 20 32Z" fill="url(#tg' + i.id + ')" stroke="#4a5560" stroke-width="1.6" stroke-linejoin="round"/>';
+    else if (i.id === 't2') s = pick + '<path d="M14 24Q36 4 58 26L52 30Q36 16 20 32Z" fill="url(#tg' + i.id + ')" stroke="#4a5560" stroke-width="1.6" stroke-linejoin="round"/><circle cx="20" cy="46" r="9" fill="url(#to' + i.id + ')" fill-opacity=".85" stroke="#d8c27a" stroke-width="2.6"/><path d="M26.5 52.5L34 60" stroke="#d8c27a" stroke-width="3.4" stroke-linecap="round"/><path d="M15 43Q18 40 22 41" stroke="#fff" stroke-width="1.6" fill="none" stroke-linecap="round"/>';
+    else if (i.id === 't3') s = '<rect x="6" y="22" width="30" height="24" rx="5" fill="#56657a" stroke="#2c3644" stroke-width="2"/><rect x="10" y="26" width="14" height="8" rx="2" fill="#8fd8ff" opacity=".85"/><circle cx="29" cy="30" r="3" fill="#ffd36a"/><path d="M36 28H44L58 34L44 40H36Z" fill="url(#tg' + i.id + ')" stroke="#4a5560" stroke-width="1.6" stroke-linejoin="round"/><path d="M42 29L52 33M42 33L55 37" stroke="#4a5560" stroke-width="1.2"/><path d="M10 46V54M30 46V54" stroke="#2c3644" stroke-width="4" stroke-linecap="round"/><path d="M14 18V22M22 18V22" stroke="#9aa8b8" stroke-width="3" stroke-linecap="round"/><path d="M12 38H28" stroke="#ffd36a" stroke-width="2"/>';
+    else s = '<path d="M14 58L40 20" stroke="url(#tw' + i.id + ')" stroke-width="5.5" stroke-linecap="round"/><path d="M14 24Q36 4 58 26L52 30Q36 16 20 32Z" fill="#ffd36a" stroke="#a87a10" stroke-width="1.6" stroke-linejoin="round"/><path d="M18 28Q36 12 54 28" fill="none" stroke="#fff6c8" stroke-width="1.4" opacity=".8"/><path d="M42 6L44 11L49.5 12.5L44 14L42 19L40 14L34.5 12.5L40 11Z" fill="#fff" stroke="#ffd36a" stroke-width=".8"/><path d="M16 40L19 43L16 46L13 43Z" fill="#8fd8ff"/>';
+    return '<span class="oic" style="filter:drop-shadow(0 0 ' + (i.tier ? 4 : 1) + 'px ' + col + ')"><svg viewBox="0 0 64 64">' + g + s + '</svg></span>';
+  }
+  ITEMS.forEach(function (i) { if (i.slot === 'outfit') i.ic = gSVG(i); else if (i.slot === 'tool') i.ic = toolSVG(i); });
   ITEMS.forEach(function (i) { if (i.slot !== 'weapon') return; var d = SPD[i.sp || ('k_' + i.kind)]; if (i.kind === 'sword') i.fx += ' ／ 近距離ボーナス：ダメージ +15%'; if (d) i.fx += ' ／ 必殺技「' + d.nm + '」：' + d.ds; });
 
   /* ---------- 盾・防具のデザイン（色つきのイラスト） ---------- */
@@ -2019,6 +2132,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         h += '<div class="it"><div class="ic">' + d.ic + '</div><div class="tx"><b>' + d.nm + '</b><span class="rt" style="color:#b583ff">クール ' + (d.cd / 1000) + '秒</span>' + (sl >= 0 ? '　（スキル' + (sl + 1) + 'にセット中）' : '') + '<br>' + d.ds + '<br>🪙 ' + d.price.toLocaleString() + '</div><button type="button" data-skb="' + d.id + '"' + (own || poorS ? ' disabled' : '') + '>' + (own ? '持ってる' : (poorS ? '足りない' : (armS ? '本当に買う？' : '買う'))) + '</button></div>';
       });
     } else if (bagTab === 2) {
+      h += eqStage(true);
       h += '<p class="tiny">掘った石と、ひろった武器・防具を、ゲームマネーに換えられるよ。レア度が高いほど高く売れる。図鑑の記録は減りませんから安心してください。</p>';
       var gr = player.grades || {}, so = player.sold || {}, rows = 0;
       h += '<div class="sec">石</div>';
@@ -2034,6 +2148,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         h += '<div class="it"><div class="ic">' + i.ic + '</div><div class="tx"><b>' + i.nm + '</b><span class="rt" style="color:' + TIERCOL[i.tier] + '">' + TIERS[i.tier].n + '</span>' + (on ? '　（そうび中）' : '') + '<br>🪙 ' + Math.round(i.price * .3).toLocaleString() + '</div><button type="button" data-si="' + i.id + '">' + (arm ? '本当に？' : '売る') + '</button></div>'; });
       if (!gl.length) h += '<p class="tiny">売れる装備は、まだ持っていません。</p>';
     } else {
+      h += eqStage(true);
       h += '<p class="tiny">ゲームマネーは、石を掘ると貯まるよ（お金では買えません）。いいランクの石ほど、たくさんもらえるよ。</p>';
       h += '<div class="chips">' + SLOTS.map(function (s) { return '<button type="button" class="' + (shopSlot === s ? 'on' : '') + '" data-shs="' + s + '">' + SLN[s] + '</button>'; }).join('') + '</div>';
       var subs = shopSlot === 'weapon' ? WKINDS : (shopSlot === 'outfit' ? OSTY : null);
@@ -2054,12 +2169,13 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var q = eqItem(sl);
     return '<button type="button" class="eqs' + (eqPick === sl ? ' on' : '') + (q ? ' has' : '') + '" data-pk="' + sl + '"><small>' + lab + '</small><i>' + (q ? q.ic : '＋') + '</i><em>' + (q ? esc(q.nm) : 'なし') + '</em></button>';
   }
-  function eqStage() {
+  function eqStage(compact) {
     var h = '', own = player.skills || [], eqS = player.skEq || [];
     var def = Math.round((((eqItem('shield') || {}).def) || 0) * 100);
     h += '<div class="eqstage"><div class="eqcol">' + eqSlotBtn('weapon', '武器') + eqSlotBtn('shield', '盾') + eqSlotBtn('armor', '防具') + '</div>';
     h += '<div class="eqmid"><div id="eqChar"><div class="hb">' + charHTML(dress(player.avatar, eqItem('outfit')), null, exMine()) + '</div></div><b style="font-size:13px">' + esc((player.avatar || {}).name || '') + '</b><span class="tiny" style="margin:0">Lv ' + (player.lv || 1) + (isGM() ? '（👑）' : '') + '</span></div>';
     h += '<div class="eqcol">' + eqSlotBtn('outfit', '衣装') + eqSlotBtn('tool', '採掘道具') + '<div class="eqst"><div>HP <b>' + hpMaxNow() + '</b></div><div>こうげき <b>' + atkP0() + '</b></div><div>ぼうぎょ <b>' + def + '%</b></div></div></div></div>';
+    if (compact) return h + '<p class="tiny" style="text-align:center">マスをタップすると、「装備」タブで着せかえできるよ</p>';
     h += '<div class="sec">スキル枠　<span class="tiny" style="margin:0">（戦いのとき、画面のボタンで使えるよ）</span></div><div class="sks">';
     for (var i = 0; i < 3; i++) { var d = SKBY[eqS[i]]; h += '<button type="button" class="eqs' + (eqPick === 'sk' + i ? ' on' : '') + (d ? ' has' : '') + '" data-pk="sk' + i + '"><small>スキル' + (i + 1) + '</small><i>' + (d ? d.ic : '＋') + '</i><em>' + (d ? d.nm : 'なし') + '</em></button>'; }
     h += '</div><p class="tiny">🔮 スキルは、町の「スキルの館」で買えるよ（' + own.length + '/' + SKD.length + ' 種類 持ってる）。</p>';
@@ -2098,7 +2214,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('bagTabs').addEventListener('click', function (e) { var b = e.target.closest('button'); if (!b) return; bagTab = +b.dataset.t; buyArm = null; sellArm = null; skArm = null; renderBag(); });
   $('bagBody').addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b || b.disabled) return;
-    if (b.dataset.pk) { eqPick = (eqPick === b.dataset.pk) ? null : b.dataset.pk; eqScroll = !!eqPick; sfx(0); renderBag(); return; }
+    if (b.dataset.pk) { if (bagTab !== 0) { bagTab = 0; eqPick = null; } eqPick = (eqPick === b.dataset.pk) ? null : b.dataset.pk; eqScroll = !!eqPick; sfx(0); renderBag(); return; }
     if (b.dataset.skb) {
       if (skArm !== b.dataset.skb) { skArm = b.dataset.skb; renderBag(); return; }
       skArm = null; b.disabled = true;
@@ -2919,7 +3035,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!gmPeer(pr) && Math.hypot(hero.x - pr.x, hero.y - pr.y) > 620) return;
     if (!gmPeer(pr) && evadeHit()) return;
     var d = Math.max(1, Math.min(500, Math.round(+m.d || 1))), dmg = Math.max(1, Math.round(d * (1 - defP()))); if (gmPeer(pr)) dmg = Math.max(dmg, hp.max);
-    hp.cur = Math.max(0, hp.cur - dmg); floatTxt(hero.x, hero.y - 74, '-' + dmg); sfx(1); vib([30, 20, 30]);
+    hp.cur = Math.max(0, hp.cur - dmg); floatTxt(hero.x, hero.y - 74, '-' + dmg); snd('hurt'); vib([30, 20, 30]);
     var hb = $('hb'); if (hb) { hb.classList.remove('lunge', 'hurt'); void hb.offsetWidth; hb.classList.add('hurt'); }
     hpUi(); rtLast = 0; if (hp.cur <= 0) plKO();
   }
@@ -2931,7 +3047,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (dist > rg) { ftarget = { x: clamp(pr.x + (hero.x < pr.x ? -1 : 1) * Math.max(40, rg * .6), 40, WW - 40), y: clamp(pr.y, FLOOR_Y + 10, WH - 50), spot: null }; toast('もうちょっと近づいてください（とどくのは ' + Math.round(rg / 75) + ' マス）'); return; }
     if (!canAttack()) return;
     var wq = curW(); if (wq && wq.rng) shootFx(pr.x, pr.y, wq.kind);
-    hero.dir = pr.x >= hero.x ? 1 : -1; updHero(); sfx('hit'); vib(20); swingAnim();
+    hero.dir = pr.x >= hero.x ? 1 : -1; updHero(); impactSnd(); vib(20); swingAnim();
     if (pr.el) { pr.el.classList.remove('gmhit'); void pr.el.offsetWidth; pr.el.classList.add('gmhit'); }
     arSend({ t: 'fhit', to: pr.id, d: arDmg() });
   }
@@ -3041,7 +3157,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!gmPeer(pr) && Math.hypot(hero.x - pr.x, hero.y - pr.y) > 620) return;
     if (!gmPeer(pr) && evadeHit()) return;
     var d = Math.max(1, Math.min(500, Math.round(+m0.d || 1))), dmg = Math.max(1, Math.round(d * (1 - defP()))); if (gmPeer(pr)) dmg = Math.max(dmg, hp.max);
-    hp.cur = Math.max(0, hp.cur - dmg); floatTxt(hero.x, hero.y - 74, '-' + dmg); sfx(1); vib([30, 20, 30]);
+    hp.cur = Math.max(0, hp.cur - dmg); floatTxt(hero.x, hero.y - 74, '-' + dmg); snd('hurt'); vib([30, 20, 30]);
     var hb = $('hb'); if (hb) { hb.classList.remove('lunge', 'hurt'); void hb.offsetWidth; hb.classList.add('hurt'); }
     hpUi(); rtLast = 0; if (hp.cur <= 0) arMeKO();
   }
@@ -3051,7 +3167,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (dist > rg) { ftarget = { x: clamp(pr.x + (hero.x < pr.x ? -1 : 1) * Math.max(40, rg * .6), 40, WW - 40), y: clamp(pr.y, 230, WH - 50), spot: null }; toast('もうちょっと近づいてください（とどくのは ' + Math.round(rg / 75) + ' マス）'); return; }
     if (!canAttack()) return;
     var wq = curW(); if (wq && wq.rng) shootFx(pr.x, pr.y, wq.kind);
-    hero.dir = pr.x >= hero.x ? 1 : -1; updHero(); sfx('hit'); vib(20); swingAnim();
+    hero.dir = pr.x >= hero.x ? 1 : -1; updHero(); impactSnd(); vib(20); swingAnim();
     if (pr.el) { pr.el.classList.remove('gmhit'); void pr.el.offsetWidth; pr.el.classList.add('gmhit'); }
     arSend({ t: 'ahit', to: pr.id, d: arDmg(), mid: m.mid });
   }
@@ -3094,7 +3210,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 49;
+  var GV = 50;
   (function () {
     var last = Date.now();
     function chk() {
@@ -3218,7 +3334,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function botStop(msg) { clearInterval(botTimer); botTimer = 0; if (bot && bot.el) bot.el.remove(); bot = null; if (msg === true) return; }
   function botHitHero(d) {
     if (hp.down || hero.y < FLOOR_Y || !inPlaza) return false; if (evadeHit()) return false;
-    var dmg = Math.max(1, Math.round(d * (1 - defP()))); hp.cur = Math.max(0, hp.cur - dmg); floatTxt(hero.x, hero.y - 74, '-' + dmg); sfx(1); vib([30, 20, 30]);
+    var dmg = Math.max(1, Math.round(d * (1 - defP()))); hp.cur = Math.max(0, hp.cur - dmg); floatTxt(hero.x, hero.y - 74, '-' + dmg); snd('hurt'); vib([30, 20, 30]);
     var hb = $('hb'); if (hb) { hb.classList.remove('lunge', 'hurt'); void hb.offsetWidth; hb.classList.add('hurt'); }
     hpUi(); if (hp.cur <= 0) plKO(); return true;
   }
@@ -3261,7 +3377,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (dist > rg) { ftarget = { x: clamp(b.x + (hero.x < b.x ? -1 : 1) * Math.max(40, rg * .6), 40, WW - 40), y: clamp(b.y, FLOOR_Y + 10, WH - 50), spot: null }; toast('もうちょっと近づいてください（とどくのは ' + Math.round(rg / 75) + ' マス）'); return; }
     if (!canAttack()) return;
     var wq = curW(); if (wq && wq.rng) shootFx(b.x, b.y, wq.kind);
-    hero.dir = b.x >= hero.x ? 1 : -1; updHero(); sfx('hit'); vib(20); swingAnim(); botHurt(arDmg());
+    hero.dir = b.x >= hero.x ? 1 : -1; updHero(); impactSnd(); vib(20); swingAnim(); botHurt(arDmg());
   }
   function npcAsk(txt) {
     var n = NPCS[npcCur]; if (!n) return; var q = String(txt || '').toLowerCase().replace(/\s+/g, ''); if (!q) return;
@@ -3890,7 +4006,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     b.textContent = r > 0 ? '💨 ' + Math.ceil(r / 1000) : '💨 ダッシュ'; b.style.opacity = r > 0 ? .55 : 1;
   }
   setInterval(function () { if (fieldOn) { dashUi(); skBtnUi(); } }, 200);
-  function justFx(t, g) { var n = performance.now(); if (n - jfxAt < 500) return; jfxAt = n; floatTxt(hero.x, hero.y - 94, t, 'y'); skAdd(g); sfx(2); vib(15); }
+  function justFx(t, g) { var n = performance.now(); if (n - jfxAt < 500) return; jfxAt = n; floatTxt(hero.x, hero.y - 94, t, 'y'); skAdd(g); snd('parry'); vib(15); }
   function evadeHit() {
     var n = performance.now();
     if (n < dashInv) { justFx('ジャスト回避！', 15); return true; }
@@ -3907,7 +4023,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function nearestE(list) { var b = null, bd = 1e9; list.forEach(function (e) { var d = Math.hypot(hero.x - e.x, hero.y - e.y) - e.r; if (d < bd) { bd = d; b = e; } }); return b ? { e: b, d: bd } : null; }
   function pvpMode() { return inPlaza || inArena; }
   function hitE(e, mult) {
-    var base = pvpMode() ? arDmg() : atkP(), dm = Math.round(base * mult); if (pvpMode() && !isGM()) dm = Math.min(500, dm); skLeechFx(dm);
+    var base = pvpMode() ? arDmg() : atkP(), dm = Math.round(base * mult); if (pvpMode() && !isGM()) dm = Math.min(500, dm); skLeechFx(dm); impactSnd();
     if (e.k === 'b') { botHurt(dm); return; }
     if (e.k === 'f') { floatTxt(e.x, e.y - 80, isGM() ? '一撃！' : '-' + dm, 'y'); dustW(e.x, e.y - 30); if (amFoeHost()) applyFoeDamage(e.o, dm); else rtSend({ t: 'hit', i: e.o.id, d: dm }); }
     else { floatTxt(e.x, e.y - 80, '-' + dm, 'y'); if (e.o.el) { e.o.el.classList.remove('gmhit'); void e.o.el.offsetWidth; e.o.el.classList.add('gmhit'); } if (e.k === 'p') arSend({ t: 'fhit', to: e.o.id, d: dm }); else arSend({ t: 'ahit', to: e.o.id, d: dm, mid: arena.m.mid }); }
@@ -3959,7 +4075,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       ne = nearestE(en);
     }
     function alive(e) { return !((e.k === 'f' && e.o.mode === 'dead') || (e.k === 'b' && e.o.dn)); }
-    function fin(buff) { skCd[id] = performance.now() + d.cd; floatTxt(hero.x, hero.y - 100, d.ic + ' ' + d.nm + '！', 'y'); if (buff) sfx(2); else { sfx('hit'); swingAnim(); } vib([20, 20, 40]); skBtnUi(); }
+    function fin(buff) { skCd[id] = performance.now() + d.cd; floatTxt(hero.x, hero.y - 100, d.ic + ' ' + d.nm + '！', 'y'); snd('s:' + d.t); if (!buff) swingAnim(true); vib([20, 20, 40]); skBtnUi(); }
     if (d.t === 'ring') {
       var hs = en.filter(function (e) { return Math.hypot(hero.x - e.x, hero.y - e.y) - e.r <= d.r; });
       if (!hs.length) { toast('とどく敵がいないよ（もっと近づいてください）'); return; }
@@ -4000,7 +4116,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       if (ne && ne.d < 420) { var ex = hero.x - ne.e.x, ey = hero.y - ne.e.y, M = Math.hypot(ex, ey) || 1; nx = hero.x + ex / M * 190; ny = hero.y + ey / M * 190; }
       else { nx = hero.x - hero.dir * 170; ny = hero.y; }
     }
-    dashAt = n + (ranged ? 5000 : 4500); dashInv = n + 450; hp.inv = Math.max(hp.inv, n + 450); heroTo(nx, ny); sfx(2); vib(15); dashUi();
+    dashAt = n + (ranged ? 5000 : 4500); dashInv = n + 450; hp.inv = Math.max(hp.inv, n + 450); heroTo(nx, ny); snd('dash'); vib(15); dashUi();
   }
   function doSpecial() {
     var w = curW(); if (!w || hp.down || busy || inTown) return; var d = spDef(); if (!d) return;
@@ -4008,7 +4124,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (guard) { toast('ガード中は、使えません'); return; }
     var en = enemies(); if (!en.length) { toast(pvpMode() ? 'ほかの人がいないよ' : '敵がいないよ'); return; }
     var ne = nearestE(en), done = false, i;
-    function fin() { skG = 0; skUi(); sfx('hit'); vib([30, 20, 60]); floatTxt(hero.x, hero.y - 100, '✨ ' + d.nm + '！', 'y'); swingAnim(); }
+    function fin() { skG = 0; skUi(); snd('s:special'); vib([30, 20, 60]); floatTxt(hero.x, hero.y - 100, '✨ ' + d.nm + '！', 'y'); swingAnim(true); }
     if (d.t === 'ring') {
       var hs = en.filter(function (e) { return Math.hypot(hero.x - e.x, hero.y - e.y) - e.r <= d.r; });
       if (!hs.length) { toast('とどく敵がいないよ（もっと近づいてください）'); return; }
@@ -4039,7 +4155,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (guard && now - guardAt < 350) { hp.inv = now + 650; justFx('ジャストガード！', 30); return false; }
     hp.inv = now + 650;
     dmg = Math.max(1, Math.round(dmg * (1 - defP()))); hp.cur = Math.max(0, hp.cur - dmg);
-    floatTxt(hero.x, hero.y - 74, '-' + dmg); sfx(1); vib([30, 20, 30]);
+    floatTxt(hero.x, hero.y - 74, '-' + dmg); snd('hurt'); vib([30, 20, 30]);
     var hb = $('hb'); if (hb) { hb.classList.remove('lunge', 'hurt'); void hb.offsetWidth; hb.classList.add('hurt'); }
     hpUi(); rtHp();
     if (hp.cur <= 0) goDown(); else if (curSpot) knockFromDig();
@@ -4122,6 +4238,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     handUi();
   }
   function shootFx(fx, fy, kind) {
+    snd('w:' + kind);
     if (kind === 'shotgun') { for (var si = -1; si <= 1; si++) (function (o) { var e2 = document.createElement('i'); e2.className = 'prj gun'; var xa = hero.x, ya = hero.y - 46, yb = fy - 28 + o * 26; e2.style.left = xa + 'px'; e2.style.top = ya + 'px'; $('world').appendChild(e2); void e2.offsetWidth; e2.style.left = fx + 'px'; e2.style.top = yb + 'px'; setTimeout(function () { e2.remove(); }, 220); })(si); return; }
     var e = document.createElement('i'); e.className = 'prj ' + kind; var x0 = hero.x, y0 = hero.y - 46, y1 = fy - 28;
     e.style.left = x0 + 'px'; e.style.top = y0 + 'px'; e.style.transform = 'rotate(' + Math.atan2(y1 - y0, fx - x0) + 'rad)'; $('world').appendChild(e); void e.offsetWidth;
@@ -4301,7 +4418,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (Math.hypot(hero.x - g.x, hero.y - g.y) > atkRange()) { toast('もうちょっと近づいてください'); return true; }
     if (!canAttack()) return true;
     var wq = curW(); if (wq && wq.rng) shootFx(g.x, g.y, wq.kind);
-    var dm = atkP(); sfx('hit'); vib(20); swingAnim(); floatTxt(g.x, g.y - 80, '-' + dm, 'y');
+    var dm = atkP(); impactSnd(); vib(20); swingAnim(); floatTxt(g.x, g.y - 80, '-' + dm, 'y');
     g.el.classList.remove('gmhit'); void g.el.offsetWidth; g.el.classList.add('gmhit');
     rtSend({ t: 'gmhit', to: g.id, d: dm }); return true;
   }
@@ -4312,7 +4429,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (hp.down) return true;
     if (!canAttack()) return true;
     var wq = curW(); if (wq && wq.rng) shootFx(hit.x, hit.y, wq.kind);
-    var dm = atkP(); sfx('hit'); vib(20); swingAnim(); dustW(hit.x, hit.y - 30); floatTxt(hit.x, hit.y - 80, isGM() ? '一撃！' : '-' + dm, 'y');
+    var dm = atkP(); impactSnd(); vib(20); swingAnim(); dustW(hit.x, hit.y - 30); floatTxt(hit.x, hit.y - 80, isGM() ? '一撃！' : '-' + dm, 'y');
     var aoeL = []; if (wq && wq.aoe) { aoeL = foes.filter(function (f) { return f !== hit && f.mode !== 'dead' && Math.hypot(f.x - hit.x, f.y - hit.y) < wq.aoe; }); var af = document.createElement('i'); af.className = 'aoefx'; af.style.cssText = 'left:' + hit.x + 'px;top:' + (hit.y - 30) + 'px;width:' + (wq.aoe * 2) + 'px;height:' + (wq.aoe * 2) + 'px'; $('world').appendChild(af); setTimeout(function () { af.remove(); }, 400); }
     if (amFoeHost()) { var was = hit.hp; applyFoeDamage(hit, dm); if (hit.hp <= 0 && was > 0) toast(hit.d.nm + 'を追いはらった！'); aoeL.forEach(function (f) { applyFoeDamage(f, Math.round(dm * .7)); }); }
     else { rtSend({ t: 'hit', i: hit.id, d: dm }); hit.el.classList.remove('hit'); void hit.el.offsetWidth; hit.el.classList.add('hit'); aoeL.forEach(function (f) { rtSend({ t: 'hit', i: f.id, d: Math.round(dm * .7) }); }); }
