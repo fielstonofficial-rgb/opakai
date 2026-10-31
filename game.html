@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:41-->
+<!--GV:42-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -434,6 +434,15 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #npc .nin input{flex:1;min-width:0;border:0;border-radius:10px;padding:10px 12px;font-size:16px}
 .gh.npc .gname{color:#ffe08a;font-weight:900}
 .gh.npc{pointer-events:none}
+.gh.sit .hb,#hero2.sit .hb{clip-path:inset(-80px -80px 16% -80px)}
+.gh.sit.walk .hb{animation:none}
+.cup{position:absolute;left:20px;top:22px;font-size:20px;line-height:1;pointer-events:none;z-index:6;filter:drop-shadow(0 1px 1px rgba(0,0,0,.45));animation:sip 3.2s ease-in-out infinite}
+@keyframes sip{0%,52%,100%{transform:none}64%,82%{transform:translate(-5px,-14px) rotate(-24deg)}}
+#world .cfe{position:absolute;transform:translate(-50%,-100%);pointer-events:none;line-height:1}
+.drk{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}
+.drk button{background:rgba(255,255,255,.1);border:1px solid rgba(255,255,255,.28);color:#fff;border-radius:12px;padding:10px 4px;font-size:14px;font-weight:700;line-height:1.35}
+.drk button b{display:block;font-size:24px}
+
 #field.plaza #fview{background:#cfae72}
 #field.arena #dig{display:none}
 #field.arena #fview{background:#cfae72}
@@ -560,7 +569,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v41（観客席のNPC・練習相手）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v42（町が広く・カフェ）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所や（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -1799,7 +1808,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function rtMsg(m) {
     if (!m || m.f === myMid) return;
     var pr = peers[m.f];
-    if (m.t === 'pos') { if (!pr) pr = peers[m.f] = { id: m.f, x: m.x, y: m.y, tx: m.x, ty: m.y, dir: m.d || 1, got: false }; if (!pr.got) { pr.x = m.x; pr.y = m.y; pr.got = true; } pr.tx = m.x; pr.ty = m.y; pr.dir = m.d || 1; pr.h = m.h == null ? 100 : m.h; pr.dn = m.dn ? 1 : 0; pr.gm = m.gm ? 1 : 0; pr.lv = m.lv; pr.eq = m.eq; ghostEl(pr); if (pr.gm && pr.el && !pr.el.classList.contains('gmg')) { pr.el.classList.add('gmg'); var gn = pr.el.querySelector('.gname'); if (gn) gn.textContent = '👑GM ' + (pr.n || ''); } return; }
+    if (m.t === 'pos') { if (!pr) pr = peers[m.f] = { id: m.f, x: m.x, y: m.y, tx: m.x, ty: m.y, dir: m.d || 1, got: false }; if (!pr.got) { pr.x = m.x; pr.y = m.y; pr.got = true; } pr.tx = m.x; pr.ty = m.y; pr.dir = m.d || 1; pr.h = m.h == null ? 100 : m.h; pr.dn = m.dn ? 1 : 0; pr.gm = m.gm ? 1 : 0; pr.st = m.st | 0; pr.dk = cupOk(m.dk); pr.lv = m.lv; pr.eq = m.eq; ghostEl(pr); if (pr.gm && pr.el && !pr.el.classList.contains('gmg')) { pr.el.classList.add('gmg'); var gn = pr.el.querySelector('.gname'); if (gn) gn.textContent = '👑GM ' + (pr.n || ''); } return; }
     if (m.t === 'rev') { if (m.to === myMid && hp.down) reviveMe(pr && pr.n); return; }
     if (m.t === 'fs') { if (!amFoeHost()) applyFoeState(m.fl || []); return; }
     if (m.t === 'hit') { if (amFoeHost() && netFoes()) { var hf = null; foes.forEach(function (x) { if (x.id === m.i) hf = x; }); if (hf) applyFoeDamage(hf, Math.max(1, Math.min((pr && pr.gm) ? 1e8 : 500, Math.round(m.d || 1)))); } return; }
@@ -1835,6 +1844,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       var dx = pr.tx - pr.x, dy = pr.ty - pr.y; pr.x += dx * k; pr.y += dy * k;
       var mv = Math.hypot(dx, dy) > 3; pr.el.classList.toggle('walk', mv);
       pr.hb.style.transform = pr.dir < 0 ? 'scaleX(-1)' : ''; placeEl(pr.el, pr.x, pr.y);
+      pr.el.classList.toggle('sit', pr.st > 0); if ((pr.cupE || '') !== (pr.dk || '')) ghCup(pr);
       pr.el.classList.toggle('dn', !!pr.dn); var gb = pr.el.querySelector('.hhp'); if (gb) { var pc = pr.h == null ? 100 : pr.h; gb.classList.toggle('on', pc < 100 || !!pr.dn); gb.firstChild.style.width = pc + '%'; gb.firstChild.style.background = pc <= 30 ? '#ff5a5a' : '#4fd68a'; }
     });
   }
@@ -1894,6 +1904,18 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         '<rect x="24" y="102" width="40" height="32" rx="3" fill="#fff" stroke="#7a5230" stroke-width="3"/><path d="M30 126L40 114L48 120L58 108" fill="none" stroke="#d94a5a" stroke-width="3"/><rect x="24" y="134" width="40" height="5" fill="#7a5230"/>' +
         '<rect x="96" y="104" width="44" height="48" rx="5" fill="#6b4630" stroke="#3f2818" stroke-width="2.4"/><rect x="102" y="110" width="32" height="22" rx="3" fill="#bfe9ff" stroke="#3f2818" stroke-width="1.8"/><path d="M118 84v14M104 98h28" stroke="#6b4a2c" stroke-width="2"/><path d="M104 98l-4 8h12zM132 98l-4 8h12z" fill="#c9a36a"/><circle cx="130" cy="142" r="2.6" fill="#ffd36a"/></svg>';
     }
+    if (k === 'cafe') {
+      var aw = '', ai;
+      for (ai = 0; ai < 8; ai++) aw += '<rect x="' + (10 + ai * 17.5) + '" y="66" width="17.5" height="22" fill="' + (ai % 2 ? '#fff' : '#d9534f') + '"/><circle cx="' + (18.75 + ai * 17.5) + '" cy="88" r="8.75" fill="' + (ai % 2 ? '#fff' : '#d9534f') + '"/>';
+      return '<svg viewBox="0 0 160 160"><defs><linearGradient id="cfW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6e7cd"/><stop offset="1" stop-color="#e5cfa8"/></linearGradient><linearGradient id="cfR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#b5653a"/><stop offset="1" stop-color="#8a4526"/></linearGradient></defs>' +
+        SH(80, 155, 76, 6) + '<path d="M6 66L80 16L154 66Z" fill="url(#cfR)" stroke="#5e2f17" stroke-width="2.4" stroke-linejoin="round"/>' + roofLines(20, 140, 30, 64, 7) +
+        '<rect x="14" y="64" width="132" height="88" rx="2" fill="url(#cfW)" stroke="#a88a5c" stroke-width="2"/><rect x="14" y="138" width="132" height="14" fill="rgba(0,0,0,.08)"/>' +
+        '<rect x="22" y="96" width="38" height="34" rx="3" fill="#bfe6f5" stroke="#7a5a35" stroke-width="2.4"/><path d="M41 96V130M22 113H60" stroke="#7a5a35" stroke-width="2"/>' +
+        '<rect x="100" y="96" width="38" height="34" rx="3" fill="#bfe6f5" stroke="#7a5a35" stroke-width="2.4"/><path d="M119 96V130M100 113H138" stroke="#7a5a35" stroke-width="2"/>' +
+        '<rect x="66" y="98" width="28" height="54" rx="3" fill="#7a4a2b" stroke="#4b2b15" stroke-width="2"/><circle cx="88" cy="126" r="2.2" fill="#ffd36a"/><rect x="70" y="102" width="20" height="18" rx="2" fill="#bfe6f5" opacity=".85"/>' + aw +
+        '<rect x="50" y="36" width="60" height="22" rx="6" fill="#4b2b15" stroke="#2c1608" stroke-width="2"/><text x="80" y="52" font-size="14" font-weight="800" fill="#ffe9b0" text-anchor="middle">☕ CAFE</text>' +
+        '<g opacity=".55" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"><path d="M126 30q-5-6 0-12t0-12"/><path d="M134 30q-5-6 0-12t0-12"/></g><rect x="122" y="30" width="16" height="22" fill="#7a4a2b"/></svg>';
+    }
     if (k === 'hosp') {
       return '<svg viewBox="0 0 160 160"><defs><linearGradient id="hpW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffffff"/><stop offset="1" stop-color="#e3eef5"/></linearGradient><linearGradient id="hpR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5cc0c8"/><stop offset="1" stop-color="#2f8f9c"/></linearGradient></defs>' +
         SH(80, 155, 76, 6) + '<path d="M6 66L80 16L154 66Z" fill="url(#hpR)" stroke="#226b75" stroke-width="2.4" stroke-linejoin="round"/>' + roofLines(20, 140, 30, 64, 7) +
@@ -1938,20 +1960,20 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       '<linearGradient id="tgG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c3e8a4"/><stop offset="1" stop-color="#97cc80"/></linearGradient>' +
       '<pattern id="tgC" width="48" height="32" patternUnits="userSpaceOnUse"><rect width="48" height="32" fill="#d3c19b"/><rect x="1.5" y="1.5" width="21" height="13" rx="4" fill="#f4e8d0"/><rect x="25.5" y="1.5" width="21" height="13" rx="4" fill="#ecdcbc"/><rect x="13.5" y="17.5" width="21" height="13" rx="4" fill="#efe2c6"/><rect x="-10.5" y="17.5" width="21" height="13" rx="4" fill="#e9d9b7"/><rect x="37.5" y="17.5" width="21" height="13" rx="4" fill="#e9d9b7"/></pattern>' +
       '<radialGradient id="tgS" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="rgba(255,255,255,.35)"/><stop offset="1" stop-color="rgba(255,255,255,0)"/></radialGradient></defs>';
-    o += '<g fill="#fff" opacity=".85"><ellipse cx="260" cy="70" rx="90" ry="22"/><ellipse cx="320" cy="58" rx="60" ry="22"/><ellipse cx="1100" cy="96" rx="110" ry="24"/><ellipse cx="1170" cy="80" rx="64" ry="22"/><ellipse cx="720" cy="46" rx="70" ry="16"/></g>';
-    o += '<path d="M0 215Q150 120 320 190T640 168T980 186T1320 148T1500 190V300H0Z" fill="#a8d6b6"/><path d="M0 245Q200 185 420 232T820 216T1180 234T1500 212V300H0Z" fill="#8ccb92"/>';
+    o += '<g fill="#fff" opacity=".85"><ellipse cx="260" cy="70" rx="90" ry="22"/><ellipse cx="320" cy="58" rx="60" ry="22"/><ellipse cx="1100" cy="96" rx="110" ry="24"/><ellipse cx="1170" cy="80" rx="64" ry="22"/><ellipse cx="720" cy="46" rx="70" ry="16"/><ellipse cx="1640" cy="64" rx="100" ry="22"/><ellipse cx="1720" cy="50" rx="60" ry="20"/><ellipse cx="1960" cy="104" rx="90" ry="22"/><ellipse cx="1400" cy="46" rx="60" ry="14"/></g>';
+    o += '<path d="M0 215Q150 120 320 190T640 168T980 186T1320 148T1500 190T1800 160T2100 196V300H0Z" fill="#a8d6b6"/><path d="M0 245Q200 185 420 232T820 216T1180 234T1500 212T1800 226T2100 208V300H0Z" fill="#8ccb92"/>';
     o += '<rect x="0" y="236" width="' + TW + '" height="' + (TH - 236) + '" fill="url(#tgG)"/>';
     var i, x, y, cs = ['#fff', '#ffe27a', '#ffb3c8', '#d4b8ff'];
-    for (i = 0; i < 260; i++) { x = Math.round(rr() * TW); y = 250 + Math.round(rr() * (TH - 260)); o += '<path d="M' + x + ' ' + y + 'q-3-8-6-9M' + x + ' ' + y + 'q0-9 1-11M' + x + ' ' + y + 'q3-8 6-8" stroke="#6fb35f" stroke-width="1.6" fill="none" opacity=".55" stroke-linecap="round"/>'; }
-    for (i = 0; i < 110; i++) { x = Math.round(rr() * TW); y = 260 + Math.round(rr() * (TH - 270)); o += '<circle cx="' + x + '" cy="' + y + '" r="2.6" fill="' + cs[i % 4] + '" opacity=".9"/>'; }
+    for (i = 0; i < 520; i++) { x = Math.round(rr() * TW); y = 250 + Math.round(rr() * (TH - 260)); o += '<path d="M' + x + ' ' + y + 'q-3-8-6-9M' + x + ' ' + y + 'q0-9 1-11M' + x + ' ' + y + 'q3-8 6-8" stroke="#6fb35f" stroke-width="1.6" fill="none" opacity=".55" stroke-linecap="round"/>'; }
+    for (i = 0; i < 210; i++) { x = Math.round(rr() * TW); y = 260 + Math.round(rr() * (TH - 270)); o += '<circle cx="' + x + '" cy="' + y + '" r="2.6" fill="' + cs[i % 4] + '" opacity=".9"/>'; }
     var P = function (d) { return '<path d="' + d + '" fill="#c9b68c" stroke="#c9b68c" stroke-width="16" stroke-linejoin="round"/><path d="' + d + '" fill="url(#tgC)"/>'; };
-    o += P('M-30 700H1530V792H-30Z') + P('M655 780H845V1300H655Z') + P('M390 990a360 250 0 1 0 720 0a360 250 0 1 0 -720 0Z') +
+    o += P('M-30 700H2130V792H-30Z') + P('M655 780H845V1800H655Z') + P('M-30 1500H2130V1590H-30Z') + P('M1655 780H1745V1500H1655Z') + P('M1500 1170a200 140 0 1 0 400 0a200 140 0 1 0 -400 0Z') + P('M1736 470H1784V705H1736Z') + P('M390 990a360 250 0 1 0 720 0a360 250 0 1 0 -720 0Z') +
       P('M298 470H362V705H298Z') + P('M706 470H794V705H706Z') + P('M1146 470H1194V705H1146Z') + P('M96 640H144V705H96Z') + P('M1356 650H1404V705H1356Z');
-    o += '<ellipse cx="750" cy="985" rx="150" ry="62" fill="#ead8b4" stroke="#c0aa7c" stroke-width="5"/><ellipse cx="750" cy="990" rx="400" ry="280" fill="url(#tgS)"/>';
+    o += '<ellipse cx="750" cy="985" rx="150" ry="62" fill="#ead8b4" stroke="#c0aa7c" stroke-width="5"/><ellipse cx="750" cy="990" rx="400" ry="280" fill="url(#tgS)"/><ellipse cx="1700" cy="1145" rx="150" ry="62" fill="#ead8b4" stroke="#c0aa7c" stroke-width="5"/><ellipse cx="1700" cy="1150" rx="400" ry="280" fill="url(#tgS)"/>';
     return o + '</svg>';
   }
   function buildTown() {
-    var w = $('world'), rr = rng(4242), html = '', TW = 1500, TH = 1300;
+    var w = $('world'), rr = rng(4242), html = '', TW = 2100, TH = 1800;
     setWorld(TW, TH); w.classList.remove('cave');
     w.style.background = 'linear-gradient(180deg,#7ec3e6 0,#d4eef8 230px,#97cc80 231px)';
     html += townGround(TW, TH, rr);
@@ -1961,17 +1983,20 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     put('hall', 750, 470, 280, 226); lbl('ギルド', 750, 196);
     put('hosp', 1170, 470, 190, 190); lbl('🏥 病院', 1170, 236); put('house1', 120, 640, 150, 150); put('exch', 1380, 650, 180, 180); lbl('取引所', 1380, 420);
     put('fount', 750, 1010, 260, 195); put('arena', 150, 1000, 230, 196); lbl('⚔ 闘技場', 150, 765);
-    DOORS = [{ k: 'shop', x: 330, y: 470, w: 200, h: 180 }, { k: 'guild', x: 750, y: 470, w: 270, h: 210 }, { k: 'hospital', x: 1170, y: 470, w: 190, h: 180 }, { k: 'exch', x: 1380, y: 650, w: 180, h: 170 }, { k: 'arena', x: 150, y: 1000, w: 220, h: 190 }];
+    DOORS = [{ k: 'shop', x: 330, y: 470, w: 200, h: 180 }, { k: 'guild', x: 750, y: 470, w: 270, h: 210 }, { k: 'hospital', x: 1170, y: 470, w: 190, h: 180 }, { k: 'exch', x: 1380, y: 650, w: 180, h: 170 }, { k: 'arena', x: 150, y: 1000, w: 220, h: 190 }, { k: 'cafe', x: 1760, y: 470, w: 190, h: 180 }];
     put('stall', 480, 905, 150, 120); put('stall', 1020, 905, 150, 120);
-    [[500, 350, 'tree2', 62, 100], [1000, 350, 'tree2', 62, 100], [1300, 360, 'tree', 78, 104], [40, 380, 'tree', 78, 104], [60, 430, 'tree', 80, 106], [1450, 430, 'tree2', 62, 100], [560, 520, 'tree', 78, 104], [950, 520, 'tree', 78, 104],
+    put('cafe', 1760, 470, 190, 190); lbl('☕ カフェ', 1760, 236); put('fount', 1700, 1170, 260, 195); put('stall', 1470, 1100, 150, 120); put('stall', 1930, 1100, 150, 120);
+    [[500, 350, 'tree2', 62, 100], [1000, 350, 'tree2', 62, 100], [1300, 360, 'tree', 78, 104], [40, 380, 'tree', 78, 104], [60, 430, 'tree', 80, 106], [1450, 430, 'tree2', 62, 100], [560, 520, 'tree', 78, 104],
+      [1580, 360, 'tree', 78, 104], [1960, 360, 'tree2', 62, 100], [2050, 440, 'tree', 80, 106], [1570, 560, 'tree2', 62, 100], [2040, 600, 'tree', 78, 104], [1990, 560, 'tree2', 62, 100], [1540, 900, 'tree', 80, 106], [1880, 900, 'tree', 78, 104], [2040, 930, 'tree2', 62, 100], [1560, 1330, 'tree', 80, 106], [1880, 1310, 'tree2', 62, 100], [2040, 1380, 'tree', 78, 104], [1990, 1230, 'tree', 80, 106], [1420, 1450, 'tree', 78, 104], [250, 1420, 'tree', 80, 106], [520, 1400, 'tree2', 62, 100], [980, 1420, 'tree', 78, 104], [1250, 1400, 'tree2', 62, 100], [150, 1330, 'tree2', 62, 100],
+      [300, 1680, 'tree', 80, 106], [560, 1700, 'tree2', 62, 100], [960, 1710, 'tree', 78, 104], [1250, 1700, 'tree2', 62, 100], [150, 1760, 'tree', 80, 106], [420, 1770, 'tree2', 62, 100], [1100, 1770, 'tree', 80, 106], [1420, 1730, 'tree', 78, 104], [1700, 1700, 'tree2', 62, 100], [1850, 1770, 'tree', 80, 106], [2040, 1730, 'tree2', 62, 100], [950, 520, 'tree', 78, 104],
       [1440, 910, 'tree', 80, 106], [330, 880, 'tree', 78, 104], [1170, 880, 'tree', 78, 104], [200, 1180, 'tree', 80, 106], [1300, 1180, 'tree2', 62, 100], [420, 1250, 'tree', 80, 106], [1080, 1250, 'tree', 80, 106], [90, 1260, 'tree2', 62, 100], [1420, 1260, 'tree', 78, 104]].forEach(function (q) { put(q[2], q[0], q[1], q[3], q[4]); });
-    [[240, 712], [560, 712], [940, 712], [1260, 712], [640, 870], [860, 870], [500, 1080], [1000, 1080]].forEach(function (q) { put('lamp', q[0], q[1], 28, 86); });
-    [[250, 498], [420, 498], [640, 498], [860, 498], [1090, 498], [1260, 498], [60, 690], [190, 690], [1300, 690], [1460, 690]].forEach(function (q) { put('bush', q[0], q[1], 64, 40); });
-    [[270, 590], [390, 590], [620, 600], [880, 600], [1110, 590], [1230, 600], [250, 790], [1250, 790], [330, 1000], [1170, 1000], [750, 1230]].forEach(function (q) { put('flower', q[0], q[1], 92, 38); });
-    [[580, 1150], [920, 1150], [250, 780], [1250, 780]].forEach(function (q) { put('bench', q[0], q[1], 90, 50); });
+    [[240, 712], [560, 712], [940, 712], [1260, 712], [640, 870], [860, 870], [500, 1080], [1000, 1080], [1560, 712], [1900, 712], [2060, 712], [1636, 900], [1764, 900], [1636, 1350], [1764, 1350], [300, 1498], [900, 1498], [1300, 1498], [1540, 1498], [1900, 1498], [1500, 1180], [1900, 1180]].forEach(function (q) { put('lamp', q[0], q[1], 28, 86); });
+    [[250, 498], [420, 498], [640, 498], [860, 498], [1090, 498], [1260, 498], [60, 690], [190, 690], [1300, 690], [1460, 690], [1580, 690], [1700, 690], [1890, 690], [2030, 690], [1650, 498], [1870, 498], [1560, 480], [1990, 480]].forEach(function (q) { put('bush', q[0], q[1], 64, 40); });
+    [[270, 590], [390, 590], [620, 600], [880, 600], [1110, 590], [1230, 600], [250, 790], [1250, 790], [330, 1000], [1170, 1000], [750, 1230], [1700, 590], [1820, 590], [1640, 590], [1920, 880], [1990, 880], [1950, 940], [2020, 940], [1900, 1010], [1990, 1010], [2040, 1090], [200, 1400], [620, 1400], [900, 1330], [1180, 1350], [300, 1670], [800, 1690], [1300, 1680], [1620, 1420], [1800, 1420], [1950, 1420], [2000, 1660]].forEach(function (q) { put('flower', q[0], q[1], 92, 38); });
+    [[580, 1150], [920, 1150], [250, 780], [1250, 780], [1510, 1170], [1890, 1170], [1620, 1340], [1790, 1340], [450, 1480], [1050, 1480], [1560, 780], [1850, 780]].forEach(function (q) { put('bench', q[0], q[1], 90, 50); });
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
-    hero.x = TW / 2; hero.y = 1130; hero.dir = 1; ftarget = null; fz = zoomT;
+    hero.x = 750; hero.y = 1130; hero.dir = 1; hero.sit = null; ftarget = null; fz = zoomT;
     $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi(); addNpcs('town');
   }
   function townDoorAt(wx, wy) { for (var i = 0; i < DOORS.length; i++) { var d = DOORS[i]; if (Math.abs(wx - d.x) < d.w / 2 + 10 && wy < d.y + 40 && wy > d.y - d.h) return d; } return null; }
@@ -1981,6 +2006,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     else if (k === 'hospital') healFull();
     else if (k === 'exch') { sfx(2); openMarket(); }
     else if (k === 'arena') { sfx(2); openArena(); }
+    else if (k === 'cafe') { sfx(2); openCafe(); }
+    else if (k === 'cafeout') { sfx(2); leaveCafe(); }
+    else if (/^seat:/.test(k)) sitDown(+k.slice(5));
     else if (/^npc:/.test(k)) openNpc(k.slice(4));
   }
   /* ---------- ギルド（Lv10から。申請→運営が承認→みんなが入れる。最大30人） ---------- */
@@ -2031,12 +2059,104 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     $('field').classList.remove('chat'); $('field').classList.add('town'); $('fTtl').textContent = 'オパ会の町';
     zoomT = .62; buildTown(); show('field'); closeSheets(); digUI(false); BGM.set('town'); gearUi();
     $('fhud').innerHTML = '<span style="flex:1;text-align:center">町では、みんなと歩いて話せるで（ことばは保存されへん）</span>';
-    var tip = $('ftip'); tip.style.opacity = 1; tip.textContent = '歩きたい場所をタップ！ ショップ・ギルド・病院（HP回復）・取引所・⚔闘技場（プレイヤー同士で戦えるのはここだけ）は、建物をタップ。下の欄から、ひとこと話せるで'; clearTimeout(tipT); tipT = setTimeout(function () { tip.style.opacity = 0; }, 6000);
+    var tip = $('ftip'); tip.style.opacity = 1; tip.textContent = '歩きたい場所をタップ！ ショップ・ギルド・病院（HP回復）・取引所・☕カフェ（ドリンク無料）・⚔闘技場（プレイヤー同士で戦えるのはここだけ）は、建物をタップ。町は東と南にも広がってるで。下の欄から、ひとこと話せるで'; clearTimeout(tipT); tipT = setTimeout(function () { tip.style.opacity = 0; }, 6000);
     $('tlog').innerHTML = '';
     var me = { id: myMid, n: (player.avatar && player.avatar.name) || '', av: player.avatar };
     RT.join('town', me, { onMsg: rtMsg, onPeers: rtPeers }, function (ok) { if (ok) { rtOn = true; rtLast = 0; rtSend(posMsg()); } else toast('つながらへんかった。町には一人だけやで'); });
   }
-  function leaveTown() { inTown = false; zoomT = ZW; fz = ZW; $('field').classList.remove('town'); rtStop(); setWorld(760, 1000); }
+
+  /* ---------- ☕ カフェ（中は自由に歩ける。椅子に座って、友達と話せる。ドリンクは全部タダ） ---------- */
+  var inCafe = false, CAFE_W = 1000, CAFE_H = 860, SEATS = [], CTABLES = [[190, 430], [500, 430], [810, 430], [190, 640], [500, 640], [810, 640]];
+  var DRINKS = [
+    { e: '☕', nm: 'あったかコーヒー', say: 'いただきます〜☕' }, { e: '🍵', nm: '抹茶ラテ', say: '抹茶ラテ、ええ香り〜🍵' }, { e: '🥤', nm: 'メロンソーダ', say: 'シュワシュワや〜🥤' },
+    { e: '🍹', nm: 'トロピカルジュース', say: 'トロピカルやで〜🍹' }, { e: '🥛', nm: 'ホットミルク', say: 'ほっとするわ〜🥛' }, { e: '🍊', nm: 'オレンジジュース', say: 'フレッシュや〜🍊' }
+  ];
+  function cupOk(e) { for (var i = 0; i < DRINKS.length; i++) if (DRINKS[i].e === e) return e; return ''; }
+  function cafeSeats() {
+    SEATS = [];
+    CTABLES.forEach(function (t) { var tx = t[0], ty = t[1]; SEATS.push({ x: tx, y: ty - 34, d: 1 }, { x: tx, y: ty + 50, d: 1 }, { x: tx - 78, y: ty + 8, d: 1 }, { x: tx + 78, y: ty + 8, d: -1 }); });
+    [120, 200, 420, 500].forEach(function (x) { SEATS.push({ x: x, y: 318, d: 1 }); });
+  }
+  function cafeGround(W, H) {
+    var o = '<svg class="tground" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" style="position:absolute;left:0;top:0;pointer-events:none;z-index:0"><defs>' +
+      '<pattern id="cfP" width="100" height="40" patternUnits="userSpaceOnUse"><rect width="100" height="40" fill="#dcae72"/><rect y="38" width="100" height="2" fill="#b98a50"/><path d="M34 0V38M78 0V38" stroke="#c99a5e" stroke-width="1.4"/><rect x="0" y="0" width="100" height="19" fill="rgba(255,255,255,.05)"/></pattern>' +
+      '<linearGradient id="cfWl" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f7ead2"/><stop offset="1" stop-color="#ecd7b3"/></linearGradient></defs>';
+    o += '<rect width="' + W + '" height="' + H + '" fill="url(#cfP)"/><rect width="' + W + '" height="250" fill="url(#cfWl)"/><rect y="150" width="' + W + '" height="100" fill="#b9774a"/><path d="M0 150H' + W + '" stroke="#8d5a34" stroke-width="5"/><rect y="244" width="' + W + '" height="8" fill="#6f4425"/>';
+    for (var wx = 600; wx <= 840; wx += 130) o += '<rect x="' + wx + '" y="36" width="100" height="92" rx="4" fill="#bfe6f5" stroke="#7a5a35" stroke-width="5"/><path d="M' + (wx + 50) + ' 36V128M' + wx + ' 82H' + (wx + 100) + '" stroke="#7a5a35" stroke-width="4"/><path d="M' + (wx + 8) + ' 120L' + (wx + 40) + ' 90" stroke="#fff" stroke-width="3" opacity=".7"/>';
+    o += '<rect x="60" y="82" width="500" height="8" rx="2" fill="#7a4a2b"/><rect x="60" y="52" width="500" height="8" rx="2" fill="#7a4a2b"/>';
+    var cs = ['#e8554e', '#ffd36a', '#6ec1e4', '#8bd17c', '#c58ae8'];
+    for (var ci = 0; ci < 14; ci++) { o += '<rect x="' + (78 + ci * 35) + '" y="' + (ci % 2 ? 62 : 32) + '" width="20" height="' + (ci % 2 ? 20 : 20) + '" rx="4" fill="' + cs[ci % 5] + '"/>'; }
+    o += '<rect x="60" y="22" width="500" height="6" fill="#7a4a2b" opacity="0"/>';
+    o += '<ellipse cx="500" cy="580" rx="400" ry="190" fill="#e9b5a2" stroke="#c48876" stroke-width="6"/><ellipse cx="500" cy="580" rx="360" ry="160" fill="none" stroke="#fff" stroke-width="3" stroke-dasharray="10 8" opacity=".6"/>';
+    o += '<rect x="410" y="800" width="180" height="46" rx="8" fill="#b85a4a" stroke="#7d3326" stroke-width="4"/>';
+    return o + '</svg>';
+  }
+  function cafeTable() {
+    return '<svg viewBox="0 0 120 70"><ellipse cx="60" cy="60" rx="46" ry="8" fill="rgba(0,0,0,.2)"/><rect x="54" y="38" width="12" height="22" fill="#7c4c27"/><ellipse cx="60" cy="36" rx="54" ry="24" fill="#8a5a33"/><ellipse cx="60" cy="30" rx="54" ry="24" fill="#c98f58" stroke="#8a5a33" stroke-width="2.4"/><ellipse cx="60" cy="30" rx="44" ry="18" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="2"/>' +
+      '<ellipse cx="42" cy="32" rx="9" ry="4" fill="#fff"/><ellipse cx="42" cy="30" rx="6" ry="2.6" fill="#7a4a2b"/><ellipse cx="80" cy="28" rx="9" ry="4" fill="#fff"/><ellipse cx="80" cy="26" rx="6" ry="2.6" fill="#7a4a2b"/><circle cx="62" cy="24" r="4" fill="#ff8fa8"/><rect x="61" y="26" width="2" height="6" fill="#4f9a47"/></svg>';
+  }
+  function cafeCounter() {
+    return '<svg viewBox="0 0 500 70"><rect x="0" y="0" width="500" height="18" rx="5" fill="#e0b27a" stroke="#8a5a33" stroke-width="3"/><rect x="6" y="18" width="488" height="50" fill="#a9703f" stroke="#7c4c27" stroke-width="3"/>' +
+      '<path d="M40 24V64M110 24V64M180 24V64M250 24V64M320 24V64M390 24V64M460 24V64" stroke="#8a5a33" stroke-width="3"/><rect x="0" y="64" width="500" height="6" fill="#6f4425"/></svg>';
+  }
+  function buildCafe() {
+    var w = $('world'), html = '', W = CAFE_W, H = CAFE_H; setWorld(W, H); w.classList.remove('cave'); w.style.background = '#dcae72';
+    cafeSeats(); html += cafeGround(W, H);
+    var dc = function (svg, x, y, wd, ht, z) { html += '<div class="dc" style="left:' + x + 'px;top:' + y + 'px;width:' + wd + 'px;height:' + ht + 'px;z-index:' + Math.round(z == null ? y : z) + '">' + svg + '</div>'; };
+    var em = function (t, x, y, fs, z) { html += '<div class="cfe" style="left:' + x + 'px;top:' + y + 'px;font-size:' + fs + 'px;z-index:' + Math.round(z == null ? y : z) + '">' + t + '</div>'; };
+    dc(cafeCounter(), 310, 262, 500, 70, 262);
+    em('🧁', 120, 232, 30, 263); em('🍰', 190, 232, 30, 263); em('☕', 470, 232, 34, 263); em('🧾', 400, 232, 26, 263);
+    CTABLES.forEach(function (t) { dc(cafeTable(), t[0], t[1] + 34, 120, 70, t[1] + 34); });
+    SEATS.forEach(function (sa) {
+      dc('<svg viewBox="0 0 50 44"><path d="M5 42V14Q5 4 25 4T45 14V42Z" fill="#a9703f" stroke="#7c4c27" stroke-width="2.4"/><path d="M13 38V16Q13 11 25 11T37 16V38Z" fill="#c4874f"/></svg>', sa.x, sa.y - 2, 50, 44, sa.y - 1);
+      dc('<svg viewBox="0 0 56 26"><rect x="8" y="14" width="5" height="12" fill="#7c4c27"/><rect x="43" y="14" width="5" height="12" fill="#7c4c27"/><ellipse cx="28" cy="9" rx="25" ry="9" fill="#d9534f" stroke="#a63a37" stroke-width="2.4"/><ellipse cx="28" cy="7" rx="16" ry="4" fill="rgba(255,255,255,.22)"/></svg>', sa.x, sa.y + 8, 56, 26, sa.y + 1);
+    });
+    em('🪴', 40, 330, 52, 330); em('🪴', 960, 330, 52, 330); em('🪴', 40, 760, 52, 760); em('🪴', 960, 760, 52, 760); em('🖼️', 570, 130, 40, 5);
+    html += '<div class="tlbl" style="left:500px;top:766px">🚪 出口</div>';
+    html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
+    w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
+    DOORS = [{ k: 'cafeout', x: 500, y: 800, w: 120, h: 70 }];
+    hero.x = 500; hero.y = 740; hero.dir = 1; hero.sit = null; ftarget = null; fz = zoomT = .8;
+    $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi(); addNpcs('cafe');
+    if (hero.cup) setCup(hero.cup, true);
+  }
+  function seatAt(wx, wy) { var r = null, bd = 42; SEATS.forEach(function (sa, i) { var d = Math.hypot(wx - sa.x, wy - (sa.y - 14)); if (d < bd) { bd = d; r = i; } }); return r; }
+  function seatTaken(i) { var t = false; Object.keys(peers).forEach(function (id) { if (peers[id].st === i + 1) t = true; }); return t; }
+  function sitDown(i) {
+    var sa = SEATS[i]; if (!sa || !inCafe) return;
+    if (seatTaken(i)) { toast('そこは、先に座ってる人がおるで'); return; }
+    hero.x = sa.x; hero.y = sa.y; hero.dir = sa.d; hero.sit = i; var h = $('hero2'); if (h) { h.classList.remove('walk'); h.classList.add('sit'); } updHero(); sfx(0);
+    var t = $('ftip'); t.style.opacity = 1; t.textContent = '座ったで。話すときは、下の「💬」から。立つときは、行きたい所をタップや'; clearTimeout(tipT); tipT = setTimeout(function () { t.style.opacity = 0; }, 4500);
+    if (rtOn) rtSend(posMsg());
+  }
+  function standUp() { if (hero.sit == null) return; hero.sit = null; var h = $('hero2'); if (h) h.classList.remove('sit'); if (rtOn) rtSend(posMsg()); }
+  function setCup(e, quiet) {
+    var h = $('hero2'), o = h && h.querySelector('.cup'); if (o) o.remove(); clearTimeout(hero.cupT); hero.cup = e || '';
+    if (e && h) { var c = document.createElement('div'); c.className = 'cup'; c.textContent = e; h.appendChild(c); hero.cupT = setTimeout(function () { setCup(''); bubble($('hero2'), 'ごちそうさま！'); if (rtOn) rtSend(posMsg()); }, 30000); }
+    if (!quiet && rtOn) rtSend(posMsg());
+  }
+  function ghCup(pr) { var o = pr.el.querySelector('.cup'); if (o) o.remove(); pr.cupE = pr.dk || ''; if (pr.cupE) { var c = document.createElement('div'); c.className = 'cup'; c.textContent = pr.cupE; pr.el.appendChild(c); } }
+  function drinkUI() { return '<div class="drk">' + DRINKS.map(function (d, i) { return '<button type="button" data-dk="' + i + '"><b>' + d.e + '</b>' + esc(d.nm) + '</button>'; }).join('') + '</div><p class="tiny" style="margin-top:8px">ぜんぶ無料。何杯でもOKや。</p>'; }
+  function takeDrink(i) {
+    var d = DRINKS[i]; if (!d) return; $('npc').classList.remove('on'); sfx(2); setCup(d.e); bubble($('hero2'), d.say);
+    var by = document.querySelector('.gh.npc[data-npc="yui"]'); if (by) bubble(by, 'はいどうぞ〜！');
+    var cu = hero.cup; setTimeout(function () { if (hero.cup === cu && inCafe) bubble($('hero2'), 'ふぅ〜、おいしい😊'); }, 6500);
+  }
+  function openCafe() {
+    inTown = true; inCafe = true; shared = false; curMine = null; hero.cup = hero.cup || '';
+    rtStop(); $('field').classList.remove('chat'); $('field').classList.add('town'); $('fTtl').textContent = 'カフェ'; fz = zoomT = .8;
+    buildCafe(); show('field'); closeSheets(); digUI(false); BGM.set('town'); gearUi();
+    $('fhud').innerHTML = '<span style="flex:1;text-align:center">カフェでは、ドリンクが全部タダ。椅子に座って話せるで</span>';
+    var tip = $('ftip'); tip.style.opacity = 1; tip.textContent = 'カフェへようこそ！ 椅子をタップで座れる。カウンターの店員さんに話しかけると、ドリンクがもらえるで（全部タダ）'; clearTimeout(tipT); tipT = setTimeout(function () { tip.style.opacity = 0; }, 6500);
+    $('tlog').innerHTML = '';
+    var by = document.querySelector('.gh.npc[data-npc="yui"]'); if (by) setTimeout(function () { bubble(by, 'いらっしゃいませ〜！'); }, 500);
+    var me = { id: myMid, n: (player.avatar && player.avatar.name) || '', av: player.avatar };
+    RT.join('cafe', me, { onMsg: rtMsg, onPeers: rtPeers }, function (ok) { if (ok) { rtOn = true; rtLast = 0; rtSend(posMsg()); } else toast('つながらへんかった。カフェには一人だけやで'); });
+  }
+  function leaveCafe() {
+    standUp(); setCup('', true); inCafe = false; rtStop(); openTown(); hero.x = 1760; hero.y = 530; hero.dir = 1; ftarget = null; updHero(); camX = hero.x - 300; camY = hero.y - 400;
+  }
+  function leaveTown() { inCafe = false; inTown = false; zoomT = ZW; fz = ZW; $('field').classList.remove('town'); rtStop(); setWorld(760, 1000); }
   function sendChat() {
     var inp = $('tin'), t = String(inp.value || '').replace(/\s+/g, ' ').trim().slice(0, 40); if (!t) return;
     var now = Date.now(); if (now - tChatAt < 1800) { toast('ちょっと待ってな'); return; } tChatAt = now;
@@ -2347,7 +2467,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 41;
+  var GV = 42;
   (function () {
     var last = Date.now();
     function chk() {
@@ -2362,6 +2482,15 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
   /* ---------- 町のNPC（案内役ミミ・闘技場の受付レオ） ---------- */
   var NPCS = {
+    yui: { nm: 'カフェの店員 ユイ', where: 'cafe', x: 310, y: 232, drinks: true, av: { name: 'ユイ', gender: 1, skin: 1, face: 3, hair: 5, hairColor: 3, outfit: 2, outfitColor: 6, pattern: 0, patColor: 6, bottom: 1, bottomColor: 5, acc: 0 },
+      hi: 'いらっしゃいませ〜！ カフェの店員のユイです。ドリンクは、ぜんぶタダで、何杯でもどうぞ。下から好きなのを選んでな。',
+      faq: [
+        { q: 'ここは、どんな場所？', k: ['カフェ', 'ここ', 'とは', '何', '場所'], a: 'オパ会のカフェや。仲のええ友達と、椅子に座って、ゆっくり話すための場所やで。店の中は、自由に歩ける。ドリンクも、ぜんぶタダや。' },
+        { q: '椅子に座るには？', k: ['座', 'すわ', '椅子', 'いす', 'イス', '席'], a: '座りたい椅子をタップしたら、そこまで歩いて座るで。座ってる姿は、ほかの人にも見える。立つときは、行きたい所をタップするだけや。先に座ってる人がおる椅子には、座られへんで。' },
+        { q: '友達と話すには？', k: ['話', '友達', 'ともだち', 'チャット', '会話', 'おしゃべり'], a: '同じ時間にカフェにおる人と、話せる。下の「💬」ボタンで、文字を打って話せるし、短縮チャットなら、ワンタップで送れる。ことばは保存されへんから、安心してな。同じテーブルに座ると、話しやすいで。' },
+        { q: 'ドリンクは？', k: ['ドリンク', '飲', 'のみ', 'ジュース', 'コーヒー', '無料', 'タダ', 'お金'], a: 'ぜんぶ無料で、何杯でも飲める。ゲームマネーも要らん。見た目を楽しむドリンクで、ステータスは変わらへんけどな。飲んでる姿は、友達にも見えるで。' },
+        { q: '外に出るには？', k: ['出', '帰', '戻', '町', '出口'], a: '画面の「🚪 町へ」ボタンか、お店の下にある「出口」をタップしたら、町に戻れるで。' }
+      ] },
     kanon: { nm: '闘技場の解説 カノン', where: 'plaza', x: 210, y: 140, av: { name: 'カノン', gender: 1, skin: 1, face: 1, hair: 4, hairColor: 5, outfit: 7, outfitColor: 2, pattern: 0, patColor: 6, bottom: 1, bottomColor: 3, acc: 3 },
       hi: 'いらっしゃい！ 闘技場の解説係のカノンや。ここのルールや、戦い方のコツを、全部教えるで。下の質問をタップか、聞きたいことを打ってな。',
       faq: [
@@ -2423,14 +2552,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       placeEl(e, n.x, n.y); $('world').appendChild(e);
     });
   }
-  function npcAt(wx, wy) { var r = null, bd = 62; var wh = inPlaza ? 'plaza' : 'town'; Object.keys(NPCS).forEach(function (k) { var n = NPCS[k]; if ((n.where || 'town') !== wh) return; var d = Math.hypot(wx - n.x, wy - (n.y - 32)); if (d < bd) { bd = d; r = k; } }); return r; }
+  function npcAt(wx, wy) { var r = null, bd = 62; var wh = inPlaza ? 'plaza' : (inCafe ? 'cafe' : 'town'); Object.keys(NPCS).forEach(function (k) { var n = NPCS[k]; if ((n.where || 'town') !== wh) return; var d = Math.hypot(wx - n.x, wy - (n.y - 32)); if (d < bd) { bd = d; r = k; } }); return r; }
   var npcCur = null;
   function npcSay(t) { $('npcSay').textContent = t; }
   function openNpc(k) {
     var n = NPCS[k]; if (!n) return; npcCur = k; sfx(2);
     $('npcN').textContent = n.nm; npcSay(n.hi); $('npcIn').value = '';
     $('npcQs').innerHTML = n.faq.map(function (f, i) { return '<button type="button" data-i="' + i + '">' + esc(f.q) + '</button>'; }).join('');
-    $('npcAct').innerHTML = n.enter ? '<button type="button" class="abtn" id="npcEnter" style="width:100%;margin-top:10px">⚔ 闘技場に入る</button>' : (n.spar ? sparUI() : '');
+    $('npcAct').innerHTML = n.enter ? '<button type="button" class="abtn" id="npcEnter" style="width:100%;margin-top:10px">⚔ 闘技場に入る</button>' : (n.spar ? sparUI() : (n.drinks ? drinkUI() : ''));
     if (n.spar) sparInfo();
     $('npc').classList.add('on');
   }
@@ -2511,6 +2640,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('npcX').addEventListener('click', function () { $('npc').classList.remove('on'); });
   $('npc').addEventListener('click', function (e) {
     if (e.target === this) this.classList.remove('on'); var b = e.target.closest && e.target.closest('#npcEnter'); if (b) { $('npc').classList.remove('on'); openArena(); }
+    var dkb = e.target.closest && e.target.closest('button[data-dk]'); if (dkb) takeDrink(+dkb.dataset.dk);
     if (e.target.closest && e.target.closest('#npcSend')) { var lv = +$('sparRg').value; LSset('opa_spar_lv', String(lv)); $('npc').classList.remove('on'); botSpawn(lv); }
     if (e.target.closest && e.target.closest('#npcBack')) { botStop(); $('npc').classList.remove('on'); toast('練習相手には、帰ってもらったで'); }
   });
@@ -2948,7 +3078,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var hh = $('hero2'); if (hh) { var b = hh.querySelector('.hhp'); if (b) { b.classList.toggle('on', r < 1); b.firstChild.style.width = (r * 100) + '%'; b.firstChild.style.background = r <= .3 ? '#ff5a5a' : '#4fd68a'; } hh.classList.toggle('down', hp.down); }
   }
   function floatTxt(x, y, t, c) { var e = document.createElement('div'); e.className = 'ftxt' + (c ? ' ' + c : ''); e.textContent = t; e.style.left = x + 'px'; e.style.top = y + 'px'; $('world').appendChild(e); setTimeout(function () { e.remove(); }, 850); }
-  function posMsg() { return { t: 'pos', x: Math.round(hero.x), y: Math.round(hero.y), d: hero.dir, h: Math.round(hp.cur / Math.max(1, hp.max) * 100), dn: hp.down ? 1 : 0, md: (arena && arena.m && !arena.m.over) ? arena.m.mid : 0, gm: isGM() ? 1 : 0, lv: (player && player.lv) || 1, eq: EQSL.map(function (sl) { var q = eqItem(sl); return q ? q.id : ''; }).join(',') }; }
+  function posMsg() { return { t: 'pos', x: Math.round(hero.x), y: Math.round(hero.y), d: hero.dir, h: Math.round(hp.cur / Math.max(1, hp.max) * 100), dn: hp.down ? 1 : 0, md: (arena && arena.m && !arena.m.over) ? arena.m.mid : 0, gm: isGM() ? 1 : 0, st: (hero.sit != null && hero.sit >= 0) ? hero.sit + 1 : 0, dk: hero.cup || '', lv: (player && player.lv) || 1, eq: EQSL.map(function (sl) { var q = eqItem(sl); return q ? q.id : ''; }).join(',') }; }
   var EQSL = ['weapon', 'shield', 'armor', 'outfit', 'tool', 'helm'];
   function rtHp() { if (rtOn) { rtLast = 0; } }
 
@@ -3367,11 +3497,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function startLoop() { if (fraf) return; flast = performance.now(); fraf = requestAnimationFrame(tick); }
   function tick(t) {
     fraf = 0; if (!fieldOn) return;
-    var bl = inArena ? '🏳 あきらめる' : (inPlaza ? '🚪 町へ' : (inTown ? '🚪 マップへ' : '🚪 鉱山を出る')); if (bl !== window.__bl) { window.__bl = bl; var bb = $('fBack'); bb.className = 'ib wide'; bb.textContent = bl; }
+    var bl = inArena ? '🏳 あきらめる' : ((inPlaza || inCafe) ? '🚪 町へ' : (inTown ? '🚪 マップへ' : '🚪 鉱山を出る')); if (bl !== window.__bl) { window.__bl = bl; var bb = $('fBack'); bb.className = 'ib wide'; bb.textContent = bl; }
     var dt = Math.min(.05, (t - flast) / 1000); flast = t;
     var hh = $('hero2'), moved = false;
     if (ftarget) {
-      var dx = ftarget.x - hero.x, dy = ftarget.y - hero.y, d = Math.hypot(dx, dy), step = SPEED * dt;
+      if (hero.sit != null) standUp(); var dx = ftarget.x - hero.x, dy = ftarget.y - hero.y, d = Math.hypot(dx, dy), step = SPEED * dt;
       if (d <= step) { hero.x = ftarget.x; hero.y = ftarget.y; var sp = ftarget.spot, dk = ftarget.door, rv = ftarget.rev; ftarget = null; if (hh) hh.classList.remove('walk'); updHero(); if (sp && !sp.used) { startDig(sp); } else if (dk) openDoor(dk); else if (rv) doRevive(rv); }
       else { hero.x += dx / d * step; hero.y += dy / d * step; if (Math.abs(dx) > 3) hero.dir = dx > 0 ? 1 : -1; moved = true; if (hh) hh.classList.add('walk'); updHero(); }
     }
@@ -3404,15 +3534,16 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var tpr = peerAt(wx, wy); if (tpr && !tpr.dn) { openProfile(tpr); return; }
     var gpr = null; Object.keys(peers).forEach(function (id) { var q = peers[id]; if (q.dn && Math.hypot(wx - q.x, wy - (q.y - 32)) < 70) gpr = q; });
     if (gpr) { doRevive(gpr.id); return; }
+    if (inCafe) { var sk = seatAt(wx, wy); if (sk != null) { var pg2 = document.createElement('i'); pg2.className = 'ping'; pg2.style.left = wx + 'px'; pg2.style.top = wy + 'px'; $('world').appendChild(pg2); setTimeout(function () { pg2.remove(); }, 520); ftarget = { x: SEATS[sk].x, y: SEATS[sk].y, spot: null, door: 'seat:' + sk }; $('ftip').style.opacity = 0; return; } }
     if (inTown) { var dr = townDoorAt(wx, wy); if (dr) { var pg0 = document.createElement('i'); pg0.className = 'ping'; pg0.style.left = wx + 'px'; pg0.style.top = wy + 'px'; $('world').appendChild(pg0); setTimeout(function () { pg0.remove(); }, 520); ftarget = { x: dr.x, y: dr.y + 46, spot: null, door: dr.k }; $('ftip').style.opacity = 0; return; } }
     spots.forEach(function (s) { if (s.used || (s.by && s.by !== myMid)) return; var d = Math.hypot(wx - s.x, wy - (s.y - 12)); if (d < best) { best = d; hit = s; } });
     var pg = document.createElement('i'); pg.className = 'ping'; pg.style.left = wx + 'px'; pg.style.top = wy + 'px'; $('world').appendChild(pg); setTimeout(function () { pg.remove(); }, 520);
     if (hit) ftarget = { x: hit.x - 58, y: hit.y + 26, spot: hit };
-    else ftarget = { x: clamp(wx, 30, WW - 30), y: clamp(wy, inTown ? 260 : 200, WH - 40), spot: null };
+    else ftarget = { x: clamp(wx, 30, WW - 30), y: clamp(wy, inCafe ? 276 : (inTown ? 260 : 200), WH - 40), spot: null };
     $('ftip').style.opacity = 0;
   });
   function digUI(on) {
-    $('field').classList.toggle('digging', !!on); zoomT = inTown ? .62 : ZW;
+    $('field').classList.toggle('digging', !!on); zoomT = inTown ? (inCafe ? .8 : .62) : ZW;
     if (!on) { $('hint').textContent = ''; }
   }
   function startDig(sp) {
@@ -3449,7 +3580,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   $('atkBtn').addEventListener('click', attackNearest);
   $('fCancel').addEventListener('click', function () { if (inArena) { arGiveUp(); return; } if (inPlaza) { leaveArena(); return; } if (!busy) cancelDig(); });
-  $('fBack').addEventListener('click', function () { if (inArena) { arGiveUp(); return; } if (inPlaza) { leaveArena(); return; } if (curSpot) cancelDig(); var wasTown = inTown; leaveTown(); openMap(wasTown ? null : curMine); });
+  $('fBack').addEventListener('click', function () { if (inCafe) { leaveCafe(); return; } if (inArena) { arGiveUp(); return; } if (inPlaza) { leaveArena(); return; } if (curSpot) cancelDig(); var wasTown = inTown; leaveTown(); openMap(wasTown ? null : curMine); });
   $('fBook').addEventListener('click', function () { renderBook(); $('book').classList.add('on'); });
   $('fSet').addEventListener('click', function () { $('setName').textContent = player.avatar.name + ' さん'; $('set').classList.add('on'); });
 
