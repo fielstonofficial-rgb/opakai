@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:50-->
+<!--GV:51-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -323,6 +323,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #fTools{position:absolute;left:8px;right:8px;bottom:6px;z-index:60;display:flex;gap:6px;justify-content:flex-end;align-items:center;pointer-events:none}
 #fTools button{pointer-events:auto;display:none;padding:5px 10px;border-radius:999px;font-weight:800;font-size:11px;line-height:1.2;white-space:nowrap}
 #fTools #guardBtn{border:1.5px solid #7fd6ff;background:rgba(8,20,30,.8);color:#bfe9ff}
+#fTools #goTown,#fTools #goMine{border:1.5px solid #ffd36a;background:rgba(30,22,6,.82);color:#ffe9a8}
 #fTools #swBtn{border:1.5px solid #ffd36a;background:rgba(30,22,6,.82);color:#ffe9a8}
 #fTools #qcBtn{border:1.5px solid #9ff0c0;background:rgba(6,30,20,.82);color:#c9ffe0}
 #fTools #gmTog{position:static;margin-right:auto;border:1.5px solid rgba(255,255,255,.3);background:rgba(10,18,24,.82);color:#fff}
@@ -639,7 +640,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v50（戦いの効果音・服と道具のアイコン・ショップでも着せ替え）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v51（採掘は武器をしまってから・銃の値段とドロップ・低Lvの難易度・ギルド・町⇄鉱山ボタン）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所です（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -647,7 +648,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   <div id="cfm"><div class="gc"><h3>ゲームをとじる？</h3><p class="tiny">とじても、ここまでの記録は残るよ。</p><div class="rw" style="display:flex;gap:8px;margin-top:12px"><button id="cfmNo" type="button" class="gbtn" style="flex:1">つづける</button><button id="cfmYes" type="button" class="gbtn dim" style="flex:1;margin-top:0">とじる</button></div></div></div>
   <section class="scr" id="field">
     <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="装備・もちもの">🎒<small>装備・持物</small></button><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
-    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="plDown"><span>やられた…（このままチャットもできるよ）</span><button type="button" class="gbtn" id="plDownGo">🏥 病院へ向かう</button></div><div id="fTools"><button id="plChat" type="button">💬 チャット</button><button id="dashBtn" type="button">💨 ダッシュ</button><button id="spBtn" type="button">✨ 0%</button><button id="sk0" class="skb" type="button"></button><button id="sk1" class="skb" type="button"></button><button id="sk2" class="skb" type="button"></button><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">💬</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしまった…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
+    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="plDown"><span>やられた…（このままチャットもできるよ）</span><button type="button" class="gbtn" id="plDownGo">🏥 病院へ向かう</button></div><div id="fTools"><button id="goTown" type="button">🏘️ 町へ</button><button id="goMine" type="button">⛏ 鉱山へ</button><button id="plChat" type="button">💬 チャット</button><button id="dashBtn" type="button">💨 ダッシュ</button><button id="spBtn" type="button">✨ 0%</button><button id="sk0" class="skb" type="button"></button><button id="sk1" class="skb" type="button"></button><button id="sk2" class="skb" type="button"></button><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">💬</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしまった…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
         <div id="gld"><div class="gc"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="tiny">ギルドの部屋</span><button id="gClose" type="button" class="gbtn" style="padding:6px 12px">とじる</button></div><div id="gBody"></div></div></div>
         <div id="npc"><div class="nc"><div class="nh"><b id="npcN"></b><button type="button" class="gbtn" id="npcX" style="padding:6px 12px">とじる</button></div><div id="npcSay"></div><div id="npcQs"></div><div class="nin"><input id="npcIn" maxlength="30" placeholder="聞きたいこと（例：HP、闘技場、売る）" autocomplete="off"><button type="button" class="gbtn" id="npcGo">きく</button></div><div id="npcAct"></div></div></div><div id="arInv"><b id="arInvT"></b><div><button type="button" class="abtn" id="arInvY">受ける</button><button type="button" class="gbtn" id="arInvN">ことわる</button></div></div><div id="updBar" role="button">🔄 新しい版があるよ。ここをタップして更新</div>
         <div id="arBig"></div>
@@ -1420,6 +1421,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function swing(ev) {
     if (busy || !curSpot || hp.down) return;
+    if (handW()) { holdStop(); toast('武器を持ったままでは掘れないよ。「🔁 つるはし」で持ちかえてね'); return; }
     actx();
     taps++; sfx('hit'); vib(18);
     var el = curSpot.el; el.classList.remove('hit'); void el.offsetWidth; el.classList.add('hit');
@@ -1984,7 +1986,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var SLOTS = ['outfit', 'tool', 'weapon', 'shield', 'armor'], SLN = { outfit: '衣装', tool: '採掘道具', weapon: '武器', shield: '盾', armor: '防具' };
 
   /* ---------- レア度の整理：店で売るのは「ノーマル」だけ。レア＝ふつうの敵がまれに／超レア＝強い敵だけ／激レア＝ボスだけ ---------- */
-  var WRE = {"wx113":[400,0],"g1":[400,0],"wx115":[450,0],"wx129":[450,0],"wx127":[550,0],"wx114":[550,0],"wx117":[600,0],"wx118":[650,0],"wx119":[650,0],"wx131":[650,0],"wx116":[800,0],"wx130":[800,0],"wx135":[1050,0],"wx137":[1100,0],"wx120":[1100,0],"wx122":[1100,0],"wx133":[1200,0],"wx123":[1200,0],"wx132":[1300,0],"wx128":[1350,0],"wx121":[1400,0],"wx136":[1450,0],"wx125":[1650,0],"wx126":[1750,0],"g2":[1800,0],"wx124":[40000,2],"wx155":[2150,0],"wx134":[2250,0],"wx139":[2950,0],"g3":[40000,2],"b1":[3500,0],"wx087":[3500,0],"wx138":[40000,2],"wx141":[4100,0],"wx086":[4400,0],"b2":[4800,0],"wx085":[4800,0],"wx100":[4900,0],"wx156":[5000,0],"wx089":[5300,0],"wx091":[5300,0],"wx099":[5400,0],"wx157":[5600,0],"g4":[100000,3],"wx142":[5600,0],"wx143":[5600,0],"wx101":[6000,0],"wx140":[7000,0],"wx071":[7000,0],"wx072":[7000,0],"wx088":[7600,0],"wx090":[7600,0],"wx102":[8000,0],"wx104":[8000,0],"wx144":[8100,0],"wx145":[8100,0],"wx146":[8100,0],"wx147":[8100,0],"wx073":[8600,0],"wx103":[8700,1],"wx105":[8700,1],"wx092":[9100,1],"wx093":[9100,1],"wx075":[9400,1],"wx149":[9700,1],"wx058":[9800,1],"wx095":[9800,1],"wx076":[10400,1],"wx077":[10400,1],"wx108":[10400,1],"wx150":[10500,1],"wx158":[11300,1],"wx106":[11300,1],"wx094":[11600,1],"wx057":[11900,1],"wx059":[11900,1],"wx148":[12400,1],"wx151":[12400,1],"wx074":[12400,1],"wx061":[13200,1],"wx062":[13200,1],"wx109":[13300,1],"wx159":[13700,1],"b3":[14000,1],"wx096":[40000,2],"wx078":[14800,1],"wx079":[14800,1],"wx030":[14900,1],"wx107":[15600,1],"wx097":[15600,1],"wx060":[15900,1],"wx031":[16500,1],"wx098":[16800,1],"wx080":[17500,1],"wx161":[17900,1],"wx112":[18200,1],"wx063":[19000,1],"wx029":[20200,1],"wx154":[21000,1],"wx111":[21000,1],"wx081":[22200,1],"wx033":[22200,1],"wx066":[22500,1],"wx162":[23200,1],"b4":[40000,2],"wx067":[24400,1],"wx032":[24400,1],"wx002":[25700,1],"wx045":[25700,1],"wx083":[25800,1],"wx160":[26500,1],"wx064":[26500,2],"w1":[28500,2],"wx152":[40000,2],"wx084":[29900,2],"wx163":[31000,2],"wx065":[31000,2],"wx001":[32000,2],"wx003":[32000,2],"wx034":[32000,2],"wx035":[32000,2],"wx153":[100000,3],"wx110":[40000,2],"wx043":[35000,2],"wx044":[35000,2],"wx037":[35000,2],"wx038":[35000,2],"wx164":[35000,2],"wx007":[38000,2],"wx165":[39000,2],"wx017":[39000,2],"w2":[42000,2],"wx015":[44000,2],"wx039":[45000,2],"wx005":[46000,2],"wx006":[46000,2],"wx046":[46000,2],"wx047":[46000,2],"wx049":[46000,2],"b5":[100000,3],"wx004":[51000,2],"wx048":[51000,2],"wx070":[51000,2],"wx036":[52000,2],"wx016":[54000,2],"wx082":[54000,2],"wx068":[59000,2],"wx009":[60000,2],"wx053":[60000,2],"w3":[66000,2],"wx040":[66000,2],"wx018":[71000,2],"wx011":[71000,2],"wx069":[100000,3],"wx050":[77000,2],"wx020":[78000,2],"wx021":[78000,2],"wx166":[79000,2],"wx010":[84000,2],"wx051":[84000,3],"wx019":[85000,3],"wx008":[90000,3],"wx052":[90000,3],"wx023":[93000,3],"wx022":[119000,3],"wx041":[120000,3],"w4":[122000,3],"wx168":[124000,3],"wx024":[128000,3],"wx025":[128000,3],"wx042":[136000,3],"w6":[140000,3],"wx014":[150000,3],"wx054":[150000,3],"w5":[183000,3],"wx012":[183000,3],"wx028":[201000,3],"wx013":[208000,3],"wx055":[208000,3],"wx167":[229000,3],"wx027":[231000,3],"wx056":[235000,3],"w7":[265000,3],"wx026":[300000,3]}, SRE = {"sx01":0,"sx02":0,"sx03":0,"sx04":0,"sx05":1,"sx06":1,"sx07":1,"sx08":1,"sx09":2,"sx10":2,"sx11":2,"sx12":2,"sx13":3,"sx14":3,"sx15":3,"sx16":3,"ax01":0,"ax02":0,"ax03":0,"ax04":0,"ax05":1,"ax06":1,"ax07":1,"ax08":1,"ax09":2,"ax10":2,"ax11":2,"ax12":2,"ax13":3,"ax14":3,"ax15":3,"ax16":3,"s1":0,"s2":1,"s3":2,"s4":3,"a1":0,"a2":1,"a3":2,"a4":3};
+  var WRE = {"wx113":[10000,0],"g1":[10000,0],"wx115":[10600,0],"wx129":[10600,0],"wx127":[11600,0],"wx114":[11600,0],"wx117":[12100,0],"wx118":[12500,0],"wx119":[12500,0],"wx131":[12500,0],"wx116":[13800,0],"wx130":[13800,0],"wx135":[15600,0],"wx137":[15900,0],"wx120":[15900,0],"wx122":[15900,0],"wx133":[16600,0],"wx123":[16600,0],"wx132":[17200,0],"wx128":[17500,0],"wx121":[17800,0],"wx136":[18100,0],"wx125":[19200,0],"wx126":[19700,0],"g2":[20000,0],"wx124":[83200,2],"wx155":[21700,0],"wx134":[22100,0],"wx139":[25100,0],"g3":[83200,2],"b1":[3500,0],"wx087":[3500,0],"wx138":[83200,2],"wx141":[29200,0],"wx086":[4400,0],"b2":[4800,0],"wx085":[4800,0],"wx100":[4900,0],"wx156":[32000,0],"wx089":[5300,0],"wx091":[5300,0],"wx099":[5400,0],"wx157":[33700,0],"g4":[126800,3],"wx142":[33700,0],"wx143":[33700,0],"wx101":[6000,0],"wx140":[37300,0],"wx071":[7000,0],"wx072":[7000,0],"wx088":[7600,0],"wx090":[7600,0],"wx102":[8000,0],"wx104":[8000,0],"wx144":[39900,0],"wx145":[39900,0],"wx146":[39900,0],"wx147":[39900,0],"wx073":[8600,0],"wx103":[8700,1],"wx105":[8700,1],"wx092":[9100,1],"wx093":[9100,1],"wx075":[9400,1],"wx149":[43300,1],"wx058":[9800,1],"wx095":[9800,1],"wx076":[10400,1],"wx077":[10400,1],"wx108":[10400,1],"wx150":[45000,1],"wx158":[46500,1],"wx106":[11300,1],"wx094":[11600,1],"wx057":[11900,1],"wx059":[11900,1],"wx148":[48500,1],"wx151":[48500,1],"wx074":[12400,1],"wx061":[13200,1],"wx062":[13200,1],"wx109":[13300,1],"wx159":[50800,1],"b3":[14000,1],"wx096":[40000,2],"wx078":[14800,1],"wx079":[14800,1],"wx030":[14900,1],"wx107":[15600,1],"wx097":[15600,1],"wx060":[15900,1],"wx031":[16500,1],"wx098":[16800,1],"wx080":[17500,1],"wx161":[57500,1],"wx112":[18200,1],"wx063":[19000,1],"wx029":[20200,1],"wx154":[61800,1],"wx111":[21000,1],"wx081":[22200,1],"wx033":[22200,1],"wx066":[22500,1],"wx162":[64700,1],"b4":[40000,2],"wx067":[24400,1],"wx032":[24400,1],"wx002":[25700,1],"wx045":[25700,1],"wx083":[25800,1],"wx160":[68800,1],"wx064":[26500,2],"w1":[28500,2],"wx152":[83200,2],"wx084":[29900,2],"wx163":[74000,2],"wx065":[31000,2],"wx001":[32000,2],"wx003":[32000,2],"wx034":[32000,2],"wx035":[32000,2],"wx153":[126800,3],"wx110":[40000,2],"wx043":[35000,2],"wx044":[35000,2],"wx037":[35000,2],"wx038":[35000,2],"wx164":[78200,2],"wx007":[38000,2],"wx165":[82200,2],"wx017":[39000,2],"w2":[42000,2],"wx015":[44000,2],"wx039":[45000,2],"wx005":[46000,2],"wx006":[46000,2],"wx046":[46000,2],"wx047":[46000,2],"wx049":[46000,2],"b5":[100000,3],"wx004":[51000,2],"wx048":[51000,2],"wx070":[51000,2],"wx036":[52000,2],"wx016":[54000,2],"wx082":[54000,2],"wx068":[59000,2],"wx009":[60000,2],"wx053":[60000,2],"w3":[66000,2],"wx040":[66000,2],"wx018":[71000,2],"wx011":[71000,2],"wx069":[100000,3],"wx050":[77000,2],"wx020":[78000,2],"wx021":[78000,2],"wx166":[113800,2],"wx010":[84000,2],"wx051":[84000,3],"wx019":[85000,3],"wx008":[90000,3],"wx052":[90000,3],"wx023":[93000,3],"wx022":[119000,3],"wx041":[120000,3],"w4":[122000,3],"wx168":[140000,3],"wx024":[128000,3],"wx025":[128000,3],"wx042":[136000,3],"w6":[140000,3],"wx014":[150000,3],"wx054":[150000,3],"w5":[183000,3],"wx012":[183000,3],"wx028":[201000,3],"wx013":[208000,3],"wx055":[208000,3],"wx167":[185600,3],"wx027":[231000,3],"wx056":[235000,3],"w7":[265000,3],"wx026":[300000,3]}, SRE = {"sx01":0,"sx02":0,"sx03":0,"sx04":0,"sx05":1,"sx06":1,"sx07":1,"sx08":1,"sx09":2,"sx10":2,"sx11":2,"sx12":2,"sx13":3,"sx14":3,"sx15":3,"sx16":3,"ax01":0,"ax02":0,"ax03":0,"ax04":0,"ax05":1,"ax06":1,"ax07":1,"ax08":1,"ax09":2,"ax10":2,"ax11":2,"ax12":2,"ax13":3,"ax14":3,"ax15":3,"ax16":3,"s1":0,"s2":1,"s3":2,"s4":3,"a1":0,"a2":1,"a3":2,"a4":3};
   var RFX = ['', ' ／ 店では売っていません（モンスターが、まれに落とす）', ' ／ 強い敵から、ごくまれに落ちる', ' ／ ボスだけが落とす'];
   ITEMS.forEach(function (i) {
     var r = i.slot === 'weapon' ? WRE[i.id] : (SRE[i.id] != null ? [i.price, SRE[i.id]] : null); if (!r) return;
@@ -2106,6 +2108,16 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var GMLIST = ['weapon', 'helm', 'armor', 'shield', 'outfit', 'tool'];
   function eqItem(slot) { if (isGM() && GMI[slot]) return GMI[slot]; var id = ((player || {}).equip || {})[slot]; if (!id && slot === 'weapon') return DAG; return id ? IBY[id] : null; }
   var wHand = 'weapon';
+
+  function toolHandHTML(skin) {
+    var tl = eqItem('tool'), id = tl && tl.id; if (!id || id === 'gm_t' || id === 't1') return pickHTML(skin);
+    var hnd = '<circle cx="29" cy="75" r="6.6" fill="' + skin + '" stroke="rgba(0,0,0,.25)" stroke-width="1"/><path d="M24 71L33 77" stroke="rgba(0,0,0,.2)" stroke-width="1.2"/>';
+    var hd = '<path d="M20 84L74 30" stroke="#8a5a2b" stroke-width="8" stroke-linecap="round"/><path d="M26 78L34 70" stroke="#5b3a1a" stroke-width="8.4" stroke-linecap="round" opacity=".5"/>', hdc;
+    if (id === 't2') hdc = '<path d="M42 16Q82 14 92 52Q70 34 42 16Z" fill="#cfd8dc" stroke="#78909c" stroke-width="2.5" stroke-linejoin="round"/><circle cx="76" cy="66" r="14" fill="#bfe9ff" fill-opacity=".55" stroke="#d8c27a" stroke-width="4"/><path d="M86 76L96 88" stroke="#d8c27a" stroke-width="5" stroke-linecap="round"/><path d="M68 60Q72 56 78 57" stroke="#fff" stroke-width="2.4" fill="none" stroke-linecap="round"/><circle cx="76" cy="66" r="5" fill="#b583ff" fill-opacity=".6"/>';
+    else if (id === 't3') hdc = '<rect x="52" y="8" width="38" height="30" rx="7" transform="rotate(-8 70 22)" fill="#56657a" stroke="#2c3644" stroke-width="2.5"/><rect x="57" y="13" width="17" height="10" rx="2" transform="rotate(-8 70 22)" fill="#8fd8ff" opacity=".9"/><circle cx="82" cy="20" r="3.6" fill="#ffd36a"/><path d="M90 14L100 24L90 34Z" fill="#cfd8dc" stroke="#4a5560" stroke-width="2" stroke-linejoin="round"/><path d="M92 18L97 24M92 24L96 28" stroke="#4a5560" stroke-width="1.4"/><path d="M60 38L56 46M80 38L84 46" stroke="#2c3644" stroke-width="5" stroke-linecap="round"/>';
+    else hdc = '<path d="M42 16Q82 14 92 52Q70 34 42 16Z" fill="#ffd36a" stroke="#a87a10" stroke-width="2.5" stroke-linejoin="round"/><path d="M50 20Q76 22 84 44" stroke="#fff6c8" stroke-width="2" fill="none"/><path d="M80 8L83 16L91 18L83 20L80 28L77 20L69 18L77 16Z" fill="#fff" stroke="#ffd36a" stroke-width="1.2"/><path d="M32 66L36 70L32 74L28 70Z" fill="#8fd8ff"/>';
+    return '<svg viewBox="0 0 100 100" aria-hidden="true">' + hd + hdc + hnd + '</svg>';
+  }
   function handW() { return !!eqItem('weapon') && wHand === 'weapon'; }
   function curW() { return handW() ? eqItem('weapon') : null; }
   function toolCut() { var t = eqItem('tool'); return t ? t.cut : 0; }
@@ -2204,7 +2216,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var c = $('eqChar'); if (!c || !player) return; var pk = c.querySelector('.fpk'); if (!pk) return;
     var w = eqItem('weapon'), mode = !w ? 'pick' : (w.skin || w.kind);
     pk.style.filter = (w && w.hu) ? 'hue-rotate(' + w.hu + 'deg) saturate(1.25)' : '';
-    pk.innerHTML = mode === 'pick' ? pickHTML(SKIN[normAv(player.avatar).skin]) : weaponSVG(mode);
+    pk.innerHTML = mode === 'pick' ? toolHandHTML(SKIN[normAv(player.avatar).skin]) : weaponSVG(mode);
   }
   var SBASE = [4, 12, 32, 100], SMULT = { quartz: 1, amethyst: 1, citrine: 1, garnet: 1, peridot: 1, sapphire: 1.5, emerald: 1.5, ruby: 1.5, diamond: 1.5, whiteopal: 1.5, paraiba: 2.5, alexandrite: 2.5, colordiamond: 2.5, crystalopal: 2.5, boulderopal: 4, fireopal: 4, blackopal: 4 };
   function stonePrice(id, g) { return Math.round(SBASE[g] * (SMULT[id] || 1)); }
@@ -2747,15 +2759,15 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (j.guild) {
       var g = j.guild, lead = g.leader === myMid;
       h += '<h3>🏰 ' + esc(g.name) + '</h3>';
-      if (g.status !== 'approved') h += '<p>📮 <b>審査中</b>です。運営（マイケル）が見て、OKが出たら、みんなが入れるようになるよ。</p>';
+      if (g.status !== 'approved') h += '<p class="tiny">メンバー ' + g.members.length + ' / ' + g.max + ' 人</p>';
       else h += '<p class="tiny">メンバー ' + g.members.length + ' / ' + g.max + ' 人</p>';
       h += '<div class="gm">' + g.members.map(function (m) { return '<div>' + (m.id === g.leader ? '👑 ' : '') + esc(m.name) + ' <span class="tiny">Lv' + m.lv + '</span></div>'; }).join('') + '</div>';
       h += '<button class="gbtn dim" id="gLeave" type="button">' + (lead && g.members.length > 1 ? 'リーダーは、最後の1人になるまで抜けられません' : 'ギルドをぬける') + '</button>';
     } else if (lv < 10) {
       h += '<h3>🏰 ギルドの部屋</h3><p>ギルドは <b>Lv10</b> から作れる・入れるよ。</p><p class="tiny">いまは Lv ' + lv + ' です。石を掘って、経験値をためましょう。</p>';
     } else {
-      h += '<h3>🏰 ギルドの部屋</h3><p class="tiny">ギルドは、仲間が最大30人。まず、申請してください。運営が見て、OKが出たら作れる。</p>';
-      h += '<div class="grow"><input id="gName" maxlength="12" placeholder="ギルドの名前（2〜12字）"><button class="gbtn" id="gApply" type="button">申請する</button></div>';
+      h += '<h3>🏰 ギルドの部屋</h3><p class="tiny">ギルドは、仲間が最大30人。Lv10 になったら、すぐ作れるよ（承認はいりません）。作る費用は <b>🪙10,000</b>（ゲームマネー）です。</p>';
+      h += '<div class="grow"><input id="gName" maxlength="12" placeholder="ギルドの名前（2〜12字）"><button class="gbtn" id="gApply" type="button">🪙10,000で作る</button></div>';
       h += '<h4>入れるギルド</h4>';
       if (!j.list || !j.list.length) h += '<p class="tiny">まだ、承認されたギルドはないよ。</p>';
       else h += j.list.map(function (g) { return '<div class="grow"><span>🏰 ' + esc(g.name) + ' <span class="tiny">' + g.n + '/' + (j.max || 30) + '</span></span><button class="gbtn" data-j="' + g.id + '" type="button"' + (g.n >= (j.max || 30) ? ' disabled' : '') + '>入る</button></div>'; }).join('');
@@ -2765,7 +2777,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('gClose').addEventListener('click', function () { $('gld').classList.remove('on'); });
   $('gBody').addEventListener('click', function (e) {
     var t = e.target.closest('button'); if (!t || t.disabled) return;
-    if (t.id === 'gApply') { var nm = $('gName').value; t.disabled = true; api({ action: 'guild_apply', name: nm }).then(function (j) { if (j.error) { t.disabled = false; gmsg(j.message || 'うまくいかんかった'); } else renderGuild(j); }); }
+    if (t.id === 'gApply') { var nm = $('gName').value; if (!t.dataset.arm) { t.dataset.arm = 1; t.textContent = '本当に作る？もう1回タップ'; return; } t.disabled = true; api({ action: 'guild_apply', name: nm }).then(function (j) { if (j.error) { t.disabled = false; gmsg(j.message || 'うまくいかんかった'); } else { if (j.player) player = j.player; toast('ギルドを作ったよ！'); sfx(2); renderGuild(j); } }); }
     else if (t.dataset.j) { t.disabled = true; api({ action: 'guild_join', guild: t.dataset.j }).then(function (j) { if (j.error) { t.disabled = false; gmsg(j.message || 'うまくいかんかった'); } else renderGuild(j); }); }
     else if (t.id === 'gLeave') { if (t.classList.contains('dim') && /最後/.test(t.textContent)) return; if (!t.dataset.arm) { t.dataset.arm = 1; t.textContent = '本当に？もう1回タップ'; return; } api({ action: 'guild_leave' }).then(function (j) { if (j.error) gmsg(j.message || 'うまくいかんかった'); else renderGuild(j); }); }
   });
@@ -3210,7 +3222,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 50;
+  var GV = 51;
   (function () {
     var last = Date.now();
     function chk() {
@@ -3270,7 +3282,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         { q: 'ゲームマネー', k: ['マネー', 'お金', 'コイン', '稼', '貯め', 'ためる', '通貨'], a: 'ゲームマネーは、石を掘ったり、敵を倒したりでたまるよ。本物のお金では買えません、遊んで貯めるものです。ショップで装備を買ったり、石や装備を売ったりできる。' },
         { q: 'ショップと取引所', k: ['ショップ', '買', '売', '取引', '交換', '手数料', '値段'], a: 'ショップは、装備や道具をゲームマネーで買う所です。取引所は、プレイヤー同士で、装備やスペシャルチケットをゲームマネーで売り買いする所で、手数料は5％ですよ。建物をタップしたら入れる。' },
         { q: '装備の付けかえ', k: ['装備', '付け', '着替', 'リュック', '持ち物', '持物', 'もちもの'], a: '画面の右上の「装備・持物」ボタンで、持ってる装備の付けかえができるよ。持ち物の確認もそこです。' },
-        { q: 'ギルド', k: ['ギルド', '仲間', 'チーム', '入る', '申請'], a: 'ギルドはレベル10から。町のギルドの建物で申請して、運営が承認したら、最大30人で入れるよ。' },
+        { q: 'ギルド', k: ['ギルド', '仲間', 'チーム', '入る', '申請'], a: 'ギルドはレベル10から。町のギルドの建物で、🪙10,000を払えば、承認なしですぐ作れるよ。最大30人まで入れます。' },
         { q: '仲間と協力', k: ['協力', 'パーティ', '待合', '招待', 'みんな', '一緒', 'ボス', '複数'], a: 'マップの下の「パーティーの待合室」で、最大5人まで仲間を集められるよ。同じ鉱山に入ったら協力プレイです。人数が多いほど、掘るのが早くなる。2人以上だと、ボスのごほうびも出るよ。' },
         { q: 'スペシャルチケット', k: ['チケット', '券', '割引', 'スペシャル', '当た'], a: '掘ってると、まれに当たることがあるよ。当たる確率は、レベルや装備、人数では変わりません。細かい使い方は、決まったらお知らせします。' },
         { q: '闘技場って？', k: ['闘技', '対戦', 'バトル', '決闘', 'pvp', '勝負'], a: '町の左下にあるよ。観客席は安全な場所。闘技場内に入ると、相手をタップするだけで攻撃できる（攻撃もされる）。観客席の人をタップして「戦いを挑む」を押して、相手が受けたら、1対1の決闘です。負けても持ち物は減りませんから安心してください。' },
@@ -3977,7 +3989,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function foeStat(tier, big) {
     var fl = ((curMine && MBY[curMine]) ? MBY[curMine].lv : 1) + [0, 2, 4][tier], k = big ? 1 : 0;
     var ml = mlv(), hB = ml >= 11 ? 1 + Math.min(1.5, (ml - 10) * .06) : 1, aB = ml >= 11 ? 1 + Math.min(1.2, (ml - 10) * .05) : 1;
-    return { hp: Math.round(hB * (18 + 4 * fl) * [1, 1.6, 2.4][tier] * (k ? 3.5 : 1)), atk: Math.round(aB * (4 + .9 * fl) * [1, 1.3, 1.7][tier] * (k ? 1.7 : 1)) };
+    var eas = ml <= 11 ? Math.max(.25, .7 - Math.max(0, plv() - ml) * .02) : 1;
+    return { hp: Math.round(eas * hB * (18 + 4 * fl) * [1, 1.6, 2.4][tier] * (k ? 3.5 : 1)), atk: Math.max(1, Math.round(eas * aB * (4 + .9 * fl) * [1, 1.3, 1.7][tier] * (k ? 1.7 : 1))) };
   }
   function hpUi() {
     var mx = hpMaxNow();
@@ -4223,8 +4236,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function handUi() {
     var pk = $('fpick'); if (!pk || !player) return;
     var w = curW(), mode = !w ? 'pick' : (w.skin || w.kind);
-    var mkey = mode + '|' + ((w && w.hu) || 0); if (pk.dataset.m === mkey) return; pk.dataset.m = mkey; pk.style.filter = (w && w.hu) ? 'hue-rotate(' + w.hu + 'deg) saturate(1.25)' : '';
-    pk.innerHTML = mode === 'pick' ? pickHTML(SKIN[normAv(player.avatar).skin]) : weaponSVG((w && w.skin) || mode);
+    var mkey = mode + '|' + ((w && w.hu) || 0) + '|' + ((eqItem('tool') || {}).id || ''); if (pk.dataset.m === mkey) return; pk.dataset.m = mkey; pk.style.filter = (w && w.hu) ? 'hue-rotate(' + w.hu + 'deg) saturate(1.25)' : '';
+    pk.innerHTML = mode === 'pick' ? toolHandHTML(SKIN[normAv(player.avatar).skin]) : weaponSVG((w && w.skin) || mode);
   }
   $('gmTog').addEventListener('click', function () { gmOn = !gmOn; LSset('opa_gm_off', gmOn ? '0' : '1'); applyGmMode(); });
   $('gmTog').addEventListener('pointerdown', function (e) { e.stopPropagation(); });
@@ -4249,7 +4262,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!atkReady()) return false;
     var w = curW(); skAdd(w && w.rng ? 9 : 12); return true;
   }
-  $('swBtn').addEventListener('click', function () { wHand = wHand === 'weapon' ? 'pick' : 'weapon'; gearUi(); sfx(2); });
+  $('swBtn').addEventListener('click', function () { wHand = wHand === 'weapon' ? 'pick' : 'weapon'; if (wHand === 'weapon' && curSpot) holdStop(); gearUi(); sfx(2); });
   var QC = [['🆘 たすけて！', 'たすけて！', 1], ['❗ ヘルプ！', 'ヘルプ！', 1], ['👍 ナイス！', 'ナイス！'], ['🙌 グッジョブ！', 'グッジョブ！'], ['👉 こっち！', 'こっち来て！'], ['🙏 ありがとう', 'ありがとう！'], ['🆗 りょうかい', 'りょうかい！'], ['⚠️ きをつけて', '気をつけて！']];
   var QCT = [['👋 こんにちは！', 'こんにちは！'], ['🌅 おはよう！', 'おはよう！'], ['🌙 こんばんは！', 'こんばんは！'], ['😊 よろしくね！', 'よろしくね！'], ['✨ はじめまして！', 'はじめまして！'], ['🙏 ありがとう！', 'ありがとう！'], ['🎉 おめでとう！', 'おめでとう！'], ['👋 またね！', 'またね！']], QCcur = QC;
   function qcFill() { QCcur = inTown ? QCT : QC; $('qcPanel').innerHTML = QCcur.map(function (q, i) { return '<button type="button" data-q="' + i + '"' + (q[2] ? ' class="hl"' : '') + '>' + q[0] + '</button>'; }).join(''); }
@@ -4427,6 +4440,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     foes.forEach(function (f) { if (f.mode === 'dead') return; var yo = f.boss ? 70 : (f.big ? 50 : 26), d = Math.hypot(wx - f.x, wy - (f.y - yo)) - (f.boss ? 70 : (f.big ? 32 : 0)); if (d < best && Math.hypot(hero.x - f.x, hero.y - f.y) < atkRange() + (f.boss ? 60 : (f.big ? 30 : 0))) { best = d; hit = f; } });
     if (!hit) return false;
     if (hp.down) return true;
+    if (eqItem('weapon') && wHand === 'pick') { wHand = 'weapon'; gearUi(); handUi(); toast('武器に持ちかえた！'); }
     if (!canAttack()) return true;
     var wq = curW(); if (wq && wq.rng) shootFx(hit.x, hit.y, wq.kind);
     var dm = atkP(); impactSnd(); vib(20); swingAnim(); dustW(hit.x, hit.y - 30); floatTxt(hit.x, hit.y - 80, isGM() ? '一撃！' : '-' + dm, 'y');
@@ -4508,7 +4522,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var k = Object.keys(player.stones || {}).length;
     $('fhud').innerHTML = '<span>掘った回数 <b>' + (player.digs || 0) + '</b></span><span>見つけた石 <b>' + k + '</b>/' + STONES.length + '</span><span>ここで <b>' + (((player.mines || {})[curMine]) || 0) + '</b> 回</span><span>🪙 <b>' + ((player.coins || 0).toLocaleString()) + '</b></span><span>' + (partyN > 1 ? '👥 <b>' + partyN + '</b>人 <button id="fLeave" class="opt" type="button" style="padding:3px 8px;font-size:11px">ぬける</button>　' : '') + 'Lv <b>' + (player.lv || 1) + '</b>' + (player.xpNeed ? '（あと ' + (player.xpNeed - (player.xpInto || 0)).toLocaleString() + '）' : (player.gmReal ? '' : '（MAX）')) + '</span>';
   }
+  var lastMine = LSget('opa_last_mine') || '';
   function openField(id) {
+    lastMine = id; LSset('opa_last_mine', id);
     if (inTown) leaveTown(); curMine = id; var m = MBY[id];
     $('fTtl').textContent = m.nm;
     shared = !!(room && room.mine === id); buildField(); fieldHud(); show('field'); closeSheets(); gearUi(); if (shared) rtStart();
@@ -4516,6 +4532,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function startLoop() { if (fraf) return; flast = performance.now(); fraf = requestAnimationFrame(tick); }
   function tick(t) {
     fraf = 0; if (!fieldOn) return;
+    var onMine = fieldOn && !inTown && !inArena && !inPlaza && !inCafe; if ($('goTown')) { $('goTown').style.display = onMine ? 'block' : 'none'; $('goMine').style.display = (fieldOn && inTown && !inArena && !inPlaza && !inCafe && lastMine && MBY[lastMine]) ? 'block' : 'none'; }
     var bl = inArena ? '🏳 あきらめる' : ((inPlaza || inCafe) ? '🚪 町へ' : (inTown ? '🚪 マップへ' : '🚪 鉱山を出る')); if (bl !== window.__bl) { window.__bl = bl; var bb = $('fBack'); bb.className = 'ib wide'; bb.textContent = bl; }
     var dt = Math.min(.05, (t - flast) / 1000); flast = t;
     var hh = $('hero2'), moved = false;
@@ -4567,6 +4584,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!on) { $('hint').textContent = ''; }
   }
   function startDig(sp) {
+    if (handW()) { toast('武器を持ったままでは掘れないよ。先に「🔁 つるはし」で持ちかえてね'); return; }
     removeMon(); monWaves = 0; monTried = false; curSpot = sp; spotKind = sp.kind; TAPS = Math.max(3, Math.round(SPOTTAPS[sp.kind] * (1 - toolCut()) / (MULT[Math.min(partyN, 5) - 1] || 1))); taps = Math.min(sp.tp || 0, TAPS - 1); busy = false;
     hero.dir = 1; updHero(); $('dig').disabled = false; $('dig').innerHTML = '⛏️ 掘る！';
     sp.el.classList.add('dg'); var pr = document.createElement('div'); pr.className = 'dprog'; pr.innerHTML = '<i></i>'; sp.el.appendChild(pr);
@@ -4600,6 +4618,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   $('atkBtn').addEventListener('click', attackNearest);
   $('fCancel').addEventListener('click', function () { if (inArena) { arGiveUp(); return; } if (inPlaza) { leaveArena(); return; } if (!busy) cancelDig(); });
+  $('goTown').addEventListener('click', function () { if (busy) return; if (curSpot) cancelDig(); leaveTown(); openTown(); });
+  $('goMine').addEventListener('click', function () { if (!lastMine || !MBY[lastMine]) return; leaveTown(); enterMine(lastMine); });
+  ['goTown', 'goMine'].forEach(function (id) { $(id).addEventListener('pointerdown', function (e) { e.stopPropagation(); }); });
   $('fBack').addEventListener('click', function () { if (inCafe) { leaveCafe(); return; } if (inArena) { arGiveUp(); return; } if (inPlaza) { leaveArena(); return; } if (curSpot) cancelDig(); var wasTown = inTown; leaveTown(); openMap(wasTown ? null : curMine); });
   $('fBook').addEventListener('click', function () { renderBook(); $('book').classList.add('on'); });
   $('fSet').addEventListener('click', function () { $('setName').textContent = player.avatar.name + ' さん'; $('set').classList.add('on'); });
