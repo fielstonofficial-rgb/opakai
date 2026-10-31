@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:48-->
+<!--GV:49-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -594,6 +594,15 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #fTools .skb{display:none;border:1.5px solid #c9a6ff;background:rgba(30,16,50,.82);color:#eadcff}
 #fTools .skb.cd{opacity:.55}
 #fTools .skb.act{border-color:#ffd36a;background:linear-gradient(#7a4ad0,#4a2a90);color:#fff;box-shadow:0 0 10px #b583ff}
+
+.wic{display:block;width:42px;height:42px}
+.wic svg{width:100%;height:100%;display:block}
+.wst{position:absolute;right:5px;bottom:2px;font-size:9px;letter-spacing:-1px;text-shadow:0 1px 2px #000}
+.it .ic{position:relative}
+.eqs i{position:relative}
+.skmaster{display:flex;gap:12px;align-items:flex-start;padding:12px;margin:6px 0 10px;border-radius:16px;border:1px solid #b583ff;background:linear-gradient(180deg,rgba(120,70,200,.22),rgba(60,30,110,.18))}
+.skm-ic{font-size:34px;flex:none}
+.skm-tx{font-size:13px;line-height:1.55}
 </style>
 </head>
 <body>
@@ -625,7 +634,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v48（装備画面・スキル10種と販売所・盾と防具を大増量・闘技場の修正）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v49（武器の価格とレア度を見直し・武器アイコン・スキルの館）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所です（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -673,10 +682,15 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     <div id="invBar"></div>
     <div id="tkov"><div class="tkc" id="tkCard"><div class="tkic" id="tkIc">🎫</div><div class="tkrk" id="tkRk"></div><div class="tknm" id="tkNm"></div><div class="tkcode" id="tkCode"></div><p class="tkds" id="tkDs"></p><button class="big" id="tkOk" type="button">もちものを見る</button></div></div>
     <div class="sheet" id="bag">
-      <div class="bar"><span style="width:42px"></span><h1>そうび・スキル・ショップ</h1><button class="ib" data-close="bag" type="button" aria-label="とじる">✕</button></div>
+      <div class="bar"><span style="width:42px"></span><h1>そうび・ショップ</h1><button class="ib" data-close="bag" type="button" aria-label="とじる">✕</button></div>
       <div class="coinbar" id="coinBar"></div>
-      <div class="tabs" id="bagTabs"><button type="button" data-t="0" class="on">⚔️ 装備</button><button type="button" data-t="1">🛍️ ショップ</button><button type="button" data-t="2">💰 売る</button><button type="button" data-t="3">🔮 スキル</button></div>
+      <div class="tabs" id="bagTabs"><button type="button" data-t="0" class="on">⚔️ 装備</button><button type="button" data-t="1">🛍️ ショップ</button><button type="button" data-t="2">💰 売る</button></div>
       <div class="body" id="bagBody"></div>
+    </div>
+    <div class="sheet" id="skp">
+      <div class="bar"><span style="width:42px"></span><h1>🔮 スキルの館</h1><button class="ib" data-close="skp" type="button" aria-label="とじる">✕</button></div>
+      <div class="coinbar" id="skpCoin"></div>
+      <div class="body" id="skpBody"></div>
     </div>
     <div class="sheet" id="mkt">
       <div class="bar"><span style="width:42px"></span><h1>取引所</h1><button class="ib" data-close="mkt" type="button" aria-label="とじる">✕</button></div>
@@ -1894,6 +1908,23 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     {"id":"ox140","slot":"outfit","nm":"鉱山王の礼服","price":40000,"tier":3,"ic":"🤵","lk":[6,9,1,2,0,0,1],"fx":"見た目：鉱山王の礼服＋金色のオーラ"}
   ];
   var SLOTS = ['outfit', 'tool', 'weapon', 'shield', 'armor'], SLN = { outfit: '衣装', tool: '採掘道具', weapon: '武器', shield: '盾', armor: '防具' };
+
+  /* ---------- レア度の整理：店で売るのは「ノーマル」だけ。レア＝ふつうの敵がまれに／超レア＝強い敵だけ／激レア＝ボスだけ ---------- */
+  var WRE = {"wx113":[400,0],"g1":[400,0],"wx115":[450,0],"wx129":[450,0],"wx127":[550,0],"wx114":[550,0],"wx117":[600,0],"wx118":[650,0],"wx119":[650,0],"wx131":[650,0],"wx116":[800,0],"wx130":[800,0],"wx135":[1050,0],"wx137":[1100,0],"wx120":[1100,0],"wx122":[1100,0],"wx133":[1200,0],"wx123":[1200,0],"wx132":[1300,0],"wx128":[1350,0],"wx121":[1400,0],"wx136":[1450,0],"wx125":[1650,0],"wx126":[1750,0],"g2":[1800,0],"wx124":[40000,2],"wx155":[2150,0],"wx134":[2250,0],"wx139":[2950,0],"g3":[40000,2],"b1":[3500,0],"wx087":[3500,0],"wx138":[40000,2],"wx141":[4100,0],"wx086":[4400,0],"b2":[4800,0],"wx085":[4800,0],"wx100":[4900,0],"wx156":[5000,0],"wx089":[5300,0],"wx091":[5300,0],"wx099":[5400,0],"wx157":[5600,0],"g4":[100000,3],"wx142":[5600,0],"wx143":[5600,0],"wx101":[6000,0],"wx140":[7000,0],"wx071":[7000,0],"wx072":[7000,0],"wx088":[7600,0],"wx090":[7600,0],"wx102":[8000,0],"wx104":[8000,0],"wx144":[8100,0],"wx145":[8100,0],"wx146":[8100,0],"wx147":[8100,0],"wx073":[8600,0],"wx103":[8700,1],"wx105":[8700,1],"wx092":[9100,1],"wx093":[9100,1],"wx075":[9400,1],"wx149":[9700,1],"wx058":[9800,1],"wx095":[9800,1],"wx076":[10400,1],"wx077":[10400,1],"wx108":[10400,1],"wx150":[10500,1],"wx158":[11300,1],"wx106":[11300,1],"wx094":[11600,1],"wx057":[11900,1],"wx059":[11900,1],"wx148":[12400,1],"wx151":[12400,1],"wx074":[12400,1],"wx061":[13200,1],"wx062":[13200,1],"wx109":[13300,1],"wx159":[13700,1],"b3":[14000,1],"wx096":[40000,2],"wx078":[14800,1],"wx079":[14800,1],"wx030":[14900,1],"wx107":[15600,1],"wx097":[15600,1],"wx060":[15900,1],"wx031":[16500,1],"wx098":[16800,1],"wx080":[17500,1],"wx161":[17900,1],"wx112":[18200,1],"wx063":[19000,1],"wx029":[20200,1],"wx154":[21000,1],"wx111":[21000,1],"wx081":[22200,1],"wx033":[22200,1],"wx066":[22500,1],"wx162":[23200,1],"b4":[40000,2],"wx067":[24400,1],"wx032":[24400,1],"wx002":[25700,1],"wx045":[25700,1],"wx083":[25800,1],"wx160":[26500,1],"wx064":[26500,2],"w1":[28500,2],"wx152":[40000,2],"wx084":[29900,2],"wx163":[31000,2],"wx065":[31000,2],"wx001":[32000,2],"wx003":[32000,2],"wx034":[32000,2],"wx035":[32000,2],"wx153":[100000,3],"wx110":[40000,2],"wx043":[35000,2],"wx044":[35000,2],"wx037":[35000,2],"wx038":[35000,2],"wx164":[35000,2],"wx007":[38000,2],"wx165":[39000,2],"wx017":[39000,2],"w2":[42000,2],"wx015":[44000,2],"wx039":[45000,2],"wx005":[46000,2],"wx006":[46000,2],"wx046":[46000,2],"wx047":[46000,2],"wx049":[46000,2],"b5":[100000,3],"wx004":[51000,2],"wx048":[51000,2],"wx070":[51000,2],"wx036":[52000,2],"wx016":[54000,2],"wx082":[54000,2],"wx068":[59000,2],"wx009":[60000,2],"wx053":[60000,2],"w3":[66000,2],"wx040":[66000,2],"wx018":[71000,2],"wx011":[71000,2],"wx069":[100000,3],"wx050":[77000,2],"wx020":[78000,2],"wx021":[78000,2],"wx166":[79000,2],"wx010":[84000,2],"wx051":[84000,3],"wx019":[85000,3],"wx008":[90000,3],"wx052":[90000,3],"wx023":[93000,3],"wx022":[119000,3],"wx041":[120000,3],"w4":[122000,3],"wx168":[124000,3],"wx024":[128000,3],"wx025":[128000,3],"wx042":[136000,3],"w6":[140000,3],"wx014":[150000,3],"wx054":[150000,3],"w5":[183000,3],"wx012":[183000,3],"wx028":[201000,3],"wx013":[208000,3],"wx055":[208000,3],"wx167":[229000,3],"wx027":[231000,3],"wx056":[235000,3],"w7":[265000,3],"wx026":[300000,3]}, SRE = {"sx01":0,"sx02":0,"sx03":0,"sx04":0,"sx05":1,"sx06":1,"sx07":1,"sx08":1,"sx09":2,"sx10":2,"sx11":2,"sx12":2,"sx13":3,"sx14":3,"sx15":3,"sx16":3,"ax01":0,"ax02":0,"ax03":0,"ax04":0,"ax05":1,"ax06":1,"ax07":1,"ax08":1,"ax09":2,"ax10":2,"ax11":2,"ax12":2,"ax13":3,"ax14":3,"ax15":3,"ax16":3,"s1":0,"s2":1,"s3":2,"s4":3,"a1":0,"a2":1,"a3":2,"a4":3};
+  var RFX = ['', ' ／ 店では売っていません（モンスターが、まれに落とす）', ' ／ 強い敵から、ごくまれに落ちる', ' ／ ボスだけが落とす'];
+  ITEMS.forEach(function (i) {
+    var r = i.slot === 'weapon' ? WRE[i.id] : (SRE[i.id] != null ? [i.price, SRE[i.id]] : null); if (!r) return;
+    i.price = r[0]; i.tier = r[1]; delete i.drop; delete i.sr; delete i.bo;
+    if (r[1] >= 1) i.drop = true; if (r[1] === 2) i.sr = true; if (r[1] === 3) i.bo = true;
+    i.fx = i.fx.replace(/( ／ )?[（]?(店では売っていません|強い敵から、ごくまれに落ちる|ボスだけが落とす)[^）]*[）]?/, '') + RFX[r[1]];
+  });
+  /* ---------- 武器アイコン：種類ごとの絵に、持ち主ごとの色とレア度の輝き ---------- */
+  function wIc(i) {
+    var col = ['#9db0b8', '#58a6ff', '#b583ff', '#ffd36a'][i.tier || 0], hu = i.hu || 0, st = '';
+    for (var k = 0; k < (i.tier || 0); k++) st += '<b></b>';
+    return '<span class="wic" style="filter:' + (hu ? 'hue-rotate(' + hu + 'deg) saturate(1.2) ' : '') + 'drop-shadow(0 0 ' + (i.tier ? 4 : 1) + 'px ' + col + ')">' + weaponSVG(i.skin || i.kind) + '</span>' + (st ? '<span class="wst" style="color:' + col + '">' + '★'.repeat(i.tier) + '</span>' : '');
+  }
+  ITEMS.forEach(function (i) { if (i.slot === 'weapon') i.ic = wIc(i); });
   ITEMS.forEach(function (i) { if (i.slot !== 'weapon') return; var d = SPD[i.sp || ('k_' + i.kind)]; if (i.kind === 'sword') i.fx += ' ／ 近距離ボーナス：ダメージ +15%'; if (d) i.fx += ' ／ 必殺技「' + d.nm + '」：' + d.ds; });
 
   /* ---------- 盾・防具のデザイン（色つきのイラスト） ---------- */
@@ -1921,7 +1952,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (i.slot === 'armor') { if (ARDEF[i.id]) { i.cl = ARDEF[i.id][0]; i.sty = ARDEF[i.id][1]; } if (i.cl) i.ic = '<span style="display:block;width:38px;height:38px">' + arSVG(i.cl, i.sty) + '</span>'; }
   });
   var IBY = {}; ITEMS.forEach(function (i) { IBY[i.id] = i; });
-  var DAG = { id: 'w0', slot: 'weapon', kind: 'dagger', nm: '短剣（はじめの武器）', tier: 0, ic: '🗡️', atk: 2, mr: 75, fx: '短剣：こうげき +2。1マス先までしか届きません。ダメージ +15%。必殺技「連続突き」' };
+  var DAG = { id: 'w0', slot: 'weapon', kind: 'dagger', nm: '短剣（はじめの武器）', tier: 0, ic: wIc({ kind: 'dagger', tier: 0 }), atk: 2, mr: 75, fx: '短剣：こうげき +2。1マス先までしか届きません。ダメージ +15%。必殺技「連続突き」' };
   var AURA = ['rgba(255,255,255,.35)', 'rgba(88,166,255,.8)', 'rgba(181,131,255,.85)', 'rgba(255,211,106,.95)'];
   var shopSlot = 'weapon', shopKind = 'all', WKINDS = [['all', 'すべて'], ['sword', '剣'], ['katana', '刀'], ['axe', '斧'], ['spear', '槍'], ['hammer', 'ハンマー'], ['dagger', '短剣'], ['bow', '弓'], ['cbow', 'クロスボウ'], ['gun', '銃'], ['smg', '連射銃'], ['shotgun', 'ショットガン'], ['rifle', 'ライフル']], OSTY = [['all', 'すべて'], ['0', 'Ｔシャツ'], ['1', 'Ｖネック'], ['2', 'パーカー'], ['3', 'ブルゾン'], ['4', '革ジャン'], ['5', 'ロングコート'], ['6', 'ジャケット'], ['7', 'カーディガン'], ['8', 'ワンピース'], ['9', 'ローブ']];
   var bagTab = 0, buyArm = null, lastGain = 0, lastXp = 0, lastLvUp = 0;
@@ -2031,7 +2062,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     h += '<div class="eqcol">' + eqSlotBtn('outfit', '衣装') + eqSlotBtn('tool', '採掘道具') + '<div class="eqst"><div>HP <b>' + hpMaxNow() + '</b></div><div>こうげき <b>' + atkP0() + '</b></div><div>ぼうぎょ <b>' + def + '%</b></div></div></div></div>';
     h += '<div class="sec">スキル枠　<span class="tiny" style="margin:0">（戦いのとき、画面のボタンで使えるよ）</span></div><div class="sks">';
     for (var i = 0; i < 3; i++) { var d = SKBY[eqS[i]]; h += '<button type="button" class="eqs' + (eqPick === 'sk' + i ? ' on' : '') + (d ? ' has' : '') + '" data-pk="sk' + i + '"><small>スキル' + (i + 1) + '</small><i>' + (d ? d.ic : '＋') + '</i><em>' + (d ? d.nm : 'なし') + '</em></button>'; }
-    h += '</div><button type="button" class="gbtn" data-go="skshop" style="width:100%;margin:2px 0 6px">🔮 スキル販売所へ（' + own.length + '/' + SKD.length + ' 種類 持ってる）</button>';
+    h += '</div><p class="tiny">🔮 スキルは、町の「スキルの館」で買えるよ（' + own.length + '/' + SKD.length + ' 種類 持ってる）。</p>';
     if (isGM()) return h + '<p class="tiny">👑 ゲームマスター装備は、ぜんぶ黄金で固定です。</p>';
     if (eqPick) {
       h += '<div id="eqPicker">';
@@ -2068,7 +2099,6 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('bagBody').addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b || b.disabled) return;
     if (b.dataset.pk) { eqPick = (eqPick === b.dataset.pk) ? null : b.dataset.pk; eqScroll = !!eqPick; sfx(0); renderBag(); return; }
-    if (b.dataset.go === 'skshop') { bagTab = 3; skArm = null; renderBag(); return; }
     if (b.dataset.skb) {
       if (skArm !== b.dataset.skb) { skArm = b.dataset.skb; renderBag(); return; }
       skArm = null; b.disabled = true;
@@ -2441,6 +2471,16 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         '<rect x="24" y="102" width="40" height="32" rx="3" fill="#fff" stroke="#7a5230" stroke-width="3"/><path d="M30 126L40 114L48 120L58 108" fill="none" stroke="#d94a5a" stroke-width="3"/><rect x="24" y="134" width="40" height="5" fill="#7a5230"/>' +
         '<rect x="96" y="104" width="44" height="48" rx="5" fill="#6b4630" stroke="#3f2818" stroke-width="2.4"/><rect x="102" y="110" width="32" height="22" rx="3" fill="#bfe9ff" stroke="#3f2818" stroke-width="1.8"/><path d="M118 84v14M104 98h28" stroke="#6b4a2c" stroke-width="2"/><path d="M104 98l-4 8h12zM132 98l-4 8h12z" fill="#c9a36a"/><circle cx="130" cy="142" r="2.6" fill="#ffd36a"/></svg>';
     }
+    if (k === 'skill') {
+      return '<svg viewBox="0 0 190 190"><defs><linearGradient id="skW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ddd0f2"/><stop offset="1" stop-color="#b6a2d8"/></linearGradient><linearGradient id="skR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#6a3fb0"/><stop offset="1" stop-color="#43247f"/></linearGradient><radialGradient id="skO" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#fff"/><stop offset="1" stop-color="#8ad0ff"/></radialGradient></defs>' +
+        SH(95, 184, 88, 7) + '<path d="M10 78L95 14L180 78Z" fill="url(#skR)" stroke="#2a1458" stroke-width="2.6" stroke-linejoin="round"/>' + roofLines(26, 164, 34, 76, 8) +
+        '<rect x="20" y="76" width="150" height="104" rx="3" fill="url(#skW)" stroke="#6e5a98" stroke-width="2.4"/><rect x="20" y="164" width="150" height="16" fill="rgba(0,0,0,.09)"/>' +
+        '<circle cx="95" cy="48" r="12" fill="url(#skO)" stroke="#2a1458" stroke-width="2"/><path d="M95 22L97.6 29.4H105L99 34L101.2 41.4L95 37L88.8 41.4L91 34L85 29.4H92.4Z" fill="#ffd36a" stroke="#a87a10" stroke-width="1"/>' +
+        '<rect x="30" y="100" width="40" height="38" rx="3" fill="#2d1d5a" stroke="#6e5a98" stroke-width="2.4"/><path d="M50 106l3 8h8l-6.5 5 2.5 8L50 123l-7 4 2.5-8L39 114h8z" fill="#ffd36a"/>' +
+        '<rect x="120" y="100" width="40" height="38" rx="3" fill="#2d1d5a" stroke="#6e5a98" stroke-width="2.4"/><path d="M130 130L150 108M134 108l16 22" stroke="#bfe6f5" stroke-width="3" stroke-linecap="round"/>' +
+        '<rect x="76" y="108" width="38" height="72" rx="4" fill="#4a2a7a" stroke="#2a1458" stroke-width="2.4"/><circle cx="106" cy="146" r="2.6" fill="#ffd36a"/><path d="M95 112a14 14 0 0 1 14 14H81a14 14 0 0 1 14-14Z" fill="#2d1d5a"/>' +
+        '<rect x="44" y="60" width="102" height="22" rx="7" fill="#2a1458" stroke="#ffd36a" stroke-width="2"/><text x="95" y="76" font-size="14" font-weight="800" fill="#ffe9b0" text-anchor="middle">SKILL</text></svg>';
+    }
     if (k === 'cafe') {
       var aw = '', ai;
       for (ai = 0; ai < 8; ai++) aw += '<rect x="' + (10 + ai * 17.5) + '" y="66" width="17.5" height="22" fill="' + (ai % 2 ? '#fff' : '#d9534f') + '"/><circle cx="' + (18.75 + ai * 17.5) + '" cy="88" r="8.75" fill="' + (ai % 2 ? '#fff' : '#d9534f') + '"/>';
@@ -2505,7 +2545,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     for (i = 0; i < 210; i++) { x = Math.round(rr() * TW); y = 260 + Math.round(rr() * (TH - 270)); o += '<circle cx="' + x + '" cy="' + y + '" r="2.6" fill="' + cs[i % 4] + '" opacity=".9"/>'; }
     var P = function (d) { return '<path d="' + d + '" fill="#c9b68c" stroke="#c9b68c" stroke-width="16" stroke-linejoin="round"/><path d="' + d + '" fill="url(#tgC)"/>'; };
     o += P('M-30 700H2130V792H-30Z') + P('M655 780H845V1800H655Z') + P('M-30 1500H2130V1590H-30Z') + P('M1655 780H1745V1500H1655Z') + P('M1500 1170a200 140 0 1 0 400 0a200 140 0 1 0 -400 0Z') + P('M1736 470H1784V705H1736Z') + P('M390 990a360 250 0 1 0 720 0a360 250 0 1 0 -720 0Z') +
-      P('M298 470H362V705H298Z') + P('M706 470H794V705H706Z') + P('M1146 470H1194V705H1146Z') + P('M96 640H144V705H96Z') + P('M1356 650H1404V705H1356Z');
+      P('M298 470H362V705H298Z') + P('M706 470H794V705H706Z') + P('M1146 470H1194V705H1146Z') + P('M96 640H144V705H96Z') + P('M1356 650H1404V705H1356Z') + P('M1536 470H1584V705H1536Z');
     o += '<ellipse cx="750" cy="985" rx="150" ry="62" fill="#ead8b4" stroke="#c0aa7c" stroke-width="5"/><ellipse cx="750" cy="990" rx="400" ry="280" fill="url(#tgS)"/><ellipse cx="1700" cy="1145" rx="150" ry="62" fill="#ead8b4" stroke="#c0aa7c" stroke-width="5"/><ellipse cx="1700" cy="1150" rx="400" ry="280" fill="url(#tgS)"/>';
     return o + '</svg>';
   }
@@ -2520,11 +2560,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     put('hall', 750, 470, 280, 226); lbl('ギルド', 750, 196);
     put('hosp', 1170, 470, 190, 190); lbl('🏥 病院', 1170, 236); put('house1', 120, 640, 150, 150); put('exch', 1380, 650, 180, 180); lbl('取引所', 1380, 420);
     put('fount', 750, 1010, 260, 195); put('arena', 150, 1000, 230, 196); lbl('⚔ 闘技場', 150, 765);
-    DOORS = [{ k: 'shop', x: 330, y: 470, w: 200, h: 180 }, { k: 'guild', x: 750, y: 470, w: 270, h: 210 }, { k: 'hospital', x: 1170, y: 470, w: 190, h: 180 }, { k: 'exch', x: 1380, y: 650, w: 180, h: 170 }, { k: 'arena', x: 150, y: 1000, w: 220, h: 190 }, { k: 'cafe', x: 1760, y: 470, w: 190, h: 180 }];
+    DOORS = [{ k: 'shop', x: 330, y: 470, w: 200, h: 180 }, { k: 'guild', x: 750, y: 470, w: 270, h: 210 }, { k: 'hospital', x: 1170, y: 470, w: 190, h: 180 }, { k: 'exch', x: 1380, y: 650, w: 180, h: 170 }, { k: 'arena', x: 150, y: 1000, w: 220, h: 190 }, { k: 'cafe', x: 1760, y: 470, w: 190, h: 180 }, { k: 'skill', x: 1560, y: 470, w: 190, h: 180 }];
     put('stall', 480, 905, 150, 120); put('stall', 1020, 905, 150, 120);
-    put('cafe', 1760, 470, 190, 190); lbl('☕ カフェ', 1760, 236); put('fount', 1700, 1170, 260, 195); put('stall', 1470, 1100, 150, 120); put('stall', 1930, 1100, 150, 120);
-    [[500, 350, 'tree2', 62, 100], [1000, 350, 'tree2', 62, 100], [1300, 360, 'tree', 78, 104], [40, 380, 'tree', 78, 104], [60, 430, 'tree', 80, 106], [1450, 430, 'tree2', 62, 100], [560, 520, 'tree', 78, 104],
-      [1580, 360, 'tree', 78, 104], [1960, 360, 'tree2', 62, 100], [2050, 440, 'tree', 80, 106], [1570, 560, 'tree2', 62, 100], [2040, 600, 'tree', 78, 104], [1990, 560, 'tree2', 62, 100], [1540, 900, 'tree', 80, 106], [1880, 900, 'tree', 78, 104], [2040, 930, 'tree2', 62, 100], [1560, 1330, 'tree', 80, 106], [1880, 1310, 'tree2', 62, 100], [2040, 1380, 'tree', 78, 104], [1990, 1230, 'tree', 80, 106], [1420, 1450, 'tree', 78, 104], [250, 1420, 'tree', 80, 106], [520, 1400, 'tree2', 62, 100], [980, 1420, 'tree', 78, 104], [1250, 1400, 'tree2', 62, 100], [150, 1330, 'tree2', 62, 100],
+    put('cafe', 1760, 470, 190, 190); lbl('☕ カフェ', 1760, 236); put('skill', 1560, 470, 190, 190); lbl('🔮 スキルの館', 1560, 236); put('fount', 1700, 1170, 260, 195); put('stall', 1470, 1100, 150, 120); put('stall', 1930, 1100, 150, 120);
+    [[500, 350, 'tree2', 62, 100], [1000, 350, 'tree2', 62, 100], [1300, 360, 'tree', 78, 104], [40, 380, 'tree', 78, 104], [60, 430, 'tree', 80, 106], [560, 520, 'tree', 78, 104],
+      [1960, 360, 'tree2', 62, 100], [2050, 440, 'tree', 80, 106], [2040, 600, 'tree', 78, 104], [1990, 560, 'tree2', 62, 100], [1540, 900, 'tree', 80, 106], [1880, 900, 'tree', 78, 104], [2040, 930, 'tree2', 62, 100], [1560, 1330, 'tree', 80, 106], [1880, 1310, 'tree2', 62, 100], [2040, 1380, 'tree', 78, 104], [1990, 1230, 'tree', 80, 106], [1420, 1450, 'tree', 78, 104], [250, 1420, 'tree', 80, 106], [520, 1400, 'tree2', 62, 100], [980, 1420, 'tree', 78, 104], [1250, 1400, 'tree2', 62, 100], [150, 1330, 'tree2', 62, 100],
       [300, 1680, 'tree', 80, 106], [560, 1700, 'tree2', 62, 100], [960, 1710, 'tree', 78, 104], [1250, 1700, 'tree2', 62, 100], [150, 1760, 'tree', 80, 106], [420, 1770, 'tree2', 62, 100], [1100, 1770, 'tree', 80, 106], [1420, 1730, 'tree', 78, 104], [1700, 1700, 'tree2', 62, 100], [1850, 1770, 'tree', 80, 106], [2040, 1730, 'tree2', 62, 100], [950, 520, 'tree', 78, 104],
       [1440, 910, 'tree', 80, 106], [330, 880, 'tree', 78, 104], [1170, 880, 'tree', 78, 104], [200, 1180, 'tree', 80, 106], [1300, 1180, 'tree2', 62, 100], [420, 1250, 'tree', 80, 106], [1080, 1250, 'tree', 80, 106], [90, 1260, 'tree2', 62, 100], [1420, 1260, 'tree', 78, 104]].forEach(function (q) { put(q[2], q[0], q[1], q[3], q[4]); });
     [[240, 712], [560, 712], [940, 712], [1260, 712], [640, 870], [860, 870], [500, 1080], [1000, 1080], [1560, 712], [1900, 712], [2060, 712], [1636, 900], [1764, 900], [1636, 1350], [1764, 1350], [300, 1498], [900, 1498], [1300, 1498], [1540, 1498], [1900, 1498], [1500, 1180], [1900, 1180]].forEach(function (q) { put('lamp', q[0], q[1], 28, 86); });
@@ -2544,6 +2584,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     else if (k === 'exch') { sfx(2); openMarket(); }
     else if (k === 'arena') { sfx(2); openArena(); }
     else if (k === 'cafe') { sfx(2); openCafe(); }
+    else if (k === 'skill') { sfx(2); openSkillShop(); }
     else if (k === 'cafeout') { sfx(2); leaveCafe(); }
     else if (/^seat:/.test(k)) sitDown(+k.slice(5));
     else if (/^npc:/.test(k)) openNpc(k.slice(4));
@@ -2554,6 +2595,36 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function loadGuild() {
     api({ action: 'guild_my' }).then(function (j) { renderGuild(j); }).catch(function () { $('gBody').innerHTML = '<p class="tiny">つながりませんでした。もう一回開いてください</p>'; });
   }
+
+  /* ---------- スキルの館（町の専用ショップ） ---------- */
+  function openSkillShop() { skArm = null; renderSkillShop(); $('skp').classList.add('on'); }
+  function renderSkillShop() {
+    var coins = (player || {}).coins || 0, haveS = player.skills || [], eqS = player.skEq || [], h = '';
+    $('skpCoin').innerHTML = '<span>🪙 ゲームマネー</span><b>' + coins.toLocaleString() + '</b>';
+    h += '<div class="skmaster"><div class="skm-ic">🧙</div><div class="skm-tx"><b>館の主</b><br>いらっしゃい。ここは、戦いの技を売る「スキルの館」だよ。買った技は、「そうび」のスキル枠にセットすると、戦いで使えるようになる。ここでも、すぐセットできるからね。枠は3つ。どの技を組み合わせるかで、戦い方が変わるよ。</div></div>';
+    h += '<div class="sec">スキル枠　<span class="tiny" style="margin:0">' + [0, 1, 2].map(function (i) { var d = SKBY[eqS[i]]; return (i + 1) + ':' + (d ? d.ic + d.nm : 'なし'); }).join('　') + '</span></div>';
+    SKD.slice().sort(function (a, b) { return a.price - b.price; }).forEach(function (d) {
+      var own = haveS.indexOf(d.id) >= 0, poorS = coins < d.price, armS = skArm === d.id, sl = eqS.indexOf(d.id), btn;
+      if (own) btn = '<button type="button" class="' + (sl >= 0 ? 'eq' : '') + '" data-sks="' + d.id + '">' + (sl >= 0 ? 'セット中' : 'セットする') + '</button>';
+      else btn = '<button type="button" data-skb="' + d.id + '"' + (poorS ? ' disabled' : '') + '>' + (poorS ? '足りない' : (armS ? '本当に買う？' : '買う')) + '</button>';
+      h += '<div class="it"><div class="ic">' + d.ic + '</div><div class="tx"><b>' + d.nm + '</b><span class="rt" style="color:#b583ff">クール ' + (d.cd / 1000) + '秒</span>' + (sl >= 0 ? '　（スキル' + (sl + 1) + 'にセット中）' : '') + '<br>' + d.ds + '<br>' + (own ? '✅ 持ってる' : '🪙 ' + d.price.toLocaleString()) + '</div>' + btn + '</div>';
+    });
+    $('skpBody').innerHTML = h;
+  }
+  $('skpBody').addEventListener('click', function (e) {
+    var b = e.target.closest('button'); if (!b || b.disabled) return;
+    if (b.dataset.skb) {
+      if (skArm !== b.dataset.skb) { skArm = b.dataset.skb; renderSkillShop(); return; }
+      skArm = null; b.disabled = true;
+      api({ action: 'skill_buy', id: b.dataset.skb }).then(function (j) { if (j.player) { player = j.player; toast('買えたよ！「セットする」を押すと、戦いで使えるよ'); sfx(1); } else toast(j.message || 'うまく買えませんでした'); renderSkillShop(); });
+    } else if (b.dataset.sks) {
+      var id = b.dataset.sks, eq = player.skEq || [], cur = eq.indexOf(id), slot;
+      if (cur >= 0) { slot = cur; id = null; } else { slot = eq.indexOf(null); if (slot < 0) for (slot = 0; slot < 3; slot++) if (!eq[slot]) break; }
+      if (slot < 0 || slot > 2) { toast('スキル枠がいっぱいです。「そうび」で入れ替えてね'); return; }
+      b.disabled = true;
+      api({ action: 'skill_equip', slot: slot, id: id }).then(function (j) { if (j.player) { player = j.player; skBtnUi(); sfx(2); } else toast(j.message || 'うまくいきませんでした'); renderSkillShop(); });
+    }
+  });
   function esc(t) { var d = document.createElement('div'); d.textContent = t == null ? '' : String(t); return d.innerHTML; }
   function renderGuild(j) {
     var b = $('gBody'), lv = j.lv || 1, h = '';
@@ -3023,7 +3094,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 48;
+  var GV = 49;
   (function () {
     var last = Date.now();
     function chk() {
