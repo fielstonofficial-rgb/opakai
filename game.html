@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:44-->
+<!--GV:45-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -299,6 +299,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 .hhp{position:absolute;left:2px;right:2px;top:-5px;height:5px;border-radius:5px;background:rgba(0,0,0,.5);overflow:hidden;display:none}
 .hhp i{display:block;height:100%;width:100%;background:#4fd68a}
 .hhp.on{display:block}
+.gh .hhp{display:block;left:-8px;right:-8px;top:-6px;height:9px;border:1px solid rgba(255,255,255,.7);box-sizing:border-box;z-index:5}
+.gh:has(.hhp) .gname{top:-32px}
+.gh .hhp::after{content:attr(data-p);position:absolute;left:0;right:0;top:0;font-size:8px;line-height:7px;text-align:center;color:#fff;font-weight:900;text-shadow:0 0 2px #000,0 0 2px #000}
+.foe .fhp{height:9px!important;top:-9px!important;border:1px solid rgba(255,255,255,.7);box-sizing:border-box}
+.foe.big .fhp,.foe.boss .fhp{height:11px!important;top:-12px!important}
 #hero2.down .hb svg,.gh.dn .hb svg{transform:rotate(90deg);transform-origin:50% 88%;filter:grayscale(.75) brightness(.8)}
 #hero2.down .hb,.gh.dn .hb{animation:none !important}
 .gh.dn::after{content:"💫 たすけて！タップ";position:absolute;left:50%;top:60%;transform:translateX(-50%);white-space:nowrap;font-size:12px;font-weight:800;color:#fff;background:rgba(200,40,70,.9);border-radius:10px;padding:3px 9px}
@@ -572,7 +577,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v44（テロップ廃止・標準語・ドリンクはテーブルに）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v45（HPゲージ・マスターを黄金装備に）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所です（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -947,7 +952,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function dress(av, item) {
     var a = normAv(av), o = {}; for (var k in a) o[k] = a[k];
     var L = item && item.lk ? item.lk : (a.gender === 1 ? DEFLK_F : DEFLK_M);
-    o.outfit = L[0]; o.outfitColor = L[1]; o.pattern = L[2]; o.patColor = L[3]; o.bottom = a.gender === 1 ? L[5] : L[4]; o.bottomColor = L[6]; return o;
+    o.outfit = L[0]; o.outfitColor = L[1]; o.pattern = L[2]; o.patColor = L[3]; o.bottom = a.gender === 1 ? L[5] : L[4]; o.bottomColor = L[6]; if (item && item.gold) { o.gold = 1; o.acc = 0; } return o;
   }
   function shade(hex, k) { // k>0 明るく / k<0 暗く
     var n = parseInt(hex.slice(1), 16), r = n >> 16, g = (n >> 8) & 255, b = n & 255;
@@ -955,7 +960,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     return '#' + ((1 << 24) + (f(r) << 16) + (f(g) << 8) + f(b)).toString(16).slice(1);
   }
   function avatarSVG(raw, opt) {
-    var a = normAv(raw), id = 'av' + (++avN), F = a.gender === 1; // gender: 0=男性 1=女性
+    var a = normAv(raw), id = 'av' + (++avN), F = a.gender === 1, gold = !!(raw && raw.gold); // gender: 0=男性 1=女性
     var skin = SKIN[a.skin], skinD = shade(skin, -.12);
     var oc = OUTC[a.outfitColor], pc = OUTC[a.patColor], bc = BOTC[a.bottomColor];
     var defs = '';
@@ -1043,6 +1048,19 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (trim === 'cuff') sleeves += '<path d="M' + (L - 6) + ' 134L' + (L + 4) + ' 134M' + (R - 4) + ' 134L' + (R + 6) + ' 134" stroke="' + shade(oc, -.3) + '" stroke-width="4"/>';
     // 長いコート・ローブは脚の上に重ねる
     var longTop = (o === 5 || o === 9);
+    if (gold) {
+      defs += '<linearGradient id="' + id + 'g" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#fff3b0"/><stop offset=".45" stop-color="#f2c230"/><stop offset="1" stop-color="#b8860b"/></linearGradient>';
+      var gf = 'url(#' + id + 'g)', ge = 'stroke="#7a5200" stroke-width="1.3" stroke-linejoin="round"', gs = '#e8b923';
+      torso = '<path d="' + torsoPath(138) + '" fill="' + gf + '" ' + ge + '/><path d="M60 82L60 136M43 98Q60 108 77 98M45 116Q60 124 75 116" stroke="#7a5200" stroke-width="1.6" fill="none"/><circle cx="60" cy="100" r="4.6" fill="#d7263d" stroke="#7a5200" stroke-width="1.2"/><path d="M' + (60 - hm - 3) + ' 132L' + (60 + hm + 3) + ' 132L' + (60 + hm + 7) + ' 154L' + (60 - hm - 7) + ' 154Z" fill="' + gf + '" ' + ge + '/><path d="M60 134L60 154" stroke="#7a5200" stroke-width="1.4"/>';
+      var gl = function (x, y) { return '<ellipse cx="' + x + '" cy="' + y + '" rx="13" ry="10" fill="' + gf + '" ' + ge + '/><path d="M' + (x - 8) + ' ' + y + 'L' + (x + 8) + ' ' + y + '" stroke="#7a5200" stroke-width="1.2"/>'; };
+      sleeves = '<path d="M' + (L - ax) + ' 112L' + (L - 1) + ' 134M' + (R + ax) + ' 112L' + (R + 1) + ' 134" stroke="#7a5200" stroke-width="' + (aw + 5) + '" stroke-linecap="round"/><path d="M' + (L - ax) + ' 112L' + (L - 1) + ' 134M' + (R + ax) + ' 112L' + (R + 1) + ' 134" stroke="' + gs + '" stroke-width="' + (aw + 2.4) + '" stroke-linecap="round"/>' + gl(L + 1, 90) + gl(R - 1, 90);
+      var lw = F ? 14 : 16;
+      var gleg = function (x0, x1) { var xa = x0 + (x1 - x0) * 16 / 82, xb = x0 + (x1 - x0) * 74 / 82; return '<path d="M' + xa + ' 150L' + xb + ' 208" stroke="#7a5200" stroke-width="' + (lw + 4) + '" stroke-linecap="round"/><path d="M' + xa + ' 150L' + xb + ' 208" stroke="' + gs + '" stroke-width="' + (lw + 1.6) + '" stroke-linecap="round"/><ellipse cx="' + (x0 + (x1 - x0) * .2) + '" cy="158" rx="' + (lw / 2 + 3) + '" ry="6" fill="' + gf + '" ' + ge + '/>'; };
+      legs += gleg(lx0, 49) + gleg(rx0, 71);
+      shoes = '<path d="M38 216Q36 228 48 228L58 228Q58 218 54 216ZM82 216Q84 228 72 228L62 228Q62 218 66 216Z" fill="' + gs + '" stroke="#7a5200" stroke-width="1.4"/>';
+      hands = '<circle cx="' + (L - 1) + '" cy="141" r="' + (F ? 5.6 : 6.4) + '" fill="' + gs + '" stroke="#7a5200"/><circle cx="' + (R + 1) + '" cy="141" r="' + (F ? 5.6 : 6.4) + '" fill="' + gs + '" stroke="#7a5200"/>';
+      back = ''; hood = '';
+    }
     /* --- 首・頭 --- */
     var nk = '<rect x="' + (F ? 56 : 54.6) + '" y="36" width="' + (F ? 8 : 10.8) + '" height="18" rx="3.5" fill="' + skinD + '"/>';
     var face = F
@@ -1119,6 +1137,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     else if (ac === 6) acc = '<path d="M37 48C34 8 86 8 83 48" fill="none" stroke="#2a2a30" stroke-width="3.4"/><rect x="33" y="42" width="8" height="16" rx="4" fill="#e0405f" stroke="#2a2a30" stroke-width="1.4"/><rect x="79" y="42" width="8" height="16" rx="4" fill="#e0405f" stroke="#2a2a30" stroke-width="1.4"/>';
     else if (ac === 7) acc = '<path d="M38 34C40 8 80 8 82 34" fill="none" stroke="' + shade(oc, 0) + '" stroke-width="4" stroke-linecap="round"/><circle cx="76" cy="16" r="4" fill="' + shade(oc, .25) + '"/>';
     /* 8頭身：頭を小さく、胴と脚と腕を長く（頭の高さ≒36、全身≒291） */
+    if (gold) {
+      hairF = ''; acc = '<path d="M37 44C32 8 88 8 83 44L80 36Q60 28 40 36Z" fill="' + gf + '" stroke="#7a5200" stroke-width="1.5" stroke-linejoin="round"/><path d="M38 42L41 66L50 60L47 42ZM82 42L79 66L70 60L73 42Z" fill="' + gf + '" ' + ge + '/><path d="M60 10L60 30" stroke="#7a5200" stroke-width="1.6"/><path d="M52 12Q60 0 68 12Z" fill="#d7263d" stroke="#7a5200" stroke-width="1.2"/><path d="M42 30Q60 22 78 30" fill="none" stroke="#fff3b0" stroke-width="2" opacity=".8"/>';
+    }
     function tf(yn, k, yo) { return 'translate(60 ' + yn + ') scale(.96 ' + k + ') translate(-60 ' + (-yo) + ')'; }
     var HT = 'translate(60 42) scale(.64) translate(-60 -70)', LT = tf(144, 1.78, 134), TT = tf(46, 1.815, 80), AT = tf(64, 1.9, 90);
     var ST = 'translate(60 290) scale(.96 1) translate(-60 -216)', HAT = 'translate(60 161) scale(.96 1) translate(-60 -141)';
@@ -1484,11 +1505,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   $('tkOk').addEventListener('click', function () { $('tkov').classList.remove('on'); openBag(0); });
   var GMI = {
-    outfit: { id: 'gm_o', slot: 'outfit', nm: '黄金のローブ', tier: 3, ic: '👑', lk: [9, 2, 0, 6, 0, 0, 1] },
+    outfit: { id: 'gm_o', slot: 'outfit', nm: '黄金の鎧', tier: 3, ic: '👑', gold: 1, lk: [0, 6, 0, 6, 0, 0, 1] },
     tool: { id: 'gm_t', slot: 'tool', nm: '黄金のつるはし', cut: .2, ic: '⛏️' },
-    weapon: { id: 'gm_w', slot: 'weapon', kind: 'bow', nm: '黄金の神弓', atk: 9999999, rng: 99999, cd: 220, ic: '🏹' },
+    weapon: { id: 'gm_w', slot: 'weapon', kind: 'bow', skin: 'xbow', nm: '黄金のボウガン', atk: 9999999, rng: 99999, cd: 220, ic: '🏹' },
     shield: { id: 'gm_s', slot: 'shield', nm: '黄金の盾', def: .85, ic: '🛡️' },
-    armor: { id: 'gm_a', slot: 'armor', nm: '黄金の鎧', hp: 0, ic: '🐉' },
+    armor: { id: 'gm_a', slot: 'armor', nm: '黄金の胸当て', hp: 0, ic: '🐉' },
     helm: { id: 'gm_h', slot: 'helm', nm: '黄金の兜', def: .05, ic: '⛑️' }
   };
   function isGM() { return !!(player && player.gm); }
@@ -1868,7 +1889,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       var mv = Math.hypot(dx, dy) > 3; pr.el.classList.toggle('walk', mv);
       pr.hb.style.transform = pr.dir < 0 ? 'scaleX(-1)' : ''; placeEl(pr.el, pr.x, pr.y);
       ghLook(pr); pr.el.classList.toggle('sit', pr.st > 0); if ((pr.cupE || '') !== (pr.dk || '') || pr.cupS !== pr.ds) ghCup(pr);
-      pr.el.classList.toggle('dn', !!pr.dn); var gb = pr.el.querySelector('.hhp'); if (gb) { var pc = pr.h == null ? 100 : pr.h; gb.classList.toggle('on', pc < 100 || !!pr.dn); gb.firstChild.style.width = pc + '%'; gb.firstChild.style.background = pc <= 30 ? '#ff5a5a' : '#4fd68a'; }
+      pr.el.classList.toggle('dn', !!pr.dn); var gb = pr.el.querySelector('.hhp'); if (gb) { var pc = pr.h == null ? 100 : pr.h; gb.classList.add('on'); gb.dataset.p = Math.round(pc) + '%'; gb.firstChild.style.width = pc + '%'; gb.firstChild.style.background = pc <= 30 ? '#ff5a5a' : '#4fd68a'; }
     });
   }
 
@@ -2219,7 +2240,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function arName(id) { var n = ''; if (peers[id] && peers[id].n) n = peers[id].n; arena.others.forEach(function (o) { if (o.id === id) n = o.n; }); return n || 'だれか'; }
   function arHost(m) { return m.ids.slice().sort()[0]; }
   function arBig(t, ms) { var e = $('arBig'); e.textContent = t; e.classList.remove('on'); void e.offsetWidth; e.classList.add('on'); clearTimeout(e._t); e._t = setTimeout(function () { e.classList.remove('on'); }, ms || 900); }
-  function arDmg() { return isGM() ? 120 : Math.min(500, atkP()); }
+  function arDmg() { return isGM() ? 99999999 : Math.min(500, atkP()); }
 
   /* ----- 広場（観客席と闘技場内） ----- */
   function plazaSVG() {
@@ -2320,13 +2341,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     else if (m.t === 'chat') rtMsg(m);
   }
   function plInFloor(pr) { return pr && pr.el && pr.el.style.display !== 'none' && pr.ty >= FLOOR_Y - 10; }
+  function gmPeer(pr) { return !!(pr && pr.gm && pr.id === GM_ID); }
   function plOnHit(m) {
     if (m.to !== myMid || !inPlaza || hp.down || hero.y < FLOOR_Y) return;
     var pr = peers[m.f]; if (!plInFloor(pr)) return;
     var now = performance.now(); if (now - (arena.hitAt[m.f] || 0) < 150) return; arena.hitAt[m.f] = now;
-    if (Math.hypot(hero.x - pr.x, hero.y - pr.y) > 620) return;
-    if (evadeHit()) return;
-    var d = Math.max(1, Math.min(500, Math.round(+m.d || 1))), dmg = Math.max(1, Math.round(d * (1 - defP())));
+    if (!gmPeer(pr) && Math.hypot(hero.x - pr.x, hero.y - pr.y) > 620) return;
+    if (!gmPeer(pr) && evadeHit()) return;
+    var d = Math.max(1, Math.min(500, Math.round(+m.d || 1))), dmg = Math.max(1, Math.round(d * (1 - defP()))); if (gmPeer(pr)) dmg = Math.max(dmg, hp.max);
     hp.cur = Math.max(0, hp.cur - dmg); floatTxt(hero.x, hero.y - 74, '-' + dmg); sfx(1); vib([30, 20, 30]);
     var hb = $('hb'); if (hb) { hb.classList.remove('lunge', 'hurt'); void hb.offsetWidth; hb.classList.add('hurt'); }
     hpUi(); rtLast = 0; if (hp.cur <= 0) plKO();
@@ -2446,9 +2468,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var m = arena.m; if (m0.to !== myMid || !m.live || hp.down || m.over) return;
     if (m.team[m0.f] === m.my) return; var pr = peers[m0.f]; if (!pr || pr.dn) return;
     var now = performance.now(); if (now - (m.hit[m0.f] || 0) < 150) return; m.hit[m0.f] = now;
-    if (Math.hypot(hero.x - pr.x, hero.y - pr.y) > 620) return;
-    if (evadeHit()) return;
-    var d = Math.max(1, Math.min(500, Math.round(+m0.d || 1))), dmg = Math.max(1, Math.round(d * (1 - defP())));
+    if (!gmPeer(pr) && Math.hypot(hero.x - pr.x, hero.y - pr.y) > 620) return;
+    if (!gmPeer(pr) && evadeHit()) return;
+    var d = Math.max(1, Math.min(500, Math.round(+m0.d || 1))), dmg = Math.max(1, Math.round(d * (1 - defP()))); if (gmPeer(pr)) dmg = Math.max(dmg, hp.max);
     hp.cur = Math.max(0, hp.cur - dmg); floatTxt(hero.x, hero.y - 74, '-' + dmg); sfx(1); vib([30, 20, 30]);
     var hb = $('hb'); if (hb) { hb.classList.remove('lunge', 'hurt'); void hb.offsetWidth; hb.classList.add('hurt'); }
     hpUi(); rtLast = 0; if (hp.cur <= 0) arMeKO();
@@ -2502,7 +2524,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 44;
+  var GV = 45;
   (function () {
     var last = Date.now();
     function chk() {
@@ -2613,7 +2635,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!inPlaza) { toast('闘技場の中で、呼んでな'); return; }
     botStop(); var st = botStats(lv), wk = ['sword', 'sword', 'dagger', 'bow', 'gun'][Math.floor(Math.random() * 5)];
     var av = { name: '練習相手', gender: lv % 2, skin: 1 + lv % 3, face: lv % 5, hair: lv % 6, hairColor: (lv * 3) % 14, outfit: lv % 10, outfitColor: (lv * 5) % 12, pattern: lv % 5, patColor: (lv * 7) % 12, bottom: lv % 4, bottomColor: lv % 8, acc: 0 };
-    var e = document.createElement('div'); e.className = 'gh npc bot'; e.innerHTML = '<div class="hs"></div><div class="hb">' + charHTML(av) + '</div><div class="gname"></div>';
+    var e = document.createElement('div'); e.className = 'gh npc bot'; e.innerHTML = '<div class="hs"></div><div class="hb">' + charHTML(av) + '</div><div class="gname"></div><div class="hhp on"><i></i></div>';
     var x = 450, y = FLOOR_Y + 330; placeEl(e, x, y); $('world').appendChild(e); var bpk = e.querySelector('.fpk'); if (bpk) bpk.innerHTML = weaponSVG(wk);
     bot = { wk: wk, lv: lv, st: st, hp: st.max, max: st.max, x: x, y: y, el: e, dn: false, cdAt: performance.now() + 1200, dashAt: 0, gauge: 0, wind: 0, sp: 0, sdir: 1, sdirAt: 0 };
     botLabel(); botTimer = setInterval(botTick, 50); sfx(3);
@@ -2622,7 +2644,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   var bot = null, botTimer = 0;
   var WK = { sword: { nm: '剣', reach: 150, go: 110, init: 125, cd: 1, wind: 1, atk: 1.1 }, dagger: { nm: '短剣', reach: 85, go: 55, init: 75, cd: .65, wind: .7, atk: .7 }, bow: { nm: '弓', reach: 225, go: 185, init: 225, cd: .9, wind: 1, atk: .8, rg: 1 }, gun: { nm: '銃', reach: 300, go: 250, init: 300, cd: 1.4, wind: 1.3, atk: 1.25, rg: 1 } };
-  function botLabel() { if (bot) bot.el.querySelector('.gname').textContent = '練習相手 Lv' + bot.lv + '（' + WK[bot.wk].nm + '）' + ' ♥' + Math.max(0, Math.ceil(bot.hp)) + '/' + bot.max; }
+  function botLabel() { if (bot) { var hg = bot.el.querySelector('.hhp'); if (hg) { var pq = Math.max(0, bot.hp / bot.max * 100); hg.dataset.p = Math.ceil(pq) + '%'; hg.firstChild.style.width = pq + '%'; hg.firstChild.style.background = pq <= 30 ? '#ff5a5a' : '#4fd68a'; } } if (bot) bot.el.querySelector('.gname').textContent = '練習相手 Lv' + bot.lv + '（' + WK[bot.wk].nm + '）' + ' ♥' + Math.max(0, Math.ceil(bot.hp)) + '/' + bot.max; }
   function botStop(msg) { clearInterval(botTimer); botTimer = 0; if (bot && bot.el) bot.el.remove(); bot = null; if (msg === true) return; }
   function botHitHero(d) {
     if (hp.down || hero.y < FLOOR_Y || !inPlaza) return false; if (evadeHit()) return false;
@@ -2659,8 +2681,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function botHurt(dm) {
     var b = bot; if (!b || b.dn) return; var st = b.st, now = performance.now();
-    if (st.evadeP && now > b.dashAt && Math.random() < st.evadeP) { botDash(b, -(hero.y - b.y), hero.x - b.x, 150); floatTxt(b.x, b.y - 80, 'かわされた！', 'y'); return; }
-    if (st.guardP && Math.random() < st.guardP) { dm = Math.max(1, Math.round(dm * .3)); floatTxt(b.x, b.y - 100, 'ガード！', 'y'); }
+    if (!isGM() && st.evadeP && now > b.dashAt && Math.random() < st.evadeP) { botDash(b, -(hero.y - b.y), hero.x - b.x, 150); floatTxt(b.x, b.y - 80, 'かわされた！', 'y'); return; }
+    if (!isGM() && st.guardP && Math.random() < st.guardP) { dm = Math.max(1, Math.round(dm * .3)); floatTxt(b.x, b.y - 100, 'ガード！', 'y'); }
     b.hp = Math.max(0, b.hp - dm); floatTxt(b.x, b.y - 80, '-' + dm, 'y'); b.el.classList.remove('gmhit'); void b.el.offsetWidth; b.el.classList.add('gmhit'); botLabel();
     if (b.hp <= 0) { b.dn = true; b.wind = 0; b.sp = 0; b.el.style.opacity = .4; sfx(3); vib([40, 30, 40]); toast('練習相手（Lv' + b.lv + '）に勝った！ また呼ぶなら、ガロに話しかけてください'); setTimeout(function () { if (bot === b) botStop(); }, 2200); }
   }
@@ -3091,7 +3113,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   /* ---------- HP・戦い・病院・たすけ合い ---------- */
   var hp = { cur: 0, max: 0, down: false, inv: 0, ready: false }, downT = 0, downLeft = 0;
   function plv() { return Math.max(1, (player && player.lv) || 1); }
-  function hpMaxNow() { if (isGM()) return (inArena || inPlaza) ? 900 : 9999; var a = eqItem('armor'); return 80 + 10 * plv() + (a ? a.hp : 0); }
+  function hpMaxNow() { if (isGM()) return 9999; var a = eqItem('armor'); return 80 + 10 * plv() + (a ? a.hp : 0); }
   function atkP() { var w = curW(); if (!w) return Math.max(1, Math.round(1 + Math.min(plv(), 60) / 12)); return Math.round((Math.round(6 + 1.5 * plv()) + w.atk) * (isGM() ? 1 : (w.rng ? .8 : 1.15))); }
   var guard = false, atkAt = 0;
   function defP() { var s = eqItem('shield'), h = isGM() ? GMI.helm : null; return Math.min(.85, (s ? s.def : 0) + (h ? h.def : 0) + (guard ? .4 : 0)); }
@@ -3153,7 +3175,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function nearestE(list) { var b = null, bd = 1e9; list.forEach(function (e) { var d = Math.hypot(hero.x - e.x, hero.y - e.y) - e.r; if (d < bd) { bd = d; b = e; } }); return b ? { e: b, d: bd } : null; }
   function pvpMode() { return inPlaza || inArena; }
   function hitE(e, mult) {
-    var base = pvpMode() ? arDmg() : atkP(), dm = Math.round(base * mult); if (pvpMode()) dm = Math.min(500, dm);
+    var base = pvpMode() ? arDmg() : atkP(), dm = Math.round(base * mult); if (pvpMode() && !isGM()) dm = Math.min(500, dm);
     if (e.k === 'b') { botHurt(dm); return; }
     if (e.k === 'f') { floatTxt(e.x, e.y - 80, isGM() ? '一撃！' : '-' + dm, 'y'); dustW(e.x, e.y - 30); if (amFoeHost()) applyFoeDamage(e.o, dm); else rtSend({ t: 'hit', i: e.o.id, d: dm }); }
     else { floatTxt(e.x, e.y - 80, '-' + dm, 'y'); if (e.o.el) { e.o.el.classList.remove('gmhit'); void e.o.el.offsetWidth; e.o.el.classList.add('gmhit'); } if (e.k === 'p') arSend({ t: 'fhit', to: e.o.id, d: dm }); else arSend({ t: 'ahit', to: e.o.id, d: dm, mid: arena.m.mid }); }
@@ -3266,14 +3288,15 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function weaponSVG(k) {
     if (k === 'dagger') return '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M42 62L70 34" stroke="#dfe7ee" stroke-width="8" stroke-linecap="round"/><path d="M42 62L70 34" stroke="#aebbc6" stroke-width="2.6" stroke-linecap="round"/><path d="M33 58L47 72" stroke="#c9a23a" stroke-width="7" stroke-linecap="round"/><path d="M37 70L25 84" stroke="#6b3a2a" stroke-width="7" stroke-linecap="round"/></svg>';
     if (k === 'bow') return '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M30 8Q96 50 30 92" fill="none" stroke="#8a5a2b" stroke-width="7" stroke-linecap="round"/><path d="M30 8L30 92" stroke="#f3ead2" stroke-width="2"/><path d="M30 50H84" stroke="#c9a36a" stroke-width="3"/><path d="M84 50l-9-5v10z" fill="#9aa7b0"/></svg>';
+    if (k === 'xbow') return '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M62 12Q98 50 62 88" fill="none" stroke="#7a5200" stroke-width="10" stroke-linecap="round"/><path d="M62 12Q98 50 62 88" fill="none" stroke="#f2c230" stroke-width="6.4" stroke-linecap="round"/><path d="M62 12L38 50L62 88" fill="none" stroke="#fff3c4" stroke-width="1.8"/><rect x="8" y="44" width="84" height="12" rx="4" fill="#f2c230" stroke="#7a5200" stroke-width="2"/><path d="M14 47H88" stroke="#fff3b0" stroke-width="2" opacity=".8"/><rect x="20" y="55" width="9" height="18" rx="3" fill="#e8b923" stroke="#7a5200" stroke-width="1.6"/><circle cx="44" cy="50" r="4.4" fill="#d7263d" stroke="#7a5200" stroke-width="1.4"/><path d="M40 50H96" stroke="#c9a23a" stroke-width="2.4"/><path d="M96 50l-9-5v10z" fill="#fff3b0" stroke="#7a5200"/></svg>';
     if (k === 'gun') return '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M14 58L26 44H40V54H22L24 70H10Z" fill="#6b4a2c"/><rect x="34" y="42" width="60" height="12" rx="3" fill="#3b3d4a"/><rect x="86" y="40" width="8" height="16" rx="2" fill="#23252e"/><path d="M42 54V64H50V54" fill="#2f313c"/></svg>';
     return '<svg viewBox="0 0 100 100" aria-hidden="true"><path d="M30 74L84 20" stroke="#dfe7ee" stroke-width="9" stroke-linecap="round"/><path d="M30 74L84 20" stroke="#aebbc6" stroke-width="3" stroke-linecap="round"/><path d="M20 66L40 86" stroke="#c9a23a" stroke-width="8" stroke-linecap="round"/><path d="M26 80L14 92" stroke="#6b3a2a" stroke-width="8" stroke-linecap="round"/></svg>';
   }
   function handUi() {
     var pk = $('fpick'); if (!pk || !player) return;
-    var w = curW(), mode = !w ? 'pick' : w.kind;
+    var w = curW(), mode = !w ? 'pick' : (w.skin || w.kind);
     if (pk.dataset.m === mode) return; pk.dataset.m = mode;
-    pk.innerHTML = mode === 'pick' ? pickHTML(SKIN[normAv(player.avatar).skin]) : weaponSVG(mode);
+    pk.innerHTML = mode === 'pick' ? pickHTML(SKIN[normAv(player.avatar).skin]) : weaponSVG((w && w.skin) || mode);
   }
   $('gmTog').addEventListener('click', function () { gmOn = !gmOn; LSset('opa_gm_off', gmOn ? '0' : '1'); applyGmMode(); });
   $('gmTog').addEventListener('pointerdown', function (e) { e.stopPropagation(); });
@@ -3538,7 +3561,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function ghLook(pr) {
     if (!pr.hb || !pr.av) return; var q = String(pr.eq || '').split(','), key = (pr.gm ? 'gm' : q[3] || '') + '|' + (q[0] || '');
     if (pr.lkk === key) return; pr.lkk = key; pr.hb.innerHTML = charHTML(dress(pr.av, peerItem(pr)));
-    pr.pk = pr.hb.querySelector('.fpk'); var wi = pr.gm ? GMI.weapon : IBY[q[0]]; if (pr.pk) pr.pk.innerHTML = weaponSVG(wi ? wi.kind : 'dagger');
+    pr.pk = pr.hb.querySelector('.fpk'); var wi = pr.gm ? GMI.weapon : IBY[q[0]]; if (pr.pk) pr.pk.innerHTML = weaponSVG(wi ? (wi.skin || wi.kind) : 'dagger');
   }
   function updHero() {
     var h = $('hero2'); if (!h) return; placeEl(h, hero.x, hero.y);
