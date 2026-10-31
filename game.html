@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:40-->
+<!--GV:41-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -393,6 +393,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #fBack.wide small{display:none}
 #field.plaza #tchat{display:none}
 #field.town #tchat{display:block;bottom:46px}
+.spfx.warn{border-color:#ff5a5a;box-shadow:0 0 24px #ff3a3a,inset 0 0 24px #ff3a3a;animation-duration:.75s}
 #field.town:not(.chat) #trow{display:none}
 #field.town.chat #tchat{bottom:6px}
 #field.town #fTools{bottom:6px}
@@ -559,7 +560,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v40（ダッシュ・必殺技・新武器）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v41（観客席のNPC・練習相手）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所や（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -1971,7 +1972,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
     hero.x = TW / 2; hero.y = 1130; hero.dir = 1; ftarget = null; fz = zoomT;
-    $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi(); addNpcs();
+    $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi(); addNpcs('town');
   }
   function townDoorAt(wx, wy) { for (var i = 0; i < DOORS.length; i++) { var d = DOORS[i]; if (Math.abs(wx - d.x) < d.w / 2 + 10 && wy < d.y + 40 && wy > d.y - d.h) return d; } return null; }
   function openDoor(k) {
@@ -2073,30 +2074,27 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     // 観客席（せまい2段）
     o += '<rect x="0" y="60" width="900" height="130" fill="url(#pT)"/>';
     for (i = 0; i < 2; i++) { var ry = 66 + i * 60; o += '<rect x="0" y="' + ry + '" width="900" height="6" fill="#6b5a78"/>'; for (var j = 0; j < 17; j++) { o += '<rect x="' + (20 + j * 52) + '" y="' + (ry + 16) + '" width="34" height="18" rx="5" fill="' + (j % 2 ? '#7a4a6a' : '#5a4a8a') + '" opacity=".75"/>'; } }
-    o += '<text x="450" y="106" text-anchor="middle" font-size="22" font-weight="900" fill="#cfe9ff" opacity=".6" font-family="system-ui,sans-serif">🛡 観客席（ここは安全）</text>';
     // 柵と入口
     o += '<rect x="0" y="190" width="900" height="24" fill="#5a4a5e"/><path d="M0 190H900" stroke="#9a80a0" stroke-width="4"/>';
     for (i = 0; i < 18; i++) o += '<rect x="' + (10 + i * 50) + '" y="170" width="10" height="44" rx="3" fill="#7a6480"/>';
     o += '<rect x="380" y="170" width="140" height="48" fill="#2b2230"/><path d="M380 170V218M520 170V218" stroke="#ffd36a" stroke-width="5"/><text x="450" y="162" text-anchor="middle" font-size="16" font-weight="900" fill="#ffd36a" font-family="system-ui,sans-serif">▼ 闘技場の入口</text>';
     // 闘技場内（全体の8割）
     o += '<rect x="0" y="214" width="900" height="886" fill="url(#pS)"/><ellipse cx="450" cy="660" rx="430" ry="410" fill="none" stroke="#a88a54" stroke-width="6"/><ellipse cx="450" cy="660" rx="410" ry="392" fill="rgba(255,255,255,.12)"/><path d="M450 270V1050" stroke="#a88a54" stroke-width="4" stroke-dasharray="14 12"/>';
-    o += '<text x="450" y="262" text-anchor="middle" font-size="24" font-weight="900" fill="#8a2a3a" opacity=".55" font-family="system-ui,sans-serif">⚔ 闘技場内（だれにでも攻撃される）</text>';
     o += '<path d="M60 60V10L130 36L60 62" fill="#e0405a" stroke="#7a1a2a" stroke-width="2"/><path d="M840 60V10L770 36L840 62" fill="#4a8ae0" stroke="#1a3a7a" stroke-width="2"/>';
     return o + '</svg>';
   }
   function buildPlaza() {
     var w = $('world'); setWorld(900, 1100); w.classList.remove('cave'); w.style.background = '#2b2230';
     w.innerHTML = plazaSVG() + '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
-    spots = []; spotSeq = 0; foes = []; fgen++; curSpot = null; guard = false; peers = {};
+    botStop(); spots = []; spotSeq = 0; foes = []; fgen++; curSpot = null; guard = false; peers = {};
     hero.x = 450; hero.y = 120; hero.dir = 1; ftarget = null; $('hb').innerHTML = heroHTML(); applyAura(); updHero();
     var f = $('field'); f.classList.remove('town', 'arena', 'chat'); f.classList.add('plaza', 'safe'); $('fTtl').textContent = '闘技場'; $('fCancel').textContent = '町へ出る';
-    fz = zoomT = .6; $('ftip').dataset.shown = 1; $('ftip').style.opacity = 0; arena.zs = 0;
+    addNpcs('plaza'); fz = zoomT = .6; $('ftip').dataset.shown = 1; $('ftip').style.opacity = 0; arena.zs = 0;
   }
   function plZoneTick() {
     if (!inPlaza) return; var fl = hero.y >= FLOOR_Y; if (arena.zs && fl === arena.floor) return;
     var first = !arena.zs; arena.floor = fl; arena.zs = 1; $('field').classList.toggle('safe', !fl);
-    $('fhud').innerHTML = fl ? '<span style="flex:1;text-align:center;color:#ffb0b8">⚔ 闘技場内 ― だれからでも攻撃されるで！</span>' : '<span style="flex:1;text-align:center;color:#bfe9ff">🛡 観客席 ― ここは安全（攻撃されへん）</span>';
-    if (!first) toast(fl ? '⚔ 闘技場の中に入った！ ここでは、だれにでも攻撃されるで' : '🛡 観客席にもどった。ここは安全やで');
+    $('fhud').innerHTML = '<span style="flex:1;text-align:center">闘技場</span>';
   }
   function openArena() {
     if (arena.on) return;
@@ -2104,7 +2102,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     inTown = false; inPlaza = true; buildPlaza();
     hp.ready = true; hp.max = hpMaxNow(); hp.cur = hp.max; hp.down = false; hp.inv = 0; hpUi(); gearUi(); if (eqItem('weapon')) wHand = 'weapon';
     show('field'); BGM.set('field'); plZoneTick();
-    var tip = $('ftip'); tip.style.opacity = 1; tip.textContent = '闘技場へようこそ！ 観客席は安全や。入口から下の「闘技場内」に入ると、相手をタップするだけで攻撃できる（攻撃もされる）で。観客席の人をタップすると「戦いを挑む」で、承認されたら1対1の決闘や'; clearTimeout(tipT); tipT = setTimeout(function () { tip.style.opacity = 0; }, 9000);
+    var tip = $('ftip'); tip.style.opacity = 1; tip.textContent = '歩きたい場所をタップ！ 上にいるNPCに話しかけると、説明を聞いたり、練習相手を呼んだりできるで。'; clearTimeout(tipT); tipT = setTimeout(function () { tip.style.opacity = 0; }, 9000);
     clearInterval(arena.zt); arena.zt = setInterval(plZoneTick, 250);
     RT.join('arena', arMe(), { onMsg: plMsg, onPeers: plPeers }, function (ok) {
       if (!ok) { toast('つながらへんかった。あとでもう一回な'); leaveArena(); return; }
@@ -2113,7 +2111,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   $('plDownGo').addEventListener('click', function () { leaveArena(true); });
   function leaveArena(toHosp) {
-    if (!arena.on) return; $('plDown').classList.remove('on'); if (inArena && arena.m && !arena.m.over) return;
+    if (!arena.on) return; botStop(); $('plDown').classList.remove('on'); if (inArena && arena.m && !arena.m.over) return;
     clearInterval(arena.zt); clearInterval(arena.tmr); inPlaza = false; inArena = false; arena.on = false; arena.m = null; arena.inv = null; arena.out = null;
     $('arInv').classList.remove('on'); $('arRes').classList.remove('on'); rtStop();
     hp.down = false; hp.max = hpMaxNow(); hp.cur = Math.max(1, Math.min(hp.max, arena.hb0 || hp.max)); hp.inv = 0;
@@ -2200,6 +2198,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function plTap(e, view) {
     if (hp.down) return;
     var r = view.getBoundingClientRect(), wx = (e.clientX - r.left) / fz + camX, wy = (e.clientY - r.top) / fz + camY, tg = null, bd = 56;
+    var nk = npcAt(wx, wy); if (nk) { var nn = NPCS[nk]; ftarget = { x: nn.x, y: nn.y + 44, spot: null, door: 'npc:' + nk }; return; }
+    if (bot && !bot.dn && hero.y >= FLOOR_Y && Math.hypot(wx - bot.x, wy - (bot.y - 32)) < 60) { botTap(); return; }
     Object.keys(peers).forEach(function (id) { var q = peers[id]; if (!q.el || q.el.style.display === 'none') return; var d = Math.hypot(wx - q.x, wy - (q.y - 32)); if (d < bd) { bd = d; tg = q; } });
     if (tg) { if (hero.y >= FLOOR_Y && plInFloor(tg)) { if (!tg.dn) plAttack(tg); return; } openProfile(tg); return; }
     var pg = document.createElement('i'); pg.className = 'ping'; pg.style.left = wx + 'px'; pg.style.top = wy + 'px'; $('world').appendChild(pg); setTimeout(function () { pg.remove(); }, 520);
@@ -2231,7 +2231,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     return o + '</svg>';
   }
   function arBegin(s) {
-    var ids = s.tm[0].concat(s.tm[1]); if (ids.indexOf(myMid) < 0) return; if (arena.m && !arena.m.over) return;
+    var ids = s.tm[0].concat(s.tm[1]); if (ids.indexOf(myMid) < 0) return; if (arena.m && !arena.m.over) return; botStop();
     var team = {}; s.tm[0].forEach(function (i) { team[i] = 0; }); s.tm[1].forEach(function (i) { team[i] = 1; });
     var m = arena.m = { mid: s.mid, tm: s.tm, team: team, my: team[myMid], ko: {}, live: false, over: false, fin: 0, ids: ids, hit: {}, hb: hp.cur, t0: 0, sentEnd: false };
     arena.inv = null; $('arInv').classList.remove('on'); $('arRes').classList.remove('on');
@@ -2347,7 +2347,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 40;
+  var GV = 41;
   (function () {
     var last = Date.now();
     function chk() {
@@ -2362,6 +2362,29 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
   /* ---------- 町のNPC（案内役ミミ・闘技場の受付レオ） ---------- */
   var NPCS = {
+    kanon: { nm: '闘技場の解説 カノン', where: 'plaza', x: 210, y: 140, av: { name: 'カノン', gender: 1, skin: 1, face: 1, hair: 4, hairColor: 5, outfit: 7, outfitColor: 2, pattern: 0, patColor: 6, bottom: 1, bottomColor: 3, acc: 3 },
+      hi: 'いらっしゃい！ 闘技場の解説係のカノンや。ここのルールや、戦い方のコツを、全部教えるで。下の質問をタップか、聞きたいことを打ってな。',
+      faq: [
+        { q: '闘技場って？', k: ['闘技', 'ここ', 'とは', '何'], a: '闘技場は、プレイヤー同士で戦えるゲーム内で唯一の場所や。上の観客席は、だれにも攻撃されへん。柵の入口から下に降りると、闘技場の中に入る。中では、近くにいるだれからでも攻撃されるし、だれでも攻撃できるで。報酬は出えへん、遊びと練習の場や。' },
+        { q: '攻撃のしかたは？', k: ['攻撃', 'こうげき', 'たたかい', '戦い方', 'やり方'], a: '闘技場の中で、相手をタップするだけで攻撃や。ボタンはないで。遠いと「もうちょっと近づいてな」って出るから、射程の中まで歩いてな。射程は、剣が2マス、弓が3マス、銃が4マスや。' },
+        { q: '1対1で戦うには？', k: ['1対1', '決闘', 'いちたいいち', '挑', 'たいせん', '対戦'], a: '観客席にいる人をタップして、「戦いを挑む」を押すんや。相手が承認したら、1対1専用のフィールドに移って、3・2・1のカウントのあと、90秒で勝負や。時間切れのときは、残ってるHPの割合が多いほうの勝ち。途中で「あきらめる」も押せるで。' },
+        { q: '倒されたらどうなる？', k: ['倒', 'やられ', '負け', '死', '病院'], a: '倒されると「病院へ向かう」ボタンが出る。押すと町の病院の前から再開や。押さんかったら、倒れたままチャットもできるで。' },
+        { q: 'ダッシュって？', k: ['ダッシュ', '突進', '回避', 'よけ', '避け'], a: '武器を持ってるときの「💨 ダッシュ」ボタンや。剣は敵の近くまで突進、弓と銃は敵から離れる向きに下がる。ダッシュしてる約0.5秒は、攻撃を受けへん。この間に攻撃が当たりそうやったら「ジャスト回避！」になって、必殺技ゲージが溜まる。使ったあとは、4〜5秒待つで。' },
+        { q: '必殺技って？', k: ['必殺', 'ひっさつ', 'ゲージ', '技'], a: '攻撃を当てたり、ジャスト回避・ジャストガードをすると、「✨ 」のゲージが溜まる。100%で光って、押すと必殺技や。剣は円月斬（まわり3マスをまとめて斬る）、弓は三連矢、銃は貫通弾（まっすぐ並んだ敵を貫く）。持ってる武器によって、技が変わるで。' },
+        { q: 'ジャストガードって？', k: ['ジャストガード', 'ガード', '盾', '守'], a: '盾を持ってると出る「🛡 ガード」ボタンや。押した直後の約0.35秒に攻撃を受けると、ダメージなしで、必殺技ゲージが多めに溜まる。ずっと押してるとたたけへんから、相手の攻撃に合わせて押すのがコツや。' },
+        { q: '武器の違いは？', k: ['武器', '剣', '弓', '銃', '近距離', '遠距離'], a: '剣などの近距離は、ダメージが+15%で、そのかわり近づかなあかん。弓と銃は遠くから撃てるけど、ダメージは少なめや。近づいたら強い、離れたら有利、っていう読み合いが楽しいで。「つるはし」ボタンで、つるはしと武器を持ちかえられる。' },
+        { q: 'コツを教えて', k: ['コツ', 'ヒント', '強く', '勝つ', '上手'], a: '一番のコツは、ステータスより「ダッシュと間合い」や。①相手の攻撃の直前にダッシュで避ける ②ゲージを溜めて、近くに集まったところで必殺技 ③遠距離の人には、ダッシュで一気に詰める。練習相手のガロに頼むと、レベル別の相手と練習できるで。' },
+        { q: 'チャットは？', k: ['チャット', '話', '短縮', 'あいさつ', '挨拶'], a: '下の「💬 チャット」を押すと、入力欄が出る。戦いの邪魔にならんように、普段はたたんであるんや。「💬」だけのボタンは短縮チャットで、「たすけて！」「ナイス！」みたいなのを、一回のタップで送れるで。' },
+        { q: '超レアな武器は？', k: ['レア', '超レア', 'ボス', '必殺技つき', '新武器', '手に入'], a: '必殺技つきの超レア武器は、強い敵からごくまれに落ちる。ボス限定の武器は、2人以上のパーティーでボスを倒したときのごほうびで出ることがあるで。店では売ってへん。ちなみに、もう持ってる武器が落ちたら、ゲームマネーに換わるんや。' }
+      ] },
+    garo: { nm: '練習相手の手配師 ガロ', where: 'plaza', x: 690, y: 140, spar: true, av: { name: 'ガロ', gender: 0, skin: 2, face: 3, hair: 2, hairColor: 8, outfit: 4, outfitColor: 7, pattern: 1, patColor: 3, bottom: 2, bottomColor: 4, acc: 1 },
+      hi: 'おう、手配師のガロや。闘技場の中で戦ってくれる練習相手を、派遣するで。レベルは10〜40で、好きに決めてな。高いほど強いだけやなくて、ガードやダッシュ、必殺技も上手くなる。倒してもごほうびは出えへん、練習用やで。',
+      faq: [
+        { q: 'レベルでどう違う？', k: ['レベル', '違い', '強さ', 'ちがい'], a: 'Lv10〜19：ただ近づいて斬ってくる。動きは遅めや。\nLv20〜29：横に回り込んだり、ガードしたり、ダッシュで距離を詰めてくる。\nLv30〜40：さらに、攻撃をダッシュでかわす。必殺技も使ってくる（光る輪が出てから当たるから、ダッシュで避けられるで）。\nレベルが上がるほど、HP・攻撃・動きも速くなる。' },
+        { q: 'ごほうびは？', k: ['ほうび', '報酬', '経験値', 'お金', 'コイン'], a: '練習用やから、ごほうびは出えへん。経験値もお金もないで。そのかわり、何回でも、タダで遊べる。' },
+        { q: '自分だけに見える？', k: ['みえ', '見え', 'ほかの', '他', '一人'], a: '練習相手は、呼んだあなたの画面だけに出るんや。ほかの人の邪魔にならんで。倒れたら、自動でいなくなる。' },
+        { q: '練習のコツは？', k: ['コツ', '練習', '勝てない', '勝て'], a: 'まず Lv10 で、ダッシュと必殺技のゲージ溜めに慣れるとええ。次に Lv25 で、ガードされる感じを覚える。Lv35 以上は、必殺技の光る輪が出たら、ダッシュで避けるんや。避けたらジャスト回避でゲージも溜まるで。' }
+      ] },
     guide: { nm: '案内役 ミミ', x: 640, y: 1150, av: { name: 'ミミ', gender: 1, skin: 1, face: 2, hair: 3, hairColor: 2, outfit: 5, outfitColor: 9, pattern: 0, patColor: 6, bottom: 1, bottomColor: 2, acc: 3 },
       hi: 'こんにちは！ うちは案内役のミミや。プレイでわからんことがあったら、なんでも聞いてな。下の質問をタップか、聞きたいことを打ってや。',
       faq: [
@@ -2392,22 +2415,90 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         { q: '持ち物は減る？', k: ['減る', '失う', '負け', '罰', '報酬', 'ごほうび'], a: '減らへん！ 勝っても負けても、ゲームマネーや装備は変わらへんで。今のところ、ごほうびもないから、気楽に腕試ししてな。' }
       ] }
   };
-  function addNpcs() {
+  function addNpcs(where) {
+    where = where || 'town';
     Object.keys(NPCS).forEach(function (k) {
-      var n = NPCS[k], e = document.createElement('div'); e.className = 'gh npc'; e.dataset.npc = k;
+      var n = NPCS[k]; if ((n.where || 'town') !== where) return; var e = document.createElement('div'); e.className = 'gh npc'; e.dataset.npc = k;
       e.innerHTML = '<div class="hs"></div><div class="hb">' + charHTML(n.av) + '</div><div class="gname"></div>'; e.querySelector('.gname').textContent = '💬 ' + n.nm;
       placeEl(e, n.x, n.y); $('world').appendChild(e);
     });
   }
-  function npcAt(wx, wy) { var r = null, bd = 62; Object.keys(NPCS).forEach(function (k) { var n = NPCS[k], d = Math.hypot(wx - n.x, wy - (n.y - 32)); if (d < bd) { bd = d; r = k; } }); return r; }
+  function npcAt(wx, wy) { var r = null, bd = 62; var wh = inPlaza ? 'plaza' : 'town'; Object.keys(NPCS).forEach(function (k) { var n = NPCS[k]; if ((n.where || 'town') !== wh) return; var d = Math.hypot(wx - n.x, wy - (n.y - 32)); if (d < bd) { bd = d; r = k; } }); return r; }
   var npcCur = null;
   function npcSay(t) { $('npcSay').textContent = t; }
   function openNpc(k) {
     var n = NPCS[k]; if (!n) return; npcCur = k; sfx(2);
     $('npcN').textContent = n.nm; npcSay(n.hi); $('npcIn').value = '';
     $('npcQs').innerHTML = n.faq.map(function (f, i) { return '<button type="button" data-i="' + i + '">' + esc(f.q) + '</button>'; }).join('');
-    $('npcAct').innerHTML = n.enter ? '<button type="button" class="abtn" id="npcEnter" style="width:100%;margin-top:10px">⚔ 闘技場に入る</button>' : '';
+    $('npcAct').innerHTML = n.enter ? '<button type="button" class="abtn" id="npcEnter" style="width:100%;margin-top:10px">⚔ 闘技場に入る</button>' : (n.spar ? sparUI() : '');
+    if (n.spar) sparInfo();
     $('npc').classList.add('on');
+  }
+  function botStats(lv) { return { lv: lv, max: 100 + 12 * lv, atk: Math.round(6 + 1.4 * lv), spd: 120 + lv * 2.8, cd: 1500 - lv * 20, wind: Math.max(160, 430 - lv * 6), guardP: lv >= 20 ? Math.min(.35, (lv - 15) * .012) : 0, dashOk: lv >= 20, evadeP: lv >= 30 ? (lv - 25) * .015 : 0, spOk: lv >= 30 }; }
+  function sparLv() { var v = parseInt(LSget('opa_spar_lv'), 10); return v >= 10 && v <= 40 ? v : 20; }
+  function sparUI() {
+    var lv = sparLv();
+    return '<div style="margin-top:10px"><div style="font-size:14px">練習相手のレベル：<b id="sparLv" style="color:#ffd36a;font-size:18px">' + lv + '</b></div><input type="range" id="sparRg" min="10" max="40" step="1" value="' + lv + '" style="width:100%;margin:8px 0"><div id="sparInfo" style="font-size:12px;line-height:1.6;color:#cfd8e3;margin-bottom:10px"></div><button type="button" class="abtn" id="npcSend" style="width:100%">⚔ 派遣してもらう</button>' + (bot ? '<button type="button" class="gbtn" id="npcBack" style="width:100%;margin-top:8px">帰ってもらう</button>' : '') + '</div>';
+  }
+  function sparInfo() {
+    var r = $('sparRg'); if (!r) return; var lv = +r.value, st = botStats(lv); $('sparLv').textContent = lv;
+    var sk = ['近づいて斬る'].concat(lv >= 20 ? ['ガード', '横に回り込む', 'ダッシュで詰める'] : [], lv >= 30 ? ['ダッシュでかわす', '必殺技（光る輪のあとに来る）'] : []);
+    $('sparInfo').innerHTML = 'HP ' + st.max + ' ／ 攻撃 ' + st.atk + '<br>できること：' + sk.join('・');
+  }
+  function botSpawn(lv) {
+    if (!inPlaza) { toast('闘技場の中で、呼んでな'); return; }
+    botStop(); var st = botStats(lv);
+    var av = { name: '練習相手', gender: lv % 2, skin: 1 + lv % 3, face: lv % 5, hair: lv % 6, hairColor: (lv * 3) % 14, outfit: lv % 10, outfitColor: (lv * 5) % 12, pattern: lv % 5, patColor: (lv * 7) % 12, bottom: lv % 4, bottomColor: lv % 8, acc: 0 };
+    var e = document.createElement('div'); e.className = 'gh npc bot'; e.innerHTML = '<div class="hs"></div><div class="hb">' + charHTML(av) + '</div><div class="gname"></div>';
+    var x = 450, y = FLOOR_Y + 330; placeEl(e, x, y); $('world').appendChild(e);
+    bot = { lv: lv, st: st, hp: st.max, max: st.max, x: x, y: y, el: e, dn: false, cdAt: performance.now() + 1200, dashAt: 0, gauge: 0, wind: 0, sp: 0, sdir: 1, sdirAt: 0 };
+    botLabel(); botTimer = setInterval(botTick, 50); sfx(3);
+    var rg = document.createElement('i'); rg.className = 'spfx'; rg.style.left = x + 'px'; rg.style.top = (y - 20) + 'px'; rg.style.width = rg.style.height = '240px'; $('world').appendChild(rg); setTimeout(function () { rg.remove(); }, 600);
+    toast('練習相手（Lv' + lv + '）が、闘技場に来たで！ 闘技場の中に入って、タップで攻撃や');
+  }
+  var bot = null, botTimer = 0;
+  function botLabel() { if (bot) bot.el.querySelector('.gname').textContent = '練習相手 Lv' + bot.lv + ' ♥' + Math.max(0, Math.ceil(bot.hp)) + '/' + bot.max; }
+  function botStop(msg) { clearInterval(botTimer); botTimer = 0; if (bot && bot.el) bot.el.remove(); bot = null; if (msg === true) return; }
+  function botHitHero(d) {
+    if (hp.down || hero.y < FLOOR_Y || !inPlaza) return false; if (evadeHit()) return false;
+    var dmg = Math.max(1, Math.round(d * (1 - defP()))); hp.cur = Math.max(0, hp.cur - dmg); floatTxt(hero.x, hero.y - 74, '-' + dmg); sfx(1); vib([30, 20, 30]);
+    var hb = $('hb'); if (hb) { hb.classList.remove('lunge', 'hurt'); void hb.offsetWidth; hb.classList.add('hurt'); }
+    hpUi(); if (hp.cur <= 0) plKO(); return true;
+  }
+  function botClamp(b) { b.x = clamp(b.x, 40, WW - 40); b.y = clamp(b.y, FLOOR_Y + 20, WH - 50); }
+  function botDash(b, dx, dy, len) { var L = Math.hypot(dx, dy) || 1; b.x += dx / L * len; b.y += dy / L * len; botClamp(b); b.dashAt = performance.now() + 6000; b.el.style.opacity = .5; setTimeout(function () { if (b.el) b.el.style.opacity = b.dn ? .4 : 1; }, 220); }
+  function botTick() {
+    var b = bot; if (!b || !inPlaza || b.dn) { if (!inPlaza) botStop(); return; }
+    var now = performance.now(), dt = .05, st = b.st;
+    if (hp.down || hero.y < FLOOR_Y) { b.wind = 0; b.sp = 0; placeEl(b.el, b.x, b.y); return; }
+    var dx = hero.x - b.x, dy = hero.y - b.y, d = Math.hypot(dx, dy) || 1;
+    if (b.wind && now >= b.wind) { b.wind = 0; b.el.classList.remove('lunge'); if (Math.hypot(hero.x - b.x, hero.y - b.y) <= 160 && botHitHero(st.atk)) b.gauge = Math.min(100, b.gauge + 12); }
+    if (b.sp && now >= b.sp) { b.sp = 0; if (Math.hypot(hero.x - b.x, hero.y - b.y) <= 235) botHitHero(Math.round(st.atk * 2.5)); }
+    if (!b.wind && !b.sp) {
+      if (st.dashOk && d > 330 && now > b.dashAt) botDash(b, dx, dy, Math.min(d - 100, 420));
+      else if (d > 100) { b.x += dx / d * st.spd * dt; b.y += dy / d * st.spd * dt; }
+      else if (st.lv >= 20) { if (now > b.sdirAt) { b.sdir = Math.random() < .5 ? 1 : -1; b.sdirAt = now + 1200 + Math.random() * 1200; } b.x += (-dy / d) * st.spd * .45 * dt * b.sdir; b.y += (dx / d) * st.spd * .45 * dt * b.sdir; }
+      botClamp(b);
+      if (d < 135 && now > b.cdAt) {
+        if (st.spOk && b.gauge >= 100) { b.gauge = 0; b.sp = now + 750; b.cdAt = now + 1500; var rg = document.createElement('i'); rg.className = 'spfx warn'; rg.style.left = b.x + 'px'; rg.style.top = (b.y - 20) + 'px'; rg.style.width = rg.style.height = '450px'; $('world').appendChild(rg); setTimeout(function () { rg.remove(); }, 600); floatTxt(b.x, b.y - 90, '✨ 円月斬！', 'y'); }
+        else { b.wind = now + st.wind; b.cdAt = now + st.cd; b.el.classList.add('lunge'); }
+      }
+    }
+    placeEl(b.el, b.x, b.y);
+  }
+  function botHurt(dm) {
+    var b = bot; if (!b || b.dn) return; var st = b.st, now = performance.now();
+    if (st.evadeP && now > b.dashAt && Math.random() < st.evadeP) { botDash(b, -(hero.y - b.y), hero.x - b.x, 150); floatTxt(b.x, b.y - 80, 'かわされた！', 'y'); return; }
+    if (st.guardP && Math.random() < st.guardP) { dm = Math.max(1, Math.round(dm * .3)); floatTxt(b.x, b.y - 100, 'ガード！', 'y'); }
+    b.hp = Math.max(0, b.hp - dm); floatTxt(b.x, b.y - 80, '-' + dm, 'y'); b.el.classList.remove('gmhit'); void b.el.offsetWidth; b.el.classList.add('gmhit'); botLabel();
+    if (b.hp <= 0) { b.dn = true; b.wind = 0; b.sp = 0; b.el.style.opacity = .4; sfx(3); vib([40, 30, 40]); toast('練習相手（Lv' + b.lv + '）に勝った！ また呼ぶなら、ガロに話しかけてな'); setTimeout(function () { if (bot === b) botStop(); }, 2200); }
+  }
+  function botTap() {
+    var b = bot, rg = atkRange(), dist = Math.hypot(hero.x - b.x, hero.y - b.y);
+    if (dist > rg) { ftarget = { x: clamp(b.x + (hero.x < b.x ? -1 : 1) * Math.max(40, rg * .6), 40, WW - 40), y: clamp(b.y, FLOOR_Y + 10, WH - 50), spot: null }; toast('もうちょっと近づいてな（とどくのは ' + Math.round(rg / 75) + ' マス）'); return; }
+    if (!canAttack()) return;
+    var wq = curW(); if (wq && wq.rng) shootFx(b.x, b.y, wq.kind);
+    hero.dir = b.x >= hero.x ? 1 : -1; updHero(); sfx('hit'); vib(20); swingAnim(); botHurt(arDmg());
   }
   function npcAsk(txt) {
     var n = NPCS[npcCur]; if (!n) return; var q = String(txt || '').toLowerCase().replace(/\s+/g, ''); if (!q) return;
@@ -2418,7 +2509,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('npcGo').addEventListener('click', function () { npcAsk($('npcIn').value); });
   $('npcIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); npcAsk($('npcIn').value); } });
   $('npcX').addEventListener('click', function () { $('npc').classList.remove('on'); });
-  $('npc').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('on'); var b = e.target.closest && e.target.closest('#npcEnter'); if (b) { $('npc').classList.remove('on'); openArena(); } });
+  $('npc').addEventListener('click', function (e) {
+    if (e.target === this) this.classList.remove('on'); var b = e.target.closest && e.target.closest('#npcEnter'); if (b) { $('npc').classList.remove('on'); openArena(); }
+    if (e.target.closest && e.target.closest('#npcSend')) { var lv = +$('sparRg').value; LSset('opa_spar_lv', String(lv)); $('npc').classList.remove('on'); botSpawn(lv); }
+    if (e.target.closest && e.target.closest('#npcBack')) { botStop(); $('npc').classList.remove('on'); toast('練習相手には、帰ってもらったで'); }
+  });
+  $('npc').addEventListener('input', function (e) { if (e.target && e.target.id === 'sparRg') sparInfo(); });
 
   function rtStart() {
     rtStop(); if (!room || !myMid) return; shared = true;
@@ -2877,7 +2973,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function enemies() {
     var a = [];
-    if (inPlaza) { if (hero.y >= FLOOR_Y) Object.keys(peers).forEach(function (id) { var q = peers[id]; if (plInFloor(q) && !q.dn) a.push({ k: 'p', o: q, x: q.x, y: q.y, r: 0 }); }); }
+    if (inPlaza) { if (hero.y >= FLOOR_Y && bot && !bot.dn) a.push({ k: 'b', o: bot, x: bot.x, y: bot.y, r: 0 }); if (hero.y >= FLOOR_Y) Object.keys(peers).forEach(function (id) { var q = peers[id]; if (plInFloor(q) && !q.dn) a.push({ k: 'p', o: q, x: q.x, y: q.y, r: 0 }); }); }
     else if (inArena) { var m = arena.m; if (m && m.live) m.ids.forEach(function (id) { var q = peers[id]; if (!q || id === myMid || m.team[id] === m.my || q.dn || m.ko[id]) return; a.push({ k: 'a', o: q, x: q.x, y: q.y, r: 0 }); }); }
     else if (!inTown) foes.forEach(function (f) { if (f.mode !== 'dead') a.push({ k: 'f', o: f, x: f.x, y: f.y, r: f.boss ? 60 : (f.big ? 30 : 0) }); });
     return a;
@@ -2886,6 +2982,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function pvpMode() { return inPlaza || inArena; }
   function hitE(e, mult) {
     var base = pvpMode() ? arDmg() : atkP(), dm = Math.round(base * mult); if (pvpMode()) dm = Math.min(500, dm);
+    if (e.k === 'b') { botHurt(dm); return; }
     if (e.k === 'f') { floatTxt(e.x, e.y - 80, isGM() ? '一撃！' : '-' + dm, 'y'); dustW(e.x, e.y - 30); if (amFoeHost()) applyFoeDamage(e.o, dm); else rtSend({ t: 'hit', i: e.o.id, d: dm }); }
     else { floatTxt(e.x, e.y - 80, '-' + dm, 'y'); if (e.o.el) { e.o.el.classList.remove('gmhit'); void e.o.el.offsetWidth; e.o.el.classList.add('gmhit'); } if (e.k === 'p') arSend({ t: 'fhit', to: e.o.id, d: dm }); else arSend({ t: 'ahit', to: e.o.id, d: dm, mid: arena.m.mid }); }
   }
@@ -2925,11 +3022,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     } else if (d.t === 'multi') {
       if (ne.d > d.r) { toast('とどく敵がおらんで（もっと近づいてな）'); return; }
       var tg = ne.e; hero.dir = tg.x >= hero.x ? 1 : -1; updHero();
-      for (i = 0; i < d.n; i++) (function (k) { setTimeout(function () { if (tg.k === 'f' && tg.o.mode === 'dead') return; shootFx(tg.x, tg.y, 'bow'); hitE(tg, d.m); }, k * 190); })(i); done = true;
+      for (i = 0; i < d.n; i++) (function (k) { setTimeout(function () { if ((tg.k === 'f' && tg.o.mode === 'dead') || (tg.k === 'b' && tg.o.dn)) return; shootFx(tg.x, tg.y, 'bow'); hitE(tg, d.m); }, k * 190); })(i); done = true;
     } else if (d.t === 'dashhit') {
       if (ne.d > d.r) { toast('とどく敵がおらんで（もっと近づいてな）'); return; }
       var t2 = ne.e, ddx = t2.x - hero.x, ddy = t2.y - hero.y, LL = Math.hypot(ddx, ddy) || 1, mv = Math.max(0, LL - 70); heroTo(hero.x + ddx / LL * mv, hero.y + ddy / LL * mv); dashInv = performance.now() + 900; hp.inv = Math.max(hp.inv, dashInv);
-      for (i = 0; i < d.n; i++) (function (k) { setTimeout(function () { if (t2.k === 'f' && t2.o.mode === 'dead') return; hitE(t2, d.m); swingAnim(); }, 120 + k * 210); })(i); done = true;
+      for (i = 0; i < d.n; i++) (function (k) { setTimeout(function () { if ((t2.k === 'f' && t2.o.mode === 'dead') || (t2.k === 'b' && t2.o.dn)) return; hitE(t2, d.m); swingAnim(); }, 120 + k * 210); })(i); done = true;
     } else if (d.t === 'blast') {
       if (ne.d > d.r) { toast('とどく敵がおらんで（もっと近づいてな）'); return; }
       var t3 = ne.e; shootFx(t3.x, t3.y, 'gun'); hitE(t3, d.m); en.forEach(function (e) { if (e !== t3 && Math.hypot(e.x - t3.x, e.y - t3.y) <= d.sr) hitE(e, d.m / 2); }); done = true;
