@@ -1792,6 +1792,16 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closePick(); });
 
   /* ---- 取得（画面が見えている間だけ、3.5秒ごと。猫を待つ間は1.5秒） ---- */
+  var authFail = 0;
+  function showRestore() {
+    var bak = LS.get('opa_token_bak'), old = document.getElementById('restoreBak');
+    if (old) old.remove();
+    if (!bak) return;
+    var b = document.createElement('button'); b.type = 'button'; b.id = 'restoreBak'; b.className = 'chip'; b.textContent = '↩ さっきの入室にもどす';
+    b.style.margin = '8px 0';
+    b.addEventListener('click', function () { token = bak; LS.set('opa_token', token); LS.del('opa_token_bak'); LS.del('opa_token_bak'); authFail = 0; b.remove(); begin(); });
+    var e = $('wErr'); if (e && e.parentNode) e.parentNode.insertBefore(b, e.nextSibling);
+  }
   function poll() {
     if (!token || busy) return Promise.resolve();
     busy = true;
@@ -1799,11 +1809,19 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       busy = false;
       if (j.kicked) { stop(); if ($('kicked').hidden) $('kMsg').textContent = 'いまは、この部屋に入れません😺'; mode('kick'); return; }
       if (j._s === 401) {
+        /* 一時的な通信・サーバーの不調でも401になることがある。1回で鍵を捨てず、3回続けて401のときだけ入り直しにする（鍵は控えに残す） */
+        authFail = (authFail || 0) + 1;
+        if (authFail < 3) { setTimeout(function () { poll(); }, 3000); return; }
+        authFail = 0;
         var wasGuest = LS.get('opa_guest') === '1';
+        if (token) LS.set('opa_token_bak', token);
         stop(); LS.del('opa_token'); token = null; mode('join'); openJoin();
         if (wasGuest) { LS.set('opa_guest', '0'); $('wErr').textContent = 'ゲストの時間（6時間）が終わりました。ゲスト入場が開いていれば、もう一度入れます。'; }
+        else { $('wErr').textContent = '退場になったわけやないで。つながりがうまくいかなかっただけかも。下のボタンで、さっきの入室にもどれるで。'; }
+        showRestore();
         return;
       }
+      authFail = 0;
       if (!j.msgs) return;
       var wasAdmin = isAdmin();
       me = j.me;
@@ -2093,7 +2111,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     $('wTitle').innerHTML = '<span class="amon">AMON</span>オパール会議室へ、ようこそ';
     $('wLead').textContent = '招待コードとニックネームを入れたら、すぐ入れます。LINEの名前は出ません。';
     $('codeRow').hidden = false; nickInput.disabled = false; nickInput.value = ''; codeInput.value = '';
-    $('wGo').textContent = '入室する'; $('wBack').hidden = true; $('xfer').hidden = false; $('ownerRow').hidden = false; $('wErr').textContent = '';
+    $('wGo').textContent = '入室する'; $('wBack').hidden = true; $('xfer').hidden = false; $('ownerRow').hidden = false; $('wErr').textContent = ''; showRestore();
     draft = { icon: ICONS[1], color: COLORS[0][0] }; bioInput.value = ''; paintPrev(); mode('join');
     // ゲスト入場：店主が開放している間だけ、ボタンを出す
     $('guestRow').hidden = true;
@@ -2123,7 +2141,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     $('wGo').disabled = true;
     api({ action: 'join', code: code, nickname: nickInput.value.trim(), icon: draft.icon, color: draft.color, bio: bioInput.value.trim() }).then(function (j) {
       $('wGo').disabled = false;
-      if (j.token) { token = j.token; LS.set('opa_token', token); LS.set('opa_adm', j.isAdmin ? '1' : '0'); LS.set('opa_guest', '0'); begin(); }
+      if (j.token) { token = j.token; LS.set('opa_token', token); LS.del('opa_token_bak'); LS.set('opa_adm', j.isAdmin ? '1' : '0'); LS.set('opa_guest', '0'); begin(); }
       else $('wErr').textContent = j.message || '入室できませんでした';
     }).catch(function () { $('wGo').disabled = false; $('wErr').textContent = 'つながらへんかった。電波を確認してもう一回な'; });
   });
@@ -2135,7 +2153,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     $('wErr').textContent = ''; $('guestBtn').disabled = true;
     api({ action: 'join_guest', nickname: nick, icon: draft.icon, color: draft.color, bio: bioInput.value.trim() }).then(function (j) {
       $('guestBtn').disabled = false;
-      if (j.token) { token = j.token; LS.set('opa_token', token); LS.set('opa_adm', '0'); LS.set('opa_guest', '1'); begin(); toast('ゲストで入ったで。6時間、楽しんでな'); }
+      if (j.token) { token = j.token; LS.set('opa_token', token); LS.del('opa_token_bak'); LS.set('opa_adm', '0'); LS.set('opa_guest', '1'); begin(); toast('ゲストで入ったで。6時間、楽しんでな'); }
       else { $('wErr').textContent = j.message || '入れませんでした'; if (j.error === 'guest_closed') $('guestRow').hidden = true; }
     }).catch(function () { $('guestBtn').disabled = false; $('wErr').textContent = 'つながらへんかった。電波を確認してもう一回な'; });
   });
@@ -2152,7 +2170,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     $('pinGo').disabled = true; $('pinErr').textContent = '';
     api({ action: 'owner_login', pin: pin }).then(function (j) {
       $('pinGo').disabled = false; $('pinInput').value = '';
-      if (j.token) { token = j.token; LS.set('opa_token', token); LS.set('opa_adm', '1'); setOnline(false); $('ownerLogin').hidden = true; begin(); }
+      if (j.token) { token = j.token; LS.set('opa_token', token); LS.del('opa_token_bak'); LS.set('opa_adm', '1'); setOnline(false); $('ownerLogin').hidden = true; begin(); }
       else $('pinErr').textContent = j.message || '入れませんでした';
     }).catch(function () { $('pinGo').disabled = false; $('pinErr').textContent = 'つながらへんかった。電波を確認してもう一回な'; });
   });
