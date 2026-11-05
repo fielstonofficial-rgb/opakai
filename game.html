@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:74-->
+<!--GV:75-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -3302,6 +3302,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
     dc(arcTableSVG('ph'), 320, 720, 340, 170, 720); lb('♠ テキサスホールデム', 320, 525);
     dc(arcTableSVG('bj'), 770, 560, 300, 150, 560); lb('🃏 ブラックジャック', 770, 392);
+    arTChairs('pk').concat(arTChairs('bj')).forEach(function (c) { dc(arcChairSVG(), c.x, c.y - 2, 54, 48, c.y - 1); dc(arcSeatSVG(), c.x, c.y + 8, 60, 30, c.y + 1); });
     html += '<div class="tlbl" style="left:500px;top:766px">🚪 出口</div>';
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
@@ -5033,6 +5034,15 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     o.type = type || 'sine'; o.frequency.setValueAtTime(f, t0); g.gain.setValueAtTime(vol || .08, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + dur); o.connect(g); g.connect(A.destination); o.start(t0); o.stop(t0 + dur + .02);
   }
   function arcShow(h, cls) { $('arc').classList.add('on'); $('arcc').className = 'arcc' + (cls ? ' ' + cls : ''); $('arcc').innerHTML = h; try { BGM.duck(true); } catch (e) {} }
+  function arTChairs(kind) {
+    var out = [], i, th;
+    if (kind === 'pk') { for (i = 0; i < 8; i++) { th = (90 + i * 45) * Math.PI / 180; out.push({ x: Math.round(320 + 190 * Math.cos(th)), y: Math.round(629 + 98 * Math.sin(th)), d: Math.cos(th) < -.3 ? 1 : (Math.cos(th) > .3 ? -1 : 1) }); } }
+    else { [165, 125, 90, 55, 15].forEach(function (a) { th = a * Math.PI / 180; out.push({ x: Math.round(770 + 172 * Math.cos(th)), y: Math.round(480 + 86 * Math.sin(th)), d: Math.cos(th) < -.3 ? 1 : (Math.cos(th) > .3 ? -1 : 1) }); }); }
+    return out;
+  }
+  function arSeatSync(P, kind) {
+    try { if (!P || P.me == null || P.me < 0 || P.sitMe === P.me || !inArcRoom) return; var c = arTChairs(kind)[P.me]; if (!c) return; P.sitMe = P.me; hero.x = c.x; hero.y = c.y; hero.dir = c.d; hero.sit = 99; ftarget = null; var el = $('hero2'); if (el) { el.classList.remove('walk'); el.classList.add('sit'); } updHero(); if (rtOn) rtSend(posMsg()); } catch (e) { }
+  }
   function arSit(kind) {
     try {
       if (!inArcRoom || !hero) return; var h = 0, id = String(myMid || 'x'); for (var i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) % 997;
@@ -5446,6 +5456,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (w) arSay(s.nm + '、' + w);
   }
   function bjRender() {
+    arSeatSync(BJ, 'bj');
     if (!BJ || !$('bjTbl')) return; var T = BJ.T, me = BJ.me, A = $('bjTbl');
     if ($('bjInfo')) $('bjInfo').textContent = '🪙 ' + chipsGet().toLocaleString();
     if (!T) { A.innerHTML = '<div class="tvW">テーブルにつないでいます…</div>'; return; }
@@ -5673,6 +5684,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var a = s.hole[0], b = s.hole[1]; return a.r === b.r ? { c: 1, t: 'ポケットペア' } : { c: 0, t: a.s === b.s ? 'スーテッド' : 'ハイカード' };
   }
   function pkRender() {
+    arSeatSync(PK, 'pk');
     if (!PK || !$('pkTbl')) return; var T = PK.T, me = PK.me, A = $('pkTbl');
     if ($('pkInfo')) $('pkInfo').textContent = '🪙 ' + chipsGet().toLocaleString();
     if (!T) { A.innerHTML = '<div class="tvW">テーブルにつないでいます…</div>'; return; }
