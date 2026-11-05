@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:83-->
+<!--GV:84-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -881,7 +881,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   <div id="cfm"><div class="gc"><h3>ゲームをとじる？</h3><p class="tiny">とじても、ここまでの記録は残るよ。</p><div class="rw" style="display:flex;gap:8px;margin-top:12px"><button id="cfmNo" type="button" class="gbtn" style="flex:1">つづける</button><button id="cfmYes" type="button" class="gbtn dim" style="flex:1;margin-top:0">とじる</button></div></div></div>
   <section class="scr" id="field">
     <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="装備・もちもの">🎒<small>装備・持物</small></button><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
-    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="plDown"><span>やられた…（このままチャットもできるよ）</span><button type="button" class="gbtn" id="plDownGo">🏥 病院へ向かう</button></div><div id="fTools"><button id="goTown" type="button">🏘️ 町へ</button><button id="goMine" type="button">⛏ 鉱山へ</button><button id="plChat" type="button">💬 チャット</button><button id="spBtn" type="button">✨ 0%</button><button id="sk0" class="skb" type="button"></button><button id="sk1" class="skb" type="button"></button><button id="sk2" class="skb" type="button"></button><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">💬</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしまった…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
+    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span id="phLv" style="color:#ffe08a">Lv 1</span><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="plDown"><span>やられた…（このままチャットもできるよ）</span><button type="button" class="gbtn" id="plDownGo">🏥 病院へ向かう</button></div><div id="fTools"><button id="goTown" type="button">🏘️ 町へ</button><button id="goMine" type="button">⛏ 鉱山へ</button><button id="plChat" type="button">💬 チャット</button><button id="spBtn" type="button">✨ 0%</button><button id="sk0" class="skb" type="button"></button><button id="sk1" class="skb" type="button"></button><button id="sk2" class="skb" type="button"></button><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">💬</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしまった…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
         <div id="gld"><div class="gc"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="tiny">ギルドの部屋</span><button id="gClose" type="button" class="gbtn" style="padding:6px 12px">とじる</button></div><div id="gBody"></div></div></div>
         <div id="npc"><div class="nc"><div class="nh"><b id="npcN"></b><button type="button" class="gbtn" id="npcX" style="padding:6px 12px">とじる</button></div><div id="npcSay"></div><div id="npcQs"></div><div class="nin"><input id="npcIn" maxlength="30" placeholder="聞きたいこと（例：HP、闘技場、売る）" autocomplete="off"><button type="button" class="gbtn" id="npcGo">きく</button></div><div id="npcAct"></div></div></div><div id="arInv"><b id="arInvT"></b><div><button type="button" class="abtn" id="arInvY">受ける</button><button type="button" class="gbtn" id="arInvN">ことわる</button></div></div><div id="updBar" role="button">🔄 新しい版があるよ。ここをタップして更新</div>
         <div id="arBig"></div>
@@ -2281,6 +2281,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     return '<span class="oic" style="filter:drop-shadow(0 0 ' + (i.tier ? 4 : 1) + 'px ' + col + ')"><svg viewBox="0 0 64 64">' + g + s + '</svg></span>';
   }
   ITEMS.forEach(function (i) { if (i.slot === 'outfit') i.ic = gSVG(i); else if (i.slot === 'tool') i.ic = toolSVG(i); });
+  ITEMS.forEach(function (i) { if (i.slot === 'outfit') i.price = Math.max(100, Math.round(i.price * 0.1175 / 50) * 50); }); /* 服は安く（平均500）。サーバー(opa-kill)も同じ式 */
   ITEMS.forEach(function (i) { if (i.slot !== 'weapon') return; var d = SPD[i.sp || ('k_' + i.kind)]; if (i.kind === 'sword') i.fx += ' ／ 近距離ボーナス：ダメージ +15%'; if (d) i.fx += ' ／ 必殺技「' + d.nm + '」：' + d.ds; });
 
 
@@ -2398,7 +2399,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function applyAura() { var a = aura(); if ($('hb')) $('hb').style.filter = a; if ($('hero')) $('hero').style.filter = a; }
   function renderBag() {
     var coins = (player || {}).coins || 0, have = (player || {}).items || [], h = '';
-    $('coinBar').innerHTML = '<span>🪙 ゲームマネー</span><b>' + coins.toLocaleString() + '</b>';
+    $('coinBar').innerHTML = '<span>Lv ' + ((player || {}).lv || 1) + '</span><span>🪙 ゲームマネー</span><b>' + coins.toLocaleString() + '</b>';
     Array.prototype.forEach.call($('bagTabs').children, function (b) { b.classList.toggle('on', +b.dataset.t === bagTab); });
     if (bagTab === 0) {
       var any = false;
@@ -2450,6 +2451,15 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     $('bagBody').innerHTML = h; fillEqChar();
   }
   var sellArm = null, skArm = null, eqPick = null, eqScroll = false;
+  function buyCall(id) {
+    var it = IBY[id];
+    if (it && it.slot === 'outfit') {
+      return fetch(API.replace(/opa-game$/, 'opa-kill'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'buy_outfit', token: token, item: id }) })
+        .then(function (r) { return r.json(); }).then(function (j) { if (!j || !j.ok) return { message: (j && j.message) || null }; return api({ action: 'game_load' }); })
+        .catch(function () { return { message: 'つながりませんでした。もう一度お試しください' }; });
+    }
+    return api({ action: 'game_buy', item: id });
+  }
   function eqSlotBtn(sl, lab) {
     var q = eqItem(sl);
     return '<button type="button" class="eqs' + (eqPick === sl ? ' on' : '') + (q ? ' has' : '') + '" data-pk="' + sl + '"><small>' + lab + '</small><i>' + (q ? q.ic : '＋') + '</i><em>' + (q ? esc(q.nm) : 'なし') + '</em></button>';
@@ -2531,7 +2541,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     } else if (b.dataset.buy) {
       if (buyArm !== b.dataset.buy) { buyArm = b.dataset.buy; renderBag(); return; }
       buyArm = null; b.disabled = true;
-      api({ action: 'game_buy', item: b.dataset.buy }).then(function (j) {
+      buyCall(b.dataset.buy).then(function (j) {
         if (j.player) { player = j.player; toast('買えたよ！もちものに入ったよ'); sfx(1); } else toast(j.message || 'うまく買えませんでした');
         renderBag();
       });
@@ -2781,7 +2791,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (m.t === 'tc') { tcRecv(m); return; }
     if (m.t === 'fm') { fmRecv(m); return; }
     var pr = peers[m.f];
-    if (m.t === 'pos') { if (!pr) pr = peers[m.f] = { id: m.f, x: m.x, y: m.y, tx: m.x, ty: m.y, dir: m.d || 1, got: false }; if (!pr.got) { pr.x = m.x; pr.y = m.y; pr.got = true; } pr.tx = m.x; pr.ty = m.y; pr.dir = m.d || 1; pr.h = m.h == null ? 100 : m.h; pr.dn = m.dn ? 1 : 0; pr.gm = m.gm ? 1 : 0; pr.st = m.st | 0; pr.dk = cupOk(m.dk); pr.ds = (m.ds == null ? -1 : m.ds | 0); pr.lv = m.lv; pr.eq = m.eq; ghostEl(pr); if (pr.gm && pr.el && !pr.el.classList.contains('gmg')) { pr.el.classList.add('gmg'); var gn = pr.el.querySelector('.gname'); if (gn) gn.textContent = '👑GM ' + (pr.n || ''); } return; }
+    if (m.t === 'pos') { if (!pr) pr = peers[m.f] = { id: m.f, x: m.x, y: m.y, tx: m.x, ty: m.y, dir: m.d || 1, got: false }; if (!pr.got) { pr.x = m.x; pr.y = m.y; pr.got = true; } pr.tx = m.x; pr.ty = m.y; pr.dir = m.d || 1; pr.h = m.h == null ? 100 : m.h; pr.dn = m.dn ? 1 : 0; pr.gm = m.gm ? 1 : 0; pr.st = m.st | 0; pr.dk = cupOk(m.dk); pr.ds = (m.ds == null ? -1 : m.ds | 0); pr.lv = m.lv; pr.eq = m.eq; ghostEl(pr); if (pr.el) { var gn3 = pr.el.querySelector('.gname'); if (gn3 && !pr.gm) gn3.textContent = (pr.n || '') + ' Lv' + (pr.lv || 1); } if (pr.gm && pr.el && !pr.el.classList.contains('gmg')) { pr.el.classList.add('gmg'); var gn = pr.el.querySelector('.gname'); if (gn) gn.textContent = '👑GM ' + (pr.n || ''); } return; }
     if (m.t === 'rev') { if (m.to === myMid && hp.down) reviveMe(pr && pr.n); return; }
     if (m.t === 'fs') { if (!amFoeHost()) applyFoeState(m.fl || []); return; }
     if (m.t === 'hit') { if (amFoeHost() && netFoes()) { var hf = null; foes.forEach(function (x) { if (x.id === m.i) hf = x; }); if (hf) applyFoeDamage(hf, Math.max(1, Math.min((pr && pr.gm) ? 1e8 : 500, Math.round(m.d || 1)))); } return; }
@@ -4481,7 +4491,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function foeStat(tier, big) {
     var fl = ((curMine && MBY[curMine]) ? (MBY[curMine].fl || MBY[curMine].lv) : 1) + [0, 2, 4][tier], k = big ? 1 : 0;
     var ml = mlv(), hB = ml >= 11 ? 1 + Math.min(1.5, (ml - 10) * .06) : 1, aB = ml >= 11 ? 1 + Math.min(1.2, (ml - 10) * .05) : 1;
-    var eas = ml <= 11 ? Math.max(.25, .7 - Math.max(0, plv() - ml) * .02) : 1;
+    var eas = ml <= 11 ? Math.max(.2, (ml <= 5 ? .4 : .55) - Math.max(0, plv() - ml) * .02) : 1;
     return { hp: Math.round(eas * hB * (18 + 4 * fl) * [1, 1.6, 2.4][tier] * (k ? 3.5 : 1)), atk: Math.max(1, Math.round(eas * aB * (4 + .9 * fl) * [1, 1.3, 1.7][tier] * (k ? 1.7 : 1))) };
   }
   function hpUi() {
@@ -4491,7 +4501,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (hp.cur > hp.max) hp.cur = hp.max;
     if (!inArena && !inPlaza) LSset('opa_game_hp_' + myMid, String(hp.cur));
     var r = hp.max ? hp.cur / hp.max : 1, ph = $('phud'); if (!ph) return;
-    $('phI').style.width = Math.max(0, r * 100) + '%'; $('phTx').textContent = 'HP ' + hp.cur + '/' + hp.max; ph.classList.toggle('low', r <= .3);
+    $('phI').style.width = Math.max(0, r * 100) + '%'; $('phTx').textContent = 'HP ' + hp.cur + '/' + hp.max; if ($('phLv')) $('phLv').textContent = 'Lv ' + ((player && player.lv) || 1); ph.classList.toggle('low', r <= .3);
     var hh = $('hero2'); if (hh) { var b = hh.querySelector('.hhp'); if (b) { b.classList.toggle('on', r < 1); b.firstChild.style.width = (r * 100) + '%'; b.firstChild.style.background = r <= .3 ? '#ff5a5a' : '#4fd68a'; } hh.classList.toggle('down', hp.down); }
   }
   function floatTxt(x, y, t, c) { var e = document.createElement('div'); e.className = 'ftxt' + (c ? ' ' + c : ''); e.textContent = t; e.style.left = x + 'px'; e.style.top = y + 'px'; $('world').appendChild(e); setTimeout(function () { e.remove(); }, 850); }
