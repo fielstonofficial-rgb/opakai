@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:86-->
+<!--GV:87-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -2507,16 +2507,18 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     }
     return api({ action: 'game_buy', item: id });
   }
+  function effTxt(q) { if (!q) return ''; var f = String(q.fx || ''), m = f.match(/ボーナス：([^／]*)/); if (q.slot === 'outfit') return m ? m[1].trim() : '見た目のみ'; return f.split(' ／ ')[0].replace(/（.*$/, '').trim(); }
+  function effRank(q) { return q && q.tier != null && TIERS[q.tier] ? '<span style="color:' + TIERCOL[q.tier] + '">' + TIERS[q.tier].n + '</span> ' : ''; }
   function eqSlotBtn(sl, lab) {
     var q = eqItem(sl);
-    return '<button type="button" class="eqs' + (eqPick === sl ? ' on' : '') + (q ? ' has' : '') + '" data-pk="' + sl + '"><small>' + lab + '</small><i>' + (q ? q.ic : '＋') + '</i><em>' + (q ? esc(q.nm) : 'なし') + '</em></button>';
+    return '<button type="button" class="eqs' + (eqPick === sl ? ' on' : '') + (q ? ' has' : '') + '" data-pk="' + sl + '"><small>' + lab + '</small><i>' + (q ? q.ic : '＋') + '</i><em>' + (q ? esc(q.nm) : 'なし') + '</em>' + (q && effTxt(q) ? '<small class="eff" style="display:block;font-size:10px;line-height:1.25;color:#ffd36a">' + esc(effTxt(q).replace(/。.*$/, '').slice(0, 30)) + '</small>' : '') + '</button>';
   }
   function eqStage(compact) {
     var h = '', own = player.skills || [], eqS = player.skEq || [];
     var def = Math.round((((eqItem('shield') || {}).def) || 0) * 100);
     h += '<div class="eqstage"><div class="eqcol">' + eqSlotBtn('weapon', '武器') + eqSlotBtn('shield', '盾') + eqSlotBtn('armor', '防具') + '</div>';
     h += '<div class="eqmid"><div id="eqChar"><div class="hb">' + charHTML(dress(player.avatar, eqItem('outfit')), null, exMine()) + '</div></div><b style="font-size:13px">' + esc((player.avatar || {}).name || '') + '</b><span class="tiny" style="margin:0">Lv ' + (player.lv || 1) + (isGM() ? '（👑）' : '') + '</span></div>';
-    h += '<div class="eqcol">' + eqSlotBtn('outfit', '衣装') + eqSlotBtn('tool', '採掘道具') + '<div class="eqst"><div>HP <b>' + hpMaxNow() + '</b></div><div>こうげき <b>' + atkP0() + '</b></div><div>ぼうぎょ <b>' + def + '%</b></div></div></div></div>';
+    h += '<div class="eqcol">' + eqSlotBtn('outfit', '衣装') + eqSlotBtn('tool', '採掘道具') + '<div class="eqst"><div>HP <b>' + hpMaxNow() + '</b></div><div>こうげき <b>' + atkP0() + '</b></div><div>ぼうぎょ <b>' + def + '%</b></div>' + (((eqItem('outfit') || {}).bspd) ? '<div>素早さ <b>+' + eqItem('outfit').bspd + '%</b></div>' : '') + '</div></div></div>';
     if (compact) return h + '<p class="tiny" style="text-align:center">マスをタップすると、「装備」タブで着せかえできるよ</p>';
     h += '<div class="sec">スキル枠　<span class="tiny" style="margin:0">（戦いのとき、画面のボタンで使えるよ）</span></div><div class="sks">';
     for (var i = 0; i < 3; i++) { var d = SKBY[eqS[i]]; h += '<button type="button" class="eqs' + (eqPick === 'sk' + i ? ' on' : '') + (d ? ' has' : '') + '" data-pk="sk' + i + '"><small>スキル' + (i + 1) + '</small><i>' + (d ? d.ic : '＋') + '</i><em>' + (d ? d.nm : 'なし') + '</em></button>'; }
@@ -3707,7 +3709,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 86;
+  var GV = 87;
   (function () {
     var last = Date.now();
     function chk() {
@@ -6080,7 +6082,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function fpStop() { if (FP) { FP.stop(); FP = null; } }
   function openProfile(pr) {
     var ids = String(pr.eq || '').split(','), eqh = '';
-    EQSL.forEach(function (sl, i) { if (sl === 'helm' && !pr.gm) return; var q = ids[i] ? (IBY[ids[i]] || GMBY[ids[i]]) : null; eqh += '<div><span>' + EQN[sl] + '</span><br><b>' + (q ? q.ic + ' ' + q.nm : (pr.eq == null ? '？' : '— なし —')) + '</b></div>'; });
+    EQSL.forEach(function (sl, i) { if (sl === 'helm' && !pr.gm) return; var q = ids[i] ? (IBY[ids[i]] || GMBY[ids[i]]) : null; eqh += '<div><span>' + EQN[sl] + '</span><br><b>' + (q ? q.ic + ' ' + esc(q.nm) : (pr.eq == null ? '？' : '— なし —')) + '</b>' + (q ? '<br><span style="font-size:11px">' + effRank(q) + '<span style="color:#ffd36a">' + esc(effTxt(q)) + '</span></span>' : '') + '</div>'; });
     var box = $('pfc'); box.innerHTML = '<div class="pfav"><div class="hb2">' + charHTML(dress(pr.av, peerItem(pr))) + '</div></div><h3></h3><span class="lvc">Lv ' + (pr.lv != null ? pr.lv : '？') + '</span>' + (pr.gm ? ' <span class="lvc">👑 ゲームマスター</span>' : '') + '<div class="eqg">' + eqh + '</div><div><button type="button" id="pfX">とじる</button>' + (pr.gm && !isGM() && !inPlaza ? '<button type="button" class="atk" id="pfA">⚔ こうげきしてみる</button>' : '') + (inPlaza ? '<button type="button" class="atk" id="pfD">⚔ 戦いを挑む</button>' : '') + (uuidish(pr.id) && pr.id !== myMid && !pr.bot ? '<button type="button" class="trd" id="pfT">🤝 トレード</button><button type="button" class="trd" id="pfJ">✊ じゃんけん</button>' : '') + '</div>';
     box.querySelector('h3').textContent = pr.n || 'だれか';
     $('pf').classList.add('on');
