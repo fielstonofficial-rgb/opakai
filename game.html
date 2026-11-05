@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:70-->
+<!--GV:71-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1770,9 +1770,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var btn = this; btn.disabled = true;
     var av = {}; for (var k in DEFAV) av[k] = draft[k];
     av.name = (draft.name || '').trim() || nick;
+    /* マスター本人のアカウントで「一般」表示中は、名前の変更を一般用の名前だけに保存し、マスターの本名はそのまま守る */
+    var genOld = LSget('opa_gen_name'), genEdit = (makeMode === 'edit' && player && player.gmReal && !gmOn);
+    if (genEdit) { LSset('opa_gen_name', av.name.slice(0, 12)); av.name = (player.avReal && player.avReal.name) || av.name; }
     api({ action: makeMode === 'edit' ? 'game_avatar' : 'game_create', avatar: av }).then(function (j) {
       btn.disabled = false;
-      if (!j.player) { toast(j.message || 'うまく保存できませんでした。もう一度お試しください'); return; }
+      if (!j.player) { if (genEdit) { if (genOld == null) { try { localStorage.removeItem('opa_gen_name'); } catch (e) {} } else LSset('opa_gen_name', genOld); } toast(j.message || 'うまく保存できませんでした。もう一度お試しください'); return; }
       player = j.player; closeSheets();
       if (makeMode === 'create') { startGame(); return; }
       renderPlay(); if (editFrom === 'play') show('play'); else if (editFrom === 'field') backToField(); else openMap();
@@ -2358,14 +2361,15 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   };
   function isGM() { return !!(player && player.gm); }
   function gmTogUi() { var b = $('gmTog'); if (!b) return; var on = $('map').classList.contains('on') || $('field').classList.contains('on'); var inF = $('field').classList.contains('on'), tl = $('fTools'); if (!b._home) b._home = b.parentNode; var host = inF ? tl : b._home; if (host && b.parentNode !== host) { if (inF) host.insertBefore(b, host.firstChild); else host.appendChild(b); } b.style.display = (player && player.gmReal && on) ? 'block' : 'none'; b.className = gmOn ? 'on' : ''; b.textContent = inF ? (gmOn ? '👑 マスター' : '🙂 一般') : (gmOn ? '👑 マスター中（タップで一般に変身）' : '🙂 一般中（タップでマスターに変身）'); }
-  var GEN_LV = 30, GEN_NAME = 'たかお';
-  function genAv(a) { var o = {}; for (var k in a) o[k] = a[k]; o.name = GEN_NAME; o.acc = 0; return o; }
+  var GEN_LV = 30;
+  function genName() { return (LSget('opa_gen_name') || '').trim() || 'たかお'; }
+  function genAv(a) { var o = {}; for (var k in a) o[k] = a[k]; o.name = genName(); o.acc = 0; return o; }
   function applyGmMode() {
     if (!player || !player.gmReal) return;
     player.gm = gmOn; player.lv = gmOn ? 999 : GEN_LV; if (!player.avReal) player.avReal = player.avatar; player.avatar = gmOn ? player.avReal : genAv(player.avReal); if ($('hb')) $('hb').innerHTML = heroHTML(); hp.ready = false; guard = false;
     hpUi(); applyAura(); gearUi(); try { stats(); } catch (e) {} gmTogUi();
     if ($('bag').classList.contains('on')) renderBag();
-    toast(gmOn ? '👑 マスターに変身した！' : '🙂 一般プレイヤー（Lv' + GEN_LV + '・' + GEN_NAME + '）に変身した');
+    toast(gmOn ? '👑 マスターに変身した！' : '🙂 一般プレイヤー（Lv' + GEN_LV + '・' + genName() + '）に変身した');
   }
   var GMLIST = ['weapon', 'helm', 'armor', 'shield', 'outfit', 'tool'];
   function eqItem(slot) { if (isGM() && GMI[slot]) return GMI[slot]; var id = ((player || {}).equip || {})[slot]; if (!id && slot === 'weapon') return DAG; return id ? IBY[id] : null; }
