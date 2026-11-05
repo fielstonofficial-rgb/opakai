@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:56-->
+<!--GV:58-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -653,7 +653,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   <div id="cfm"><div class="gc"><h3>ゲームをとじる？</h3><p class="tiny">とじても、ここまでの記録は残るよ。</p><div class="rw" style="display:flex;gap:8px;margin-top:12px"><button id="cfmNo" type="button" class="gbtn" style="flex:1">つづける</button><button id="cfmYes" type="button" class="gbtn dim" style="flex:1;margin-top:0">とじる</button></div></div></div>
   <section class="scr" id="field">
     <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="装備・もちもの">🎒<small>装備・持物</small></button><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
-    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="plDown"><span>やられた…（このままチャットもできるよ）</span><button type="button" class="gbtn" id="plDownGo">🏥 病院へ向かう</button></div><div id="fTools"><button id="goTown" type="button">🏘️ 町へ</button><button id="goMine" type="button">⛏ 鉱山へ</button><button id="plChat" type="button">💬 チャット</button><button id="dashBtn" type="button">💨 ダッシュ</button><button id="warpBtn" type="button">🌀 ワープ</button><button id="spBtn" type="button">✨ 0%</button><button id="sk0" class="skb" type="button"></button><button id="sk1" class="skb" type="button"></button><button id="sk2" class="skb" type="button"></button><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">💬</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしまった…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
+    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="plDown"><span>やられた…（このままチャットもできるよ）</span><button type="button" class="gbtn" id="plDownGo">🏥 病院へ向かう</button></div><div id="fTools"><button id="goTown" type="button">🏘️ 町へ</button><button id="goMine" type="button">⛏ 鉱山へ</button><button id="plChat" type="button">💬 チャット</button><button id="spBtn" type="button">✨ 0%</button><button id="sk0" class="skb" type="button"></button><button id="sk1" class="skb" type="button"></button><button id="sk2" class="skb" type="button"></button><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">💬</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしまった…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
         <div id="gld"><div class="gc"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="tiny">ギルドの部屋</span><button id="gClose" type="button" class="gbtn" style="padding:6px 12px">とじる</button></div><div id="gBody"></div></div></div>
         <div id="npc"><div class="nc"><div class="nh"><b id="npcN"></b><button type="button" class="gbtn" id="npcX" style="padding:6px 12px">とじる</button></div><div id="npcSay"></div><div id="npcQs"></div><div class="nin"><input id="npcIn" maxlength="30" placeholder="聞きたいこと（例：HP、闘技場、売る）" autocomplete="off"><button type="button" class="gbtn" id="npcGo">きく</button></div><div id="npcAct"></div></div></div><div id="arInv"><b id="arInvT"></b><div><button type="button" class="abtn" id="arInvY">受ける</button><button type="button" class="gbtn" id="arInvN">ことわる</button></div></div><div id="updBar" role="button">🔄 新しい版があるよ。ここをタップして更新</div>
         <div id="arBig"></div>
@@ -812,7 +812,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   /* ---------- 通信 ---------- */
   function api(body) {
     body.token = token;
-    return fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
+    var url = (/^skill_/.test(body.action) && (body.id === 'sk11' || body.id === 'sk12')) ? API + '-sk' : API;
+    return fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
       .then(function (r) { return r.json().then(function (j) { j._s = r.status; if (j && j.player && (j.me === GM_ID || myMidG === GM_ID)) { j.player.gmReal = true; j.player.lvReal = j.player.lv; j.player.avReal = j.player.avatar; if (gmOn) { j.player.lv = 999; j.player.gm = true; } else { j.player.lv = GEN_LV; j.player.avatar = genAv(j.player.avatar); } } return j; }); });
   }
   var GM_ID = '4a324658-8414-4361-9962-9a6963982a39', myMidG = '', gmOn = LSget('opa_gm_off') !== '1';
@@ -4112,7 +4113,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function atkP0() { var w = curW(); if (!w) return Math.max(1, Math.round(1 + Math.min(plv(), 60) / 12)); return Math.round((Math.round(6 + 1.5 * plv()) + w.atk) * (isGM() ? 1 : (w.rng ? .8 : 1.15)) * (isGM() ? 1 : (w.pw || 1))); }
   var guard = false, atkAt = 0;
   function defP() { var s = eqItem('shield'), h = isGM() ? GMI.helm : null; return Math.min(.85, (s ? s.def : 0) + (h ? h.def : 0) + (guard ? .4 : 0) + (performance.now() < skGuardUntil ? .5 : 0)); }
-  function atkReady() { var w = curW(), n = performance.now(); if (n < atkAt) return false; atkAt = n + (w && w.cd ? w.cd : 0); return true; }
+  var MCD = { sword: 800, dagger: 450, axe: 1000, spear: 800, hammer: 1300 };
+  function atkReady() { var w = curW(), n = performance.now(); if (n < atkAt) return false; atkAt = n + (w ? (w.cd || (w.rng ? 0 : (MCD[w.kind] || 700))) : 700); return true; }
   function atkRange() { var w = curW(); return w ? (w.rng || Math.round((w.mr || 150) * .6)) : 90; }
   function mlv() { return (curMine && MBY[curMine]) ? (MBY[curMine].fl || MBY[curMine].lv) : 1; }
   function diffN() { var m = mlv(); return m <= 10 ? Math.max(0, (m - 1) / 90) : Math.min(1, .35 + (m - 11) / 50 * .65); }
@@ -4149,10 +4151,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var b = $('spBtn'); if (!b || b.style.display === 'none') return; var d = spDef(); if (!d) return;
     var rdy = isGM() || skG >= 100; b.classList.toggle('rdy', rdy); b.textContent = rdy ? '✨ ' + d.nm : '✨ ' + Math.floor(skG) + '%';
   }
-  function dashUi() {
-    var n = performance.now();
-    [['dashBtn', dashAt, '💨 ダッシュ'], ['warpBtn', warpAt, '🌀 ワープ']].forEach(function (a) { var b = $(a[0]); if (!b || b.style.display === 'none') return; var r = a[1] - n; b.textContent = r > 0 ? a[2].slice(0, 2) + ' ' + Math.ceil(r / 1000) : a[2]; b.style.opacity = r > 0 ? .55 : 1; });
-  }
+  function dashUi() {}
   setInterval(function () { if (fieldOn) { dashUi(); skBtnUi(); } }, 200);
   function justFx(t, g) { var n = performance.now(); if (n - jfxAt < 500) return; jfxAt = n; floatTxt(hero.x, hero.y - 94, t, 'y'); skAdd(g); snd('parry'); vib(15); }
   function evadeHit() {
@@ -4194,7 +4193,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     { id: 'sk07', nm: '鉄壁の構え', ic: '🧱', price: 2200, cd: 22000, t: 'guardUp', d: 5000, ds: '5秒間、受けるダメージを50%カットする' },
     { id: 'sk08', nm: '闘気解放', ic: '🔥', price: 3200, cd: 24000, t: 'atkUp', d: 8000, ds: '8秒間、こうげき力が +40%' },
     { id: 'sk09', nm: '疾風の足', ic: '🍃', price: 1800, cd: 18000, t: 'haste', d: 6000, ds: '6秒間、移動速度が +50%' },
-    { id: 'sk10', nm: '吸血の刃', ic: '🩸', price: 4800, cd: 26000, t: 'leech', d: 8000, ds: '8秒間、与えたダメージの12%ぶん、HPが回復する（決闘中は使えません）' }
+    { id: 'sk10', nm: '吸血の刃', ic: '🩸', price: 4800, cd: 26000, t: 'leech', d: 8000, ds: '8秒間、与えたダメージの12%ぶん、HPが回復する（決闘中は使えません）' },
+    { id: 'sk11', nm: 'ダッシュ', ic: '💨', price: 1500, cd: 4000, t: 'dashTo', len: 225, ds: '敵の方向へ3マス近づく。一瞬、攻撃をよけられる' },
+    { id: 'sk12', nm: 'ワープ', ic: '🌀', price: 2000, cd: 4000, t: 'warpTo', len: 375, ds: '敵から5マス離れた場所へワープする。遠距離の武器むき' }
   ];
   var SKBY = {}; SKD.forEach(function (d) { SKBY[d.id] = d; });
   function skLeechFx(dm) {
@@ -4217,7 +4218,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var n = performance.now(); if (n < (skCd[id] || 0)) { toast('「' + d.nm + '」は、あと ' + Math.ceil((skCd[id] - n) / 1000) + ' 秒で使えるよ'); return; }
     if (guard) { toast('ガード中は、使えません'); return; }
     if (inArena && (d.t === 'heal' || d.t === 'leech')) { toast('決闘中は、回復のスキルは使えません'); return; }
-    var atk = ['ring', 'rush', 'bolt', 'volley', 'quake'].indexOf(d.t) >= 0, en = [], ne = null, k;
+    var atk = ['ring', 'rush', 'bolt', 'volley', 'quake', 'dashTo', 'warpTo'].indexOf(d.t) >= 0, en = [], ne = null, k;
     if (atk) {
       en = enemies(); if (!en.length) { toast(pvpMode() ? 'ほかの人がいないよ' : '敵がいないよ'); return; }
       ne = nearestE(en);
@@ -4244,6 +4245,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     } else if (d.t === 'quake') {
       if (ne.d > d.r) { toastQ(); return; }
       var t3 = ne.e; ringAt(t3.x, t3.y, d.sr); hitE(t3, d.m); en.forEach(function (e) { if (e !== t3 && Math.hypot(e.x - t3.x, e.y - t3.y) <= d.sr) hitE(e, d.m * .6); }); fin();
+    } else if (d.t === 'dashTo') {
+      var ddx = ne.e.x - hero.x, ddy = ne.e.y - hero.y, dL = Math.hypot(ddx, ddy) || 1, dmv = Math.min(d.len, Math.max(0, dL - 40));
+      hero.dir = ddx >= 0 ? 1 : -1; dashInv = performance.now() + 350; hp.inv = Math.max(hp.inv, dashInv); heroTo(hero.x + ddx / dL * dmv, hero.y + ddy / dL * dmv); fin(true);
+    } else if (d.t === 'warpTo') {
+      var wex = hero.x - ne.e.x, wey = hero.y - ne.e.y, wM = Math.hypot(wex, wey) || 1;
+      dashInv = performance.now() + 350; hp.inv = Math.max(hp.inv, dashInv); heroTo(ne.e.x + wex / wM * d.len, ne.e.y + wey / wM * d.len); fin(true);
     } else if (d.t === 'heal') {
       var add = Math.min(hp.max - hp.cur, Math.round(hp.max * d.m)); if (add <= 0) { toast('HPは、もう満タンだよ'); return; }
       hp.cur += add; hpUi(); rtHp(); floatTxt(hero.x, hero.y - 74, '+' + add, 'g'); fin(true);
@@ -4253,21 +4260,6 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     else if (d.t === 'leech') { skLeechUntil = n + d.d; fin(true); }
   }
   [0, 1, 2].forEach(function (i) { var b = $('sk' + i); b.addEventListener('click', function () { useSkill(i); }); b.addEventListener('pointerdown', function (e) { e.stopPropagation(); }); });
-  function doDash() {
-    var w = curW(); if (!w || hp.down || busy || inTown) return; var n = performance.now();
-    if (n < dashAt) return;
-    var ne = nearestE(enemies()); if (!ne) return;
-    var dx = ne.e.x - hero.x, dy = ne.e.y - hero.y, L = Math.hypot(dx, dy) || 1, mv = Math.min(225, Math.max(0, L - 40));
-    hero.dir = dx >= 0 ? 1 : -1;
-    dashAt = n + 4000; dashInv = n + 350; hp.inv = Math.max(hp.inv, n + 350); heroTo(hero.x + dx / L * mv, hero.y + dy / L * mv); snd('dash'); vib(15); dashUi();
-  }
-  function doWarp() {
-    var w = curW(); if (!w || hp.down || busy || inTown) return; var n = performance.now();
-    if (n < warpAt) return;
-    var ne = nearestE(enemies()); if (!ne) return;
-    var ex = hero.x - ne.e.x, ey = hero.y - ne.e.y, M = Math.hypot(ex, ey) || 1;
-    warpAt = n + 4000; dashInv = n + 350; hp.inv = Math.max(hp.inv, n + 350); heroTo(ne.e.x + ex / M * 375, ne.e.y + ey / M * 375); snd('dash'); vib(15); dashUi();
-  }
   function doSpecial() {
     var w = curW(); if (!w || hp.down || busy || inTown) return; var d = spDef(); if (!d) return;
     if (!isGM() && skG < 100) { toast('「' + d.nm + '」は、ゲージがあと ' + (100 - Math.floor(skG)) + '% で使えるよ（敵に当てると、たまる）'); return; }
@@ -4297,8 +4289,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     }
     if (done) fin();
   }
-  $('dashBtn').addEventListener('click', doDash); $('warpBtn').addEventListener('click', doWarp); $('spBtn').addEventListener('click', doSpecial);
-  ['dashBtn', 'warpBtn', 'spBtn', 'plChat'].forEach(function (id) { $(id).addEventListener('pointerdown', function (e) { e.stopPropagation(); }); });
+  $('spBtn').addEventListener('click', doSpecial);
+  ['spBtn', 'plChat'].forEach(function (id) { $(id).addEventListener('pointerdown', function (e) { e.stopPropagation(); }); });
   function hurtMe(dmg) {
     if (hp.down || inTown || busy) return false;
     var now = performance.now(); if (now < hp.inv) { if (now < dashInv) justFx('ジャスト回避！', 15); return false; }
@@ -4383,7 +4375,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     g.style.display = (has && fieldOn) ? 'block' : 'none'; g.classList.toggle('on', guard); g.textContent = guard ? '🛡 ガード中' : '🛡 ガード';
     var hh = $('hero2'); if (hh) hh.classList.toggle('guard', guard);
     var sw = $('swBtn'); if (sw) { sw.style.display = (fieldOn && !inTown && eqItem('weapon')) ? 'block' : 'none'; sw.textContent = handW() ? '🔁 つるはし' : '🔁 武器'; }
-    var hv = !!(fieldOn && !inTown && eqItem('weapon') && handW()); $('dashBtn').style.display = hv ? 'block' : 'none'; $('warpBtn').style.display = hv ? 'block' : 'none'; $('spBtn').style.display = hv ? 'block' : 'none'; skUi(); dashUi(); skBtnUi();
+    var hv = !!(fieldOn && !inTown && eqItem('weapon') && handW());  $('spBtn').style.display = hv ? 'block' : 'none'; skUi(); dashUi(); skBtnUi();
     var qb = $('qcBtn'); if (qb) { var qs = fieldOn; qb.style.display = qs ? 'block' : 'none'; if (!qs) $('qcPanel').classList.remove('on'); var wm = inTown ? 't' : 'b'; if (qcMode !== wm) { qcMode = wm; qcFill(); $('qcPanel').classList.remove('on'); } }
     handUi();
   }
