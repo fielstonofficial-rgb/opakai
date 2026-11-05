@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:59-->
+<!--GV:61-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -506,6 +506,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 .bub::after{content:"";position:absolute;left:50%;bottom:-5px;margin-left:-5px;border:5px solid transparent;border-bottom:0;border-top-color:#fff}
 @keyframes bubin{from{opacity:0;transform:translateX(-50%) scale(.6)}}
 .foe{position:absolute;width:66px;height:66px;transform:translate(-50%,-100%);pointer-events:none}
+.pouch{position:absolute;width:54px;height:54px;transform:translate(-50%,-100%);pointer-events:none;font-size:44px;line-height:54px;text-align:center;filter:drop-shadow(0 0 8px #ffd36a) drop-shadow(0 0 16px #ffb300);animation:pouchIn .5s ease-out,pouchBob 1.1s ease-in-out .5s infinite}
+.pouch::after{content:'';position:absolute;left:50%;top:50%;width:80px;height:80px;margin:-48px 0 0 -40px;border-radius:50%;border:2px solid rgba(255,211,106,.8);animation:pouchRing 1.2s ease-out infinite}
+@keyframes pouchIn{0%{transform:translate(-50%,-260%) scale(.3);opacity:0}60%{transform:translate(-50%,-100%) scale(1.25);opacity:1}100%{transform:translate(-50%,-100%) scale(1)}}
+@keyframes pouchBob{0%,100%{transform:translate(-50%,-100%)}50%{transform:translate(-50%,-118%)}}
+@keyframes pouchRing{0%{transform:scale(.4);opacity:.9}100%{transform:scale(1.4);opacity:0}}
 .foe svg{width:100%;height:100%;display:block}
 .foe .fi{width:100%;height:100%;transition:transform .12s}
 .foe .fnm{position:absolute;left:50%;top:-15px;transform:translateX(-50%);white-space:nowrap;font-size:10px;font-weight:700;color:#fff;text-shadow:0 1px 3px #000}
@@ -1433,7 +1438,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     swingAnim(); dustW(monster.x, monster.y - 30);
     $('monHp').style.width = Math.max(0, monster.hp / monster.max * 100) + '%';
     if (monster.hp > 0) { $('hint').textContent = '「' + monster.d.nm + '」HP ' + monster.hp + '/' + monster.max + '！'; return; }
-    var nm = monster.d.nm; dropRoll(Math.min(2, ((monster.d && monster.d.tier) || 0) + (monster.big ? 1 : 0))); clearInterval(monTimer); monTimer = 0; monster = null;
+    var nm = monster.d.nm; dropRoll(Math.min(2, ((monster.d && monster.d.tier) || 0) + (monster.big ? 1 : 0)), monster.x, monster.y); clearInterval(monTimer); monTimer = 0; monster = null;
     m.classList.remove('hit', 'atk'); void m.offsetWidth; m.classList.add('flee'); sfx(2);
     $('hint').textContent = '追いはらったよ！つづけて掘ろう（あと ' + (TAPS - taps) + ' 回）';
     setTimeout(function () { removeMon(); if (monWaves > 0 && curSpot && !busy && !hp.down) { monWaves--; setTimeout(function () { if (curSpot && !monster && !busy && !hp.down) { spawnMon(); toast('まだ来るよ！'); } }, 500); } }, 620);
@@ -4438,15 +4443,36 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var f = { big: big, id: nf ? nf.id : ++foeSeq, di: MONS.indexOf(d), nx: x, ny: y, d: d, st: st, cd: 0, hp: h0, max: m0, x: x, y: y, hx: x, hy: y, tx: x, ty: y, t: 0, mode: 'idle', el: el, fi: el.querySelector('.fi'), bar: el.querySelector('.fhp i'), dir: 1 };
     f.bar.style.width = Math.max(0, h0 / m0 * 100) + '%'; foes.push(f); placeEl(el, x, y); return f;
   }
-  function dropRoll(tier) {
+  var pouches = [];
+  function dropChime() {
+    if (!soundOn) return; var A = actx(); if (!A) return; var t0 = A.currentTime + .02;
+    [[1318.5, 0], [1568, .09], [2093, .18], [2637, .27], [3136, .38]].forEach(function (n) {
+      [1, 2].forEach(function (h, k) { var o = A.createOscillator(), g = A.createGain(); o.type = k ? 'triangle' : 'sine'; o.frequency.value = n[0] * h; g.gain.setValueAtTime(0, t0 + n[1]); g.gain.linearRampToValueAtTime(k ? .05 : .13, t0 + n[1] + .01); g.gain.exponentialRampToValueAtTime(.001, t0 + n[1] + .55); o.connect(g); g.connect(A.destination); o.start(t0 + n[1]); o.stop(t0 + n[1] + .6); });
+    });
+  }
+  function dropPouch(x, y, g) {
+    var el = document.createElement('div'); el.className = 'pouch'; el.textContent = '👝'; $('world').appendChild(el); placeEl(el, x, y + 6);
+    var p = { x: x, y: y + 6, el: el, g: g, t: Date.now() }; pouches.push(p);
+    setTimeout(function () { var i = pouches.indexOf(p); if (i >= 0) { pouches.splice(i, 1); el.remove(); } }, 60000);
+  }
+  function pouchAt(wx, wy) {
+    for (var i = pouches.length - 1; i >= 0; i--) { var p = pouches[i]; if (!p.el.isConnected) { pouches.splice(i, 1); continue; } if (Math.hypot(wx - p.x, wy - (p.y - 24)) < 62) return p; }
+    return null;
+  }
+  function pouchTake(p) {
+    var i = pouches.indexOf(p); if (i >= 0) pouches.splice(i, 1); p.el.remove();
+    var gi = IBY[p.g.id]; sfx(3); vib([30, 20, 40]);
+    ringAt(p.x, p.y, 60);
+  }
+  function dropRoll(tier, x, y) {
     if (!curMine || inTown || !token) return;
     api({ action: 'game_drop', mine: curMine, tier: tier || 0 }).then(function (j) {
-      if (!j || !j.gear) return; player = j.player; var gi = IBY[j.gear.id]; applyAura(); gearUi(); hpUi(); sfx(3); vib([40, 30, 40]);
-      toast(gi ? (j.gear.dup ? '「' + gi.nm + '」を落とした！ もう持ってるから 🪙' + j.gear.coins + ' になったよ' : '✨ モンスターが「' + gi.nm + '」を落としたよ！もちものに入ったよ') : '✨ 装備を落としたよ！');
+      if (!j || !j.gear) return; player = j.player; applyAura(); gearUi(); hpUi(); vib([40, 30, 40]); dropChime();
+      dropPouch(x != null ? x : hero.x + 40, y != null ? y : hero.y, j.gear);
     }).catch(function () {});
   }
   function killFoe(f, delay) {
-    f.mode = 'dead'; if (f.bs) { bsT = 22; clearTls(f); } if (!f.noDrop && !f.boss) dropRoll(Math.min(2, ((f.d && f.d.tier) || 0) + (f.big ? 1 : 0))); var g = fgen; if (f.tel) { f.tel.remove(); f.tel = null; }
+    f.mode = 'dead'; if (f.bs) { bsT = 22; clearTls(f); } if (!f.noDrop && !f.boss) dropRoll(Math.min(2, ((f.d && f.d.tier) || 0) + (f.big ? 1 : 0)), f.x, f.y); var g = fgen; if (f.tel) { f.tel.remove(); f.tel = null; }
     if (amFoeHost() && netFoes()) { if (f.boss) { rtSend({ t: 'bk' }); claimBoss(); } else { kills++; if (kills >= 6 && !bsDef() && Object.keys(peers).length >= 1 && !foes.some(function (x) { return x.boss && x.mode !== 'dead'; })) { kills = 0; setTimeout(spawnBoss, 3000); } } }
     setTimeout(function () { if (f.el) f.el.remove(); var i = foes.indexOf(f); if (i >= 0) foes.splice(i, 1); }, 620);
     f.el.classList.add('flee');
@@ -4575,7 +4601,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function claimBoss() {
     api({ action: 'game_boss', mine: curMine }).then(function (j) {
-      if (j.ok) { player = j.player; hpUi(); toast('🎉 ボスをたおした！ 🪙' + j.coins + ' と 経験値 ' + j.xp + ' をもらったよ' + (j.gear ? '（装備もひろった！）' : '')); sfx(3); }
+      if (j.ok) { player = j.player; hpUi(); toast('🎉 ボスをたおした！ 🪙' + j.coins + ' と 経験値 ' + j.xp + ' をもらったよ' + (j.gear ? '（装備もひろった！）' : '')); sfx(3); if (j.gear) { dropChime(); dropPouch(hero.x + 40, hero.y, j.gear); } }
       else if (j.message) toast(j.message);
     }).catch(function () {});
   }
@@ -4818,6 +4844,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (inArena) { arTap(e, this); return; }
     if (inPlaza) { plTap(e, this); return; }
     if (hp.down) return;
+    if (pouches.length) { var rp = this.getBoundingClientRect(), pp = pouchAt((e.clientX - rp.left) / fz + camX, (e.clientY - rp.top) / fz + camY); if (pp) { pouchTake(pp); return; } }
     if (curSpot) {
       var r0 = this.getBoundingClientRect(), wx0 = (e.clientX - r0.left) / fz + camX, wy0 = (e.clientY - r0.top) / fz + camY;
       if (hitFoeAt(wx0, wy0)) return;
