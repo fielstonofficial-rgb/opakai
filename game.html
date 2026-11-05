@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:75-->
+<!--GV:78-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -199,6 +199,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #fpF{position:absolute;right:22px;bottom:34px;width:96px;height:96px;border-radius:50%;border:3px solid #ff6bd6;background:rgba(255,107,214,.25);color:#fff;font-size:40px;display:flex;align-items:center;justify-content:center;z-index:3;touch-action:none}
 #fpF.on{background:rgba(255,226,122,.5)}
 #fpO{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;background:rgba(0,0,0,.7);color:#fff;z-index:4;text-align:center}
+#fpP{position:absolute;inset:0;display:none;align-items:center;justify-content:center;flex-direction:column;background:rgba(0,0,0,.72);color:#fff;z-index:5;text-align:center}#fpP.on{display:flex}#fpP .t{font-size:30px;font-weight:800;color:#ffe27a}#fpP .s2{font-size:13px;color:#cfd3dc;margin:6px 0 14px}
 #fpO.on{display:flex}#fpO .t{font-size:34px;color:#ff6b6b;font-weight:800}#fpO .s{font-size:22px;color:#ffe27a;margin:8px 0 16px}
 #arc .chipb{display:inline-block;margin:6px 0 10px;padding:6px 14px;border-radius:20px;background:#0008;border:1px solid #ffe27a;color:#ffe27a;font-size:14px}
 #arc .chipb small{color:#9fb4c4;margin-left:6px}
@@ -5027,8 +5028,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   /* ---------- ゲームセンター（室内・スロット・ブラックジャック・FPS） ---------- */
   var FP = null, inArcRoom = false, arcTm = [];
-  function chipsGet() { try { var v = localStorage.getItem('opa_chips'); return v == null ? 1000 : Math.max(0, parseInt(v, 10) || 0); } catch (e) { return 1000; } }
-  function chipsSet(n) { try { localStorage.setItem('opa_chips', String(Math.max(0, Math.floor(n)))); } catch (e) {} arcSched(); }
+  function chipsGet() { if (player && player.gm) return 99999; try { var v = localStorage.getItem('opa_chips'); return v == null ? 1000 : Math.max(0, parseInt(v, 10) || 0); } catch (e) { return 1000; } }
+  function chipsSet(n) { if (player && player.gm) { return; } try { localStorage.setItem('opa_chips', String(Math.max(0, Math.floor(n)))); } catch (e) {} arcSched(); }
   function arTone(f, dur, type, vol, delay) {
     if (!soundOn) return; var A = actx(); if (!A) return; var o = A.createOscillator(), g = A.createGain(), t0 = A.currentTime + (delay || 0);
     o.type = type || 'sine'; o.frequency.setValueAtTime(f, t0); g.gain.setValueAtTime(vol || .08, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + dur); o.connect(g); g.connect(A.destination); o.start(t0); o.stop(t0 + dur + .02);
@@ -5057,7 +5058,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function arcClose() { arStand(); if (typeof PK !== 'undefined' && PK) pkLeave(); if (typeof BJ !== 'undefined' && BJ) bjLeave(); try { BGM.duck(false); } catch (e) {} arcCl.splice(0).forEach(function (f) { try { f(); } catch (e) {} }); arcFlush(); fpStop(); arcTm.forEach(clearTimeout); arcTm = []; $('arc').classList.remove('on'); }
   function chipBar() { return '<div class="chipb">🪙 <b id="chipN">' + chipsGet().toLocaleString() + '</b> チップ</div>'; }
   function chipUpd() { var e = $('chipN'); if (e) e.textContent = chipsGet().toLocaleString(); }
-  function chipFree() { if (chipsGet() < 10) { if (ARC.on) { if (!ARC.rfOk) return; ARC.rfOk = false; ARC.rf = true; } chipsSet(chipsGet() + 500); chipUpd(); } }
+  function chipFree() { if (player && player.gm) return; if (chipsGet() < 10) { if (ARC.on) { if (!ARC.rfOk) return; ARC.rfOk = false; ARC.rf = true; } chipsSet(chipsGet() + 500); chipUpd(); } }
   function betRow(sel, cb) {
     return '<div class="bets">' + [10, 50, 100, 500].map(function (b) { return '<button type="button" data-b="' + b + '"' + (b === sel ? ' class="on"' : '') + '>' + b + '</button>'; }).join('') + '</div>';
   }
@@ -5213,9 +5214,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var ARC = { on: false, rfOk: false, rf: false, tm: 0 }, arcCl = [];
   function arcApi(body) { body.token = token; return fetch(API.replace(/opa-game$/, 'opa-arcade'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }).then(function (r) { return r.json().then(function (j) { j._s = r.status; return j; }); }).catch(function () { return { _s: 0 }; }); }
   function pendGet() { try { return Math.max(0, parseInt(localStorage.getItem('opa_pk_pend') || '0', 10) || 0); } catch (e) { return 0; } }
-  function arcSched() { if (!ARC.on) return; clearTimeout(ARC.tm); ARC.tm = setTimeout(arcFlush, 1500); }
+  function arcSched() { if (!ARC.on || (player && player.gm)) return; clearTimeout(ARC.tm); ARC.tm = setTimeout(arcFlush, 1500); }
   function arcFlush() {
-    if (!ARC.on) return Promise.resolve(); clearTimeout(ARC.tm); var rf = ARC.rf;
+    if (!ARC.on || (player && player.gm)) return Promise.resolve(); clearTimeout(ARC.tm); var rf = ARC.rf;
     return arcApi({ action: 'arc_put', c: chipsGet(), p: pendGet(), rf: rf }).then(function (j) {
       if (j._s !== 200) return; ARC.rfOk = !!j.rfOk; if (rf && !j.rejected) ARC.rf = false;
       if (j.rejected) { try { localStorage.setItem('opa_chips', String(j.chips)); if (j.pend > 0) localStorage.setItem('opa_pk_pend', String(j.pend)); else localStorage.removeItem('opa_pk_pend'); } catch (e) {} chipUpd(); }
@@ -5502,7 +5503,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     arSit('bj');
     try { var pend = parseInt(localStorage.getItem('opa_pk_pend') || '0', 10); if (pend > 0) { chipsSet(chipsGet() + pend); localStorage.removeItem('opa_pk_pend'); } } catch (e) {}
     chipFree(); var buy = Math.min(1000, chipsGet()); if (buy < 20) { arcShow('<h2>🃏 ブラックジャック</h2><p>チップが足りません</p><button type="button" class="arcx" id="pkX0">とじる</button>'); $('pkX0').onclick = arcClose; return; }
-    chipsSet(chipsGet() - buy); try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {}
+    chipsSet(chipsGet() - buy); if (!(player && player.gm)) { try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {} }
     arcShow('<div class="tvh"><b>🃏 ブラックジャック</b><span id="bjInfo" class="chipb"></span><button type="button" class="arcx" id="bjX">席を立つ</button></div><div class="tvAw"><div id="bjTbl" class="tvA tvAi"></div><div id="bjFl" class="tvFl"></div></div><div id="bjMsg" class="tvM"></div><div id="bjCtl" class="tvC"></div>' + tcHTML('bj'), 'tv');
     BJ = { T: null, me: -1, last: Date.now(), hb: 0, seen: {}, iv: 0, buy: buy, sel: 10, bub: {}, pos: {}, cl: [] }; tcInit('bj', BJ, 'bj'); BJ.iv = setInterval(bjTick, 250);
     $('bjX').onclick = bjLeave; bjRender(); bjSend({ k: 'who' });
@@ -5729,7 +5730,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     arSit('pk');
     try { var pend = parseInt(localStorage.getItem('opa_pk_pend') || '0', 10); if (pend > 0) { chipsSet(chipsGet() + pend); localStorage.removeItem('opa_pk_pend'); } } catch (e) {}
     chipFree(); var buy = Math.min(PKBUY, chipsGet()); if (buy < 20) { arcShow('<h2>♠ テキサスホールデム</h2><p>チップが足りません</p><button type="button" class="arcx" id="pkX0">とじる</button>'); $('pkX0').onclick = arcClose; return; }
-    chipsSet(chipsGet() - buy); try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {}
+    chipsSet(chipsGet() - buy); if (!(player && player.gm)) { try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {} }
     arcShow('<div class="tvh"><b>♠ テキサスホールデム</b><span id="pkInfo" class="chipb"></span><button type="button" class="arcx" id="pkX">席を立つ</button></div><div class="tvAw"><div id="pkTbl" class="tvA tvAi"></div><div id="pkFl" class="tvFl"></div></div><div id="pkMsg" class="tvM"></div><div id="pkCtl" class="tvC"></div>' + tcHTML('pk'), 'tv');
     PK = { T: null, me: -1, last: Date.now(), hb: 0, seen: {}, iv: 0, buy: buy, bub: {}, pos: {}, cl: [] }; tcInit('pk', PK, 'pk'); PK.iv = setInterval(pkTick, 250);
     $('pkX').onclick = pkLeave; pkRender(); pkSend({ k: 'who' });
@@ -5809,7 +5810,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     g.fillStyle = gr; g.strokeStyle = '#fff'; g.lineWidth = 2; g.beginPath(); g.moveTo(32, 14); g.lineTo(50, 28); g.lineTo(32, 54); g.lineTo(14, 28); g.closePath(); g.fill(); g.stroke(); return c;
   }
   function fpStart(MP) {
-    $('arcc').className = ''; $('arcc').innerHTML = '<div id="fpw"><canvas id="fpc"></canvas><button type="button" id="fpX">✕</button><div id="fpF">🔫</div><div id="fpO"><div class="t">GAME OVER</div><div class="s" id="fpS"></div><div class="arcc2"><button type="button" class="cab" id="fpR" style="margin:6px auto;width:220px;padding:10px">もう一回</button><button type="button" class="arcx" id="fpQ">ゲームセンターへ</button></div></div></div>';
+    $('arcc').className = ''; $('arcc').innerHTML = '<div id="fpw"><canvas id="fpc"></canvas><button type="button" id="fpX">✕</button><div id="fpF">🔫</div><div id="fpP"><div class="t">一時停止</div><div class="s2">みんなで撃ち合いは、ゲームが続いてるよ</div><button type="button" class="cab" id="fpPC" style="margin:6px auto;width:220px;padding:10px">つづける</button><button type="button" class="arcx" id="fpPQ">ゲームセンターへ</button></div><div id="fpO"><div class="t">GAME OVER</div><div class="s" id="fpS"></div><div class="arcc2"><button type="button" class="cab" id="fpR" style="margin:6px auto;width:220px;padding:10px">もう一回</button><button type="button" class="arcx" id="fpQ">ゲームセンターへ</button></div></div></div>';
     var wrap = $('fpw'), cv = $('fpc'), cx = cv.getContext('2d'), cw = wrap.clientWidth || 360, ch = wrap.clientHeight || 640;
     var H = 360, asp = Math.max(.6, Math.min(2.4, cw / ch)), W = Math.round(H * asp); cv.width = W; cv.height = H;
     var G = fpGen(), N = FPN, S = { px: 24.5, py: 24.5, a: -Math.PI / 2, pitch: 0, hp: 100, score: 0, wave: 0, en: [], gems: [], toSpawn: 0, spT: 0, nextWave: 1.2, shotT: 0, flash: 0, hurt: 0, over: false, dead: 0, inv: 0, feed: [], hpT: 0, keys: {}, mv: { x: 0, y: 0 }, fire: false, t: 0, banner: 0, kills: 0 };
@@ -5895,6 +5896,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       var ms = 72, mxp = W - ms - 6, myp = 34; cx.globalAlpha = .85; cx.drawImage(mm, 0, 0, N * 2, N * 2, mxp, myp, ms, ms); cx.globalAlpha = 1; var sc2 = ms / N;
       S.en.forEach(function (e) { if (Math.hypot(e.x - S.px, e.y - S.py) < 20) { cx.fillStyle = '#ff3a3a'; cx.fillRect(mxp + e.x * sc2 - 1.5, myp + e.y * sc2 - 1.5, 3, 3); } });
       cx.fillStyle = '#fff'; cx.save(); cx.translate(mxp + S.px * sc2, myp + S.py * sc2); cx.rotate(S.a); cx.beginPath(); cx.moveTo(4, 0); cx.lineTo(-3, 3); cx.lineTo(-3, -3); cx.closePath(); cx.fill(); cx.restore();
+      if (S.t < 9) { cx.textAlign = 'center'; cx.font = 'bold 12px sans-serif'; cx.strokeStyle = '#000'; cx.lineWidth = 3; cx.strokeText('Escキーでマウスを解放（メニューが出るよ）', W / 2, H - 10); cx.fillStyle = '#fff'; cx.fillText('Escキーでマウスを解放（メニューが出るよ）', W / 2, H - 10); cx.textAlign = 'left'; }
       if (!MP && S.banner > 0) { cx.textAlign = 'center'; cx.fillStyle = 'rgba(255,226,122,' + Math.min(1, S.banner) + ')'; cx.strokeStyle = 'rgba(0,0,0,' + Math.min(1, S.banner) + ')'; cx.lineWidth = 3; cx.font = 'bold 30px sans-serif'; cx.strokeText('WAVE ' + S.wave, W / 2, H * .3); cx.fillText('WAVE ' + S.wave, W / 2, H * .3); cx.textAlign = 'left'; }
     }
     var nmMe = ((player && player.avatar && player.avatar.name) || 'あなた').slice(0, 12), colMe = FPCOL[Math.abs(String(myMid || 'x').split('').reduce(function (a, c) { return a * 31 + c.charCodeAt(0); }, 7)) % FPCOL.length], mpT = 0, mpIv = 0;
@@ -5929,10 +5931,10 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     function loop(n) { var dt = Math.min(.05, (n - last) / 1000); last = n; update(dt); draw(); raf = requestAnimationFrame(loop); }
     function kd(e) { S.keys[e.code] = true; if (e.code === 'Space' || e.code.indexOf('Arrow') === 0) e.preventDefault(); } function ku(e) { S.keys[e.code] = false; } function kclr() { S.keys = {}; S.fire = false; }
     function mmv(e) { if (document.pointerLockElement === cv) { S.a += (e.movementX || 0) * .0026; S.pitch = Math.max(-.4, Math.min(.4, S.pitch - (e.movementY || 0) * .0022)); } }
-    function plc() { locked = document.pointerLockElement === cv; kclr(); }
+    function plc() { var was = locked; locked = document.pointerLockElement === cv; kclr(); var P = $('fpP'); if (P) { if (locked) P.classList.remove('on'); else if (was && !S.over) P.classList.add('on'); } }
     window.addEventListener('keydown', kd); window.addEventListener('keyup', ku); window.addEventListener('blur', kclr); document.addEventListener('mousemove', mmv); document.addEventListener('pointerlockchange', plc);
     wrap.addEventListener('pointerdown', function (e) {
-      if (e.target.closest('#fpF,#fpX,#fpO')) return;
+      if (e.target.closest('#fpF,#fpX,#fpO,#fpP')) return;
       if (e.pointerType === 'mouse') { if (document.pointerLockElement !== cv) { try { cv.requestPointerLock(); } catch (_) {} } else if (e.button === 0) S.fire = true; return; }
       var r = wrap.getBoundingClientRect(), x = e.clientX - r.left;
       if (x < r.width * .45) { if (!stick) stick = { id: e.pointerId, x: e.clientX, y: e.clientY }; } else if (!look) look = { id: e.pointerId, x: e.clientX, y: e.clientY };
@@ -5948,6 +5950,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var fb = $('fpF'); fb.addEventListener('pointerdown', function (e) { e.stopPropagation(); S.fire = true; fb.classList.add('on'); try { fb.setPointerCapture(e.pointerId); } catch (_) {} });
     function fu() { S.fire = false; fb.classList.remove('on'); } fb.addEventListener('pointerup', fu); fb.addEventListener('pointercancel', fu);
     $('fpX').onclick = function () { arcLobby(); }; $('fpQ').onclick = function () { arcLobby(); }; $('fpR').onclick = function () { fpStart(MP); };
+    $('fpPC').onclick = function () { $('fpP').classList.remove('on'); try { cv.requestPointerLock(); } catch (_) {} }; $('fpPQ').onclick = function () { arcLobby(); };
     bfs();
     FP = { stop: function () { if (MP) { try { rtSend({ t: 'fm', k: 'l' }); } catch (e) { } FPH = null; clearInterval(mpIv); } cancelAnimationFrame(raf); window.removeEventListener('keydown', kd); window.removeEventListener('keyup', ku); window.removeEventListener('blur', kclr); document.removeEventListener('mousemove', mmv); document.removeEventListener('pointerlockchange', plc); if (document.pointerLockElement) document.exitPointerLock(); }, S: S };
     raf = requestAnimationFrame(loop);
