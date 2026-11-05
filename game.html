@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:79-->
+<!--GV:80-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1826,7 +1826,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     k_spear: { nm: '突貫', ds: 'まっすぐ長く突いて、ならんだ敵を貫く（×2.6）', t: 'line', len: 340, m: 2.6 },
     k_hammer: { nm: '大地砕き', ds: 'まわり3.5マス以内の敵に、大ダメージ（×3.4）', t: 'ring', r: 262, m: 3.4 },
     k_cbow: { nm: '二連弩', ds: 'ねらった敵に、太い矢を2本つづけて射る（×1.8を2回）', t: 'multi', r: 330, n: 2, m: 1.8 },
-    k_smg: { nm: '弾幕', ds: 'ねらった敵に、弾を8発たたきこむ（×0.6を8回）', t: 'multi', r: 280, n: 8, m: .6 },
+    k_smg: { nm: '弾幕', ds: 'ねらった敵に、弾を8発たたきこんで、最後に通常攻撃の5倍の大ダメージ（×5を一発で）', t: 'multi', r: 280, n: 8, m: 5, once: 1 },
     k_shotgun: { nm: '散弾砲', ds: 'ねらった敵に大ダメージ（×3.4）。まわりの敵にも、はんぶん', t: 'blast', r: 180, m: 3.4, sr: 130 },
     k_rifle: { nm: '狙撃', ds: '長い射程で、ならんだ敵をまっすぐ撃ちぬく（×4.5）', t: 'line', len: 800, m: 4.5 },
     blizzard: { nm: '氷結陣', ds: 'まわり4.3マス以内の敵を、凍らせるように斬る（×2.6）', t: 'ring', r: 320, m: 2.6 },
@@ -1834,7 +1834,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     crush: { nm: '粉砕斬', ds: 'まわり3.7マス以内の敵に、大ダメージ（×3.6）', t: 'ring', r: 280, m: 3.6 },
     pierce: { nm: '天穿ち', ds: 'とても長い突きで、ならんだ敵を貫く（×3.4）', t: 'line', len: 520, m: 3.4 },
     holy: { nm: '聖光', ds: 'まわり4.8マス以内の敵を、光で焼く（×2.8）', t: 'ring', r: 360, m: 2.8 },
-    barrage: { nm: '千弾', ds: 'ねらった敵に、弾を12発たたきこむ（×0.7を12回）', t: 'multi', r: 320, n: 12, m: .7 },
+    barrage: { nm: '千弾', ds: 'ねらった敵に、弾を12発たたきこんで、最後に通常攻撃の8倍の大ダメージ（×8を一発で）', t: 'multi', r: 320, n: 12, m: 8, once: 1 },
     pellet: { nm: '烈火散弾', ds: 'ねらった敵に超ダメージ（×4.5）。まわりの敵にも、はんぶん', t: 'blast', r: 220, m: 4.5, sr: 170 },
     snipe: { nm: '一撃必中', ds: '画面のはしまで届く、とても強い一発（×7）', t: 'line', len: 900, m: 7 }
   };
@@ -4632,7 +4632,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     } else if (d.t === 'multi') {
       if (ne.d > d.r) { toastQ(); return; }
       var tg = ne.e; hero.dir = tg.x >= hero.x ? 1 : -1; updHero();
-      for (i = 0; i < d.n; i++) (function (k) { setTimeout(function () { if ((tg.k === 'f' && tg.o.mode === 'dead') || (tg.k === 'b' && tg.o.dn)) return; shootFx(tg.x, tg.y, 'bow'); hitE(tg, d.m); }, k * 190); })(i); done = true;
+      if (d.once) { for (i = 0; i < d.n; i++) (function (k) { setTimeout(function () { if ((tg.k === 'f' && tg.o.mode === 'dead') || (tg.k === 'b' && tg.o.dn)) return; shootFx(tg.x, tg.y, 'bow'); if (k === d.n - 1) { ringAt(tg.x, tg.y, 90); hitE(tg, d.m); } }, k * 90); })(i); done = true; }
+      else { for (i = 0; i < d.n; i++) (function (k) { setTimeout(function () { if ((tg.k === 'f' && tg.o.mode === 'dead') || (tg.k === 'b' && tg.o.dn)) return; shootFx(tg.x, tg.y, 'bow'); hitE(tg, d.m); }, k * 190); })(i); done = true; }
     } else if (d.t === 'dashhit') {
       if (ne.d > d.r) { toastQ(); return; }
       var t2 = ne.e, ddx = t2.x - hero.x, ddy = t2.y - hero.y, LL = Math.hypot(ddx, ddy) || 1, mv = Math.max(0, LL - 70); heroTo(hero.x + ddx / LL * mv, hero.y + ddy / LL * mv); dashInv = performance.now() + 900; hp.inv = Math.max(hp.inv, dashInv);
