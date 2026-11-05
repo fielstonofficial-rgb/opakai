@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:84-->
+<!--GV:85-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -2451,6 +2451,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     $('bagBody').innerHTML = h; fillEqChar();
   }
   var sellArm = null, skArm = null, eqPick = null, eqScroll = false;
+  function skBuy(id) {
+    return fetch(API.replace(/opa-game$/, 'opa-kill'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'buy_skill', token: token, id: id }) })
+      .then(function (r) { return r.json(); }).then(function (j) { if (!j || !j.ok) return { message: (j && j.message) || null }; return api({ action: 'game_load' }); })
+      .catch(function () { return { message: 'つながりませんでした。もう一度お試しください' }; });
+  }
   function buyCall(id) {
     var it = IBY[id];
     if (it && it.slot === 'outfit') {
@@ -2513,7 +2518,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (b.dataset.skb) {
       if (skArm !== b.dataset.skb) { skArm = b.dataset.skb; renderBag(); return; }
       skArm = null; b.disabled = true;
-      api({ action: 'skill_buy', id: b.dataset.skb }).then(function (j) { if (j.player) { player = j.player; toast('買えたよ！「装備」タブでセットしてね'); sfx(1); } else toast(j.message || 'うまく買えませんでした'); renderBag(); });
+      skBuy(b.dataset.skb).then(function (j) { if (j.player) { player = j.player; toast('買えたよ！「装備」タブでセットしてね'); sfx(1); } else toast(j.message || 'うまく買えませんでした'); renderBag(); });
       return;
     }
     if (b.dataset.ske) {
@@ -3046,7 +3051,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (b.dataset.skb) {
       if (skArm !== b.dataset.skb) { skArm = b.dataset.skb; renderSkillShop(); return; }
       skArm = null; b.disabled = true;
-      api({ action: 'skill_buy', id: b.dataset.skb }).then(function (j) { if (j.player) { player = j.player; toast('買えたよ！「セットする」を押すと、戦いで使えるよ'); sfx(1); } else toast(j.message || 'うまく買えませんでした'); renderSkillShop(); });
+      skBuy(b.dataset.skb).then(function (j) { if (j.player) { player = j.player; toast('買えたよ！「セットする」を押すと、戦いで使えるよ'); sfx(1); } else toast(j.message || 'うまく買えませんでした'); renderSkillShop(); });
     } else if (b.dataset.sks) {
       var id = b.dataset.sks, eq = player.skEq || [], cur = eq.indexOf(id), slot;
       if (cur >= 0) { slot = cur; id = null; } else { slot = eq.indexOf(null); if (slot < 0) for (slot = 0; slot < 3; slot++) if (!eq[slot]) break; }
@@ -4562,6 +4567,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     { id: 'sk11', nm: 'ダッシュ', ic: '💨', price: 1500, cd: 4000, t: 'dashTo', len: 225, ds: '敵の方向へ3マス近づく。一瞬、攻撃をよけられる' },
     { id: 'sk12', nm: 'ワープ', ic: '🌀', price: 2000, cd: 4000, t: 'warpTo', len: 375, ds: '敵から5マス離れた場所へワープする。遠距離の武器むき' }
   ];
+  SKD.forEach(function (d) { d.price = d.price * 15; }); /* スキルの値段は15倍。サーバー(opa-kill)も同じ */
   var SKBY = {}; SKD.forEach(function (d) { SKBY[d.id] = d; });
   function skLeechFx(dm) {
     var n = performance.now(); if (n >= skLeechUntil || hp.down || inArena || hp.cur >= hp.max) return;
