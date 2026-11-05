@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:89-->
+<!--GV:90-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -2497,7 +2497,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       h += '<div class="sec">武器・盾・防具</div>';
       var gl = ITEMS.filter(function (i) { return ['weapon', 'shield', 'armor'].indexOf(i.slot) >= 0 && have.indexOf(i.id) >= 0; });
       gl.forEach(function (i) { var arm = sellArm === i.id, on = ((player.equip || {})[i.slot]) === i.id;
-        h += '<div class="it"><div class="ic">' + i.ic + '</div><div class="tx"><b>' + i.nm + '</b><span class="rt" style="color:' + TIERCOL[i.tier] + '">' + TIERS[i.tier].n + '</span>' + (on ? '　（そうび中）' : '') + '<br>🪙 ' + Math.round(i.price * .5).toLocaleString() + '</div><button type="button" data-si="' + i.id + '">' + (arm ? '本当に？' : '売る') + '</button></div>'; });
+        h += '<div class="it"><div class="ic">' + i.ic + '</div><div class="tx"><b>' + i.nm + '</b><span class="rt" style="color:' + TIERCOL[i.tier] + '">' + TIERS[i.tier].n + '</span>' + (on ? '　（そうび中）' : '') + '<br>🪙 ' + Math.round(i.price * .5).toLocaleString() + '</div>' + (on ? '<button type="button" disabled style="opacity:.45" title="外すと売れるよ">装備中</button>' : '<button type="button" data-si="' + i.id + '">' + (arm ? '本当に？' : '売る') + '</button>') + '</div>'; });
       if (!gl.length) h += '<p class="tiny">売れる装備は、まだ持っていません。</p>';
     } else {
       h += eqStage(true);
@@ -2605,6 +2605,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         renderBag();
       });
     } else if (b.dataset.si) {
+      if (Object.keys(player.equip || {}).some(function (k) { return player.equip[k] === b.dataset.si; })) { toast('装備中は売れないよ。外してから売ってね'); return; }
       if (sellArm !== b.dataset.si) { sellArm = b.dataset.si; renderBag(); return; }
       sellArm = null; b.disabled = true;
       api({ action: 'game_sell_item', item: b.dataset.si }).then(function (j) {
@@ -3733,7 +3734,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 89;
+  var GV = 90;
   (function () {
     var last = Date.now();
     function chk() {
