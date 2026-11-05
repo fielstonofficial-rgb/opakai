@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:80-->
+<!--GV:81-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1684,7 +1684,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       if (j._s === 403) { busy = false; $('dig').disabled = false; taps = 0; setProg(); toast(j.message || 'まだ開いていない鉱山です'); openMap(); return; }
       if (!j.stone) { busy = false; $('dig').disabled = false; taps = TAPS - 1; setProg(); $('hint').textContent = 'つながりませんでした。もう一回たたいてください'; toast(j.message || 'つながりませんでした。もう一度お試しください'); return; }
       if (j.gear) { var gi = IBY[j.gear.id]; setTimeout(function () { toast(gi ? (j.gear.dup ? gi.nm + ' をひろった！ もう持ってるから 🪙' + j.gear.coins + ' になったよ' : '装備をひろった！「' + gi.nm + '」がもちものに入ったよ') : '装備をひろった！'); }, 2600); }
-      if (j.ticket) { tickets.unshift(j.ticket); pendingTicket = j.ticket; } player = j.player; taps = 0; setProg(); stats(); lastStone = j.stone; pendingUnlock = j.unlocked || []; lastGain = j.gain || 0; lastXp = j.xpGain || 0; lastLvUp = j.lvUp || 0; renderPlay(); applyAura(); reveal(j.stone);
+      if (j.ticket) { tickets.unshift(j.ticket); pendingTicket = j.ticket; } player = j.player; taps = 0; setProg(); stats(); lastStone = j.stone; pendingUnlock = j.unlocked || []; lastGain = j.gain || 0; lastXp = j.xpGain || 0; lastLvUp = j.lvUp || 0; renderPlay(); applyAura(); reveal(j.stone); try { killRw({ action: 'dig', grade: (j.stone && j.stone.grade) || 0 }); } catch (e) {}
     }).catch(function () { busy = false; $('dig').disabled = false; taps = TAPS - 1; setProg(); $('hint').textContent = 'つながりませんでした。もう一回たたいてください'; });
   }
   var rvT = 0;
@@ -4800,8 +4800,27 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var gi = IBY[p.g.id]; sfx(3); vib([30, 20, 40]);
     ringAt(p.x, p.y, 60);
   }
+  var killQ = Promise.resolve();
+  function killRw(body, at) {
+    if (!token || !curMine) return;
+    body.token = token; body.mine = curMine;
+    killQ = killQ.then(function () {
+      return fetch(API.replace(/opa-game$/, 'opa-kill'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
+        .then(function (r) { return r.json(); }).then(function (j) {
+          if (!j || !j.ok || !player) return;
+          if (j.xpGain || j.coGain) {
+            player.xp = j.xp; player.coins = j.coins; if (j.xpToday != null) player.xpToday = j.xpToday;
+            if (player.gmReal) { player.lvReal = j.lv; } else { player.lv = j.lv; player.xpInto = j.xpInto; player.xpNeed = j.xpNeed; }
+            try { stats(); } catch (e) {}
+            if (at && body.action !== 'dig') floatTxt(at.x, at.y - 90, (j.party ? '👥×3 ' : '') + '✨+' + j.xpGain, 'y');
+            if (j.lvUp > 0 && !player.gmReal) toast('レベルが ' + j.lv + ' に上がったよ！');
+          }
+        }).catch(function () {});
+    });
+  }
   function dropRoll(tier, x, y) {
     if (!curMine || inTown || !token) return;
+    killRw({ tier: tier || 0 }, { x: x != null ? x : hero.x, y: y != null ? y : hero.y });
     api({ action: 'game_drop', mine: curMine, tier: tier || 0 }).then(function (j) {
       if (!j || !j.gear) return; player = j.player; applyAura(); gearUi(); hpUi(); vib([40, 30, 40]); dropChime();
       dropPouch(x != null ? x : hero.x + 40, y != null ? y : hero.y, j.gear);
