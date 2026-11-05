@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:88-->
+<!--GV:89-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -3733,7 +3733,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 88;
+  var GV = 89;
   (function () {
     var last = Date.now();
     function chk() {
@@ -6230,6 +6230,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var dt = Math.min(.05, (t - flast) / 1000); flast = t;
     var hh = $('hero2'), moved = false;
     if (kb) { var kt = Math.min(1, (t - kb.t0) / 200); hero.x = kb.x0 + (kb.x1 - kb.x0) * kt; hero.y = kb.y0 + (kb.y1 - kb.y0) * kt; updHero(); ftarget = null; moved = true; if (kt >= 1) kb = null; }
+    if (kbOk() && (KEYS.ArrowLeft || KEYS.ArrowRight || KEYS.ArrowUp || KEYS.ArrowDown || KEYS.KeyA || KEYS.KeyD || KEYS.KeyW || KEYS.KeyS)) {
+      var kx = ((KEYS.ArrowRight || KEYS.KeyD) ? 1 : 0) - ((KEYS.ArrowLeft || KEYS.KeyA) ? 1 : 0), ky = ((KEYS.ArrowDown || KEYS.KeyS) ? 1 : 0) - ((KEYS.ArrowUp || KEYS.KeyW) ? 1 : 0);
+      if (kx || ky) {
+        ftarget = null; if (hero.sit != null) standUp(); var kL = Math.hypot(kx, ky), kst = SPEED * dt * (performance.now() < skHasteUntil ? 1.5 : 1) * (1 + ((eqItem('outfit') || {}).bspd || 0) / 100);
+        hero.x = clamp(hero.x + kx / kL * kst, 30, WW - 30); hero.y = clamp(hero.y + ky / kL * kst, inArena ? 230 : 200, WH - 40);
+        if (kx) hero.dir = kx > 0 ? 1 : -1; moved = true; kWalk = true; if (hh) hh.classList.add('walk'); updHero(); $('ftip').style.opacity = 0;
+      } else if (kWalk) { kWalk = false; if (hh && !ftarget) hh.classList.remove('walk'); }
+    } else if (kWalk) { kWalk = false; if (hh && !ftarget) hh.classList.remove('walk'); }
     if (ftarget) {
       if (hero.sit != null) standUp(); var dx = ftarget.x - hero.x, dy = ftarget.y - hero.y, d = Math.hypot(dx, dy), step = SPEED * dt * (performance.now() < skHasteUntil ? 1.5 : 1) * (1 + ((eqItem('outfit') || {}).bspd || 0) / 100);
       if (d <= step) { hero.x = ftarget.x; hero.y = ftarget.y; var sp = ftarget.spot, dk = ftarget.door, rv = ftarget.rev; ftarget = null; if (hh) hh.classList.remove('walk'); updHero(); if (sp && !sp.used) { startDig(sp); } else if (dk) openDoor(dk); else if (rv) doRevive(rv); }
@@ -6245,6 +6253,22 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     $('world').style.transform = 'translate3d(' + (-camX * fz).toFixed(1) + 'px,' + (-camY * fz).toFixed(1) + 'px,0) scale(' + fz.toFixed(3) + ')';
     fraf = requestAnimationFrame(tick);
   }
+  /* ---------- キーボード操作：矢印キー（WASDも）で移動、スペースで一番近い敵を攻撃。鉱山・闘技場・広場で有効 ---------- */
+  var KEYS = {}, kWalk = false;
+  function kbOk() {
+    if (!fieldOn || hp.down || curSpot || inTown || inCafe || FP) return false;
+    var ae = document.activeElement; if (ae && /^(INPUT|TEXTAREA|SELECT)$/.test(ae.tagName)) return false;
+    var pf = $('pf'); if (pf && pf.classList.contains('on')) return false;
+    return true;
+  }
+  window.addEventListener('keydown', function (e) {
+    var c = e.code; if (!/^(Arrow(Left|Right|Up|Down)|Key[ADWS]|Space)$/.test(c) || e.ctrlKey || e.metaKey || e.altKey) return;
+    if (!kbOk()) return;
+    if (c === 'Space') { e.preventDefault(); if (!e.repeat) attackNearest(); return; }
+    if (c.indexOf('Arrow') === 0) e.preventDefault(); KEYS[c] = true;
+  });
+  window.addEventListener('keyup', function (e) { KEYS[e.code] = false; });
+  window.addEventListener('blur', function () { KEYS = {}; });
   $('fview').addEventListener('pointerdown', function (e) {
     if (!fieldOn) return; actx();
     if (e.target.closest && (e.target.closest('#fDigBar') || e.target.closest('#downov'))) return;
