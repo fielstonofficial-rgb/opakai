@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:58-->
+<!--GV:59-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -183,6 +183,17 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #gmTog.on{border-color:#ffd36a;color:#ffe9a8;background:rgba(40,30,6,.9);box-shadow:0 0 10px rgba(255,211,106,.4)}
 #pf{position:absolute;inset:0;z-index:48;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:18px}
 #pf.on{display:flex}
+#jk{position:absolute;inset:0;z-index:60;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.6);padding:18px}
+#jk.on{display:flex}
+#jk .jkc{width:100%;max-width:340px;border-radius:20px;background:#101c24;border:1px solid var(--line);padding:18px;text-align:center;color:#fff}
+#jk .jkc h3{margin:0 0 10px;font-size:18px}#jk .jkc p{margin:8px 0;font-size:14px}
+#jk .jkh{display:flex;gap:10px;justify-content:center;margin:14px 0}
+#jk .jkh button{font-size:34px;width:84px;height:84px;border-radius:18px;border:2px solid #b0e0ff;background:rgba(10,26,40,.9);color:#fff}
+#jk .jkh button.on{background:#2a4a66;border-color:#ffd36a}
+#jk .jkb{display:flex;gap:10px;justify-content:center;margin-top:10px}
+#jk .jkb button{padding:10px 18px;border-radius:12px;border:1px solid var(--line);background:#1c2c38;color:#fff;font-size:15px}
+#jk .jkb button.ok{background:#ffd36a;color:#3a2a08;border-color:#ffd36a}
+#jk .big{font-size:56px;line-height:1.1}#jk .win{font-size:30px;color:#ffd36a;margin-top:6px}
 #pf .pfc{width:100%;max-width:340px;border-radius:20px;background:#101c24;border:1px solid var(--line);padding:16px;text-align:center}
 #pf .pfav{height:120px;display:flex;justify-content:center;margin-bottom:6px}
 #pf .pfav .hb2{width:64px;height:118px;position:relative}
@@ -731,6 +742,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     </div>
     <button id="gmTog" type="button"></button>
     <div id="pf"><div class="pfc" id="pfc"></div></div>
+    <div id="jk"><div class="jkc" id="jkc"></div></div>
     <div id="rvMini"><div class="g" id="rvG"></div><div class="t"><small id="rvT"></small><b id="rvN"></b><span id="rvX"></span></div></div>
     <div id="rev">
       <div class="flash"></div>
@@ -2540,6 +2552,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function rtFree(sp) { sp.by = null; sp.el.classList.remove('taken'); var b = sp.el.querySelector('.by'); if (b) b.remove(); }
   function rtMsg(m) {
     if (!m || m.f === myMid) return;
+    if (m.t === 'jk') { jkRecv(m); return; }
     var pr = peers[m.f];
     if (m.t === 'pos') { if (!pr) pr = peers[m.f] = { id: m.f, x: m.x, y: m.y, tx: m.x, ty: m.y, dir: m.d || 1, got: false }; if (!pr.got) { pr.x = m.x; pr.y = m.y; pr.got = true; } pr.tx = m.x; pr.ty = m.y; pr.dir = m.d || 1; pr.h = m.h == null ? 100 : m.h; pr.dn = m.dn ? 1 : 0; pr.gm = m.gm ? 1 : 0; pr.st = m.st | 0; pr.dk = cupOk(m.dk); pr.ds = (m.ds == null ? -1 : m.ds | 0); pr.lv = m.lv; pr.eq = m.eq; ghostEl(pr); if (pr.gm && pr.el && !pr.el.classList.contains('gmg')) { pr.el.classList.add('gmg'); var gn = pr.el.querySelector('.gname'); if (gn) gn.textContent = '👑GM ' + (pr.n || ''); } return; }
     if (m.t === 'rev') { if (m.to === myMid && hp.down) reviveMe(pr && pr.n); return; }
@@ -3079,6 +3092,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function plMsg(m) {
     if (!m || m.f === myMid) return;
+    if (m.t === 'jk') { jkRecv(m); return; }
     var mt = arena.m, duel = inArena && mt && !mt.over;
     if (m.t === 'ach') {
       if (m.to !== myMid) return;
@@ -4599,16 +4613,75 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var GMBY = {}; Object.keys(GMI).forEach(function (k) { GMBY[GMI[k].id] = GMI[k]; });
   var EQN = { weapon: '武器', shield: '盾', armor: '防具', outfit: '衣装', tool: '採掘道具', helm: '兜' };
   function peerAt(wx, wy) { var g = null, bd = 50; Object.keys(peers).forEach(function (id) { var q = peers[id]; if (!q.el) return; var d = Math.hypot(wx - q.x, wy - (q.y - 32)); if (d < bd) { bd = d; g = q; } }); return g; }
+
+  /* ---------- じゃんけん（町・広場・鉱山の、プロフィール画面から） ---------- */
+  var JKH = ['✊', '✌️', '🖐️'], JKN = ['グー', 'チョキ', 'パー'], jk = null, jkTm = 0;
+  function jkSend(m) { m.f = myMid; try { RT.send(m); } catch (e) {} }
+  function jkNm(id) { return (peers[id] && peers[id].n) || 'だれか'; }
+  function jkClose() { clearTimeout(jkTm); jk = null; $('jk').classList.remove('on'); }
+  function jkShow(h) { $('jkc').innerHTML = h; $('jk').classList.add('on'); }
+  function jkExpire(ms) { clearTimeout(jkTm); var cur = jk; jkTm = setTimeout(function () { if (jk === cur && cur) { jkSend({ t: 'jk', k: 'end', to: cur.with }); jkShow('<h3>時間切れ</h3><p>じゃんけんは、おわりました</p><div class="jkb"><button type="button" id="jkX">とじる</button></div>'); $('jkX').onclick = jkClose; jk = null; } }, ms); }
+  function jkInvite(pr) {
+    if (!rtOn && !inPlaza) { toast('いまは、つながっていません'); return; }
+    if (jk) return;
+    jk = { with: pr.id, st: 'out', mine: null, theirs: null };
+    jkSend({ t: 'jk', k: 'inv', to: pr.id });
+    jkShow('<h3>✊ じゃんけん</h3><p>' + esc(pr.n || 'だれか') + ' さんに、挑戦中…</p><div class="jkb"><button type="button" id="jkX">やめる</button></div>');
+    $('jkX').onclick = function () { jkSend({ t: 'jk', k: 'end', to: pr.id }); jkClose(); };
+    jkExpire(20000);
+  }
+  function jkPlay() {
+    jk.st = 'play'; jk.mine = null; jk.theirs = null;
+    jkShow('<h3>✊✌️🖐️ じゃんけん</h3><p>' + esc(jkNm(jk.with)) + ' さんと勝負！ えらんでね</p><div class="jkh"><button type="button" data-h="0">✊</button><button type="button" data-h="1">✌️</button><button type="button" data-h="2">🖐️</button></div><p id="jkW" style="color:#9fb4c4"></p><div class="jkb"><button type="button" id="jkX">やめる</button></div>');
+    Array.prototype.forEach.call($('jkc').querySelectorAll('.jkh button'), function (b) { b.onclick = function () { if (!jk || jk.st !== 'play' || jk.mine != null) return; jk.mine = +b.dataset.h; b.classList.add('on'); jkSend({ t: 'jk', k: 'pick', to: jk.with, h: jk.mine }); if (jk.theirs == null) $('jkW').textContent = '相手がえらぶのを、待ってるよ…'; jkCheck(); }; });
+    $('jkX').onclick = function () { jkSend({ t: 'jk', k: 'end', to: jk.with }); jkClose(); };
+    jkExpire(30000);
+  }
+  function jkVoice() {
+    try { var u = new SpeechSynthesisUtterance('じゃんけん、ぽい！'); u.lang = 'ja-JP'; u.rate = 1.05; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); } catch (e) {}
+    try { snd('imp', 0); } catch (e) {}
+  }
+  function jkCheck() {
+    if (!jk || jk.st !== 'play' || jk.mine == null || jk.theirs == null) return;
+    jk.st = 'show'; clearTimeout(jkTm); var cur = jk, a = cur.mine, b = cur.theirs;
+    jkShow('<h3>じゃんけん…</h3><div class="big">✊ ✊</div><p>ぽい！</p>'); jkVoice();
+    setTimeout(function () {
+      if (jk !== cur) return;
+      var r = (a - b + 3) % 3, res = r === 0 ? 'draw' : (r === 2 ? 'win' : 'lose'), nm = esc(jkNm(cur.with));
+      jkShow('<h3>じゃんけん ぽい！</h3><div class="big">' + JKH[a] + '　' + JKH[b] + '</div><p>あなた：' + JKN[a] + '　／　' + nm + ' さん：' + JKN[b] + '</p>' + (res === 'win' ? '<div class="win">🎊 勝ち！ 🎊</div>' : res === 'lose' ? '<div class="win" style="color:#9fb4c4">負け…</div>' : '<div class="win" style="color:#cfd8e3">あいこ！</div>') + '<div class="jkb">' + (res === 'draw' ? '<button type="button" class="ok" id="jkR">もう一回</button>' : '') + '<button type="button" id="jkX">とじる</button></div>');
+      if (res === 'win') { sfx(1); vib([30, 30, 60]); } else if (res === 'lose') { sfx(2); }
+      $('jkX').onclick = function () { jkSend({ t: 'jk', k: 'end', to: cur.with }); jkClose(); };
+      if ($('jkR')) $('jkR').onclick = function () { jkSend({ t: 'jk', k: 'again', to: cur.with }); jkPlay(); };
+    }, 1300);
+  }
+  function jkRecv(m) {
+    if (!m || m.to !== myMid) return;
+    if (m.k === 'inv') {
+      if (jk || hp.down) { jkSend({ t: 'jk', k: 'no', to: m.f, busy: 1 }); return; }
+      jk = { with: m.f, st: 'in', mine: null, theirs: null };
+      jkShow('<h3>✊ じゃんけん</h3><p>' + esc(jkNm(m.f)) + ' さんが、じゃんけんを挑んできた！</p><div class="jkb"><button type="button" class="ok" id="jkY">受ける</button><button type="button" id="jkN">ことわる</button></div>');
+      $('jkY').onclick = function () { jkSend({ t: 'jk', k: 'ok', to: m.f }); jkPlay(); };
+      $('jkN').onclick = function () { jkSend({ t: 'jk', k: 'no', to: m.f }); jkClose(); };
+      jkExpire(20000); sfx(2); vib([20, 20, 20]); return;
+    }
+    if (!jk || jk.with !== m.f) return;
+    if (m.k === 'ok' && jk.st === 'out') { jkPlay(); return; }
+    if (m.k === 'no') { jkShow('<h3>✊ じゃんけん</h3><p>' + esc(jkNm(m.f)) + (m.busy ? ' さんは、いま対応できないみたい' : ' さんは、ことわりました') + '</p><div class="jkb"><button type="button" id="jkX">とじる</button></div>'); $('jkX').onclick = jkClose; clearTimeout(jkTm); jk = null; return; }
+    if (m.k === 'end') { jkShow('<h3>✊ じゃんけん</h3><p>相手が、やめました</p><div class="jkb"><button type="button" id="jkX">とじる</button></div>'); $('jkX').onclick = jkClose; clearTimeout(jkTm); jk = null; return; }
+    if (m.k === 'again' && jk.st !== 'out') { jkPlay(); return; }
+    if (m.k === 'pick' && (jk.st === 'play' || jk.st === 'in') && (m.h === 0 || m.h === 1 || m.h === 2)) { jk.theirs = m.h; jkCheck(); }
+  }
   function openProfile(pr) {
     var ids = String(pr.eq || '').split(','), eqh = '';
     EQSL.forEach(function (sl, i) { if (sl === 'helm' && !pr.gm) return; var q = ids[i] ? (IBY[ids[i]] || GMBY[ids[i]]) : null; eqh += '<div><span>' + EQN[sl] + '</span><br><b>' + (q ? q.ic + ' ' + q.nm : (pr.eq == null ? '？' : '— なし —')) + '</b></div>'; });
-    var box = $('pfc'); box.innerHTML = '<div class="pfav"><div class="hb2">' + charHTML(dress(pr.av, peerItem(pr))) + '</div></div><h3></h3><span class="lvc">Lv ' + (pr.lv != null ? pr.lv : '？') + '</span>' + (pr.gm ? ' <span class="lvc">👑 ゲームマスター</span>' : '') + '<div class="eqg">' + eqh + '</div><div><button type="button" id="pfX">とじる</button>' + (pr.gm && !isGM() && !inPlaza ? '<button type="button" class="atk" id="pfA">⚔ こうげきしてみる</button>' : '') + (inPlaza ? '<button type="button" class="atk" id="pfD">⚔ 戦いを挑む</button>' : '') + (uuidish(pr.id) && pr.id !== myMid && !pr.bot ? '<button type="button" class="trd" id="pfT">🤝 トレード</button>' : '') + '</div>';
+    var box = $('pfc'); box.innerHTML = '<div class="pfav"><div class="hb2">' + charHTML(dress(pr.av, peerItem(pr))) + '</div></div><h3></h3><span class="lvc">Lv ' + (pr.lv != null ? pr.lv : '？') + '</span>' + (pr.gm ? ' <span class="lvc">👑 ゲームマスター</span>' : '') + '<div class="eqg">' + eqh + '</div><div><button type="button" id="pfX">とじる</button>' + (pr.gm && !isGM() && !inPlaza ? '<button type="button" class="atk" id="pfA">⚔ こうげきしてみる</button>' : '') + (inPlaza ? '<button type="button" class="atk" id="pfD">⚔ 戦いを挑む</button>' : '') + (uuidish(pr.id) && pr.id !== myMid && !pr.bot ? '<button type="button" class="trd" id="pfT">🤝 トレード</button><button type="button" class="trd" id="pfJ">✊ じゃんけん</button>' : '') + '</div>';
     box.querySelector('h3').textContent = pr.n || 'だれか';
     $('pf').classList.add('on');
     $('pfX').onclick = function () { $('pf').classList.remove('on'); };
     if ($('pfD')) $('pfD').onclick = function () { $('pf').classList.remove('on'); arChallenge(pr); };
     if ($('pfA')) $('pfA').onclick = function () { $('pf').classList.remove('on'); hitGmPeer(pr); };
     if ($('pfT')) $('pfT').onclick = function () { $('pf').classList.remove('on'); trStart(pr); };
+    if ($('pfJ')) $('pfJ').onclick = function () { $('pf').classList.remove('on'); jkInvite(pr); };
   }
   $('pf').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('on'); });
   function hitGmAt(wx, wy) { var g = peerAt(wx, wy); return !!(g && g.gm && hitGmPeer(g)); }
