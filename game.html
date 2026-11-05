@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:69-->
+<!--GV:70-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -281,7 +281,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #arc .slc::before{content:'';display:block;padding-bottom:306%}
 #arc .slc .strip{display:flex;flex-direction:column;position:absolute;left:0;right:0;top:0}
 #arc .slc .c{aspect-ratio:1/1.02;display:flex;align-items:center;justify-content:center;font-size:min(8.5vw,38px);color:#222;position:relative}
-#arc .slc .strip.roll{animation:slroll .3s linear infinite;filter:blur(2px)}
+#arc .slc .strip.jsr{opacity:.92}
 @keyframes slroll{from{transform:translateY(-75%)}to{transform:translateY(0)}}
 #arc .slc .strip.stop{animation:sldrop .28s cubic-bezier(.2,1.4,.4,1)}
 @keyframes sldrop{from{transform:translateY(-22%)}to{transform:translateY(0)}}
@@ -5059,9 +5059,18 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     function sf(f) { try { f(); } catch (e) { } }
     var kd = function (e) { if (e.code === 'Space' || e.code === 'Enter') { if ($('slGo') && !e.repeat) { e.preventDefault(); spin(); } } };
     document.addEventListener('keydown', kd); arcCl.push(function () { document.removeEventListener('keydown', kd); });
-    function setCells(r, g) { var st = $('slG').children[r].firstChild; st.className = 'strip stop'; st.innerHTML = [0, 1, 2].map(function (x) { return '<div class="c" id="c' + r + x + '">' + SLI[g[r][x]] + '</div>'; }).join(''); }
-    function startReel(r) { var ks = Object.keys(SLI), h = ''; for (var i = 0; i < 12; i++) h += '<div class="c">' + SLI[ks[Math.floor(Math.random() * ks.length)]] + '</div>'; var st = $('slG').children[r].firstChild; st.className = 'strip roll'; st.innerHTML = h; }
-    function slow(r, on) { var st = $('slG').children[r]; if (st) st.classList.toggle('slowr', !!on); }
+    function setCells(r, g) { var st = $('slG').children[r].firstChild; delete RL[r]; st.style.transform = ''; st.className = 'strip stop'; st.innerHTML = [0, 1, 2].map(function (x) { return '<div class="c" id="c' + r + x + '">' + SLI[g[r][x]] + '</div>'; }).join(''); }
+    function startReel(r) { var ks = Object.keys(SLI), h = ''; for (var i = 0; i < 12; i++) h += '<div class="c">' + SLI[ks[Math.floor(Math.random() * ks.length)]] + '</div>'; var st = $('slG').children[r].firstChild; st.className = 'strip jsr'; st.innerHTML = h; RL[r] = { slow: 0, ph: Math.random() }; if (!RAF) rafLoop(); }
+    function slow(r, on) { if (RL[r]) RL[r].slow = on ? 1 : 0; }
+    var RL = {}, RAF = 0, rt0 = 0;
+    function rafLoop() {
+      RAF = 1; rt0 = performance.now();
+      (function f() {
+        if (!$('slG')) { RAF = 0; return; } var any = false, now = performance.now(), dt = now - rt0; rt0 = now;
+        Object.keys(RL).forEach(function (k) { any = true; var o = RL[k], st = $('slG').children[k].firstChild, c = st.firstChild, ch = c ? c.offsetHeight : 0; if (!ch) return; var per = 9 * ch; o.ph = (o.ph + dt / (o.slow ? 750 : 300)) % 1; st.style.transform = 'translateY(' + (-per + o.ph * per).toFixed(1) + 'px)'; });
+        if (any) requestAnimationFrame(f); else RAF = 0;
+      })();
+    }
     function tick() { if (!ticking) return; sf(function () { arNoise(.04, 4200, .18, 0, 2); }); later(tick, 85); }
     function banner(t, cls) { var e = $('slRc'); e.textContent = t; e.className = 'slRc on ' + (cls || ''); }
     function cut(txt, em, cls) { var c = $('slCut'); if (!c) return; c.className = 'slCut'; void c.offsetWidth; c.innerHTML = '<span class="e">' + em + '</span><span class="t">' + txt + '</span>'; c.className = 'slCut on ' + (cls || ''); later(function () { if ($('slCut')) $('slCut').className = 'slCut'; }, 1400); }
