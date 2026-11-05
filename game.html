@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:68-->
+<!--GV:69-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -341,6 +341,23 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #arc .tcPh{display:flex;flex-wrap:wrap;gap:6px}
 #arc .tcPh button{font-size:12px;padding:6px 8px;border-radius:14px;border:1px solid #556;background:#1c2030;color:#fff}
 #arc .tcE button{font-size:24px;width:42px;height:42px;border-radius:50%;border:1px solid #556;background:#1c2030}
+#arc .slc .c{font-size:min(6.4vw,30px)}
+#arc .slG{gap:2px}
+#arc .slc .strip.roll.slowr{animation-duration:.75s;filter:blur(1px)}
+#arc .slM.shk{animation:slshk .09s infinite alternate}
+@keyframes slshk{from{transform:translate(-2px,1px)}to{transform:translate(2px,-1px)}}
+#arc .slRc.r3{font-size:28px;color:#ff9ad8}#arc .slRc.r4{font-size:30px;color:#7af0ff;background:linear-gradient(90deg,transparent,#2b3cffcc,transparent)}
+#arc .slCut{display:none;position:absolute;left:0;right:0;top:30%;z-index:7;height:96px;align-items:center;justify-content:center;gap:10px;background:linear-gradient(90deg,transparent,#000c 20%,#000c 80%,transparent);pointer-events:none}
+#arc .slCut.on{display:flex;animation:slcut 1.4s ease-out forwards}
+#arc .slCut .e{font-size:64px}#arc .slCut .t{font-size:34px;font-weight:900;color:#ffe27a;text-shadow:0 0 10px #ff2bd6,0 0 22px #ff2bd6;font-style:italic}
+#arc .slCut.c3 .t{color:#7af0ff}#arc .slCut.c4 .t{color:#ff6bd6}
+@keyframes slcut{0%{transform:translateX(-100%);opacity:0}18%{transform:translateX(0);opacity:1}80%{opacity:1}100%{transform:translateX(0);opacity:0}}
+#arc .slFl{position:absolute;inset:0;z-index:8;opacity:0;pointer-events:none}
+#arc .slFl.on{animation:slfl .5s ease-out}
+@keyframes slfl{0%{opacity:.85}100%{opacity:0}}
+#arc .slPre{display:none;position:absolute;left:0;right:0;top:8px;text-align:center;z-index:6;font-weight:900;font-size:18px;color:#fff;text-shadow:0 0 8px #ff2bd6;pointer-events:none}
+#arc .slPre.on{display:block;animation:slbn .25s infinite alternate}
+#arc .slPre.k1{color:#ffb300;font-size:21px}#arc .slPre.k2{font-size:24px;background:linear-gradient(90deg,#f00,#ff0,#0f0,#0ff,#00f,#f0f);-webkit-background-clip:text;background-clip:text;color:transparent;text-shadow:none}
 #arc .pkTbl{position:relative;width:100%;max-width:400px;height:470px;margin:8px auto}
 #arc .pkOval{position:absolute;left:10%;top:12%;width:80%;height:76%;border-radius:50%;background:radial-gradient(ellipse at 50% 40%,#1f7a46,#0d3a22);border:7px solid #4a2c14;box-shadow:0 0 0 3px #d4a73a,inset 0 0 30px #000a}
 #arc .pkBoard{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);width:90%;display:flex;justify-content:center;gap:2px;min-height:60px}
@@ -4975,7 +4992,18 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     o.type = type || 'sine'; o.frequency.setValueAtTime(f, t0); g.gain.setValueAtTime(vol || .08, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + dur); o.connect(g); g.connect(A.destination); o.start(t0); o.stop(t0 + dur + .02);
   }
   function arcShow(h, cls) { $('arc').classList.add('on'); $('arcc').className = 'arcc' + (cls ? ' ' + cls : ''); $('arcc').innerHTML = h; try { BGM.duck(true); } catch (e) {} }
-  function arcClose() { if (typeof PK !== 'undefined' && PK) pkLeave(); if (typeof BJ !== 'undefined' && BJ) bjLeave(); try { BGM.duck(false); } catch (e) {} arcCl.splice(0).forEach(function (f) { try { f(); } catch (e) {} }); arcFlush(); fpStop(); arcTm.forEach(clearTimeout); arcTm = []; $('arc').classList.remove('on'); }
+  function arSit(kind) {
+    try {
+      if (!inArcRoom || !hero) return; var h = 0, id = String(myMid || 'x'); for (var i = 0; i < id.length; i++) h = (h * 31 + id.charCodeAt(i)) % 997;
+      var x, y;
+      if (kind === 'slot') { var ms = [110, 205, 300], bx = ms[0]; ms.forEach(function (m) { if (Math.abs(m - hero.x) < Math.abs(bx - hero.x)) bx = m; }); x = bx; y = 476; }
+      else if (kind === 'pk') { x = 320 + [-120, -60, 0, 60, 120][h % 5]; y = 772 + (h % 2) * 4; }
+      else { x = 770 + [-120, -60, 0, 60, 120][h % 5]; y = 612 + (h % 2) * 4; }
+      hero.x = x; hero.y = y; hero.dir = 1; hero.sit = 99; ftarget = null; var el = $('hero2'); if (el) { el.classList.remove('walk'); el.classList.add('sit'); } updHero(); if (rtOn) rtSend(posMsg());
+    } catch (e) { }
+  }
+  function arStand() { try { if (hero && hero.sit === 99) standUp(); } catch (e) { } }
+  function arcClose() { arStand(); if (typeof PK !== 'undefined' && PK) pkLeave(); if (typeof BJ !== 'undefined' && BJ) bjLeave(); try { BGM.duck(false); } catch (e) {} arcCl.splice(0).forEach(function (f) { try { f(); } catch (e) {} }); arcFlush(); fpStop(); arcTm.forEach(clearTimeout); arcTm = []; $('arc').classList.remove('on'); }
   function chipBar() { return '<div class="chipb">🪙 <b id="chipN">' + chipsGet().toLocaleString() + '</b> チップ</div>'; }
   function chipUpd() { var e = $('chipN'); if (e) e.textContent = chipsGet().toLocaleString(); }
   function chipFree() { if (chipsGet() < 10) { if (ARC.on) { if (!ARC.rfOk) return; ARC.rfOk = false; ARC.rf = true; } chipsSet(chipsGet() + 500); chipUpd(); } }
@@ -4984,97 +5012,134 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function betBind(get, set) { Array.prototype.forEach.call($('arcc').querySelectorAll('.bets button'), function (b) { b.onclick = function () { set(+b.dataset.b); Array.prototype.forEach.call($('arcc').querySelectorAll('.bets button'), function (x) { x.classList.toggle('on', x === b); }); sfx(2); }; }); }
 
-  /* --- スロット（5リール×3段・10ライン・ワイルド・スキャッター・フリースピン） --- */
-  var SLI = { C: '🍒', L: '🍋', B: '🔔', V: '🍀', S: '⭐', D: '💎', '7': '7️⃣', W: '🃏', X: '🎰' }, SLWT = { C: 20, L: 18, B: 15, V: 12, S: 10, D: 7, '7': 4, W: 6, X: 4 };
-  var SLPAY = { C: [5, 15, 50], L: [6, 18, 60], B: [8, 25, 90], V: [10, 40, 150], S: [15, 70, 300], D: [25, 125, 600], '7': [50, 250, 2500] }, SLSC = { 3: 2, 4: 10, 5: 50 };
-  var SLLN = [[1, 1, 1, 1, 1], [0, 0, 0, 0, 0], [2, 2, 2, 2, 2], [0, 1, 2, 1, 0], [2, 1, 0, 1, 2], [0, 0, 1, 2, 2], [2, 2, 1, 0, 0], [1, 0, 0, 0, 1], [1, 2, 2, 2, 1], [1, 0, 1, 2, 1]];
-  function slCell(r) { var ks = Object.keys(SLWT).filter(function (k) { return !(k === 'W' && (r === 0 || r === 4)); }), tot = 0, i; ks.forEach(function (k) { tot += SLWT[k]; }); var x = Math.random() * tot; for (i = 0; i < ks.length; i++) { if (x < SLWT[ks[i]]) return ks[i]; x -= SLWT[ks[i]]; } return 'C'; }
-  function slEval(g, lineBet) {
-    var wins = [], cells = {}, tot = 0;
+  /* --- スロット v3（7リール×3段・15ライン・ワイルド・スキャッター・フリースピン・段階リーチ） --- */
+  var SLN = 7, SLI = { C: '🍒', L: '🍋', B: '🔔', V: '🍀', S: '⭐', D: '💎', '7': '7️⃣', W: '🃏', X: '🎰' }, SLWT = { C: 20, L: 18, B: 15, V: 12, S: 10, D: 7, '7': 4, W: 6, X: 4 };
+  var SLPAY = { C: [4, 12, 30, 80, 200], L: [5, 15, 40, 100, 250], B: [6, 20, 60, 150, 400], V: [8, 30, 90, 250, 600], S: [12, 50, 150, 400, 1000], D: [20, 90, 300, 800, 2000], '7': [40, 200, 700, 2000, 5000] }, SLSC = { 3: 10, 4: 40, 5: 150, 6: 400, 7: 1000 }, SLK = .4, SLK2 = .35;
+  var SLLN = [[1, 1, 1, 1, 1, 1, 1], [0, 0, 0, 0, 0, 0, 0], [2, 2, 2, 2, 2, 2, 2], [0, 1, 2, 1, 0, 1, 2], [2, 1, 0, 1, 2, 1, 0], [0, 0, 1, 2, 2, 2, 1], [2, 2, 1, 0, 0, 0, 1], [1, 0, 0, 0, 1, 2, 2], [1, 2, 2, 2, 1, 0, 0], [1, 0, 1, 2, 1, 0, 1], [1, 2, 1, 0, 1, 2, 1], [0, 1, 1, 1, 1, 1, 0], [2, 1, 1, 1, 1, 1, 2], [0, 1, 0, 1, 0, 1, 0], [2, 1, 2, 1, 2, 1, 2]];
+  function slCell(r) { var ks = Object.keys(SLWT).filter(function (k) { return !(k === 'W' && (r === 0 || r === SLN - 1)); }), tot = 0, i; ks.forEach(function (k) { tot += SLWT[k]; }); var x = Math.random() * tot; for (i = 0; i < ks.length; i++) { if (x < SLWT[ks[i]]) return ks[i]; x -= SLWT[ks[i]]; } return 'C'; }
+  function slEval(g, bet) {
+    var wins = [], cells = {}, tot = 0, ub = bet / SLLN.length;
     SLLN.forEach(function (ln, li) {
       var cs = ln.map(function (row, r) { return g[r][row]; }), base = null, i;
-      for (i = 0; i < 5; i++) if (cs[i] !== 'W' && cs[i] !== 'X') { base = cs[i]; break; } if (base === null) base = '7'; if (cs[0] === 'X') return;
-      var n = 0; for (i = 0; i < 5; i++) { if (cs[i] === base || cs[i] === 'W') n++; else break; }
-      if (n >= 3) { var amt = SLPAY[base][n - 3] * lineBet; tot += amt; wins.push({ li: li, n: n, amt: amt }); for (i = 0; i < n; i++) cells[i + ',' + ln[i]] = 1; }
+      for (i = 0; i < SLN; i++) if (cs[i] !== 'W' && cs[i] !== 'X') { base = cs[i]; break; } if (base === null) base = '7'; if (cs[0] === 'X') return;
+      var n = 0; for (i = 0; i < SLN; i++) { if (cs[i] === base || cs[i] === 'W') n++; else break; }
+      if (n >= 3) { var amt = SLPAY[base][n - 3] * ub * SLK; tot += amt; wins.push({ li: li, n: n, amt: amt, b: base }); for (i = 0; i < n; i++) cells[i + ',' + ln[i]] = 1; }
     });
-    var sc = 0, r, x; for (r = 0; r < 5; r++) for (x = 0; x < 3; x++) if (g[r][x] === 'X') sc++;
-    if (sc >= 3) for (r = 0; r < 5; r++) for (x = 0; x < 3; x++) if (g[r][x] === 'X') cells[r + ',' + x] = 1;
-    var sw = 0; if (sc >= 3) { sw = SLSC[Math.min(5, sc)] * lineBet * 10; tot += sw; }
-    return { tot: tot, wins: wins, cells: cells, sc: sc, sw: sw };
+    var sc = 0, r, x; for (r = 0; r < SLN; r++) for (x = 0; x < 3; x++) if (g[r][x] === 'X') sc++;
+    if (sc >= 3) for (r = 0; r < SLN; r++) for (x = 0; x < 3; x++) if (g[r][x] === 'X') cells[r + ',' + x] = 1;
+    var sw = 0; if (sc >= 3) { sw = SLSC[Math.min(7, sc)] * bet * SLK2; tot += sw; }
+    return { tot: Math.round(tot), wins: wins, cells: cells, sc: sc, sw: sw };
   }
   function slReach(g, upto) {
-    /* 先に止まった upto 個のリールだけを見て、リーチかどうか調べる（高い絵が3つ以上つながっている／スキャッターが2つ以上） */
-    var best = 0, sc = 0, r, x, hi = { V: 1, S: 1, D: 1, '7': 1 };
-    for (r = 0; r < upto; r++) for (x = 0; x < 3; x++) if (g[r][x] === 'X') sc++;
+    /* 先に止まった upto 個のリールだけを見て、何がつながっているか調べる（高い絵 or 7が連続／スキャッター／ワイルド数） */
+    var best = 0, sc = 0, wd = 0, r, x, hi = { V: 1, S: 1, D: 1, '7': 1 }, sev = 0;
+    for (r = 0; r < upto; r++) for (x = 0; x < 3; x++) { if (g[r][x] === 'X') sc++; if (g[r][x] === 'W') wd++; }
     SLLN.forEach(function (ln) {
       var cs = ln.slice(0, upto).map(function (row, r2) { return g[r2][row]; }), base = null, i;
       for (i = 0; i < cs.length; i++) if (cs[i] !== 'W' && cs[i] !== 'X') { base = cs[i]; break; } if (!base || !hi[base]) return;
-      var n = 0; for (i = 0; i < cs.length; i++) { if (cs[i] === base || cs[i] === 'W') n++; else break; } if (n > best) best = n;
+      var n = 0; for (i = 0; i < cs.length; i++) { if (cs[i] === base || cs[i] === 'W') n++; else break; } if (n > best) { best = n; sev = base === '7' ? 1 : 0; }
     });
-    return { line: best, sc: sc };
+    return { line: best, sc: sc, wd: wd, s7: sev };
   }
   function openSlot() {
-    var bet = 10, spinning = false, fs = 0, SLT = [], stopped = 0, ticking = false, lastWin = 0;
-    var cols = ''; for (var r = 0; r < 5; r++) cols += '<div class="slc"><div class="strip">' + [0, 1, 2].map(function (x) { return '<div class="c" id="c' + r + x + '">' + SLI[['7', 'D', 'S'][x]] + '</div>'; }).join('') + '</div></div>';
-    var sp = ''; for (var q = 0; q < 16; q++) sp += '<i class="sp" style="left:' + Math.round(Math.random() * 96) + '%;top:' + Math.round(Math.random() * 96) + '%;animation-delay:' + (Math.random() * 3).toFixed(2) + 's">✦</i>';
+    arSit('slot');
+    var bet = 10, spinning = false, fs = 0, SLT = {}, stopped = 0, ticking = false, wdog = 0;
+    var cols = ''; for (var r = 0; r < SLN; r++) cols += '<div class="slc"><div class="strip">' + [0, 1, 2].map(function (x) { return '<div class="c" id="c' + r + x + '">' + SLI[['7', 'D', 'S'][x]] + '</div>'; }).join('') + '</div></div>';
+    var sp = ''; for (var q = 0; q < 22; q++) sp += '<i class="sp" style="left:' + Math.round(Math.random() * 96) + '%;top:' + Math.round(Math.random() * 96) + '%;animation-delay:' + (Math.random() * 3).toFixed(2) + 's">✦</i>';
     arcShow('<div class="tvh"><b>🎰 OPAL JACKPOT</b><span id="slInfo" class="chipb"></span><button type="button" class="arcx" id="slX">とじる</button></div>' +
-      '<div class="tvA slA" id="slA"><div class="slSun"></div><div class="slM"><div class="slB1"></div><div class="slB2"></div><div class="slMq">OPAL  JACKPOT</div><div class="slW"><div class="slG" id="slG">' + cols + '</div><svg class="slL" id="slL" viewBox="0 0 5 3" preserveAspectRatio="none"></svg></div><div class="slRc" id="slRc"></div><div class="slWin" id="slWin"></div></div>' + sp +
-      '<button type="button" class="slPb" id="slPb">配当</button><div class="slPay" id="slPay"><b>配当表</b>（1ラインの賭け金に対する倍率：3つ／4つ／5つ）<br>7️⃣ 50 / 250 / 2500<br>💎 25 / 125 / 600<br>⭐ 15 / 70 / 300<br>🍀 10 / 40 / 150<br>🔔 8 / 25 / 90<br>🍋 6 / 18 / 60<br>🍒 5 / 15 / 50<br>🃏 ワイルド：2〜4番目のリールで、ほかの絵の代わりになる<br>🎰 スキャッター：どこでも3つ以上で、賭け金の20 / 100 / 500倍 ＋ フリースピン8回<br>10ライン固定（賭け金 ÷ 10 が 1ライン）<br>スペースキーでもSPIN<br><button type="button" class="arcx" id="slPc">とじる</button></div><div class="slBig" id="slBig"></div></div>' +
+      '<div class="tvA slA" id="slA"><div class="slSun"></div><div class="slM" id="slM"><div class="slB1"></div><div class="slB2"></div><div class="slMq">OPAL  JACKPOT</div><div class="slW"><div class="slG" id="slG">' + cols + '</div><svg class="slL" id="slL" viewBox="0 0 ' + SLN + ' 3" preserveAspectRatio="none"></svg></div><div class="slRc" id="slRc"></div><div class="slWin" id="slWin"></div></div>' + sp +
+      '<div class="slCut" id="slCut"></div><div class="slFl" id="slFl"></div><div class="slPre" id="slPre"></div>' +
+      '<button type="button" class="slPb" id="slPb">配当</button><div class="slPay" id="slPay"><b>配当表</b>（賭け金÷15 が 1ライン分。3つ〜7つそろいで高配当）<br>7️⃣ 最大 ×2000相当<br>💎 ⭐ 🍀 🔔 🍋 🍒 の順に配当が下がる<br>🃏 ワイルド：2〜6番目のリールで、ほかの絵の代わりになる<br>🎰 スキャッター：どこでも3つ以上で賞金 ＋ フリースピン8回<br>15ライン固定・7リール<br>左から連続でそろうと当たり<br>スペースキーでもSPIN<br><button type="button" class="arcx" id="slPc">とじる</button></div><div class="slBig" id="slBig"></div></div>' +
       '<div class="tvM" id="slRes"></div><div class="tvC"><div class="tvB">' + [10, 50, 100, 500].map(function (b) { return '<button type="button" class="b bt' + (b === bet ? ' on' : '') + '" data-b="' + b + '">' + b + '</button>'; }).join('') + '<button type="button" class="b ra slGo" id="slGo">SPIN</button></div></div>', 'tv');
     chipUpd2(); var slX = $('slX'); slX.onclick = arcClose; $('slPb').onclick = function () { $('slPay').classList.add('on'); }; $('slPc').onclick = function () { $('slPay').classList.remove('on'); };
-    Array.prototype.forEach.call($('arcc').querySelectorAll('.bt'), function (b) { b.onclick = function () { if (spinning || fs) return; bet = +b.dataset.b; Array.prototype.forEach.call($('arcc').querySelectorAll('.bt'), function (x) { x.classList.toggle('on', x === b); }); sndChip(); }; });
+    function setBet(b, snd) { bet = b; Array.prototype.forEach.call($('arcc').querySelectorAll('.bt'), function (x) { x.classList.toggle('on', +x.dataset.b === b); }); if (snd) sndChip(); }
+    Array.prototype.forEach.call($('arcc').querySelectorAll('.bt'), function (b) { b.onclick = function () { if (spinning || fs) return; setBet(+b.dataset.b, 1); }; });
     function chipUpd2() { var e = $('slInfo'); if (e) e.textContent = '🪙 ' + chipsGet().toLocaleString(); }
-    function later(f, ms) { var t = setTimeout(f, ms); arcTm.push(t); return t; }
+    function later(f, ms) { var t = setTimeout(function () { try { f(); } catch (e) { forceEnd(); } }, ms); arcTm.push(t); return t; }
+    function sf(f) { try { f(); } catch (e) { } }
     var kd = function (e) { if (e.code === 'Space' || e.code === 'Enter') { if ($('slGo') && !e.repeat) { e.preventDefault(); spin(); } } };
     document.addEventListener('keydown', kd); arcCl.push(function () { document.removeEventListener('keydown', kd); });
     function setCells(r, g) { var st = $('slG').children[r].firstChild; st.className = 'strip stop'; st.innerHTML = [0, 1, 2].map(function (x) { return '<div class="c" id="c' + r + x + '">' + SLI[g[r][x]] + '</div>'; }).join(''); }
     function startReel(r) { var ks = Object.keys(SLI), h = ''; for (var i = 0; i < 12; i++) h += '<div class="c">' + SLI[ks[Math.floor(Math.random() * ks.length)]] + '</div>'; var st = $('slG').children[r].firstChild; st.className = 'strip roll'; st.innerHTML = h; }
-    function tick() { if (!ticking) return; arNoise(.04, 4200, .18, 0, 2); later(tick, 85); }
+    function slow(r, on) { var st = $('slG').children[r]; if (st) st.classList.toggle('slowr', !!on); }
+    function tick() { if (!ticking) return; sf(function () { arNoise(.04, 4200, .18, 0, 2); }); later(tick, 85); }
     function banner(t, cls) { var e = $('slRc'); e.textContent = t; e.className = 'slRc on ' + (cls || ''); }
+    function cut(txt, em, cls) { var c = $('slCut'); if (!c) return; c.className = 'slCut'; void c.offsetWidth; c.innerHTML = '<span class="e">' + em + '</span><span class="t">' + txt + '</span>'; c.className = 'slCut on ' + (cls || ''); later(function () { if ($('slCut')) $('slCut').className = 'slCut'; }, 1400); }
+    function flash(col) { var f = $('slFl'); if (!f) return; f.style.background = col || '#fff'; f.className = 'slFl'; void f.offsetWidth; f.className = 'slFl on'; }
+    function shake(on) { var m = $('slM'); if (m) m.classList.toggle('shk', !!on); }
+    function climb(n, base, type, vol) { for (var k = 0; k < n; k++) arTone(base * Math.pow(1.1, k), .15, type || 'sawtooth', vol || .05, k * .13); }
+    function chipsEnough() {
+      chipFree(); var c = chipsGet();
+      if (c < 10) { /* 救済：1日分をもう使っていても、20分ごとに100チップ */
+        var last = 0; try { last = +localStorage.getItem('opa_rescue') || 0; } catch (e) { }
+        if (Date.now() - last > 20 * 60 * 1000) { try { localStorage.setItem('opa_rescue', String(Date.now())); } catch (e) { } chipsSet(c + 100); chipUpd2(); $('slRes').textContent = '🆘 チップがなくなったので、特別に100チップ出したよ'; c += 100; }
+        else { var w = Math.ceil((20 * 60 * 1000 - (Date.now() - last)) / 60000); $('slRes').textContent = 'チップが足りません。あと約' + w + '分で、100チップ出るよ'; return false; }
+      }
+      if (c < bet) { var nb = 10; [10, 50, 100, 500].forEach(function (b) { if (b <= c) nb = b; }); setBet(nb); }
+      return true;
+    }
+    function forceEnd() { if (!spinning) return; var g = SLT.g; if (g) { for (var z = 0; z < SLN; z++) sf(function () { setCells(z, g); }); finish(g, SLT.free); } else { spinning = false; $('slGo').disabled = false; ticking = false; } }
     function spin() {
       if (spinning) return; var free = fs > 0; $('slWin').textContent = '';
-      if (!free) { chipFree(); if (chipsGet() < bet) { $('slRes').textContent = ARC.on ? 'チップが足りません（1日1回、500チップもらえるよ）' : 'チップが足りません'; return; } chipsSet(chipsGet() - bet); chipUpd2(); } else { fs--; $('slRes').textContent = '🎰 フリースピン 残り ' + fs + ' 回'; }
-      SLT.cn = (SLT.cn || 0) + 1; spinning = true; $('slGo').disabled = true; $('slRes').textContent = free ? $('slRes').textContent : ''; $('slRc').className = 'slRc'; $('slL').innerHTML = ''; $('slA').classList.remove('winning'); stopped = 0;
-      var g = []; for (var r2 = 0; r2 < 5; r2++) g.push([slCell(r2), slCell(r2), slCell(r2)]);
-      for (r2 = 0; r2 < 5; r2++) startReel(r2); ticking = true; tick(); arTone(300, .25, 'sawtooth', .04); arTone(450, .25, 'sawtooth', .04, .1);
-      var reach = null;
+      if (!free) { if (!chipsEnough()) return; if (chipsGet() < bet) { $('slRes').textContent = 'チップが足りません'; return; } chipsSet(chipsGet() - bet); chipUpd2(); } else { fs--; $('slRes').textContent = '🎰 フリースピン 残り ' + fs + ' 回'; }
+      spinning = true; SLT.free = free; SLT.cn = (SLT.cn || 0) + 1; $('slGo').disabled = true; if (!free) $('slRes').textContent = ''; $('slRc').className = 'slRc'; $('slL').innerHTML = ''; $('slA').classList.remove('winning', 'reach'); shake(false); stopped = 0;
+      Array.prototype.forEach.call($('arcc').querySelectorAll('.slc .c.win'), function (e) { e.classList.remove('win'); });
+      var g = []; for (var r2 = 0; r2 < SLN; r2++) g.push([slCell(r2), slCell(r2), slCell(r2)]); SLT.g = g;
+      clearTimeout(wdog); wdog = setTimeout(function () { forceEnd(); }, 16000); arcTm.push(wdog);
+      for (r2 = 0; r2 < SLN; r2++) startReel(r2); ticking = true; tick(); sf(function () { arTone(300, .25, 'sawtooth', .04); arTone(450, .25, 'sawtooth', .04, .1); });
+      /* 予告演出：結果を先に決めてあるので、当たりそうな時ほど出やすい（ガセも混ざる） */
+      var pre = slEval(g, bet), ratio = pre.tot / bet, pr = Math.random();
+      if ((ratio >= 8 && pr < .7) || (ratio >= 2 && pr < .3) || pr < .09) later(function () {
+        var kind = ratio >= 15 ? 2 : (ratio >= 2 || pr < .04 ? 1 : 0), P = $('slPre'); if (!P) return;
+        P.textContent = ['🌟 予告：きらめき？', '🔥 予告：激アツ！', '🌈 予告：プレミアム！！'][kind]; P.className = 'slPre on k' + kind; later(function () { if ($('slPre')) $('slPre').className = 'slPre'; }, 1500); sf(function () { arSay(['チャンス？', '激アツ', 'プレミアム'][kind]); climb(3 + kind * 2, 500, 'triangle', .06); }); if (kind) flash(kind === 2 ? '#ff6bd6' : '#ffb300');
+      }, 380);
+      var wd = 0;
       function stop(r) {
-        setCells(r, g); sndThunk(r); stopped++;
-        if (r === 2) {
-          var rc = slReach(g, 3), hit = rc.line >= 3 ? 'line' : (rc.sc >= 2 ? 'sc' : '');
-          if (hit) { reach = hit; banner(hit === 'sc' ? '🎰 スキャッターリーチ！' : '🔥 リーチ！', 'r1'); $('slA').classList.add('reach'); arSay('リーチ！', 1.1, 1.1); for (var k = 0; k < 8; k++) arTone(300 * Math.pow(1.12, k), .16, 'sawtooth', .05, k * .13); later(function () { stop(3); }, 1500); }
-          else later(function () { stop(3); }, 480);
-        } else if (r === 3) {
-          var rc4 = slReach(g, 4), s4 = reach && (rc4.line >= 4 || rc4.sc >= 3), wait = reach ? (s4 ? 2300 : 1500) : 480;
-          if (s4) { banner('⚡ SUPER REACH ⚡', 'r2'); arSay('大チャンス！', 1.15, 1.1); for (var k2 = 0; k2 < 10; k2++) arTone(400 * Math.pow(1.1, k2), .14, 'square', .04, k2 * .16); }
-          later(function () { stop(4); }, wait);
-        } else if (r === 4) { later(function () { finish(g, free); }, 350); }
+        slow(r, false); setCells(r, g); sf(function () { sndThunk(r); }); stopped++;
+        if (r >= SLN - 1) { later(function () { finish(g, free); }, 350); return; }
+        var rc = slReach(g, r + 1), wait = 430, lvl = 0, nxt = r + 1;
+        if (r >= 2) {
+          if (rc.line >= 3) {
+            lvl = rc.line - 2; /* 1:リーチ 2:SUPER 3:MEGA 4:ULTRA */
+            var T = ['', '🔥 リーチ！', '⚡ SUPER REACH ⚡', '🌋 MEGA REACH 🌋', '🌈 ULTRA REACH 🌈'][Math.min(4, lvl)], S = ['', 'リーチ！', '大チャンス！', 'メガチャンス！', 'ウルトラ！'][Math.min(4, lvl)];
+            banner(rc.s7 && lvl >= 2 ? '7️⃣ ' + T : T, 'r' + Math.min(4, lvl)); $('slA').classList.add('reach'); shake(lvl >= 2);
+            sf(function () { arSay(S); climb(6 + lvl * 2, 300, lvl >= 3 ? 'square' : 'sawtooth'); });
+            if (lvl >= 2) { flash(lvl >= 4 ? '#7af0ff' : '#ff3b3b'); cut(['', '', 'チャンス！', 'メガ！', 'ULTRA!!'][Math.min(4, lvl)], ['', '', '🐱', '🦁', '🐉'][Math.min(4, lvl)], 'c' + Math.min(4, lvl)); }
+            wait = 900 + lvl * 480; slow(nxt, 1);
+          } else if (rc.sc >= 2 && stopped < SLN) {
+            banner(rc.sc >= 3 ? '🎰 フリースピン確定！？' : '🎰 スキャッターリーチ！', 'r2'); $('slA').classList.add('reach'); sf(function () { arSay(rc.sc >= 3 ? 'フリースピン、きそう' : 'スキャッター'); climb(7, 380, 'square'); }); flash('#2bf0ff'); cut('SCATTER', '🎰', 'c3'); wait = 1200 + (rc.sc - 2) * 500; slow(nxt, 1);
+          } else if (rc.wd >= 2 && Math.random() < .55) {
+            banner('🃏 ワイルド発動！', 'r1'); sf(function () { climb(4, 600, 'triangle', .06); }); wait = 800;
+          } else if (Math.random() < .1) { /* ガセ予告 */ banner('？？？', 'r1'); sf(function () { climb(4, 360, 'sawtooth', .04); }); wait = 900; slow(nxt, 1); }
+          else { $('slA').classList.remove('reach'); shake(false); if ($('slRc').className.indexOf('on') >= 0) $('slRc').className = 'slRc'; }
+        }
+        later(function () { stop(nxt); }, wait);
       }
-      later(function () { stop(0); }, 850); later(function () { stop(1); }, 1250); later(function () { stop(2); }, 1650);
-      later(function () { if (spinning && stopped < 5) { for (var z = stopped; z < 5; z++) setCells(z, g); finish(g, free); } }, 9000);
+      later(function () { stop(0); }, 800); later(function () { stop(1); }, 1150);
     }
-    function sndThunk(r) { arTone(95, .12, 'sine', .22); arNoise(.07, 900, .35, 0, 1); arTone(220 + r * 45, .08, 'triangle', .08); }
+    function sndThunk(r) { arTone(95, .12, 'sine', .22); arNoise(.07, 900, .35, 0, 1); arTone(220 + r * 40, .08, 'triangle', .08); }
     function showLines(ev) {
       var L = $('slL'); if (!L || !ev.wins.length) return; var i = 0;
       (function cyc() { if (!$('slL')) return; var w = ev.wins[i % ev.wins.length], pts = SLLN[w.li].slice(0, w.n).map(function (row, r) { return (r + .5) + ',' + (row + .5); }).join(' '); L.innerHTML = '<polyline points="' + pts + '" fill="none" stroke="#fff6a8" stroke-width="5" stroke-linecap="round" stroke-linejoin="round" vector-effect="non-scaling-stroke" style="filter:drop-shadow(0 0 4px #ffb300)"/>'; i++; if (i < 40) later(cyc, 850); })();
     }
     function finish(g, free) {
-      if (!spinning) return; ticking = false; var ev = null;
+      if (!spinning) return; clearTimeout(wdog); ticking = false; shake(false); var ev = null; for (var z = 0; z < SLN; z++) sf(function () { slow(z, false); });
       try {
-        ev = slEval(g, bet / 10); var tot = ev.tot; $('slA').classList.remove('reach'); $('slRc').className = 'slRc';
+        ev = slEval(g, bet); var tot = ev.tot; $('slA').classList.remove('reach'); $('slRc').className = 'slRc';
         Object.keys(ev.cells).forEach(function (k) { var p = k.split(','), e = $('c' + p[0] + p[1]); if (e) e.classList.add('win'); });
         if (tot > 0) {
-          chipsSet(chipsGet() + tot); var ratio = tot / bet, five = ev.wins.some(function (w) { return w.n === 5 && w.amt >= 2500 * bet / 10; }), lv = five ? 4 : (ratio >= 50 ? 3 : (ratio >= 15 ? 2 : (ratio >= 5 ? 1 : 0)));
+          chipsSet(chipsGet() + tot); var ratio = tot / bet, five = ev.wins.some(function (w) { return w.n >= 6 && w.b === '7'; }), lv = five ? 4 : (ratio >= 50 ? 3 : (ratio >= 15 ? 2 : (ratio >= 4 ? 1 : 0)));
           $('slA').classList.add('winning'); showLines(ev);
           var steps = 18, i = 0, cid = (SLT.cn = (SLT.cn || 0) + 1); (function cnt() { var e = $('slWin'); if (!e || SLT.cn !== cid) return; i++; e.textContent = '+' + Math.round(tot * Math.min(1, i / steps)).toLocaleString(); if (i < steps) later(cnt, 50); })();
           $('slRes').textContent = (lv >= 4 ? '👑 JACKPOT！' : lv === 3 ? '💥 MEGA WIN！' : lv === 2 ? '🎊 BIG WIN！' : '🎉 WIN') + (ev.wins.length ? '（' + ev.wins.length + 'ライン）' : '');
-          var nc = [4, 8, 12, 16, 22][lv]; for (var k = 0; k < nc; k++) sndChip(k * .07); [0, 1, 2, 3, 4].slice(0, 2 + lv).forEach(function (k) { arTone(523 * Math.pow(1.26, k), .3, 'triangle', .09, .1 + k * .11); });
-          if (lv >= 2) { var B = $('slBig'); B.innerHTML = '<div class="bt">' + (lv >= 4 ? 'JACKPOT' : lv === 3 ? 'MEGA WIN' : 'BIG WIN') + '</div><div class="bn">' + tot.toLocaleString() + '</div>' + new Array(26).join('x').split('').map(function () { return '<i style="left:' + Math.round(Math.random() * 96) + '%;animation-delay:' + (Math.random() * 1.2).toFixed(2) + 's">🪙</i>'; }).join(''); B.classList.add('on'); later(function () { B.classList.remove('on'); }, 2600); arSay(lv >= 4 ? 'ジャックポット！' : lv === 3 ? 'メガウィン！' : 'ビッグウィン！', 1.05, 1.05); vib([30, 30, 60]); }
-        } else { $('slRes').textContent = free ? $('slRes').textContent : 'ハズレ…'; arTone(200, .25, 'sine', .05); }
-        if (ev.sc >= 3) { fs += 8; $('slRes').textContent = '🎰 フリースピン ' + fs + ' 回！'; arSay('フリースピン！', 1.1, 1.1); [0, 1, 2, 3, 4].forEach(function (k) { arTone(660 * Math.pow(1.19, k), .3, 'square', .05, k * .1); }); }
+          var nc = [4, 8, 12, 18, 26][lv]; for (var k = 0; k < nc; k++) sf(function () { sndChip(k * .07); }); sf(function () { [0, 1, 2, 3, 4, 5].slice(0, 2 + lv + 1).forEach(function (k) { arTone(523 * Math.pow(1.26, k), .3, 'triangle', .09, .1 + k * .11); }); });
+          if (lv >= 1) flash(lv >= 3 ? '#ffe27a' : '#fff');
+          if (lv >= 2) { var B = $('slBig'), em = ['🪙', '🪙', '🪙', '💎', '👑'][lv]; B.innerHTML = '<div class="bt">' + (lv >= 4 ? 'JACKPOT' : lv === 3 ? 'MEGA WIN' : 'BIG WIN') + '</div><div class="bn">' + tot.toLocaleString() + '</div>' + new Array(lv >= 3 ? 40 : 26).join('x').split('').map(function (_, n) { return '<i style="left:' + Math.round(Math.random() * 96) + '%;animation-delay:' + (Math.random() * 1.2).toFixed(2) + 's">' + (n % 4 === 0 ? ['🎆', '✨', '🎇', '🌟'][(n >> 2) % 4] : em) + '</i>'; }).join(''); B.classList.add('on'); later(function () { B.classList.remove('on'); }, lv >= 3 ? 4200 : 2600); sf(function () { arSay(lv >= 4 ? 'ジャックポット！' : lv === 3 ? 'メガウィン！' : 'ビッグウィン！'); }); vib([30, 30, 60]); }
+        } else { $('slRes').textContent = free ? $('slRes').textContent : 'ハズレ…'; sf(function () { arTone(200, .25, 'sine', .05); }); }
+        if (ev.sc >= 3) { fs += 8; $('slRes').textContent = '🎰 フリースピン ' + fs + ' 回！'; flash('#2bf0ff'); cut('FREE SPIN', '🎰', 'c3'); sf(function () { arSay('フリースピン！'); [0, 1, 2, 3, 4].forEach(function (k) { arTone(660 * Math.pow(1.19, k), .3, 'square', .05, k * .1); }); }); }
       } catch (e) { }
       chipUpd2(); spinning = false; $('slGo').disabled = false; arcFlush();
-      if (fs > 0) later(spin, ev && ev.tot > 0 ? 3000 : 1600);
+      if (fs > 0) later(spin, ev && ev.tot > 0 ? 3200 : 1700);
     }
     $('slGo').onclick = spin;
   }
@@ -5373,6 +5438,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     }
   }
   function openBJ() {
+    arSit('bj');
     try { var pend = parseInt(localStorage.getItem('opa_pk_pend') || '0', 10); if (pend > 0) { chipsSet(chipsGet() + pend); localStorage.removeItem('opa_pk_pend'); } } catch (e) {}
     chipFree(); var buy = Math.min(1000, chipsGet()); if (buy < 20) { arcShow('<h2>🃏 ブラックジャック</h2><p>チップが足りません</p><button type="button" class="arcx" id="pkX0">とじる</button>'); $('pkX0').onclick = arcClose; return; }
     chipsSet(chipsGet() - buy); try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {}
@@ -5598,6 +5664,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     }
   }
   function openHoldem() {
+    arSit('pk');
     try { var pend = parseInt(localStorage.getItem('opa_pk_pend') || '0', 10); if (pend > 0) { chipsSet(chipsGet() + pend); localStorage.removeItem('opa_pk_pend'); } } catch (e) {}
     chipFree(); var buy = Math.min(PKBUY, chipsGet()); if (buy < 20) { arcShow('<h2>♠ テキサスホールデム</h2><p>チップが足りません</p><button type="button" class="arcx" id="pkX0">とじる</button>'); $('pkX0').onclick = arcClose; return; }
     chipsSet(chipsGet() - buy); try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {}
