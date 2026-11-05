@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:52-->
+<!--GV:56-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -430,7 +430,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #field.town #fTools #plChat{display:block}
 #field.town.chat #fTools #plChat{background:#ffd36a;color:#3a2a08;border-color:#ffd36a}
 #fTools{flex-wrap:wrap;row-gap:5px}
-#fTools #dashBtn{border:1.5px solid #b0e0ff;background:rgba(10,26,40,.82);color:#d6f1ff}
+#fTools #dashBtn,#fTools #warpBtn{border:1.5px solid #b0e0ff;background:rgba(10,26,40,.82);color:#d6f1ff}
 #fTools #spBtn{border:1.5px solid #888;background:rgba(30,20,40,.82);color:#bbb}
 #fTools #spBtn.rdy{border-color:#ffd36a;background:linear-gradient(#ff9a3c,#ff5a3c);color:#fff;box-shadow:0 0 10px #ffb347;animation:spg .9s infinite alternate}
 @keyframes spg{to{box-shadow:0 0 20px #ff8a3c}}
@@ -549,6 +549,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #fDigBar #dig{display:none!important}
 #field:not(.arena) #fDigBar #atkBtn{display:none!important}
 #field.digging #ftip{display:none}
+#hint{display:none!important}
 .monw{position:absolute;width:92px;transform:translate(-50%,-100%);pointer-events:none}
 .gh{position:absolute;width:38px;height:71px;transform:translate(-50%,-100%);pointer-events:none}
 .gh .hb{width:64px;height:118px;zoom:.6;transform-origin:50% 100%;position:relative}
@@ -652,7 +653,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   <div id="cfm"><div class="gc"><h3>ゲームをとじる？</h3><p class="tiny">とじても、ここまでの記録は残るよ。</p><div class="rw" style="display:flex;gap:8px;margin-top:12px"><button id="cfmNo" type="button" class="gbtn" style="flex:1">つづける</button><button id="cfmYes" type="button" class="gbtn dim" style="flex:1;margin-top:0">とじる</button></div></div></div>
   <section class="scr" id="field">
     <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="装備・もちもの">🎒<small>装備・持物</small></button><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
-    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="plDown"><span>やられた…（このままチャットもできるよ）</span><button type="button" class="gbtn" id="plDownGo">🏥 病院へ向かう</button></div><div id="fTools"><button id="goTown" type="button">🏘️ 町へ</button><button id="goMine" type="button">⛏ 鉱山へ</button><button id="plChat" type="button">💬 チャット</button><button id="dashBtn" type="button">💨 ダッシュ</button><button id="spBtn" type="button">✨ 0%</button><button id="sk0" class="skb" type="button"></button><button id="sk1" class="skb" type="button"></button><button id="sk2" class="skb" type="button"></button><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">💬</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしまった…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
+    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="plDown"><span>やられた…（このままチャットもできるよ）</span><button type="button" class="gbtn" id="plDownGo">🏥 病院へ向かう</button></div><div id="fTools"><button id="goTown" type="button">🏘️ 町へ</button><button id="goMine" type="button">⛏ 鉱山へ</button><button id="plChat" type="button">💬 チャット</button><button id="dashBtn" type="button">💨 ダッシュ</button><button id="warpBtn" type="button">🌀 ワープ</button><button id="spBtn" type="button">✨ 0%</button><button id="sk0" class="skb" type="button"></button><button id="sk1" class="skb" type="button"></button><button id="sk2" class="skb" type="button"></button><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">💬</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしまった…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
         <div id="gld"><div class="gc"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="tiny">ギルドの部屋</span><button id="gClose" type="button" class="gbtn" style="padding:6px 12px">とじる</button></div><div id="gBody"></div></div></div>
         <div id="npc"><div class="nc"><div class="nh"><b id="npcN"></b><button type="button" class="gbtn" id="npcX" style="padding:6px 12px">とじる</button></div><div id="npcSay"></div><div id="npcQs"></div><div class="nin"><input id="npcIn" maxlength="30" placeholder="聞きたいこと（例：HP、闘技場、売る）" autocomplete="off"><button type="button" class="gbtn" id="npcGo">きく</button></div><div id="npcAct"></div></div></div><div id="arInv"><b id="arInvT"></b><div><button type="button" class="abtn" id="arInvY">受ける</button><button type="button" class="gbtn" id="arInvN">ことわる</button></div></div><div id="updBar" role="button">🔄 新しい版があるよ。ここをタップして更新</div>
         <div id="arBig"></div>
@@ -817,7 +818,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var GM_ID = '4a324658-8414-4361-9962-9a6963982a39', myMidG = '', gmOn = LSget('opa_gm_off') !== '1';
   function lvS(x) { return x && x.id === GM_ID ? 999 : (x ? x.lv : 1); }
   var tt;
-  function toast(m) { var t = $('toast'); t.textContent = m; t.style.display = 'block'; clearTimeout(tt); tt = setTimeout(function () { t.style.display = 'none'; }, 2200); }
+  function toast(m) { if (typeof fieldOn !== 'undefined' && fieldOn && !inTown && !/つながり|エラー|失敗|もう一回/.test(m)) return; var t = $('toast'); t.textContent = m; t.style.display = 'block'; clearTimeout(tt); tt = setTimeout(function () { t.style.display = 'none'; }, 2200); }
   var qAt = 0; function toastQ() { var n = Date.now(); if (n - qAt < 6000) return; qAt = n; floatTxtQ(); }
   function floatTxtQ() { try { if (typeof floatTxt === 'function' && typeof hero !== 'undefined') floatTxt(hero.x, hero.y - 110, 'とどかない…', 'y'); } catch (e) {} }
   function show(id) { ['load', 'open', 'make', 'map', 'field', 'play'].forEach(function (x) { $(x).classList.toggle('on', x === id); }); if (typeof gmTogUi === 'function') gmTogUi(); fieldOn = (id === 'field'); if (fieldOn) startLoop(); if (typeof BGM !== 'undefined' && BGM) if (id !== 'open') themeStop(); BGM.set(({ field: (inTown ? 'town' : 'field'), play: 'dig' })[id] || (id === 'open' && !THEME.on && THEME.failed ? 'map' : null)); }
@@ -1422,7 +1423,6 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var nm = monster.d.nm; dropRoll(Math.min(2, ((monster.d && monster.d.tier) || 0) + (monster.big ? 1 : 0))); clearInterval(monTimer); monTimer = 0; monster = null;
     m.classList.remove('hit', 'atk'); void m.offsetWidth; m.classList.add('flee'); sfx(2);
     $('hint').textContent = '追いはらったよ！つづけて掘ろう（あと ' + (TAPS - taps) + ' 回）';
-    toast(nm + 'を追いはらった！');
     setTimeout(function () { removeMon(); if (monWaves > 0 && curSpot && !busy && !hp.down) { monWaves--; setTimeout(function () { if (curSpot && !monster && !busy && !hp.down) { spawnMon(); toast('まだ来るよ！'); } }, 500); } }, 620);
   }
   function swing(ev) {
@@ -2255,7 +2255,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     pk.style.filter = (w && w.hu) ? 'hue-rotate(' + w.hu + 'deg) saturate(1.25)' : '';
     pk.innerHTML = mode === 'pick' ? toolHandHTML(SKIN[normAv(player.avatar).skin]) : weaponSVG(mode);
   }
-  var SBASE = [4, 12, 32, 100], SMULT = { quartz: 1, amethyst: 1, citrine: 1, garnet: 1, peridot: 1, sapphire: 1.5, emerald: 1.5, ruby: 1.5, diamond: 1.5, whiteopal: 1.5, paraiba: 2.5, alexandrite: 2.5, colordiamond: 2.5, crystalopal: 2.5, boulderopal: 4, fireopal: 4, blackopal: 4 };
+  var SBASE = [40, 120, 320, 1000], SMULT = { quartz: 1, amethyst: 1, citrine: 1, garnet: 1, peridot: 1, sapphire: 1.5, emerald: 1.5, ruby: 1.5, diamond: 1.5, whiteopal: 1.5, paraiba: 2.5, alexandrite: 2.5, colordiamond: 2.5, crystalopal: 2.5, boulderopal: 4, fireopal: 4, blackopal: 4 };
   function stonePrice(id, g) { return Math.round(SBASE[g] * (SMULT[id] || 1)); }
   var TIERCOL = ['#9db0b8', '#58a6ff', '#b583ff', '#ffd36a'];
   function openBag(tab) { bagTab = tab || 0; buyArm = null; sellArm = null; skArm = null; renderBag(); $('bag').classList.add('on'); }
@@ -3294,7 +3294,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 54;
+  var GV = 55;
   (function () {
     var last = Date.now();
     function chk() {
@@ -4026,7 +4026,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     runQ(q);
   }
   /* ---------- フィールド（歩いて、掘る場所を選ぶ） ---------- */
-  var WW = 760, WH = 1000, SPEED = 200;
+  var WW = 760, WH = 1000, SPEED = 165;
   function setWorld(w, h) { WW = w; WH = h; var el = $('world'); el.style.width = w + 'px'; el.style.height = h + 'px'; }
   var ZW = .66, hero = { x: 380, y: 900, dir: 1 }, fz = ZW, zoomT = ZW, camX = 0, camY = 0, ftarget = null, fieldOn = false, fraf = 0, flast = 0;
   var spots = [], curSpot = null, spotSeq = 0, spotKind = 'a', tipT = 0;
@@ -4113,7 +4113,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var guard = false, atkAt = 0;
   function defP() { var s = eqItem('shield'), h = isGM() ? GMI.helm : null; return Math.min(.85, (s ? s.def : 0) + (h ? h.def : 0) + (guard ? .4 : 0) + (performance.now() < skGuardUntil ? .5 : 0)); }
   function atkReady() { var w = curW(), n = performance.now(); if (n < atkAt) return false; atkAt = n + (w && w.cd ? w.cd : 0); return true; }
-  function atkRange() { var w = curW(); return w ? (w.rng || w.mr || 150) : 150; }
+  function atkRange() { var w = curW(); return w ? (w.rng || Math.round((w.mr || 150) * .6)) : 90; }
   function mlv() { return (curMine && MBY[curMine]) ? (MBY[curMine].fl || MBY[curMine].lv) : 1; }
   function diffN() { var m = mlv(); return m <= 10 ? Math.max(0, (m - 1) / 90) : Math.min(1, .35 + (m - 11) / 50 * .65); }
   function foeCap() { return 5 + Math.round(Math.pow(diffN(), 1.15) * 31) + (mlv() >= 11 ? 4 : 0); }
@@ -4142,7 +4142,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var EQSL = ['weapon', 'shield', 'armor', 'outfit', 'tool', 'helm'];
   function rtHp() { if (rtOn) { rtLast = 0; } }
 
-  var skG = 0, dashAt = 0, dashInv = 0, guardAt = 0, jfxAt = 0, qcMode = '', heroDashT = 0, skAtkUntil = 0, skGuardUntil = 0, skHasteUntil = 0, skLeechUntil = 0, skCd = {};
+  var skG = 0, warpAt = 0, dashAt = 0, dashInv = 0, guardAt = 0, jfxAt = 0, qcMode = '', heroDashT = 0, skAtkUntil = 0, skGuardUntil = 0, skHasteUntil = 0, skLeechUntil = 0, skCd = {};
   function skAdd(n) { if (isGM()) return; skG = Math.min(100, skG + n); skUi(); }
   function spDef() { var w = curW(); if (!w) return null; return SPD[w.sp || ('k_' + (w.kind || 'sword'))] || null; }
   function skUi() {
@@ -4150,8 +4150,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var rdy = isGM() || skG >= 100; b.classList.toggle('rdy', rdy); b.textContent = rdy ? '✨ ' + d.nm : '✨ ' + Math.floor(skG) + '%';
   }
   function dashUi() {
-    var b = $('dashBtn'); if (!b || b.style.display === 'none') return; var r = dashAt - performance.now();
-    b.textContent = r > 0 ? '💨 ' + Math.ceil(r / 1000) : '💨 ダッシュ'; b.style.opacity = r > 0 ? .55 : 1;
+    var n = performance.now();
+    [['dashBtn', dashAt, '💨 ダッシュ'], ['warpBtn', warpAt, '🌀 ワープ']].forEach(function (a) { var b = $(a[0]); if (!b || b.style.display === 'none') return; var r = a[1] - n; b.textContent = r > 0 ? a[2].slice(0, 2) + ' ' + Math.ceil(r / 1000) : a[2]; b.style.opacity = r > 0 ? .55 : 1; });
   }
   setInterval(function () { if (fieldOn) { dashUi(); skBtnUi(); } }, 200);
   function justFx(t, g) { var n = performance.now(); if (n - jfxAt < 500) return; jfxAt = n; floatTxt(hero.x, hero.y - 94, t, 'y'); skAdd(g); snd('parry'); vib(15); }
@@ -4255,16 +4255,18 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   [0, 1, 2].forEach(function (i) { var b = $('sk' + i); b.addEventListener('click', function () { useSkill(i); }); b.addEventListener('pointerdown', function (e) { e.stopPropagation(); }); });
   function doDash() {
     var w = curW(); if (!w || hp.down || busy || inTown) return; var n = performance.now();
-    if (n < dashAt) { toast('ダッシュは、あと ' + Math.ceil((dashAt - n) / 1000) + ' 秒で使えるよ'); return; }
-    var en = enemies(), ne = nearestE(en), ranged = !!w.rng, nx, ny;
-    if (!ranged) {
-      if (ne && ne.d < 460 + 30) { var dx = ne.e.x - hero.x, dy = ne.e.y - hero.y, L = Math.hypot(dx, dy) || 1, mv = Math.max(0, Math.min(L - 70 - ne.e.r * .5, 460)); nx = hero.x + dx / L * mv; ny = hero.y + dy / L * mv; hero.dir = dx >= 0 ? 1 : -1; }
-      else { nx = hero.x + hero.dir * 170; ny = hero.y; }
-    } else {
-      if (ne && ne.d < 420) { var ex = hero.x - ne.e.x, ey = hero.y - ne.e.y, M = Math.hypot(ex, ey) || 1; nx = hero.x + ex / M * 190; ny = hero.y + ey / M * 190; }
-      else { nx = hero.x - hero.dir * 170; ny = hero.y; }
-    }
-    dashAt = n + (ranged ? 5000 : 4500); dashInv = n + 450; hp.inv = Math.max(hp.inv, n + 450); heroTo(nx, ny); snd('dash'); vib(15); dashUi();
+    if (n < dashAt) return;
+    var ne = nearestE(enemies()); if (!ne) return;
+    var dx = ne.e.x - hero.x, dy = ne.e.y - hero.y, L = Math.hypot(dx, dy) || 1, mv = Math.min(225, Math.max(0, L - 40));
+    hero.dir = dx >= 0 ? 1 : -1;
+    dashAt = n + 4000; dashInv = n + 350; hp.inv = Math.max(hp.inv, n + 350); heroTo(hero.x + dx / L * mv, hero.y + dy / L * mv); snd('dash'); vib(15); dashUi();
+  }
+  function doWarp() {
+    var w = curW(); if (!w || hp.down || busy || inTown) return; var n = performance.now();
+    if (n < warpAt) return;
+    var ne = nearestE(enemies()); if (!ne) return;
+    var ex = hero.x - ne.e.x, ey = hero.y - ne.e.y, M = Math.hypot(ex, ey) || 1;
+    warpAt = n + 4000; dashInv = n + 350; hp.inv = Math.max(hp.inv, n + 350); heroTo(ne.e.x + ex / M * 375, ne.e.y + ey / M * 375); snd('dash'); vib(15); dashUi();
   }
   function doSpecial() {
     var w = curW(); if (!w || hp.down || busy || inTown) return; var d = spDef(); if (!d) return;
@@ -4295,8 +4297,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     }
     if (done) fin();
   }
-  $('dashBtn').addEventListener('click', doDash); $('spBtn').addEventListener('click', doSpecial);
-  ['dashBtn', 'spBtn', 'plChat'].forEach(function (id) { $(id).addEventListener('pointerdown', function (e) { e.stopPropagation(); }); });
+  $('dashBtn').addEventListener('click', doDash); $('warpBtn').addEventListener('click', doWarp); $('spBtn').addEventListener('click', doSpecial);
+  ['dashBtn', 'warpBtn', 'spBtn', 'plChat'].forEach(function (id) { $(id).addEventListener('pointerdown', function (e) { e.stopPropagation(); }); });
   function hurtMe(dmg) {
     if (hp.down || inTown || busy) return false;
     var now = performance.now(); if (now < hp.inv) { if (now < dashInv) justFx('ジャスト回避！', 15); return false; }
@@ -4381,7 +4383,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     g.style.display = (has && fieldOn) ? 'block' : 'none'; g.classList.toggle('on', guard); g.textContent = guard ? '🛡 ガード中' : '🛡 ガード';
     var hh = $('hero2'); if (hh) hh.classList.toggle('guard', guard);
     var sw = $('swBtn'); if (sw) { sw.style.display = (fieldOn && !inTown && eqItem('weapon')) ? 'block' : 'none'; sw.textContent = handW() ? '🔁 つるはし' : '🔁 武器'; }
-    var hv = !!(fieldOn && !inTown && eqItem('weapon') && handW()); $('dashBtn').style.display = hv ? 'block' : 'none'; $('spBtn').style.display = hv ? 'block' : 'none'; skUi(); dashUi(); skBtnUi();
+    var hv = !!(fieldOn && !inTown && eqItem('weapon') && handW()); $('dashBtn').style.display = hv ? 'block' : 'none'; $('warpBtn').style.display = hv ? 'block' : 'none'; $('spBtn').style.display = hv ? 'block' : 'none'; skUi(); dashUi(); skBtnUi();
     var qb = $('qcBtn'); if (qb) { var qs = fieldOn; qb.style.display = qs ? 'block' : 'none'; if (!qs) $('qcPanel').classList.remove('on'); var wm = inTown ? 't' : 'b'; if (qcMode !== wm) { qcMode = wm; qcFill(); $('qcPanel').classList.remove('on'); } }
     handUi();
   }
@@ -4638,7 +4640,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var trr = trHit(hit, atkP()), dm = trr.dm; impactSnd(); vib(20); swingAnim(); dustW(hit.x, hit.y - 30); floatTxt(hit.x, hit.y - 80, isGM() ? '一撃！' : '-' + dm, 'y'); trDone(trr, hit);
     var aoeL = []; if (wq && wq.aoe) { aoeL = foes.filter(function (f) { return f !== hit && f.mode !== 'dead' && Math.hypot(f.x - hit.x, f.y - hit.y) < wq.aoe; }); var af = document.createElement('i'); af.className = 'aoefx'; af.style.cssText = 'left:' + hit.x + 'px;top:' + (hit.y - 30) + 'px;width:' + (wq.aoe * 2) + 'px;height:' + (wq.aoe * 2) + 'px'; $('world').appendChild(af); setTimeout(function () { af.remove(); }, 400); }
     var exL = trExtra(hit, trr, aoeL.map(function (f) { return { f: f, m: .7 }; }));
-    if (amFoeHost()) { var was = hit.hp; applyFoeDamage(hit, dm); if (hit.hp <= 0 && was > 0) toast(hit.d.nm + 'を追いはらった！'); exL.forEach(function (o) { applyFoeDamage(o.f, Math.round(dm * o.m)); }); }
+    if (amFoeHost()) { var was = hit.hp; applyFoeDamage(hit, dm); exL.forEach(function (o) { applyFoeDamage(o.f, Math.round(dm * o.m)); }); }
     else { rtSend({ t: 'hit', i: hit.id, d: dm }); hit.el.classList.remove('hit'); void hit.el.offsetWidth; hit.el.classList.add('hit'); exL.forEach(function (o) { rtSend({ t: 'hit', i: o.f.id, d: Math.round(dm * o.m) }); }); }
     return true;
   }
