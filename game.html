@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:65-->
+<!--GV:66-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -220,6 +220,48 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #arc .slcell.win{background:#ffe27a;animation:slw .45s infinite alternate;box-shadow:0 0 10px #ffb300}
 @keyframes slw{from{transform:scale(1)}to{transform:scale(1.09)}}
 #arc .slfs{min-height:20px;color:#7af0ff;font-weight:800;font-size:15px}
+#arc .arcc.tv{display:flex;flex-direction:column;padding:6px 8px 8px;overflow:hidden;gap:3px}
+#arc .tvh{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:15px;color:#ffe27a;font-weight:800;max-width:460px;width:100%;margin:0 auto}
+#arc .tvh .chipb{margin:0;padding:3px 10px;font-size:13px}
+#arc .tvh .arcx{margin:0;padding:6px 12px;font-size:12px}
+#arc .tvA{flex:1 1 0;min-height:0;position:relative;width:100%;max-width:460px;margin:0 auto}
+#arc .tvM{flex:0 0 auto;min-height:18px;font-size:12px;color:#cfd8e3;line-height:1.3}
+#arc .tvC{flex:0 0 auto;display:flex;gap:6px;align-items:center;justify-content:center;height:76px;max-width:460px;width:100%;margin:0 auto}
+#arc .tvB{flex:1;display:flex;gap:6px}
+#arc .tvB .b{flex:1;height:44px;border-radius:10px;border:2px solid #666;background:#1c2030;color:#fff;font-size:13px;font-weight:700;padding:0 2px;min-width:0}
+#arc .b.fo{border-color:#c0504d;background:#3a1414}#arc .b.ca{border-color:#4cd964;background:#0e3a1a}#arc .b.ra,#arc .b.bt.on{border-color:#ffe27a;background:#3a3010;color:#ffe27a}
+#arc .tvB .b:disabled{opacity:.35}
+#arc .tvG{flex:0 0 50px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;color:#ffe27a;height:72px;font-weight:800}
+#arc input.vr{writing-mode:vertical-lr;direction:rtl;width:24px;height:50px;margin:0;accent-color:#ffe27a}
+#arc .tvW{padding:80px 0;color:#9fb4c4}
+#arc .tvDl{position:absolute;left:50%;top:0;transform:translateX(-50%);height:17%;aspect-ratio:1.2;z-index:3}
+#arc .tvDl svg{height:100%;width:100%}
+#arc .tvDl .arm{transform-origin:80px 58px}
+#arc .tvDl.dealing .arm{animation:armD .45s ease-in-out 3;animation-delay:var(--ad,0ms)}
+@keyframes armD{0%,100%{transform:rotate(0)}45%{transform:rotate(-55deg)}}
+#arc .tvO{position:absolute;left:5%;top:15%;width:90%;height:84%;border-radius:50%;background:radial-gradient(ellipse at 50% 40%,#1f7a46,#0b3320 85%);border:6px solid #4a2c14;box-shadow:0 0 0 2px #d4a73a,inset 0 0 40px #000b}
+#arc .tvO.bj{border-radius:50% 50% 44% 44% / 34% 34% 66% 66%;background:radial-gradient(ellipse at 50% 12%,#106048,#06291e 85%)}
+#arc .tvBd{position:absolute;left:50%;top:45%;transform:translate(-50%,-50%);display:flex;gap:3px;z-index:2}
+#arc .tvBd .pc{width:32px;height:45px;line-height:45px;font-size:14px;margin:0}
+#arc .tvPot{position:absolute;left:50%;top:58%;transform:translateX(-50%);color:#ffe27a;font-weight:800;font-size:12px;text-shadow:0 1px 3px #000;z-index:2}
+#arc .pkSeat{position:absolute;transform:translate(-50%,-50%);width:74px;text-align:center;font-size:10.5px;background:#000a;border:1px solid #556;border-radius:10px;padding:3px 2px;z-index:4}
+#arc .pkSeat.me{border-color:#7af0ff}
+#arc .pkSeat.turn{border-color:#ffe27a;box-shadow:0 0 12px #ffe27a}
+#arc .pkSeat .pkCs{min-height:31px;display:flex;justify-content:center}
+#arc .pc.sm{width:22px;height:31px;line-height:31px;font-size:11px;margin:0 1px;border-radius:4px}
+#arc .pkBet{position:absolute;transform:translate(-50%,-50%);background:#d4a73a;color:#2a1a00;border-radius:10px;padding:0 6px;font-size:11px;font-weight:800;z-index:3}
+#arc .pkW{position:absolute;left:50%;transform:translateX(-50%);top:-20px;background:#4cd964;color:#042;border-radius:8px;padding:1px 6px;font-weight:800;white-space:nowrap;font-size:10.5px;line-height:1.3;z-index:5}
+#arc .pkB2{color:#ffe27a;font-weight:800}
+#arc .bjs{width:68px}
+#arc .bjH{display:flex;justify-content:center;min-height:31px}
+#arc .bjH .pc{margin:0 -6px 0 0}
+#arc .bjD{position:absolute;left:50%;top:24%;transform:translateX(-50%);display:flex;align-items:center;gap:0;z-index:2}
+#arc .bjD .pc{margin:0 -4px 0 0}
+#arc .bjT{font-size:11px;font-weight:800;background:#000a;border-radius:8px;padding:0 6px;color:#ffe27a;margin:0 0 0 8px}
+#arc .bjs .bjT{margin:1px auto;display:inline-block}
+#arc .bjL{color:#c9a24a;letter-spacing:3px;font-size:11px}
+@keyframes dlA{0%{transform:translate(var(--dx),var(--dy)) rotate(220deg) scale(.45);opacity:0}12%{opacity:1}100%{transform:none;opacity:1}}
+#arc .pc.dl{animation:dlA .5s cubic-bezier(.2,.8,.3,1) both}
 #arc .pkTbl{position:relative;width:100%;max-width:400px;height:470px;margin:8px auto}
 #arc .pkOval{position:absolute;left:10%;top:12%;width:80%;height:76%;border-radius:50%;background:radial-gradient(ellipse at 50% 40%,#1f7a46,#0d3a22);border:7px solid #4a2c14;box-shadow:0 0 0 3px #d4a73a,inset 0 0 30px #000a}
 #arc .pkBoard{position:absolute;left:50%;top:42%;transform:translate(-50%,-50%);width:90%;display:flex;justify-content:center;gap:2px;min-height:60px}
@@ -2628,6 +2670,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!m || m.f === myMid) return;
     if (m.t === 'jk') { jkRecv(m); return; }
     if (m.t === 'pk') { pkRecv(m); return; }
+    if (m.t === 'bj') { bjRecv(m); return; }
     var pr = peers[m.f];
     if (m.t === 'pos') { if (!pr) pr = peers[m.f] = { id: m.f, x: m.x, y: m.y, tx: m.x, ty: m.y, dir: m.d || 1, got: false }; if (!pr.got) { pr.x = m.x; pr.y = m.y; pr.got = true; } pr.tx = m.x; pr.ty = m.y; pr.dir = m.d || 1; pr.h = m.h == null ? 100 : m.h; pr.dn = m.dn ? 1 : 0; pr.gm = m.gm ? 1 : 0; pr.st = m.st | 0; pr.dk = cupOk(m.dk); pr.ds = (m.ds == null ? -1 : m.ds | 0); pr.lv = m.lv; pr.eq = m.eq; ghostEl(pr); if (pr.gm && pr.el && !pr.el.classList.contains('gmg')) { pr.el.classList.add('gmg'); var gn = pr.el.querySelector('.gname'); if (gn) gn.textContent = '👑GM ' + (pr.n || ''); } return; }
     if (m.t === 'rev') { if (m.to === myMid && hp.down) reviveMe(pr && pr.n); return; }
@@ -3237,6 +3280,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!m || m.f === myMid) return;
     if (m.t === 'jk') { jkRecv(m); return; }
     if (m.t === 'pk') { pkRecv(m); return; }
+    if (m.t === 'bj') { bjRecv(m); return; }
     var mt = arena.m, duel = inArena && mt && !mt.over;
     if (m.t === 'ach') {
       if (m.to !== myMid) return;
@@ -4844,8 +4888,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!soundOn) return; var A = actx(); if (!A) return; var o = A.createOscillator(), g = A.createGain(), t0 = A.currentTime + (delay || 0);
     o.type = type || 'sine'; o.frequency.setValueAtTime(f, t0); g.gain.setValueAtTime(vol || .08, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + dur); o.connect(g); g.connect(A.destination); o.start(t0); o.stop(t0 + dur + .02);
   }
-  function arcShow(h) { $('arc').classList.add('on'); $('arcc').className = 'arcc'; $('arcc').innerHTML = h; }
-  function arcClose() { if (typeof PK !== 'undefined' && PK) pkLeave(); fpStop(); arcTm.forEach(clearTimeout); arcTm = []; $('arc').classList.remove('on'); }
+  function arcShow(h, cls) { $('arc').classList.add('on'); $('arcc').className = 'arcc' + (cls ? ' ' + cls : ''); $('arcc').innerHTML = h; try { BGM.duck(true); } catch (e) {} }
+  function arcClose() { if (typeof PK !== 'undefined' && PK) pkLeave(); if (typeof BJ !== 'undefined' && BJ) bjLeave(); try { BGM.duck(false); } catch (e) {} fpStop(); arcTm.forEach(clearTimeout); arcTm = []; $('arc').classList.remove('on'); }
   function chipBar() { return '<div class="chipb">🪙 <b id="chipN">' + chipsGet().toLocaleString() + '</b> チップ<small>ゲーム用・換金や景品はありません</small></div>'; }
   function chipUpd() { var e = $('chipN'); if (e) e.textContent = chipsGet().toLocaleString(); }
   function chipFree() { if (chipsGet() < 10) { chipsSet(chipsGet() + 500); chipUpd(); } }
@@ -4902,30 +4946,188 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function cardH(c, hid) { if (hid) return '<span class="pc back"></span>'; return '<span class="pc' + (c.s === 1 || c.s === 2 ? ' red' : '') + '">' + CRK[c.r] + CSU[c.s] + '</span>'; }
   function newDeck() { var d = [], s, r, i; for (s = 0; s < 4; s++) for (r = 1; r <= 13; r++) d.push({ r: r, s: s }); for (i = d.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = d[i]; d[i] = d[j]; d[j] = t; } return d; }
   function bjVal(h) { var t = 0, a = 0; h.forEach(function (c) { if (c.r === 1) { a++; t += 11; } else t += Math.min(10, c.r); }); while (t > 21 && a) { t -= 10; a--; } return t; }
+  /* --- テーブルゲーム共通：効果音・声・ディーラー・カード配りの動き --- */
+  function arNoise(dur, fc, vol, delay, q) {
+    if (!soundOn) return; var A = actx(); if (!A) return; try {
+      var n = Math.floor(A.sampleRate * dur), b = A.createBuffer(1, n, A.sampleRate), d = b.getChannelData(0), i; for (i = 0; i < n; i++) d[i] = (Math.random() * 2 - 1) * (1 - i / n);
+      var s = A.createBufferSource(), f = A.createBiquadFilter(), g = A.createGain(); s.buffer = b; f.type = 'bandpass'; f.frequency.value = fc; f.Q.value = q || 1; g.gain.value = vol; s.connect(f); f.connect(g); g.connect(A.destination); s.start(A.currentTime + (delay || 0));
+    } catch (e) {}
+  }
+  function sndCard(d) { arNoise(.09, 3400, .55, d, .8); arTone(190, .05, 'triangle', .05, d); }
+  function sndFlip(d) { arNoise(.14, 2200, .5, d, .6); }
+  function sndChip(d) { d = d || 0; arTone(2300, .07, 'square', .03, d); arTone(3000, .06, 'square', .025, d + .05); arNoise(.06, 5200, .25, d, 3); }
+  function sndKnock() { arTone(130, .08, 'sine', .22); arTone(95, .1, 'sine', .2, .1); }
+  function sndFold() { arNoise(.18, 1800, .4, 0, .5); }
+  function sndDing() { arTone(880, .12, 'sine', .08); arTone(1175, .18, 'sine', .08, .11); }
+  function sndWin() { [0, 1, 2, 3].forEach(function (k) { arTone(523 * Math.pow(1.26, k), .28, 'triangle', .1, k * .1); }); for (var k = 0; k < 5; k++) sndChip(.45 + k * .07); }
+  function sndLose() { arTone(220, .3, 'sawtooth', .05); arTone(165, .45, 'sawtooth', .05, .2); }
+  function arSay(t, pitch, rate) { try { if (!soundOn) return; var u = new SpeechSynthesisUtterance(t); u.lang = 'ja-JP'; u.rate = rate || 1.2; u.pitch = pitch || 1; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); } catch (e) {} }
+  function tvCtx(P, A) { if (!P.an) P.an = {}; return { P: P, an: P.an, W: A.clientWidth || 400, H: A.clientHeight || 400, n: 0, snd: [], first: !P.rendered }; }
+  function tvCard(txt, red, hid, sz, key, X, dx, dy, flip) {
+    var cls = 'pc' + (hid ? ' back' : (red ? ' red' : '')) + (sz ? ' ' + sz : ''), st = '';
+    if (key) {
+      var t = X.an[key], now = Date.now();
+      if (t == null) { if (X.first) t = X.an[key] = 0; else { t = X.an[key] = now + X.n * 140; X.snd.push([X.n * .14, flip]); X.n++; } }
+      var el = now - t; if (el < 700) { cls += ' dl'; st = ' style="--dx:' + Math.round(dx) + 'px;--dy:' + Math.round(dy) + 'px;animation-delay:' + Math.round(-el) + 'ms"'; }
+    }
+    return '<span class="' + cls + '"' + st + '>' + (hid ? '' : txt) + '</span>';
+  }
+  function tvPlay(X) { if (X.n) X.P.dt = Date.now(); X.snd.slice(0, 8).forEach(function (s) { if (s[1]) sndFlip(s[0]); else sndCard(s[0]); }); X.P.rendered = true; }
+  function tvDealer(X) {
+    var el = Date.now() - (X.P.dt || 0), cl = el < 900 ? ' dealing' : '';
+    return '<div class="tvDl' + cl + '" style="--ad:' + Math.round(-el) + 'ms"><svg viewBox="0 0 120 100"><ellipse cx="60" cy="97" rx="32" ry="3.5" fill="#0007"/><rect x="36" y="50" width="48" height="46" rx="11" fill="#1b1b24" stroke="#d4a73a" stroke-width="1.6"/><path d="M51 50L60 74L69 50Z" fill="#f6f2e8"/><path d="M52 52L60 57L68 52L68 60L60 57L52 60Z" fill="#b3202a"/><path d="M38 60q-8 14 -3 30" stroke="#1b1b24" stroke-width="9" stroke-linecap="round" fill="none"/><circle cx="35" cy="91" r="5" fill="#f2cfae"/>' +
+      '<circle cx="60" cy="30" r="16" fill="#f2cfae"/><path d="M43 30Q42 10 60 11Q78 10 77 30Q70 21 60 21Q50 21 43 30Z" fill="#2b1d14"/><circle cx="54" cy="31" r="1.7" fill="#222"/><circle cx="66" cy="31" r="1.7" fill="#222"/><path d="M55 38Q60 42 65 38" stroke="#a0442a" stroke-width="1.6" fill="none" stroke-linecap="round"/>' +
+      '<g class="arm"><path d="M80 58L100 72" stroke="#1b1b24" stroke-width="9" stroke-linecap="round" fill="none"/><circle cx="102" cy="73" r="5" fill="#f2cfae"/><rect x="100" y="64" width="8" height="12" rx="1.5" fill="#fff" stroke="#888" stroke-width=".6" transform="rotate(25 104 70)"/></g></svg></div>';
+  }
+  var PKPOS = [[50, 93], [21, 84], [11, 58], [18, 33], [50, 20], [82, 33], [89, 58], [79, 84]];
+
+  /* --- ブラックジャック（最大5人・ディーラー常駐。ゲーム用チップ・景品なし） --- */
+  var BJ = null, BJPOS = [[11, 62], [31, 78], [50, 83], [69, 78], [89, 62]];
+  function bjShoe() { var d = [], k, i; for (k = 0; k < 4; k++) d = d.concat(newDeck()); for (i = d.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = d[i]; d[i] = d[j]; d[j] = t; } return d; }
+  function bjSeat(id, nm, stack) { return { id: id, nm: nm, stack: stack, bet: 0, h: [], done: 0, dbl: 0, gone: 0, res: '', pay: 0 }; }
+  function bjNew() { return { v: 0, hid: myMid, rd: 0, seats: [null, null, null, null, null], st: 'bet', d: [], deck: [], hide: 1, turn: -1, tt: 0, nt: Date.now() + 15000, log: '', ev: 0, la: null }; }
+  function bjNat(h) { return h.length === 2 && bjVal(h) === 21; }
+  function bjNext(T, i) {
+    for (var j = i + 1; j < 5; j++) { var s = T.seats[j]; if (s && s.bet > 0 && !s.done && !s.gone) { T.turn = j; T.tt = Date.now() + 20000; return; } }
+    T.st = 'dealer'; T.hide = 0; T.turn = -1; T.nt = Date.now() + 1000;
+  }
+  function bjDeal(T) {
+    T.rd++; T.deck = bjShoe(); T.d = []; T.hide = 1; var ps = [], k;
+    T.seats.forEach(function (s, i) { if (!s) return; s.h = []; s.done = 0; s.dbl = 0; s.res = ''; s.pay = 0; if (s.bet > 0) ps.push(i); });
+    for (k = 0; k < 2; k++) { ps.forEach(function (i) { T.seats[i].h.push(T.deck.pop()); }); T.d.push(T.deck.pop()); }
+    T.st = 'play'; ps.forEach(function (i) { if (bjNat(T.seats[i].h)) T.seats[i].done = 1; });
+    if (bjNat(T.d)) { T.hide = 0; bjSettle(T); return; }
+    bjNext(T, -1);
+  }
+  function bjBet(T, i, b) { var s = T.seats[i]; if (!s || T.st !== 'bet' || s.bet > 0 || s.gone || b < 10 || s.stack < b) return false; s.stack -= b; s.bet = b; T.ev++; T.la = { i: i, k: 'bet', e: T.ev }; return true; }
+  function bjAct(T, i, a) {
+    var s = T.seats[i]; if (!s || s.done || T.st !== 'play' || T.turn !== i) return false; var k = a;
+    if (a === 'h') { s.h.push(T.deck.pop()); var v = bjVal(s.h); if (v > 21) { s.done = 1; k = 'b'; } else if (v === 21) s.done = 1; else T.tt = Date.now() + 20000; }
+    else if (a === 's') { s.done = 1; }
+    else if (a === 'd') { if (s.h.length !== 2 || s.stack < s.bet) return false; s.stack -= s.bet; s.bet *= 2; s.dbl = 1; s.h.push(T.deck.pop()); s.done = 1; if (bjVal(s.h) > 21) k = 'b'; }
+    else return false;
+    T.ev++; T.la = { i: i, k: k, e: T.ev }; if (s.done) bjNext(T, i); return true;
+  }
+  function bjSettle(T) {
+    var dv = bjVal(T.d), dn = bjNat(T.d), tx = [];
+    T.seats.forEach(function (s) {
+      if (!s || !(s.bet > 0)) return; var pv = bjVal(s.h), nat = bjNat(s.h) && !s.dbl, m;
+      if (pv > 21) m = 0; else if (nat) m = dn ? 1 : 2.5; else if (dn) m = 0; else if (dv > 21 || pv > dv) m = 2; else if (pv === dv) m = 1; else m = 0;
+      var back = Math.floor(s.bet * m); s.stack += back; s.pay = back - s.bet; s.res = pv > 21 ? 'bust' : (nat && !dn ? 'bj' : (m === 2 ? 'win' : (m === 1 ? 'push' : 'lose'))); s.bet = 0;
+      tx.push(s.nm + ' ' + ({ bust: 'バースト', bj: 'ブラックジャック', win: '勝ち', push: '引き分け', lose: '負け' })[s.res]);
+    });
+    T.st = 'show'; T.hide = 0; T.turn = -1; T.nt = Date.now() + 5500; T.log = tx.join(' ／ ');
+  }
+  function bjTick() {
+    if (!BJ || !BJ.T) return; var T = BJ.T, now = Date.now(), ch = false;
+    if (T.hid !== myMid) {
+      if (now - (BJ.hbs || 0) > 2000) { BJ.hbs = now; bjSend({ k: 'hb' }); }
+      var al = T.seats.filter(function (s) { return s && !s.gone && (s.id === myMid || now - (BJ.seen[s.id] || 0) < 6000); }).map(function (s) { return s.id; }).sort();
+      if (now - BJ.last > 5000 && al.length && al[0] === myMid && BJ.me >= 0) { T.hid = myMid; T.v++; T.seats.forEach(function (s) { if (s && s.id !== myMid && now - (BJ.seen[s.id] || 0) > 5000) { s.gone = 1; s.done = 1; } }); ch = true; } else return;
+    }
+    if (T.st === 'bet') {
+      var el = T.seats.filter(function (s) { return s && !s.gone && s.stack + s.bet >= 10; }), rd = el.filter(function (s) { return s.bet > 0; });
+      if (rd.length && (rd.length === el.length || now >= T.nt)) { bjDeal(T); ch = true; } else if (now >= T.nt) { T.nt = now + 15000; ch = true; }
+    } else if (T.st === 'play') {
+      var s = T.seats[T.turn]; if (!s || s.done || s.gone) { if (s) s.done = 1; bjNext(T, T.turn); ch = true; } else if (now > T.tt) { bjAct(T, T.turn, 's'); ch = true; }
+    } else if (T.st === 'dealer') {
+      if (now >= T.nt) { var need = T.seats.some(function (s) { return s && s.bet > 0 && bjVal(s.h) <= 21 && !bjNat(s.h); }); if (need && bjVal(T.d) < 17) { T.d.push(T.deck.pop()); T.nt = now + 950; } else bjSettle(T); ch = true; }
+    } else if (T.st === 'show') {
+      if (now >= T.nt) { T.seats.forEach(function (s, i) { if (s && s.gone) T.seats[i] = null; else if (s) { s.h = []; s.res = ''; s.pay = 0; s.done = 0; s.dbl = 0; } }); T.d = []; T.hide = 1; T.st = 'bet'; T.nt = now + 15000; ch = true; }
+    }
+    if (ch) bjPush(T); else if (now - BJ.hb > 2000) bjPush(T);
+  }
+  function bjSend(m) { m.t = 'bj'; m.f = myMid; try { if (rtOn) RT.send(m); } catch (e) {} }
+  function bjPush(T) { T.v++; BJ.hb = Date.now(); BJ.last = Date.now(); bjSend({ k: 'st', T: T }); bjRender(); }
+  function bjMine() { var T = BJ.T; if (!T) return -1; return T.seats.findIndex(function (s) { return s && s.id === myMid && !s.gone; }); }
+  function bjRecv(m) {
+    if (!BJ || !m) return; var T = BJ.T; BJ.seen[m.f] = Date.now();
+    if (m.k === 'st') { if (!T || m.T.v > T.v || (m.T.v === T.v && m.T.hid < T.hid)) { BJ.T = m.T; BJ.last = Date.now(); BJ.me = bjMine(); bjRender(); } return; }
+    if (!T || T.hid !== myMid) return;
+    if (m.k === 'who') { bjPush(T); return; }
+    if (m.k === 'sit') { if (T.seats.some(function (s) { return s && s.id === m.f; })) { bjPush(T); return; } var fi = T.seats.findIndex(function (s) { return !s; }); if (fi < 0) return; T.seats[fi] = bjSeat(m.f, String(m.n || 'だれか').slice(0, 8), Math.max(20, Math.min(1000, Math.floor(m.b) || 1000))); bjPush(T); return; }
+    if (m.k === 'bet') { if (bjBet(T, T.seats.findIndex(function (s) { return s && s.id === m.f; }), Math.floor(m.b) || 0)) bjPush(T); return; }
+    if (m.k === 'act') { var i = T.seats.findIndex(function (s) { return s && s.id === m.f; }); if (i >= 0 && m.r === T.rd && bjAct(T, i, m.a)) bjPush(T); return; }
+    if (m.k === 'leave') { var j = T.seats.findIndex(function (s) { return s && s.id === m.f; }); if (j >= 0) { bjDrop(T, j); bjPush(T); } return; }
+  }
+  function bjDrop(T, j) { var s = T.seats[j]; if (!s) return; if (T.st === 'bet') { T.seats[j] = null; } else if (T.st === 'show') { T.seats[j] = null; } else { s.gone = 1; s.done = 1; if (T.st === 'play' && T.turn === j) bjNext(T, j); } }
+  function bjDo(a) { var T = BJ.T; if (!T || BJ.me !== T.turn || T.st !== 'play') return; if (T.hid === myMid) { if (bjAct(T, BJ.me, a)) bjPush(T); } else bjSend({ k: 'act', a: a, r: T.rd }); }
+  function bjPlace(b) { var T = BJ.T; if (!T || BJ.me < 0) return; if (T.hid === myMid) { if (bjBet(T, BJ.me, b)) bjPush(T); } else bjSend({ k: 'bet', b: b }); }
+  function bjVoice(T, la) {
+    var s = T.seats[la.i]; if (!s) return; var pit = .9 + (la.i % 5) * .1;
+    if (la.k === 'bet') { sndChip(); sndChip(.08); return; }
+    var w = { h: 'ヒット', s: 'スタンド', d: 'ダブル', b: 'バースト' }[la.k]; if (la.k === 's') sndKnock(); else if (la.k === 'd') { sndChip(); sndChip(.1); } else if (la.k === 'b') sndLose();
+    if (w) arSay(w, pit, 1.25);
+  }
+  function bjRender() {
+    if (!BJ || !$('bjTbl')) return; var T = BJ.T, me = BJ.me, A = $('bjTbl');
+    if ($('bjInfo')) $('bjInfo').textContent = '🪙 ' + chipsGet().toLocaleString();
+    if (!T) { A.innerHTML = '<div class="tvW">テーブルにつないでいます…</div>'; return; }
+    var X = tvCtx(BJ, A), W = X.W, H = X.H, mineS = me >= 0 ? T.seats[me] : null, h = tvDealer(X) + '<div class="tvO bj"></div>';
+    h += '<div class="bjD">' + T.d.map(function (c, k) { return tvCard(CRK[c.r], c.s === 1 || c.s === 2, T.hide && k === 1 && T.st !== 'show', 'sm', 'd' + T.rd + '_' + k, X, 0, -H * .22); }).join('') + (T.d.length ? '<span class="bjT">' + (T.hide && T.st !== 'show' ? bjVal([T.d[0]]) : bjVal(T.d)) + '</span>' : '<span class="bjL">DEALER</span>') + '</div>';
+    T.seats.forEach(function (s, i) {
+      var p = BJPOS[i]; if (!s) { h += '<div class="pkSeat bjs empty" style="left:' + p[0] + '%;top:' + p[1] + '%">空席</div>'; return; }
+      var dx = (50 - p[0]) / 100 * W, dy = (8 - p[1]) / 100 * H, v = s.h.length ? bjVal(s.h) : 0, rs = s.res ? ({ bust: 'BUST', bj: 'BLACKJACK', win: 'WIN', push: 'PUSH', lose: 'LOSE' })[s.res] : '';
+      h += '<div class="pkSeat bjs' + (i === me ? ' me' : '') + (i === T.turn ? ' turn' : '') + (s.res === 'win' || s.res === 'bj' ? ' win' : '') + (s.res === 'lose' || s.res === 'bust' ? ' fold' : '') + '" style="left:' + p[0] + '%;top:' + p[1] + '%"><div class="bjH">' +
+        s.h.map(function (c, k) { return tvCard(CRK[c.r], c.s === 1 || c.s === 2, 0, 'sm', 'p' + T.rd + '_' + i + '_' + k, X, dx, dy); }).join('') + '</div>' + (s.h.length ? '<div class="bjT">' + v + '</div>' : '') +
+        '<div class="pkNm">' + esc(s.nm) + '</div><div class="pkSt">🪙 ' + s.stack.toLocaleString() + '</div>' + (s.bet > 0 ? '<div class="pkB2">賭け ' + s.bet.toLocaleString() + '</div>' : '') +
+        (rs ? '<div class="pkW">' + rs + (s.pay > 0 ? ' +' + s.pay.toLocaleString() : (s.pay < 0 ? ' ' + s.pay.toLocaleString() : '')) + '</div>' : '') + '</div>';
+    });
+    A.innerHTML = h; tvPlay(X);
+    if (BJ.laSeen === undefined) BJ.laSeen = T.la ? T.la.e : 0; else if (T.la && T.la.e > BJ.laSeen) { BJ.laSeen = T.la.e; bjVoice(T, T.la); }
+    if (BJ.hd !== undefined && BJ.hd === 1 && !T.hide && !X.first) sndFlip(0); BJ.hd = T.hide ? 1 : 0;
+    var dk = T.rd + ':' + T.st + ':' + T.turn; if (me >= 0 && T.st === 'play' && T.turn === me && BJ.dk !== dk) { BJ.dk = dk; setTimeout(sndDing, 250); }
+    if (T.st === 'show' && BJ.rr !== T.rd) {
+      BJ.rr = T.rd; if (!X.first && mineS && mineS.res) { if (mineS.res === 'bj') { sndWin(); arSay('ブラックジャック！', 1.1, 1.1); } else if (mineS.res === 'win') { sndWin(); arSay('やったね、勝ち！', 1.1, 1.15); } else if (mineS.res === 'push') arSay('引き分け', 1, 1.2); else { sndLose(); arSay('残念', .9, 1.2); } }
+    }
+    var msg = T.st === 'show' ? T.log : (T.st === 'bet' ? (mineS && mineS.bet > 0 ? '賭け済み。みんなを待ってるよ' : (mineS && mineS.stack < 10 ? 'チップがなくなったよ。「席を立つ」で戻って、もう一回すわってね' : '賭け金を選んで「配る」を押してね')) : (T.st === 'dealer' ? 'ディーラーの番…' : (T.turn >= 0 && T.seats[T.turn] ? (T.turn === me ? 'あなたの番だよ' : T.seats[T.turn].nm + ' さんの番') : '')));
+    if ($('bjMsg')) $('bjMsg').textContent = msg;
+    var myTurn = !!(mineS && T.st === 'play' && T.turn === me), betting = !!(mineS && T.st === 'bet' && mineS.bet === 0 && mineS.stack >= 10), key = [T.rd, T.st, T.turn, me, mineS ? mineS.stack : 0, mineS ? mineS.h.length : 0, betting ? 1 : 0, BJ.sel].join('|'), cb = $('bjCtl');
+    if (cb.dataset.k !== key) {
+      cb.dataset.k = key;
+      if (betting) {
+        if (mineS.stack < BJ.sel) BJ.sel = [500, 100, 50, 10].filter(function (b) { return b <= mineS.stack; })[0] || 10;
+        cb.innerHTML = '<div class="tvB">' + [10, 50, 100, 500].map(function (b) { return '<button type="button" class="b bt' + (b === BJ.sel ? ' on' : '') + '" data-b="' + b + '"' + (b > mineS.stack ? ' disabled' : '') + '>' + b + '</button>'; }).join('') + '<button type="button" class="b ra" id="bjGo">配る</button></div>';
+        Array.prototype.forEach.call(cb.querySelectorAll('.bt'), function (b) { b.onclick = function () { BJ.sel = +b.dataset.b; cb.dataset.k = ''; sndChip(); bjRender(); }; });
+        $('bjGo').onclick = function () { bjPlace(BJ.sel); };
+      } else {
+        var dis = myTurn ? '' : ' disabled', dd = myTurn && mineS.h.length === 2 && mineS.stack >= mineS.bet ? '' : ' disabled';
+        cb.innerHTML = '<div class="tvB"><button type="button" class="b ca" id="bjH"' + dis + '>ヒット</button><button type="button" class="b fo" id="bjS"' + dis + '>スタンド</button><button type="button" class="b ra" id="bjDb"' + dd + '>ダブル</button></div>';
+        if (myTurn) { $('bjH').onclick = function () { bjDo('h'); }; $('bjS').onclick = function () { bjDo('s'); }; $('bjDb').onclick = function () { bjDo('d'); }; }
+      }
+    }
+  }
   function openBJ() {
-    var bet = 10, B = null;
-    function draw(msg) {
-      var playing = B && B.st === 'play';
-      arcShow('<h2>🃏 ブラックジャック</h2>' + chipBar() +
-        '<div class="hand"><b>ディーラー' + (B && !playing ? '（' + bjVal(B.d) + '）' : '') + '</b>' + (B ? B.d.map(function (c, i) { return cardH(c, playing && i === 1); }).join('') : '') + '</div>' +
-        '<div class="hand"><b>あなた' + (B ? '（' + bjVal(B.p) + '）' : '') + '</b>' + (B ? B.p.map(function (c) { return cardH(c); }).join('') : '') + '</div>' +
-        '<div class="slres">' + (msg || '') + '</div>' +
-        (playing ? '<div class="bjb"><button type="button" id="bjH">ヒット</button><button type="button" id="bjS">スタンド</button><button type="button" id="bjD"' + (B.p.length === 2 && chipsGet() >= B.bet ? '' : ' disabled') + '>ダブル</button></div>' : betRow(bet) + '<button type="button" class="go" id="bjGo">配る</button>') +
-        '<button type="button" class="arcx" id="bjX">とじる</button>');
-      $('bjX').onclick = arcClose;
-      if (playing) { $('bjH').onclick = hit; $('bjS').onclick = stand; $('bjD').onclick = dbl; } else { betBind(null, function (b) { bet = b; }); $('bjGo').onclick = deal; }
+    try { var pend = parseInt(localStorage.getItem('opa_pk_pend') || '0', 10); if (pend > 0) { chipsSet(chipsGet() + pend); localStorage.removeItem('opa_pk_pend'); } } catch (e) {}
+    chipFree(); var buy = Math.min(1000, chipsGet()); if (buy < 20) { arcShow('<h2>🃏 ブラックジャック</h2><p>チップが足りません</p><button type="button" class="arcx" id="pkX0">とじる</button>'); $('pkX0').onclick = arcClose; return; }
+    chipsSet(chipsGet() - buy); try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {}
+    arcShow('<div class="tvh"><b>🃏 ブラックジャック</b><span id="bjInfo" class="chipb"></span><button type="button" class="arcx" id="bjX">席を立つ</button></div><div id="bjTbl" class="tvA"></div><div id="bjMsg" class="tvM"></div><div id="bjCtl" class="tvC"></div>', 'tv');
+    BJ = { T: null, me: -1, last: Date.now(), hb: 0, seen: {}, iv: 0, buy: buy, sel: 10 }; BJ.iv = setInterval(bjTick, 250);
+    $('bjX').onclick = bjLeave; bjRender(); bjSend({ k: 'who' });
+    var nm = (player && player.avatar && player.avatar.name) || 'あなた';
+    setTimeout(function () {
+      if (!BJ) return; if (!BJ.T) { BJ.T = bjNew(); BJ.T.seats[2] = bjSeat(myMid, String(nm).slice(0, 8), buy); BJ.me = 2; bjPush(BJ.T); }
+      else { BJ.me = bjMine(); if (BJ.me < 0) bjSend({ k: 'sit', n: nm, b: buy }); }
+    }, 1300);
+    BJ.sitCheck = setInterval(function () {
+      if (!BJ || !BJ.T) return; BJ.me = bjMine();
+      if (BJ.me < 0) { if (BJ.T.seats.every(function (s) { return s; })) { clearInterval(BJ.sitCheck); $('bjMsg').textContent = '満席です'; } else bjSend({ k: 'sit', n: nm, b: buy }); }
+    }, 1500);
+  }
+  function bjLeave() {
+    if (BJ) {
+      clearInterval(BJ.iv); clearInterval(BJ.sitCheck); var T = BJ.T, back = BJ.buy;
+      if (T && BJ.me >= 0 && T.seats[BJ.me]) {
+        var s = T.seats[BJ.me]; back = s.stack + (T.st === 'bet' ? s.bet : 0);
+        if (T.hid === myMid) {
+          var nx = T.seats.filter(function (q) { return q && !q.gone && q.id !== myMid; }).map(function (q) { return q.id; }).sort(); bjDrop(T, BJ.me);
+          if (nx.length) T.hid = nx[0]; T.v++; bjSend({ k: 'st', T: T });
+        } else bjSend({ k: 'leave' });
+      }
+      chipsSet(chipsGet() + back); try { localStorage.removeItem('opa_pk_pend'); } catch (e) {}
+      BJ = null;
     }
-    function pay(m, txt) { var win = Math.floor(B.bet * m); chipsSet(chipsGet() + win); B.st = 'done'; draw(txt + (win > B.bet ? '　+' + (win - B.bet).toLocaleString() : '')); if (m > 1) [0, 1, 2].forEach(function (k) { arTone(660 * Math.pow(1.26, k), .22, 'sine', .1, k * .1); }); }
-    function deal() {
-      chipFree(); if (chipsGet() < bet) { draw('チップが足りません'); return; }
-      chipsSet(chipsGet() - bet); B = { bet: bet, deck: newDeck(), p: [], d: [], st: 'play' }; B.p.push(B.deck.pop(), B.deck.pop()); B.d.push(B.deck.pop(), B.deck.pop()); arTone(440, .08, 'triangle', .08);
-      var pv = bjVal(B.p), dv = bjVal(B.d);
-      if (pv === 21) { if (dv === 21) pay(1, '引き分け'); else pay(2.5, '🎊 ブラックジャック！'); } else draw('');
-    }
-    function hit() { B.p.push(B.deck.pop()); arTone(500, .06, 'triangle', .08); var v = bjVal(B.p); if (v > 21) { B.st = 'done'; draw('バースト… 負け'); } else if (v === 21) stand(); else draw(''); }
-    function stand() { while (bjVal(B.d) < 17) B.d.push(B.deck.pop()); var pv = bjVal(B.p), dv = bjVal(B.d); if (dv > 21) pay(2, '🎉 ディーラーがバースト！ 勝ち'); else if (pv > dv) pay(2, '🎉 勝ち！'); else if (pv === dv) pay(1, '引き分け'); else { B.st = 'done'; draw('負け…'); } }
-    function dbl() { chipsSet(chipsGet() - B.bet); B.bet *= 2; B.p.push(B.deck.pop()); if (bjVal(B.p) > 21) { B.st = 'done'; draw('バースト… 負け'); } else stand(); }
-    draw('');
+    arcClose();
   }
 
   /* --- テキサスホールデム（最大8人・NPC1人が常駐。ゲーム用チップ・景品なし） --- */
@@ -4983,11 +5185,15 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function pkNeedRun(T) { var al = pkInHand(T), can = al.filter(function (s) { return !s.a; }); if (al.length < 2) return false; if (can.length === 0) return true; if (can.length === 1) { return can[0].bet >= T.cur; } return false; }
   function pkRoundDone(T) { return T.seats.every(function (s) { return !s || s.f || s.a || (s.act && s.bet === T.cur); }); }
   function pkApply(T, i, a, amt) {
+    var s0 = T.seats[i]; if (!s0) return false; var need0 = T.cur - s0.bet, cur0 = T.cur, ok = pkApply0(T, i, a, amt);
+    if (ok) { var k = s0.f ? 'f' : (T.cur > cur0 ? (s0.a ? 'ai' : 'r') : (need0 > 0 ? (s0.a ? 'ai' : 'c') : 'k')); T.ev = (T.ev || 0) + 1; T.la = { i: i, k: k, e: T.ev }; } return ok;
+  }
+  function pkApply0(T, i, a, amt) {
     var s = T.seats[i]; if (!s || s.f || s.a) return false; var need = T.cur - s.bet;
     if (a === 'f') { if (need <= 0) a = 'c'; else { s.f = 1; } }
     if (a === 'c') { var p = Math.min(need, s.stack); s.stack -= p; s.bet += p; s.tot += p; T.pot += p; if (s.stack === 0) s.a = 1; }
     else if (a === 'r') {
-      var to = Math.min(Math.floor(amt), s.bet + s.stack); if (to <= T.cur) return pkApply(T, i, 'c', 0);
+      var to = Math.min(Math.floor(amt), s.bet + s.stack); if (to <= T.cur) return pkApply0(T, i, 'c', 0);
       var sz = to - T.cur, full = sz >= T.minR || to === s.bet + s.stack; if (to < T.cur + T.minR && to < s.bet + s.stack) to = Math.min(T.cur + T.minR, s.bet + s.stack), sz = to - T.cur;
       var pay = to - s.bet; s.stack -= pay; s.bet = to; s.tot += pay; T.pot += pay; if (s.stack === 0) s.a = 1;
       if (sz >= T.minR) { T.minR = sz; T.seats.forEach(function (o) { if (o && o !== s) o.act = 0; }); } T.cur = Math.max(T.cur, to);
@@ -5063,33 +5269,52 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function pkMine() { var T = PK.T; if (!T) return -1; return T.seats.findIndex(function (s) { return s && s.id === myMid && !s.gone; }); }
   function pkAct(a, amt) { var T = PK.T; if (!T || PK.me !== T.turn || T.run) return; if (T.hid === myMid) { if (pkApply(T, PK.me, a, amt)) pkPush(T); } else pkSend({ k: 'act', a: a, amt: amt, h: T.hand }); }
   function pkCards(cs, hid, sm) { return cs.map(function (c) { return hid ? '<span class="pc back' + (sm ? ' s' : '') + '"></span>' : '<span class="pc' + (c.s === 1 || c.s === 2 ? ' red' : '') + (sm ? ' s' : '') + '">' + PKRK[c.r] + CSU[c.s] + '</span>'; }).join(''); }
-  var PKPOS = [[50, 90], [20, 78], [12, 50], [20, 22], [50, 9], [80, 22], [88, 50], [80, 78]];
+  function pkVoice(T, la) {
+    var s = T.seats[la.i]; if (!s) return; var w = { f: 'フォールド', k: 'チェック', c: 'コール', r: 'レイズ', ai: 'オールイン' }[la.k], pit = s.npc ? .7 : .9 + (la.i % 4) * .12;
+    if (la.k === 'f') sndFold(); else if (la.k === 'k') sndKnock(); else { sndChip(); sndChip(.09); } if (w) arSay(w, pit, 1.25);
+  }
   function pkRender() {
-    if (!PK || !$('pkTbl')) return; var T = PK.T, me = PK.me; if (!T) { $('pkTbl').innerHTML = '<div style="padding:80px 0;color:#9fb4c4">テーブルにつないでいます…</div>'; return; }
-    var h = '<div class="pkOval"></div><div class="pkBoard">' + (T.board.length ? pkCards(T.board, 0) : '') + '</div><div class="pkPot">ポット ' + T.pot.toLocaleString() + '</div>';
+    if (!PK || !$('pkTbl')) return; var T = PK.T, me = PK.me, A = $('pkTbl');
+    if ($('pkInfo')) $('pkInfo').textContent = '🪙 ' + chipsGet().toLocaleString();
+    if (!T) { A.innerHTML = '<div class="tvW">テーブルにつないでいます…</div>'; return; }
+    var X = tvCtx(PK, A), W = X.W, H = X.H, rel = me < 0 ? 0 : me, h = tvDealer(X) + '<div class="tvO"></div>', mineS = me >= 0 ? T.seats[me] : null;
+    h += '<div class="tvBd">' + T.board.map(function (c, k) { return tvCard(PKRK[c.r], c.s === 1 || c.s === 2, 0, 0, 'b' + T.hand + '_' + k, X, 0, -H * .3, 1); }).join('') + '</div><div class="tvPot">ポット ' + T.pot.toLocaleString() + '</div>';
     T.seats.forEach(function (s, i) {
-      var r = (i - (me < 0 ? 0 : me) + 8) % 8, p = PKPOS[r]; if (!s) { h += '<div class="pkSeat empty" style="left:' + p[0] + '%;top:' + p[1] + '%">空席</div>'; return; }
-      var mine = i === me, sh = T.res && T.res.shown.indexOf(i) >= 0, face = mine || sh, inH = T.hand > 0 && T.st !== 'wait' && s.hole.length === 2 && !(s.f && T.st !== 'show');
-      h += '<div class="pkSeat' + (i === T.turn ? ' turn' : '') + (s.f ? ' fold' : '') + (T.res && T.res.won[i] ? ' win' : '') + '" style="left:' + p[0] + '%;top:' + p[1] + '%"><div class="pkCs">' + (s.hole.length === 2 && T.st !== 'wait' ? pkCards(s.hole, !face, 1) : '') + '</div><div class="pkNm">' + (i === T.btn ? '<i class="pkD">D</i>' : '') + esc(s.nm) + (s.npc ? ' 🤖' : '') + '</div><div class="pkSt">🪙 ' + s.stack.toLocaleString() + '</div>' + (s.bet > 0 ? '<div class="pkB">' + s.bet.toLocaleString() + '</div>' : '') + (T.res && T.res.won[i] ? '<div class="pkW">+' + T.res.won[i].toLocaleString() + (T.res.desc[i] ? '<br>' + T.res.desc[i] : '') + '</div>' : '') + '</div>';
+      var r = (i - rel + 8) % 8, p = PKPOS[r]; if (!s) { h += '<div class="pkSeat empty" style="left:' + p[0] + '%;top:' + p[1] + '%">空席</div>'; return; }
+      var mine = i === me, sh = T.res && T.res.shown.indexOf(i) >= 0, face = mine || sh, inH = T.hand > 0 && T.st !== 'wait' && s.hole.length === 2 && !(s.f && T.st !== 'show'), dx = (50 - p[0]) / 100 * W, dy = (10 - p[1]) / 100 * H;
+      h += '<div class="pkSeat' + (mine ? ' me' : '') + (i === T.turn ? ' turn' : '') + (s.f ? ' fold' : '') + (T.res && T.res.won[i] ? ' win' : '') + '" style="left:' + p[0] + '%;top:' + p[1] + '%"><div class="pkCs">' +
+        (inH ? s.hole.map(function (c, k) { return tvCard(PKRK[c.r], c.s === 1 || c.s === 2, !face, 'sm', 'h' + T.hand + '_' + i + '_' + k, X, dx, dy); }).join('') : '') + '</div><div class="pkNm">' + (i === T.btn ? '<i class="pkD">D</i>' : '') + esc(s.nm) + (s.npc ? ' 🤖' : '') + '</div><div class="pkSt">🪙 ' + s.stack.toLocaleString() + '</div>' +
+        (T.res && T.res.won[i] ? '<div class="pkW">+' + T.res.won[i].toLocaleString() + (T.res.desc[i] ? ' ' + T.res.desc[i] : '') + '</div>' : '') + '</div>';
+      if (s.bet > 0) h += '<div class="pkBet" style="left:' + (p[0] + (50 - p[0]) * .34) + '%;top:' + (p[1] + (57 - p[1]) * .34) + '%">🪙' + s.bet.toLocaleString() + '</div>';
     });
-    $('pkTbl').innerHTML = h;
-    var key = [T.hand, T.st, T.turn, T.cur, me, me >= 0 && T.seats[me] ? T.seats[me].stack : 0, T.res ? 1 : 0].join('|'), cb = $('pkCtl');
-    if (cb.dataset.k !== key) {
-      cb.dataset.k = key; var s = me >= 0 ? T.seats[me] : null, my = s && T.turn === me && !T.run && T.st !== 'show' && T.st !== 'wait';
-      if (my) {
-        var need = T.cur - s.bet, minTo = Math.min(s.bet + s.stack, T.cur + T.minR), maxTo = s.bet + s.stack, canR = maxTo > T.cur;
-        cb.innerHTML = '<div class="pkBt"><button type="button" id="pkF">フォールド</button><button type="button" id="pkC" class="ok">' + (need > 0 ? 'コール ' + Math.min(need, s.stack).toLocaleString() : 'チェック') + '</button></div>' + (canR ? '<div class="pkR"><input type="range" id="pkRs" min="' + minTo + '" max="' + maxTo + '" step="10" value="' + minTo + '"><button type="button" id="pkRb" class="go2">レイズ <b id="pkRv">' + minTo.toLocaleString() + '</b></button></div>' : '');
-        $('pkF').onclick = function () { pkAct('f', 0); }; $('pkC').onclick = function () { pkAct('c', 0); };
-        if (canR) { $('pkRs').oninput = function () { $('pkRv').textContent = (+this.value).toLocaleString(); }; $('pkRb').onclick = function () { pkAct('r', +$('pkRs').value); }; }
-      } else cb.innerHTML = '<div class="pkMsg">' + (me >= 0 && T.seats[me] && T.seats[me].stack <= 0 ? 'チップがなくなったよ。「席を立つ」で戻って、もう一回すわってね' : T.st === 'show' ? esc(T.log) : (T.st === 'wait' ? '次のハンドを準備中…' : (T.turn >= 0 && T.seats[T.turn] ? esc(T.seats[T.turn].nm) + ' さんの番です' : ''))) + '</div>';
+    A.innerHTML = h; tvPlay(X);
+    /* 音・声 */
+    if (PK.laSeen === undefined) PK.laSeen = T.la ? T.la.e : 0; else if (T.la && T.la.e > PK.laSeen) { PK.laSeen = T.la.e; pkVoice(T, T.la); }
+    var dk = T.hand + ':' + T.st + ':' + T.turn + ':' + T.cur; if (me >= 0 && T.turn === me && PK.dk !== dk && !T.run) { PK.dk = dk; setTimeout(sndDing, 250); }
+    if (T.st === 'show' && T.res && PK.rh !== T.hand) {
+      PK.rh = T.hand; var ws = Object.keys(T.res.won).map(function (i) { return T.seats[i]; }).filter(Boolean);
+      if (!X.first) { if (me >= 0 && T.res.won[me]) { sndWin(); arSay('やったね、勝ち！', 1.1, 1.15); } else { if (ws[0]) arSay(ws[0].nm + 'の勝ち', 1, 1.15); if (me >= 0 && T.seats[me] && !T.seats[me].f) sndLose(); } }
     }
-    if ($('pkInfo')) $('pkInfo').textContent = '🪙 手持ち ' + chipsGet().toLocaleString() + '　ブラインド ' + PKSB + '/' + PKBB;
+    /* メッセージと操作 */
+    var msg = T.st === 'show' ? T.log : (me >= 0 && mineS && mineS.stack <= 0 && (T.st === 'wait' || mineS.f) ? 'チップがなくなったよ。「席を立つ」で戻って、もう一回すわってね' : (T.st === 'wait' ? '次のハンドを準備中…' : (T.turn >= 0 && T.seats[T.turn] ? (T.turn === me ? 'あなたの番だよ' : T.seats[T.turn].nm + ' さんの番') : '')));
+    if ($('pkMsg')) $('pkMsg').textContent = msg;
+    var myTurn = !!(mineS && T.turn === me && !T.run && T.st !== 'show' && T.st !== 'wait'), key = [T.hand, T.st, T.turn, T.cur, me, mineS ? mineS.stack : 0, myTurn ? 1 : 0].join('|'), cb = $('pkCtl');
+    if (cb.dataset.k !== key) {
+      cb.dataset.k = key; var s = mineS || { bet: 0, stack: 0 }, need = T.cur - s.bet, maxTo = s.bet + s.stack, minTo = Math.min(maxTo, T.cur + T.minR), canR = myTurn && maxTo > T.cur, dis = myTurn ? '' : ' disabled';
+      cb.innerHTML = '<div class="tvB"><button type="button" class="b fo" id="pkF"' + dis + '>フォールド</button><button type="button" class="b ca" id="pkC"' + dis + '>' + (myTurn && need > 0 ? 'コール ' + Math.min(need, s.stack).toLocaleString() : 'チェック') + '</button><button type="button" class="b ra" id="pkRb"' + (canR ? '' : ' disabled') + '>レイズ</button></div>' +
+        '<div class="tvG"><span id="pkRv">' + (canR ? '' : '－') + '</span><input type="range" class="vr" id="pkRs" min="0" max="100" value="0"' + (canR ? '' : ' disabled') + '></div>';
+      if (myTurn) { $('pkF').onclick = function () { pkAct('f', 0); }; $('pkC').onclick = function () { pkAct('c', 0); }; }
+      if (canR) {
+        var upd = function () { var pc = +$('pkRs').value, amt = pc >= 100 ? maxTo : Math.min(maxTo, Math.max(minTo, Math.round((minTo + (maxTo - minTo) * pc / 100) / 10) * 10)); $('pkRv').textContent = amt >= maxTo ? 'ALL IN' : amt.toLocaleString(); $('pkRb').textContent = amt >= maxTo ? 'オールイン' : 'レイズ ' + amt.toLocaleString(); return amt; };
+        $('pkRs').oninput = upd; upd(); $('pkRb').onclick = function () { pkAct('r', upd()); };
+      }
+    }
   }
   function openHoldem() {
     try { var pend = parseInt(localStorage.getItem('opa_pk_pend') || '0', 10); if (pend > 0) { chipsSet(chipsGet() + pend); localStorage.removeItem('opa_pk_pend'); } } catch (e) {}
     chipFree(); var buy = Math.min(PKBUY, chipsGet()); if (buy < 20) { arcShow('<h2>♠ テキサスホールデム</h2><p>チップが足りません</p><button type="button" class="arcx" id="pkX0">とじる</button>'); $('pkX0').onclick = arcClose; return; }
     chipsSet(chipsGet() - buy); try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {}
-    arcShow('<h2>♠ テキサスホールデム</h2><div class="chipb" id="pkInfo"></div><div id="pkTbl" class="pkTbl"></div><div id="pkCtl" class="pkCtl"></div><button type="button" class="arcx" id="pkX">席を立つ</button>');
+    arcShow('<div class="tvh"><b>♠ テキサスホールデム</b><span id="pkInfo" class="chipb"></span><button type="button" class="arcx" id="pkX">席を立つ</button></div><div id="pkTbl" class="tvA"></div><div id="pkMsg" class="tvM"></div><div id="pkCtl" class="tvC"></div>', 'tv');
     PK = { T: null, me: -1, last: Date.now(), hb: 0, seen: {}, iv: 0, buy: buy }; PK.iv = setInterval(pkTick, 250);
     $('pkX').onclick = pkLeave; pkRender(); pkSend({ k: 'who' });
     var nm = (player && player.avatar && player.avatar.name) || 'あなた';
@@ -5097,7 +5322,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       if (!PK) return; if (!PK.T) { PK.T = pkNewTable(); PK.T.seats[1] = pkSeat(myMid, String(nm).slice(0, 8), buy, 0); PK.me = 1; pkPush(PK.T); }
       else { PK.me = pkMine(); if (PK.me < 0) pkSend({ k: 'sit', n: nm, b: buy }); }
     }, 1300);
-    PK.sitCheck = setInterval(function () { if (!PK || !PK.T) return; PK.me = pkMine(); if (PK.me < 0 && PK.T.seats.every(function (s) { return s; })) { clearInterval(PK.sitCheck); $('pkCtl').innerHTML = '<div class="pkMsg">満席です</div>'; } }, 1500);
+    PK.sitCheck = setInterval(function () { if (!PK || !PK.T) return; PK.me = pkMine(); if (PK.me < 0 && !PK.T.seats.every(function (s) { return s; })) pkSend({ k: 'sit', n: nm, b: buy }); if (PK.me < 0 && PK.T.seats.every(function (s) { return s; })) { clearInterval(PK.sitCheck); $('pkCtl').innerHTML = '<div class="pkMsg">満席です</div>'; } }, 1500);
   }
   function pkLeave() {
     if (PK) {
