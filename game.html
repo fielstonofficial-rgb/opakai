@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:90-->
+<!--GV:92-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -2277,6 +2277,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     i.fx = i.fx.replace(/( ／ )?[（]?(店では売っていません|強い敵から、ごくまれに落ちる|ボスだけが落とす)[^）]*[）]?/, '') + RFX[r[1]];
     if (i.slot === 'outfit') { var bn = OBN[i.id] || {}; i.bhp = bn.hp || 0; i.batk = bn.atk || 0; i.bspd = bn.spd || 0; var bt = (i.bhp ? ' HP+' + i.bhp : '') + (i.batk ? ' ダメージ+' + i.batk : '') + (i.bspd ? ' 素早さ+' + i.bspd + '%' : ''); if (bt) i.fx = i.fx.replace(RFX[r[1]], '') + ' ／ ボーナス：' + bt.trim() + RFX[r[1]]; }
   });
+  /* ---------- ライフルは撃つ間隔を約4割短く（3〜3.6秒 → 1.7〜2.2秒） ---------- */
+  ITEMS.forEach(function (i) { if (i.kind !== 'rifle' || !i.cd) return; i.cd = Math.round(i.cd * .6 / 100) * 100; i.fx = i.fx.replace(/うつのが、とても遅い（[\d.]+秒に1発）/, 'うつのが、ゆっくりめ（' + (i.cd / 1000).toFixed(1) + '秒に1発）'); });
   /* ---------- 武器アイコン：種類ごとの絵に、持ち主ごとの色とレア度の輝き ---------- */
   function wIc(i) {
     var col = ['#9db0b8', '#58a6ff', '#b583ff', '#ffd36a'][i.tier || 0], hu = i.hu || 0, st = '';
@@ -3456,6 +3458,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     o += '<rect x="380" y="170" width="140" height="48" fill="#2b2230"/><path d="M380 170V218M520 170V218" stroke="#ffd36a" stroke-width="5"/><text x="450" y="162" text-anchor="middle" font-size="16" font-weight="900" fill="#ffd36a" font-family="system-ui,sans-serif">▼ 闘技場の入口</text>';
     // 闘技場内（全体の8割）
     o += '<rect x="0" y="214" width="900" height="886" fill="url(#pS)"/><ellipse cx="450" cy="660" rx="430" ry="410" fill="none" stroke="#a88a54" stroke-width="6"/><ellipse cx="450" cy="660" rx="410" ry="392" fill="rgba(255,255,255,.12)"/><path d="M450 270V1050" stroke="#a88a54" stroke-width="4" stroke-dasharray="14 12"/>';
+    /* スタート位置の目印（練習相手と戦う時：あなた＝左端、相手＝右端） */
+    o += '<g font-family="system-ui,sans-serif" font-weight="900" text-anchor="middle"><circle cx="64" cy="640" r="40" fill="rgba(224,64,90,.28)" stroke="#e0405a" stroke-width="4" stroke-dasharray="8 6"/><text x="64" y="570" font-size="16" fill="#fff" stroke="#3b2f3d" stroke-width="4" paint-order="stroke">あなたの</text><text x="64" y="590" font-size="16" fill="#fff" stroke="#3b2f3d" stroke-width="4" paint-order="stroke">スタート</text><circle cx="836" cy="640" r="40" fill="rgba(74,138,224,.28)" stroke="#4a8ae0" stroke-width="4" stroke-dasharray="8 6"/><text x="836" y="570" font-size="16" fill="#fff" stroke="#3b2f3d" stroke-width="4" paint-order="stroke">あいての</text><text x="836" y="590" font-size="16" fill="#fff" stroke="#3b2f3d" stroke-width="4" paint-order="stroke">スタート</text></g>';
     o += '<path d="M60 60V10L130 36L60 62" fill="#e0405a" stroke="#7a1a2a" stroke-width="2"/><path d="M840 60V10L770 36L840 62" fill="#4a8ae0" stroke="#1a3a7a" stroke-width="2"/>';
     return o + '</svg>';
   }
@@ -3734,7 +3738,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 90;
+  var GV = 92;
   (function () {
     var last = Date.now();
     function chk() {
@@ -3846,7 +3850,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     botStop(); var st = botStats(lv), wk = ['sword', 'sword', 'dagger', 'bow', 'gun'][Math.floor(Math.random() * 5)];
     var av = { name: '練習相手', gender: lv % 2, skin: 1 + lv % 3, face: lv % 5, hair: lv % 6, hairColor: (lv * 3) % 14, outfit: lv % 10, outfitColor: (lv * 5) % 12, pattern: lv % 5, patColor: (lv * 7) % 12, bottom: lv % 4, bottomColor: lv % 8, acc: 0 };
     var e = document.createElement('div'); e.className = 'gh npc bot'; e.innerHTML = '<div class="hs"></div><div class="hb">' + charHTML(av) + '</div><div class="gname"></div><div class="hhp on"><i></i></div>';
-    var x = 450, y = FLOOR_Y + 330; placeEl(e, x, y); $('world').appendChild(e); var bpk = e.querySelector('.fpk'); if (bpk) bpk.innerHTML = weaponSVG(wk);
+    var x = 836, y = 640; placeEl(e, x, y); hero.x = 64; hero.y = 640; hero.dir = 1; ftarget = null; updHero(); $('world').appendChild(e); var bpk = e.querySelector('.fpk'); if (bpk) bpk.innerHTML = weaponSVG(wk);
     bot = { wk: wk, lv: lv, st: st, hp: st.max, max: st.max, x: x, y: y, el: e, dn: false, cdAt: performance.now() + 1200, dashAt: 0, gauge: 0, wind: 0, sp: 0, sdir: 1, sdirAt: 0 };
     botLabel(); botTimer = setInterval(botTick, 50); sfx(3);
     var rg = document.createElement('i'); rg.className = 'spfx'; rg.style.left = x + 'px'; rg.style.top = (y - 20) + 'px'; rg.style.width = rg.style.height = '240px'; $('world').appendChild(rg); setTimeout(function () { rg.remove(); }, 600);
@@ -6129,7 +6133,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     rtSend({ t: 'gmhit', to: g.id, d: dm }); return true;
   }
   function hitFoeAt(wx, wy) {
-    var best = 56, hit = null;
+    var best = (curW() && curW().rng) ? 130 : 56, hit = null; /* 遠距離武器は、敵の近くをタップすれば当たる（動きながらでも外れにくい） */
     foes.forEach(function (f) { if (f.mode === 'dead') return; var yo = f.boss ? 70 : (f.big ? 50 : 26), d = Math.hypot(wx - f.x, wy - (f.y - yo)) - (f.boss ? 70 : (f.big ? 32 : 0)); if (d < best && Math.hypot(hero.x - f.x, hero.y - f.y) < atkRange() + (f.boss ? 60 : (f.big ? 30 : 0))) { best = d; hit = f; } });
     if (!hit) return false;
     if (hp.down) return true;
