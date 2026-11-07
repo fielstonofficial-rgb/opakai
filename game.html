@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:102-->
+<!--GV:103-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -3778,7 +3778,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 102;
+  var GV = 103;
   (function () {
     var last = Date.now();
     function chk() {
@@ -5408,11 +5408,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!token) return Promise.resolve(); if (PK || BJ) return Promise.resolve();
     return arcApi({ action: 'arc_get' }).then(function (j) {
       if (j._s !== 200) return; ARC.on = true; ARC.rfOk = !!j.rfOk;
-      var seeded = false, hasL = false, loc = 0; try { seeded = localStorage.getItem('opa_arc_seed') === '1'; hasL = localStorage.getItem('opa_chips') != null; loc = chipsGet() + pendGet(); } catch (e) {}
+      var loc = 0, srv = j.chips + j.pend;
+      try {
+        if (!(player && player.gm) && localStorage.getItem('opa_fix1108') !== '1') { localStorage.setItem('opa_fix1108', '1'); if (chipsGet() + pendGet() < 30000) localStorage.setItem('opa_chips', String(30000 - pendGet())); }
+        loc = chipsGet() + pendGet();
+      } catch (e) {}
       var adopt = function () { try { localStorage.setItem('opa_chips', String(j.chips + j.pend)); localStorage.removeItem('opa_pk_pend'); } catch (e) {} chipUpd(); return arcFlush(); };
-      if (!seeded && !(player && player.gm)) { /* 初回だけ：いま持ってるコインをサーバーに登録（ランキング用） */
-        try { localStorage.setItem('opa_arc_seed', '1'); } catch (e) {}
-        if (hasL && loc > j.chips + j.pend) return arcApi({ action: 'arc_put', c: loc, p: 0, rf: false }).then(function (r) { if (r._s === 200 && !r.rejected) { try { localStorage.setItem('opa_chips', String(loc)); localStorage.removeItem('opa_pk_pend'); } catch (e) {} chipUpd(); return; } return adopt(); });
+      if (!(player && player.gm) && loc > srv) { /* 手元の方が多いときは、サーバーの値で上書きしない */
+        return arcApi({ action: 'arc_put', c: chipsGet(), p: pendGet(), rf: false }).then(function (r) { if (r._s === 200 && r.rejected) return adopt(); chipUpd(); });
       }
       return adopt();
     });
@@ -6052,6 +6055,25 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       var sx = 2 + Math.floor(rnd() * 46), sy = 2 + Math.floor(rnd() * 46), mx = sx % 10, my = sy % 10, cx0 = mx === 9 || mx === 0, cy0 = my === 9 || my === 0;
       if (!(cx0 !== cy0)) continue; if (Math.abs(sx - 24) + Math.abs(sy - 24) < 8) continue; if (G[sy * FPN + sx]) continue; set(sx, sy, rnd() < .5 ? 9 : 7);
     }
+    (function () { /* 隠れ穴：3方向をふさいだ1マスのくぼみ（入口は1方向だけ） */
+      var r2 = 777 + fl * 31, rn = function () { r2 = (r2 * 1664525 + 1013904223) >>> 0; return r2 / 4294967296; }, D = [[0, -1], [1, 0], [0, 1], [-1, 0]], cnt;
+      var at = function (x, y) { return x < 0 || y < 0 || x >= FPN || y >= FPN ? 1 : G[y * FPN + x]; };
+      for (var nby = 0; nby < 5; nby++) for (var nbx = 0; nbx < 5; nbx++) {
+        cnt = 0;
+        for (var tr = 0; tr < 90 && cnt < 6; tr++) {
+          var lx = 1 + Math.floor(rn() * 6), ly = 1 + Math.floor(rn() * 6), hx = nbx * 10 + 1 + lx, hy = nby * 10 + 1 + ly, d = D[Math.floor(rn() * 4)];
+          if (Math.abs(hx - 24) + Math.abs(hy - 24) < 7) continue;
+          var fx = hx + d[0], fy = hy + d[1], bx2 = hx - d[0], by2 = hy - d[1], p1x = hx + d[1], p1y = hy + d[0], p2x = hx - d[1], p2y = hy - d[0];
+          var bl = (bx2 - (nbx * 10 + 1)), bm = (by2 - (nby * 10 + 1));
+          if (at(hx, hy) || at(fx, fy)) continue;
+          if (!at(bx2, by2) && (bl < 1 || bl > 6 || bm < 1 || bm > 6)) continue;
+          var ok = true; [[p1x, p1y], [p2x, p2y]].forEach(function (c) { var pl = c[0] - (nbx * 10 + 1), pm = c[1] - (nby * 10 + 1); if (!at(c[0], c[1]) && (pl < 0 || pl > 7 || pm < 0 || pm > 7)) ok = false; });
+          if (!ok) continue;
+          var wv = rn() < .5 ? 8 : 7; [[p1x, p1y], [p2x, p2y], [bx2, by2]].forEach(function (c) { if (!at(c[0], c[1])) set(c[0], c[1], wv); });
+          cnt++;
+        }
+      }
+    })();
     for (i = 0; i < G.length; i++) { var v = G[i]; G[i] = v === 8 ? 8 : v; }
     set(24, 24, 0); set(23, 24, 0); set(25, 24, 0); set(24, 23, 0); set(24, 25, 0);
     FPST.forEach(function (t) { for (var yy = -1; yy <= 1; yy++) for (var xx = -1; xx <= 1; xx++) set(t[2] + xx, t[3] + yy, 0); });
@@ -6072,7 +6094,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     g.fillStyle = gr; g.strokeStyle = '#fff'; g.lineWidth = 2; g.beginPath(); g.moveTo(32, 14); g.lineTo(50, 28); g.lineTo(32, 54); g.lineTo(14, 28); g.closePath(); g.fill(); g.stroke(); return c;
   }
   function fpStart(MP) {
-    $('arcc').className = ''; $('arcc').innerHTML = '<div id="fpw"><canvas id="fpc"></canvas><button type="button" id="fpX">✕</button><div id="fpF">🔫</div><div id="fpP"><div class="t">一時停止</div><div class="s2">みんなで撃ち合いは、ゲームが続いてるよ</div><button type="button" class="cab" id="fpPC" style="margin:6px auto;width:220px;padding:10px">つづける</button><button type="button" class="arcx" id="fpPQ">ゲームセンターへ</button></div><div id="fpI"><div class="rb"><div class="rt">' + (MP ? 'みんなで撃ち合い' : 'ひとりで撃ち合い') + '</div><div class="rs">ルール説明</div><ul><li>🎯 <b>目的</b>：' + (MP ? '4発あてるとダウン！ <b>1人倒すと50コイン</b>🪙。たくさん倒して、ランキング1位をめざそう。やられても3秒で復活（復活後2秒は無敵）' : '次々と来るライバルを倒そう。<b>1人倒すと50コイン</b>🪙（ポーカーやブラックジャックで使えるよ）。HPがなくなったら終わり') + '</li><li>📡 <b>レーダー</b>：敵が地図に映るのは、<b>5秒に1回、1秒間だけ</b>。そのタイミングで場所を覚えよう</li><li>🪜 <b>階段</b>：光る緑（2Fは青）の壁に向かって歩くと、1F⇔2Fを行き来できるよ。敵もあとから追ってくる</li><li>🏭 <b>工場・研究所</b>：高い壁と機械の陰にかくれて、まわりこんで撃とう。遠くは暗くて見えにくいよ</li><li>🖱 <b>PC</b>：W A S D 移動 ／ マウスで見回す ／ 左クリックで撃つ ／ <b>Esc</b>でメニュー</li><li>📱 <b>スマホ</b>：左半分ドラッグで移動 ／ 右半分ドラッグで見回す ／ 🔫ボタンで撃つ</li></ul><label class="rk"><input type="checkbox" id="fpIk"> 次からこの説明を出さない</label><button type="button" class="cab" id="fpIS" style="margin:8px auto 0;width:220px;padding:10px">はじめる！</button></div></div><div id="fpO"><div class="t">GAME OVER</div><div class="s" id="fpS"></div><div class="arcc2"><button type="button" class="cab" id="fpR" style="margin:6px auto;width:220px;padding:10px">もう一回</button><button type="button" class="arcx" id="fpQ">ゲームセンターへ</button></div></div></div>';
+    $('arcc').className = ''; $('arcc').innerHTML = '<div id="fpw"><canvas id="fpc"></canvas><button type="button" id="fpX">✕</button><div id="fpF">🔫</div><div id="fpP"><div class="t">一時停止</div><div class="s2">みんなで撃ち合いは、ゲームが続いてるよ</div><button type="button" class="cab" id="fpPC" style="margin:6px auto;width:220px;padding:10px">つづける</button><button type="button" class="arcx" id="fpPQ">ゲームセンターへ</button></div><div id="fpI"><div class="rb"><div class="rt">' + (MP ? 'みんなで撃ち合い' : 'ひとりで撃ち合い') + '</div><div class="rs">ルール説明</div><ul><li>🎯 <b>目的</b>：' + (MP ? '4発あてるとダウン！ <b>1人倒すと50コイン</b>🪙。たくさん倒して、ランキング1位をめざそう。やられても3秒で復活（復活後2秒は無敵）' : '次々と来るライバルを倒そう。<b>1人倒すと10コイン</b>🪙（ポーカーやブラックジャックで使えるよ）。HPがなくなったら終わり') + '</li><li>📡 <b>レーダー</b>：敵が地図に映るのは、<b>5秒に1回、1秒間だけ</b>。そのタイミングで場所を覚えよう</li><li>🪜 <b>階段</b>：光る緑（2Fは青）の壁に向かって歩くと、1F⇔2Fを行き来できるよ。敵もあとから追ってくる</li><li>🏭 <b>工場・研究所</b>：高い壁と機械の陰にかくれて、まわりこんで撃とう。遠くは暗くて見えにくいよ</li><li>🖱 <b>PC</b>：W A S D 移動 ／ マウスで見回す ／ 左クリックで撃つ ／ <b>Esc</b>でメニュー</li><li>📱 <b>スマホ</b>：左半分ドラッグで移動 ／ 右半分ドラッグで見回す ／ 🔫ボタンで撃つ</li></ul><label class="rk"><input type="checkbox" id="fpIk"> 次からこの説明を出さない</label><button type="button" class="cab" id="fpIS" style="margin:8px auto 0;width:220px;padding:10px">はじめる！</button></div></div><div id="fpO"><div class="t">GAME OVER</div><div class="s" id="fpS"></div><div class="arcc2"><button type="button" class="cab" id="fpR" style="margin:6px auto;width:220px;padding:10px">もう一回</button><button type="button" class="arcx" id="fpQ">ゲームセンターへ</button></div></div></div>';
     var wrap = $('fpw'), cv = $('fpc'), cx = cv.getContext('2d'), cw = wrap.clientWidth || 360, ch = wrap.clientHeight || 640;
     var H = 360, asp = Math.max(.6, Math.min(2.4, cw / ch)), W = Math.round(H * asp); cv.width = W; cv.height = H;
     var GS = [fpGen(0), fpGen(1)], G = GS[0], N = FPN, S = { fl: 0, stT: 0, px: 24.5, py: 24.5, a: -Math.PI / 2, pitch: 0, hp: 100, score: 0, wave: 0, en: [], gems: [], toSpawn: 0, spT: 0, nextWave: 1.2, shotT: 0, flash: 0, hurt: 0, hold: 1, over: false, dead: 0, inv: 0, feed: [], hpT: 0, keys: {}, mv: { x: 0, y: 0 }, fire: false, t: 0, banner: 0, kills: 0, earn: 0 };
@@ -6102,7 +6124,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       var wd = cast(S.a).d, best = null, bd = 1e9;
       S.en.forEach(function (e) { if (e.al === 0 || e.hide > 0) return; var p = proj(e, .62); if (!p || p.fw >= wd || p.fw >= bd) return; var w = p.size * .5 * .75; if (Math.abs(W / 2 - p.scrX) < w && H / 2 > p.top - 2 && H / 2 < p.top + p.size + 2) { bd = p.fw; best = e; } });
       if (MP) { if (rtOn) rtSend({ t: 'fm', k: 'f', nm: nmMe }); if (best && best.al) { best.hit = .15; snd2(220, .09, 'square', .08); rtSend({ t: 'fm', k: 'h', to: best.id, d: 25, nm: nmMe }); best.hp = Math.max(0, best.hp - 25); } }
-      else if (best) { best.hp--; best.hit = .15; snd2(220, .09, 'square', .08); if (best.hp <= 0) { S.en.splice(S.en.indexOf(best), 1); S.score += 110; S.kills++; S.earn += 50; chipsSet(chipsGet() + 50); chipUpd(); S.hp = Math.min(100, S.hp + 6); feedAdd('🪙 +50 コイン'); snd2(900, .2, 'triangle', .09); } }
+      else if (best) { best.hp--; best.hit = .15; snd2(220, .09, 'square', .08); if (best.hp <= 0) { S.en.splice(S.en.indexOf(best), 1); S.score += 110; S.kills++; S.earn += 10; chipsSet(chipsGet() + 10); chipUpd(); S.hp = Math.min(100, S.hp + 6); feedAdd('🪙 +10 コイン'); snd2(900, .2, 'triangle', .09); } }
     }
     function goFloor(cx2, cy2) {
       var t = null; FPST.forEach(function (q) { if (q[0] === cx2 && q[1] === cy2) t = q; }); if (!t) return;
