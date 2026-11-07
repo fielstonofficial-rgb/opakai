@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:112-->
+<!--GV:113-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -811,6 +811,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #fTools #dashBtn,#fTools #warpBtn{border:1.5px solid #b0e0ff;background:rgba(10,26,40,.82);color:#d6f1ff}
 #fTools #spBtn{border:1.5px solid #888;background:rgba(30,20,40,.82);color:#bbb}
 #fTools #spBtn.rdy{border-color:#ffd36a;background:linear-gradient(#ff9a3c,#ff5a3c);color:#fff;box-shadow:0 0 10px #ffb347;animation:spg .9s infinite alternate}
+#fTools{gap:7px}
+#fTools button{padding:9px 14px;font-size:13.5px;border-width:2px!important;box-shadow:0 3px 8px #0009}
+#fTools #goTown,#fTools #goMine,#fTools #swBtn,#fTools #dashBtn,#fTools #warpBtn,#fTools #guardBtn{background:linear-gradient(#3a2a08,#1c1404);color:#ffe9a8;border-color:#ffd36a!important}
+#fTools #guardBtn{background:linear-gradient(#123a52,#081a28);color:#d6f1ff;border-color:#7fd6ff!important}
+#fTools #plChat{background:linear-gradient(#ffe27a,#f0a81c);color:#3a2400;border-color:#fff3b0!important;font-size:15px;padding:10px 18px;box-shadow:0 0 14px #ffc83a,0 3px 8px #0009}
+#fTools #qcBtn{background:linear-gradient(#7af0b0,#1fae6a);color:#032a16;border-color:#d8ffea!important;font-size:15px;padding:10px 16px;box-shadow:0 0 14px #3be08a,0 3px 8px #0009}
 @keyframes spg{to{box-shadow:0 0 20px #ff8a3c}}
 #hero2.dash{opacity:.45;filter:blur(1px)}
 .spfx{position:absolute;border-radius:50%;pointer-events:none;z-index:99998;border:6px solid #ffe08a;box-shadow:0 0 24px #ffb347,inset 0 0 24px #ffb347;transform:translate(-50%,-50%) scale(.15);animation:spr .55s ease-out forwards}
@@ -1036,7 +1042,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   <div id="cfm"><div class="gc"><h3>ゲームをとじる？</h3><p class="tiny">とじても、ここまでの記録は残るよ。</p><div class="rw" style="display:flex;gap:8px;margin-top:12px"><button id="cfmNo" type="button" class="gbtn" style="flex:1">つづける</button><button id="cfmYes" type="button" class="gbtn dim" style="flex:1;margin-top:0">とじる</button></div></div></div>
   <section class="scr" id="field">
     <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="装備・もちもの">🎒<small>装備・持物</small></button><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
-    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span id="phLv" style="color:#ffe08a">Lv 1</span><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="plDown"><span>やられた…（このままチャットもできるよ）</span><button type="button" class="gbtn" id="plDownGo">🏥 病院へ向かう</button></div><div id="fTools"><button id="goTown" type="button">🏘️ 町へ</button><button id="goMine" type="button">⛏ 鉱山へ</button><button id="plChat" type="button">💬 チャット</button><button id="spBtn" type="button">✨ 0%</button><button id="sk0" class="skb" type="button"></button><button id="sk1" class="skb" type="button"></button><button id="sk2" class="skb" type="button"></button><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">💬</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしまった…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
+    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span id="phLv" style="color:#ffe08a">Lv 1</span><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="plDown"><span>やられた…（このままチャットもできるよ）</span><button type="button" class="gbtn" id="plDownGo">🏥 病院へ向かう</button></div><div id="fTools"><button id="goTown" type="button">🏘️ 町へ</button><button id="goMine" type="button">🗺 マップ</button><button id="plChat" type="button">💬 チャット</button><button id="spBtn" type="button">✨ 0%</button><button id="sk0" class="skb" type="button"></button><button id="sk1" class="skb" type="button"></button><button id="sk2" class="skb" type="button"></button><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">⚡ ひとこと</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしまった…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
         <div id="gld"><div class="gc"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="tiny">ギルドの部屋</span><button id="gClose" type="button" class="gbtn" style="padding:6px 12px">とじる</button></div><div id="gBody"></div></div></div>
         <div id="npc"><div class="nc"><div class="nh"><b id="npcN"></b><button type="button" class="gbtn" id="npcX" style="padding:6px 12px">とじる</button></div><div id="npcSay"></div><div id="npcQs"></div><div class="nin"><input id="npcIn" maxlength="30" placeholder="聞きたいこと（例：HP、闘技場、売る）" autocomplete="off"><button type="button" class="gbtn" id="npcGo">きく</button></div><div id="npcAct"></div></div></div><div id="arInv"><b id="arInvT"></b><div><button type="button" class="abtn" id="arInvY">受ける</button><button type="button" class="gbtn" id="arInvN">ことわる</button></div></div><div id="updBar" role="button">🔄 新しい版があるよ。ここをタップして更新</div>
         <div id="arBig"></div>
@@ -3918,7 +3924,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 112;
+  var GV = 113;
   (function () {
     var last = Date.now();
     function chk() {
@@ -5011,7 +5017,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('gmTog').addEventListener('pointerdown', function (e) { e.stopPropagation(); });
   function gearUi() {
     lookSync(); var g = $('guardBtn'); if (!g) return; var has = !!eqItem('shield');
-    g.style.display = (has && fieldOn) ? 'block' : 'none'; g.classList.toggle('on', guard); g.textContent = guard ? '🛡 ガード中' : '🛡 ガード';
+    g.style.display = (has && fieldOn && !inTown) ? 'block' : 'none'; g.classList.toggle('on', guard); g.textContent = guard ? '🛡 ガード中' : '🛡 ガード';
     var hh = $('hero2'); if (hh) hh.classList.toggle('guard', guard);
     var sw = $('swBtn'); if (sw) { sw.style.display = (fieldOn && !inTown && eqItem('weapon')) ? 'block' : 'none'; sw.textContent = handW() ? '🔁 つるはし' : '🔁 武器'; }
     var hv = !!(fieldOn && !inTown && eqItem('weapon') && handW());  $('spBtn').style.display = hv ? 'block' : 'none'; skUi(); dashUi(); skBtnUi();
@@ -6962,7 +6968,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function startLoop() { if (fraf) return; flast = performance.now(); fraf = requestAnimationFrame(tick); }
   function tick(t) {
     fraf = 0; if (!fieldOn) return;
-    var onMine = fieldOn && !inTown && !inArena && !inPlaza && !inCafe; if ($('goTown')) { $('goTown').style.display = onMine ? 'block' : 'none'; $('goMine').style.display = (fieldOn && inTown && !inArena && !inPlaza && !inCafe && lastMine && MBY[lastMine]) ? 'block' : 'none'; }
+    var onMine = fieldOn && !inTown && !inArena && !inPlaza && !inCafe; if ($('goTown')) { $('goTown').style.display = onMine ? 'block' : 'none'; $('goMine').style.display = (fieldOn && inTown && !inArena && !inPlaza && !inCafe) ? 'block' : 'none'; }
     var bl = inArena ? '🏳 あきらめる' : ((inPlaza || inCafe) ? '🚪 町へ' : (inTown ? '🚪 マップへ' : '🚪 鉱山を出る')); if (bl !== window.__bl) { window.__bl = bl; var bb = $('fBack'); bb.className = 'ib wide'; bb.textContent = bl; }
     var dt = Math.min(.05, (t - flast) / 1000); flast = t;
     var hh = $('hero2'), moved = false;
@@ -7074,7 +7080,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('atkBtn').addEventListener('click', attackNearest);
   $('fCancel').addEventListener('click', function () { if (inArena) { arGiveUp(); return; } if (inPlaza) { leaveArena(); return; } if (!busy) cancelDig(); });
   $('goTown').addEventListener('click', function () { if (busy) return; if (curSpot) cancelDig(); leaveTown(); openTown(); });
-  $('goMine').addEventListener('click', function () { if (!lastMine || !MBY[lastMine]) return; if (MBY[lastMine].bs && !bsOk(MBY[lastMine])) { bsNeed(MBY[lastMine]); return; } leaveTown(); enterMine(lastMine); });
+  $('goMine').addEventListener('click', function () { if (busy) return; if (curSpot) cancelDig(); leaveTown(); openMap(null); });
   ['goTown', 'goMine'].forEach(function (id) { $(id).addEventListener('pointerdown', function (e) { e.stopPropagation(); }); });
   $('fBack').addEventListener('click', function () { if (inCafe) { leaveCafe(); return; } if (inArena) { arGiveUp(); return; } if (inPlaza) { leaveArena(); return; } if (curSpot) cancelDig(); var wasTown = inTown; leaveTown(); openMap(wasTown ? null : curMine); });
   $('fBook').addEventListener('click', function () { renderBook(); $('book').classList.add('on'); });
