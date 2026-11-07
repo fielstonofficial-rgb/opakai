@@ -4952,7 +4952,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 155;
+  var GV = 156;
   (function () {
     var last = Date.now();
     function chk() {
@@ -8520,15 +8520,15 @@ var TB = {
 
   /* ---------- 起動 ---------- */
   /* ---------- 🎓 はじめてのチュートリアル（新しい人だけ。町からスタート。終わるとLv7） ---------- */
-  var TUT = { pend: '', retryAt: 0, test: 0, ld: [], on: false, tm: 0, busy: 0, dlg: 0, cur: -1, killed: 0, doors: {}, min: 0, quit: 0, n0: 0, e0: 0, d0: 0, key: '' };
+  var TUT = { pend: '', retryAt: 0, test: 0, ld: [], on: false, tm: 0, busy: 0, dlg: 0, cur: -1, killed: 0, doors: {}, min: 1, quit: 0, n0: 0, e0: 0, d0: 0, key: '' };
   (function () {
     var st = document.createElement('style');
-    st.textContent = '#tutB{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(8px + env(safe-area-inset-bottom));width:min(94vw,430px);z-index:250;display:none;pointer-events:none;font-family:inherit}' +
-      '#tutB.on{display:block}#tutB.top{bottom:auto;top:calc(104px + env(safe-area-inset-top))}#tutB.top .ok{top:auto;bottom:-46px}#tutB.sh{top:auto;bottom:calc(74px + env(safe-area-inset-bottom))}#tutB.sh .ok{top:-46px;bottom:auto}#tutB .tc{pointer-events:auto;background:linear-gradient(180deg,rgba(32,26,58,.96),rgba(18,14,36,.97));border:1.5px solid #e8c46a;border-radius:16px;padding:9px 12px 10px;color:#fff;box-shadow:0 6px 22px rgba(0,0,0,.55)}' +
-      '#tutB .th{display:flex;align-items:center;gap:8px;font-size:12px;color:#e8c46a;font-weight:800}#tutB .th span{flex:1}' +
-      '#tutB .tp{height:5px;border-radius:3px;background:rgba(255,255,255,.14);margin:5px 0 7px;overflow:hidden}#tutB .tp i{display:block;height:100%;background:linear-gradient(90deg,#ffd36a,#ff9a4a);transition:width .5s}' +
-      '#tutB .tt{font-size:15px;font-weight:900;line-height:1.35}#tutB .ts{font-size:12.5px;line-height:1.5;color:#dfe6f2;margin-top:3px}' +
-      '#tutB .tb{display:flex;gap:6px;margin-top:7px;justify-content:flex-end}#tutB button{border:0;border-radius:9px;padding:5px 10px;font-size:12px;font-weight:800;background:rgba(255,255,255,.14);color:#e8ecf4}' +
+    st.textContent = '#tutB{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(8px + env(safe-area-inset-bottom));width:min(92vw,360px);z-index:250;display:none;pointer-events:none;font-family:inherit}' +
+      '#tutB.on{display:block}#tutB.top{bottom:auto;top:calc(100px + env(safe-area-inset-top))}#tutB.top .ok{top:auto;bottom:-46px}#tutB.sh{top:auto;bottom:calc(74px + env(safe-area-inset-bottom))}#tutB.sh .ok{top:-46px;bottom:auto}#tutB .tc{pointer-events:auto;background:linear-gradient(180deg,rgba(32,26,58,.96),rgba(18,14,36,.97));border:1.5px solid #e8c46a;border-radius:11px;padding:4px 8px 5px;color:#fff;box-shadow:0 3px 12px rgba(0,0,0,.5)}' +
+      '#tutB .th{display:flex;align-items:center;gap:6px;font-size:10px;color:#e8c46a;font-weight:800}#tutB .th span{flex:1}' +
+      '#tutB .tp{height:3px;border-radius:2px;background:rgba(255,255,255,.14);margin:3px 0 4px;overflow:hidden}#tutB .tp i{display:block;height:100%;background:linear-gradient(90deg,#ffd36a,#ff9a4a);transition:width .5s}' +
+      '#tutB .tt{font-size:12.5px;font-weight:900;line-height:1.3}#tutB .ts{font-size:10.5px;line-height:1.4;color:#dfe6f2;margin-top:2px}' +
+      '#tutB .tb{display:flex;gap:5px;margin-top:4px;justify-content:flex-end}#tutB button{border:0;border-radius:7px;padding:2px 7px;font-size:10px;font-weight:800;background:rgba(255,255,255,.14);color:#e8ecf4}' +
       '#tutB .ok{position:absolute;left:0;right:0;top:-46px;text-align:center;pointer-events:none}#tutB .ok b{display:inline-block;background:linear-gradient(180deg,#7ee08a,#2fae55);color:#06280f;border-radius:20px;padding:7px 18px;font-size:15px;box-shadow:0 4px 14px rgba(0,0,0,.5);animation:tutPop .5s ease-out}' +
       '@keyframes tutPop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}' +
       '#tutDir{position:fixed;z-index:249;pointer-events:none;transform:translate(-50%,-50%);text-align:center;display:none}#tutDir i{display:block;font-style:normal;font-size:46px;line-height:1;color:#ffd36a;text-shadow:0 0 10px #000,0 0 18px #f0a030;animation:tutPul .8s ease-in-out infinite alternate}#tutDir small{display:inline-block;background:rgba(0,0,0,.75);color:#ffd36a;border-radius:10px;padding:2px 8px;font-size:12px;font-weight:800}@keyframes tutPul{from{opacity:.55}to{opacity:1}}' +
