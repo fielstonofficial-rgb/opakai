@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:94-->
+<!--GV:95-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -390,7 +390,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #arc .pkMsg{padding:18px 6px;color:#cfd8e3;font-size:14px}
 #arc .hand{min-height:76px;margin:6px 0}
 #arc .hand b{display:block;font-size:12px;color:#9fb4c4;margin-bottom:4px}
-#arc .pc{display:inline-block;width:46px;height:66px;margin:0 3px;border-radius:7px;background:#fff;color:#111;font-size:18px;font-weight:800;line-height:66px;text-align:center;border:1px solid #888;box-shadow:0 2px 6px #0008}
+#arc .pc.su{display:inline-flex;flex-direction:column;align-items:center;justify-content:center;line-height:1;gap:1px}#arc .pc.su i{font-style:normal;font-size:.95em;line-height:1}#arc .pc{display:inline-block;width:46px;height:66px;margin:0 3px;border-radius:7px;background:#fff;color:#111;font-size:18px;font-weight:800;line-height:66px;text-align:center;border:1px solid #888;box-shadow:0 2px 6px #0008}
 #arc .pc.red{color:#d02020}#arc .pc.back{background:repeating-linear-gradient(45deg,#2a4a9a,#2a4a9a 5px,#1a2a6a 5px,#1a2a6a 10px);border:2px solid #fff}
 #arc .bjb{display:flex;gap:8px;justify-content:center;margin:10px 0}
 #arc .bjb button{padding:12px 16px;border-radius:12px;border:2px solid #7af0ff;background:#0e2a3a;color:#fff;font-size:16px}
@@ -1162,15 +1162,20 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var v = a.volume, n = 0, iv = setInterval(function () { n++; try { a.volume = Math.max(0, v * (1 - n / 10)); } catch (e) {} if (n >= 10) { clearInterval(iv); try { a.pause(); a.currentTime = 0; a.volume = v; } catch (e) {} } }, 100);
   }
   function themeSync() { if (!THEME.a) return; try { if (bgmOn && THEME.on) THEME.a.play(); else if (!bgmOn) THEME.a.pause(); } catch (e) {} }
-  document.addEventListener('visibilitychange', function () { if (!THEME.a || !THEME.on) return; try { if (document.hidden) THEME.a.pause(); else if (bgmOn) THEME.a.play(); } catch (e) {} });
+  document.addEventListener('visibilitychange', function () { if (!THEME.a || !THEME.on) return; try { if (document.hidden) THEME.a.pause(); else if (bgmOn && !tvQ) THEME.a.play(); } catch (e) {} });
   /* ---------- 場面ごとの曲（ファイルがある場面だけ。なければ今までのBGM） ---------- */
   var SONGS = { dig: 'opa-dig.mp3', field: 'opa-dig.mp3', town: 'opa-town.mp3' }, SC = { a: null, name: null, on: false, failed: {} }, curScene = null;
   function sceneStop() {
     var a = SC.a; SC.on = false; SC.a = null; SC.name = null; if (!a) return;
     var v = a.volume, n = 0, iv = setInterval(function () { n++; try { a.volume = Math.max(0, v * (1 - n / 8)); } catch (e) {} if (n >= 8) { clearInterval(iv); try { a.pause(); } catch (e) {} } }, 80);
   }
+  var tvQ = false; /* カジノのテーブル中は、音楽を止めてディーラーの声を聞きやすくする */
+  function tvQuiet(on) {
+    tvQ = !!on;
+    try { if (on) { if (SC.a) SC.a.pause(); if (THEME.a) THEME.a.pause(); BGM.duck(true); } else { BGM.duck(false); if (bgmOn && SC.a && SC.on) { var pp = SC.a.play(); if (pp && pp.catch) pp.catch(function () {}); } else BGM.refresh(); } } catch (e) {}
+  }
   function sceneSong(name) {
-    var f = SONGS[name];
+    var f = SONGS[name]; if (tvQ) return false;
     if (!bgmOn || !f || SC.failed[name]) { sceneStop(); return false; }
     if (SC.name === f && SC.a) return true;
     sceneStop();
@@ -1179,7 +1184,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var pr = a.play(); if (pr && pr.catch) pr.catch(function () { if (SC.a === a) { SC.a = null; SC.name = null; SC.on = false; BGM.refresh(); } });
     return true;
   }
-  document.addEventListener('visibilitychange', function () { if (!SC.a) return; try { if (document.hidden) SC.a.pause(); else if (bgmOn) SC.a.play(); } catch (e) {} });
+  document.addEventListener('visibilitychange', function () { if (!SC.a) return; try { if (document.hidden) SC.a.pause(); else if (bgmOn && !tvQ) SC.a.play(); } catch (e) {} });
   var BGM = (function () {
     var NT = { C: 0, D: 2, E: 4, F: 5, G: 7, A: 9, B: 11 };
     function fr(n) { var x = /^([A-G])(#|b)?(\d)$/.exec(n); var v = NT[x[1]] + (x[2] === '#' ? 1 : x[2] === 'b' ? -1 : 0); return 440 * Math.pow(2, (12 * (+x[3] + 1) + v - 69) / 12); }
@@ -1282,7 +1287,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     return {
       set: function (name) { if (name === want && (inst || !bgmOn)) return; want = name; stop(); if (name) start(); },
       refresh: function () { if (bgmOn) start(); else stop(); },
-      duck: function (d) { ducked = d; var a = actx(); if (master && a) master.gain.setTargetAtTime(d ? 0.1 : 0.55, a.currentTime, 0.1); },
+      duck: function (d) { ducked = d; var a = actx(); if (master && a) master.gain.setTargetAtTime(d ? (tvQ ? 0.001 : 0.1) : 0.55, a.currentTime, 0.1); },
       off: stop
     };
   })();
@@ -3739,7 +3744,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 94;
+  var GV = 95;
   (function () {
     var last = Date.now();
     function chk() {
@@ -5186,7 +5191,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     } catch (e) { }
   }
   function arStand() { try { if (hero && (hero.sit === 99 || (hero.sit != null && SEATS[hero.sit] && SEATS[hero.sit].tbl))) standUp(); } catch (e) { } }
-  function arcClose() { arStand(); if (typeof PK !== 'undefined' && PK) pkLeave(); if (typeof BJ !== 'undefined' && BJ) bjLeave(); try { BGM.duck(false); } catch (e) {} arcCl.splice(0).forEach(function (f) { try { f(); } catch (e) {} }); arcFlush(); fpStop(); arcTm.forEach(clearTimeout); arcTm = []; $('arc').classList.remove('on'); }
+  function arcClose() { if (tvQ) tvQuiet(false); arStand(); if (typeof PK !== 'undefined' && PK) pkLeave(); if (typeof BJ !== 'undefined' && BJ) bjLeave(); try { BGM.duck(false); } catch (e) {} arcCl.splice(0).forEach(function (f) { try { f(); } catch (e) {} }); arcFlush(); fpStop(); arcTm.forEach(clearTimeout); arcTm = []; $('arc').classList.remove('on'); }
   function chipBar() { return '<div class="chipb">🪙 <b id="chipN">' + chipsGet().toLocaleString() + '</b> チップ</div>'; }
   function chipUpd() { var e = $('chipN'); if (e) e.textContent = chipsGet().toLocaleString(); }
   function chipFree() { if (player && player.gm) return; if (chipsGet() < 10) { if (ARC.on) { if (!ARC.rfOk) return; ARC.rfOk = false; ARC.rf = true; } chipsSet(chipsGet() + 500); chipUpd(); } }
@@ -5412,8 +5417,10 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function sndWin() { [0, 1, 2, 3].forEach(function (k) { arTone(523 * Math.pow(1.26, k), .28, 'triangle', .1, k * .1); }); for (var k = 0; k < 5; k++) sndChip(.45 + k * .07); }
   function sndLose() { arTone(220, .3, 'sawtooth', .05); arTone(165, .45, 'sawtooth', .05, .2); }
   function tvCtx(P, A) { if (!P.an) P.an = {}; return { P: P, an: P.an, W: A.clientWidth || 400, H: A.clientHeight || 400, n: 0, snd: [], first: !P.rendered }; }
+  var SUIT = ['♠', '♥', '♦', '♣'];
+  function cdTxt(r, c) { return r + '<i>' + SUIT[c.s] + '</i>'; }
   function tvCard(txt, red, hid, sz, key, X, dx, dy, flip) {
-    var cls = 'pc' + (hid ? ' back' : (red ? ' red' : '')) + (sz ? ' ' + sz : ''), st = '';
+    var cls = 'pc' + (hid ? ' back' : (red ? ' red' : '')) + (sz ? ' ' + sz : '') + (!hid && String(txt).indexOf('<i>') >= 0 ? ' su' : ''), st = '';
     if (key) {
       var t = X.an[key], now = Date.now();
       if (t == null) { if (X.first) t = X.an[key] = 0; else { t = X.an[key] = now + X.n * 140; X.snd.push([X.n * .14, flip]); X.n++; } }
@@ -5426,11 +5433,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function arVoice() {
     if (ARV) return ARV; try {
       var vs = window.speechSynthesis.getVoices().filter(function (v) { return /^ja/i.test(v.lang); }); if (!vs.length) return null;
-      var male = vs.filter(function (v) { return /ichiro|otoya|hattori|keita|takumi|male|男/i.test(v.name); }); ARV = { v: male[0] || vs[0], m: !!male.length }; return ARV;
+      /* いちばん自然に聞こえる声を選ぶ（Natural・Neural・Online・Premium・Google などを優先） */
+      var sc = function (v) { var n = v.name || '', p = 0; if (/natural|neural|online|premium|enhanced|高品質/i.test(n)) p += 10; if (/google/i.test(n)) p += 6; if (/kyoko|nanami|keita|o-ren|hattori|otoya|ayumi|haruka|sayaka|ichiro|takumi/i.test(n)) p += 4; if (/compact|espeak/i.test(n)) p -= 6; if (v.localService === false) p += 2; return p; };
+      vs.sort(function (a, b) { return sc(b) - sc(a); }); var v0 = vs[0];
+      ARV = { v: v0, m: /ichiro|otoya|hattori|keita|takumi|male|男/i.test(v0.name || '') }; return ARV;
     } catch (e) { return null; }
   }
   try { window.speechSynthesis.onvoiceschanged = function () { ARV = null; }; } catch (e) {}
-  function arSay(t) { try { if (!soundOn) return; var u = new SpeechSynthesisUtterance(t), V = arVoice(); u.lang = 'ja-JP'; if (V) u.voice = V.v; u.pitch = V && V.m ? .8 : .45; u.rate = .98; u.volume = 1; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); } catch (e) {} }
+  function arSay(t) { try { if (!soundOn) return; var u = new SpeechSynthesisUtterance(t), V = arVoice(); u.lang = 'ja-JP'; if (V) u.voice = V.v; u.pitch = V && V.m ? .92 : 1; u.rate = 1.06; u.volume = 1; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); } catch (e) {} }
   var NPCN = ['ジョー', 'リナ', 'タクミ', 'ミサキ', 'ケン', 'サラ', 'ダイ', 'アヤ', 'レオ', 'ノア', 'ハル', 'ユウ', 'カイ', 'マリ'];
   function tvAddNpc(T, n, mk, avoid) {
     var free = [], i; for (i = 0; i < n; i++) if (!T.seats[i]) free.push(i); if (!free.length) return -1;
@@ -5593,12 +5603,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if ($('bjInfo')) $('bjInfo').textContent = '🪙 ' + chipsGet().toLocaleString();
     if (!T) { A.innerHTML = '<div class="tvW">テーブルにつないでいます…</div>'; return; }
     var X = tvCtx(BJ, A), W = X.W, H = X.H, mineS = me >= 0 ? T.seats[me] : null, now = Date.now(), h = tvDealer(X) + '<div class="tvO bj"></div>';
-    h += '<div class="bjD">' + T.d.map(function (c, k) { return tvCard(CRK[c.r], c.s === 1 || c.s === 2, T.hide && k === 1 && T.st !== 'show', 'sm', 'd' + T.rd + '_' + k, X, 0, -H * .22); }).join('') + (T.d.length ? '<span class="bjT">' + (T.hide && T.st !== 'show' ? bjVal([T.d[0]]) : bjVal(T.d)) + '</span>' : '<span class="bjL">DEALER</span>') + '</div>';
+    h += '<div class="bjD">' + T.d.map(function (c, k) { return tvCard(cdTxt(CRK[c.r], c), c.s === 1 || c.s === 2, T.hide && k === 1 && T.st !== 'show', 'sm', 'd' + T.rd + '_' + k, X, 0, -H * .22); }).join('') + (T.d.length ? '<span class="bjT">' + (T.hide && T.st !== 'show' ? bjVal([T.d[0]]) : bjVal(T.d)) + '</span>' : '<span class="bjL">DEALER</span>') + '</div>';
     T.seats.forEach(function (s, i) {
       var p = BJPOS[i], bb = s && BJ.bub[s.id]; if (!s) { h += '<div class="pkSeat bjs empty" style="left:' + p[0] + '%;top:' + p[1] + '%">空席</div>'; return; }
       var dx = (50 - p[0]) / 100 * W, dy = (8 - p[1]) / 100 * H, v = s.h.length ? bjVal(s.h) : 0, rs = s.res ? ({ bust: 'BUST', bj: 'BLACKJACK', win: 'WIN', push: 'PUSH', lose: 'LOSE' })[s.res] : '';
       BJ.pos[s.id] = p; h += '<div class="pkSeat bjs' + (i === me ? ' me' : '') + (i === T.turn ? ' turn' : '') + (s.res === 'win' || s.res === 'bj' ? ' win' : '') + (s.res === 'lose' || s.res === 'bust' ? ' fold' : '') + '" style="left:' + p[0] + '%;top:' + p[1] + '%">' + (bb && bb.exp > now ? '<div class="tvBub">' + esc(bb.x) + '</div>' : '') + '<div class="bjH">' +
-        s.h.map(function (c, k) { return tvCard(CRK[c.r], c.s === 1 || c.s === 2, 0, 'sm', 'p' + T.rd + '_' + i + '_' + k, X, dx, dy); }).join('') + '</div>' + (s.h.length ? '<div class="bjT">' + v + '</div>' : '') +
+        s.h.map(function (c, k) { return tvCard(cdTxt(CRK[c.r], c), c.s === 1 || c.s === 2, 0, 'sm', 'p' + T.rd + '_' + i + '_' + k, X, dx, dy); }).join('') + '</div>' + (s.h.length ? '<div class="bjT">' + v + '</div>' : '') +
         '<div class="pkNm">' + esc(s.nm) + (s.npc ? ' 🤖' : '') + '</div><div class="pkSt">🪙 ' + s.stack.toLocaleString() + '</div>' + (s.bet > 0 ? '<div class="pkB2">賭け ' + s.bet.toLocaleString() + '</div>' : '') +
         (rs ? '<div class="pkW">' + rs + (s.pay > 0 ? ' +' + s.pay.toLocaleString() : (s.pay < 0 ? ' ' + s.pay.toLocaleString() : '')) + '</div>' : '') + '</div>';
     });
@@ -5631,6 +5641,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     }
   }
   function openBJ() {
+    tvQuiet(true);
     try { var pend = parseInt(localStorage.getItem('opa_pk_pend') || '0', 10); if (pend > 0) { chipsSet(chipsGet() + pend); localStorage.removeItem('opa_pk_pend'); } } catch (e) {}
     chipFree(); var buy = Math.min(1000, chipsGet()); if (buy < 20) { arcShow('<h2>🃏 ブラックジャック</h2><p>チップが足りません</p><button type="button" class="arcx" id="pkX0">とじる</button>'); $('pkX0').onclick = arcClose; return; }
     chipsSet(chipsGet() - buy); if (!(player && player.gm)) { try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {} }
@@ -5770,6 +5781,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function pkNpcAct(T, i) {
     var s = T.seats[i], need = T.cur - s.bet, nOpp = Math.min(3, Math.max(1, pkInHand(T).length - 1)), eq = pkEquity(s.hole, T.board, nOpp, 90), pot = T.pot, odds = need > 0 ? need / (pot + need) : 0, r = Math.random();
     var sizeTo = function (frac) { return Math.max(T.cur + T.minR, Math.round((T.cur + pot * frac) / 10) * 10); };
+    var solo = T.seats.filter(function (q) { return q && !q.npc && !q.gone; }).length <= 1; /* ひとりで遊んでる時は、さらに弱く・すぐ降りない */
+    if (solo) {
+      eq = eq * .78 + (Math.random() - .5) * .3;
+      if (eq > .84 && r > .6) { var to0 = sizeTo(.25 + Math.random() * .3); return ['r', Math.min(to0, s.bet + s.stack)]; }
+      if (need === 0) { if (eq > .72 && r < .15) return ['r', Math.min(sizeTo(.25), s.bet + s.stack)]; return ['c', 0]; }
+      if (eq > odds - .24 || (r < .5 && need <= pot * 1.1) || need <= T.minR * 2) return ['c', 0];
+      return ['f', 0];
+    }
     eq = eq * .85 + (Math.random() - .5) * .2; /* 読みが甘い（ひとりでも遊びやすいよう、わざと弱め） */
     if (eq > .78 && r > .45) { var to = sizeTo(.3 + Math.random() * .4); return ['r', Math.min(to, s.bet + s.stack)]; }
     if (need === 0) { if (eq > .62 && r < .25) return ['r', Math.min(sizeTo(.3), s.bet + s.stack)]; return ['c', 0]; }
@@ -5812,7 +5831,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function pkRankInfo(T, s) {
     if (!s || s.f || s.hole.length !== 2 || T.st === 'wait' || !T.hand) return null;
     if (T.board.length >= 3) { var c = pkCat(pkBest(s.hole.concat(T.board))); return { c: c, t: PKCAT[c] }; }
-    var a = s.hole[0], b = s.hole[1]; return a.r === b.r ? { c: 1, t: 'ポケットペア' } : { c: 0, t: a.s === b.s ? 'スーテッド' : 'ハイカード' };
+    var a = s.hole[0], b = s.hole[1]; return a.r === b.r ? { c: 1, t: 'ポケットペア' } : { c: 0, t: a.s === b.s ? 'スーテッド（同じマーク）' : 'ハイカード' };
   }
   function pkRender() {
     arSeatSync(PK, 'pk');
@@ -5820,12 +5839,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if ($('pkInfo')) $('pkInfo').textContent = '🪙 ' + chipsGet().toLocaleString();
     if (!T) { A.innerHTML = '<div class="tvW">テーブルにつないでいます…</div>'; return; }
     var X = tvCtx(PK, A), W = X.W, H = X.H, rel = me < 0 ? 0 : me, h = tvDealer(X) + '<div class="tvO"></div>', mineS = me >= 0 ? T.seats[me] : null, now = Date.now(), rk = pkRankInfo(T, mineS);
-    h += '<div class="tvBd">' + T.board.map(function (c, k) { return tvCard(PKRK[c.r], c.s === 1 || c.s === 2, 0, 0, 'b' + T.hand + '_' + k, X, 0, -H * .3, 1); }).join('') + '</div><div class="tvPot">ポット ' + T.pot.toLocaleString() + '</div>';
+    h += '<div class="tvBd">' + T.board.map(function (c, k) { return tvCard(cdTxt(PKRK[c.r], c), c.s === 1 || c.s === 2, 0, 0, 'b' + T.hand + '_' + k, X, 0, -H * .3, 1); }).join('') + '</div><div class="tvPot">ポット ' + T.pot.toLocaleString() + '</div>';
     T.seats.forEach(function (s, i) {
       var r = (i - rel + 8) % 8, p = PKPOS[r]; if (!s) { h += '<div class="pkSeat empty" style="left:' + p[0] + '%;top:' + p[1] + '%">空席</div>'; return; }
       PK.pos[s.id] = p; var mine = i === me, sh = T.res && T.res.shown.indexOf(i) >= 0, face = mine || sh, inH = T.hand > 0 && T.st !== 'wait' && s.hole.length === 2 && !(s.f && T.st !== 'show'), dx = (50 - p[0]) / 100 * W, dy = (10 - p[1]) / 100 * H, bb = PK.bub[s.id];
       h += '<div class="pkSeat' + (mine ? ' me' : '') + (i === T.turn ? ' turn' : '') + (s.f ? ' fold' : '') + (T.res && T.res.won[i] ? ' win' : '') + '" style="left:' + p[0] + '%;top:' + p[1] + '%">' + (bb && bb.exp > now ? '<div class="tvBub">' + esc(bb.x) + '</div>' : '') + '<div class="pkCs">' +
-        (inH ? s.hole.map(function (c, k) { return tvCard(PKRK[c.r], c.s === 1 || c.s === 2, !face, 'sm', 'h' + T.hand + '_' + i + '_' + k, X, dx, dy); }).join('') : '') + '</div><div class="pkNm">' + (i === T.btn ? '<i class="pkD">D</i>' : '') + esc(s.nm) + (s.npc ? ' 🤖' : '') + '</div><div class="pkSt">🪙 ' + s.stack.toLocaleString() + '</div>' +
+        (inH ? s.hole.map(function (c, k) { return tvCard(cdTxt(PKRK[c.r], c), c.s === 1 || c.s === 2, !face, 'sm', 'h' + T.hand + '_' + i + '_' + k, X, dx, dy); }).join('') : '') + '</div><div class="pkNm">' + (i === T.btn ? '<i class="pkD">D</i>' : '') + esc(s.nm) + (s.npc ? ' 🤖' : '') + '</div><div class="pkSt">🪙 ' + s.stack.toLocaleString() + '</div>' +
         (T.res && T.res.won[i] ? '<div class="pkW">+' + T.res.won[i].toLocaleString() + (T.res.desc[i] ? ' ' + T.res.desc[i] : '') + '</div>' : (mine && rk && T.st !== 'show' ? '<div class="pkRk' + (PK.rkUp && now - PK.rkUp < 1500 ? ' up' : '') + '">現在：' + rk.t + '</div>' : '')) + '</div>';
       if (s.bet > 0) h += '<div class="pkBet" style="left:' + (p[0] + (50 - p[0]) * .34) + '%;top:' + (p[1] + (57 - p[1]) * .34) + '%">🪙' + s.bet.toLocaleString() + '</div>';
     });
@@ -5857,12 +5876,13 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     }
   }
   function openHoldem() {
+    tvQuiet(true);
     try { var pend = parseInt(localStorage.getItem('opa_pk_pend') || '0', 10); if (pend > 0) { chipsSet(chipsGet() + pend); localStorage.removeItem('opa_pk_pend'); } } catch (e) {}
     chipFree(); var buy = Math.min(PKBUY, chipsGet()); if (buy < 20) { arcShow('<h2>♠ テキサスホールデム</h2><p>チップが足りません</p><button type="button" class="arcx" id="pkX0">とじる</button>'); $('pkX0').onclick = arcClose; return; }
     chipsSet(chipsGet() - buy); if (!(player && player.gm)) { try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {} }
-    arcShow('<div class="tvh"><b>♠ テキサスホールデム</b><span id="pkInfo" class="chipb"></span><button type="button" class="arcx" id="pkX">席を立つ</button></div><div class="tvAw"><div id="pkTbl" class="tvA tvAi"></div><div id="pkFl" class="tvFl"></div></div><div id="pkMsg" class="tvM"></div><div id="pkCtl" class="tvC"></div>' + tcHTML('pk'), 'tv');
+    arcShow('<div class="tvh"><b>♠ テキサスホールデム</b><span id="pkInfo" class="chipb"></span><button type="button" class="arcx" id="pkH" style="margin-right:6px">役</button><button type="button" class="arcx" id="pkX">席を立つ</button></div><div class="tvAw"><div id="pkTbl" class="tvA tvAi"></div><div id="pkFl" class="tvFl"></div><div id="pkHelp" style="display:none;position:absolute;left:6%;right:6%;top:8%;z-index:30;background:#101820ee;border:2px solid #ffd36a;border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.55;color:#fff"><b style="color:#ffd36a">役の強さ（上ほど強い）</b><br>① ストレートフラッシュ：同じマークの連番5枚<br>② フォーカード：同じ数字4枚<br>③ フルハウス：3枚＋2枚の組み合わせ<br>④ フラッシュ：同じマーク5枚（♠♥♦♣）<br>⑤ ストレート：連番5枚（マークはバラバラでOK）<br>⑥ スリーカード：同じ数字3枚<br>⑦ ツーペア：ペアが2組<br>⑧ ワンペア：同じ数字2枚<br>⑨ ハイカード：役なし（いちばん大きい数字）<br><span style="color:#9fd0ff">手札2枚＋場の5枚から、いちばん強い5枚で勝負。自分の役は「現在：○○」で出るよ。（タップで閉じる）</span></div></div><div id="pkMsg" class="tvM"></div><div id="pkCtl" class="tvC"></div>' + tcHTML('pk'), 'tv');
     PK = { T: null, me: -1, last: Date.now(), hb: 0, seen: {}, iv: 0, buy: buy, bub: {}, pos: {}, cl: [] }; tcInit('pk', PK, 'pk'); PK.iv = setInterval(pkTick, 250);
-    $('pkX').onclick = pkLeave; pkRender(); pkSend({ k: 'who' });
+    $('pkX').onclick = pkLeave; $('pkH').onclick = function () { var h = $('pkHelp'); h.style.display = h.style.display === 'none' ? 'block' : 'none'; }; $('pkHelp').onclick = function () { this.style.display = 'none'; }; pkRender(); pkSend({ k: 'who' });
     var nm = (player && player.avatar && player.avatar.name) || 'あなた';
     setTimeout(function () {
       if (!PK) return; if (!PK.T) { PK.T = pkNewTable(); PK.T.seats[1] = pkSeat(myMid, String(nm).slice(0, 8), buy, 0); PK.me = 1; pkPush(PK.T); }
