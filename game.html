@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:117-->
+<!--GV:118-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -388,7 +388,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #arc .tgRl{display:none;position:absolute;left:3%;right:3%;top:3%;bottom:3%;overflow:auto;z-index:40;background:#101820f7;border:2px solid #ffd36a;border-radius:12px;padding:12px 14px;font-size:12.5px;line-height:1.7;color:#fff;text-align:left}
 #arc .tgRl.on{display:block}
 #arc .tgRl h4{margin:0 0 6px;font-size:15px;color:#ffe27a}#arc .tgRl ul{margin:0;padding-left:18px}#arc .tgRl li{margin:4px 0}#arc .tgRl .arcx{display:block;margin:12px auto 0;padding:8px 26px}
-#arc .opl{display:inline-block;font-style:normal;animation:opSh 2s linear infinite;filter:drop-shadow(0 0 4px #7af0ff)}
+#arc .opl em{animation:opSh 2s linear infinite;filter:drop-shadow(0 0 4px #7af0ff)}
 @keyframes opSh{to{filter:hue-rotate(360deg) drop-shadow(0 0 4px #ffe27a)}}
 #arc .bgOp{display:block;margin:2px auto;padding:5px 12px;border-radius:14px;border:2px solid #7af0ff;background:linear-gradient(90deg,#1b1040,#3a1a60);color:#fff;font-weight:800;font-size:12px;box-shadow:0 0 10px #7af0ff}
 #arc .bgOp.on{background:linear-gradient(90deg,#7af0ff,#ff9ad5);color:#1b1040}
@@ -397,6 +397,10 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #arc .unS .av.cat{overflow:visible;background:#fff6e8}#arc .unS .av.cat svg{border-radius:0;overflow:visible}
 #arc .pkRest{position:absolute;left:6px;bottom:6px;z-index:25;padding:7px 13px;border-radius:14px;border:2px solid #9ff0c0;background:rgba(6,30,20,.9);color:#c9ffe0;font-weight:800;font-size:12.5px;box-shadow:0 2px 8px #0008}
 #arc .pkRest.on{background:linear-gradient(#ffe27a,#f0a81c);color:#3a2400;border-color:#fff3b0;box-shadow:0 0 12px #ffc83a}
+#arc .opl{display:flex;flex-direction:column;align-items:center;justify-content:center;gap:1px;line-height:1;font-style:normal;text-decoration:none}
+#arc .opl em{font-style:normal;font-size:13px;line-height:1}
+#arc .opl u{text-decoration:none;font-size:6.5px;font-weight:900;letter-spacing:0;color:#fff;text-shadow:0 0 3px #7af0ff,0 0 2px #000;white-space:nowrap}
+#arc .pc:has(.opl){width:32px!important;height:44px!important;line-height:1!important;padding:0!important;background:linear-gradient(135deg,#1b1040,#4a2a80)!important;border:2px solid #7af0ff!important;color:#fff;display:inline-flex!important;align-items:center;justify-content:center;box-shadow:0 0 8px #7af0ff}
 #arc .tgTm{flex:0 0 auto;height:5px;border-radius:3px;background:#fff2;overflow:hidden;margin:0 10px}
 #arc .tgTm i{display:block;height:100%;background:linear-gradient(90deg,#ff5a5a,#ffe27a,#4cd964);transform-origin:left;animation-name:tgTm;animation-timing-function:linear;animation-fill-mode:forwards}
 @keyframes tgTm{from{transform:scaleX(1)}to{transform:scaleX(0)}}
@@ -3930,7 +3934,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 117;
+  var GV = 118;
   (function () {
     var last = Date.now();
     function chk() {
@@ -5619,7 +5623,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function sndLose() { arTone(220, .3, 'sawtooth', .05); arTone(165, .45, 'sawtooth', .05, .2); }
   function tvCtx(P, A) { if (!P.an) P.an = {}; return { P: P, an: P.an, W: A.clientWidth || 400, H: A.clientHeight || 400, n: 0, snd: [], first: !P.rendered }; }
   var SUIT = ['♠', '♥', '♦', '♣'];
-  function cdTxt(r, c) { if (c.o) return '<b class="opl">💎</b>'; return r + '<i>' + SUIT[c.s] + '</i>'; }
+  function cdTxt(r, c) { if (c.o) return '<b class="opl"><em>💎</em><u>オパール</u></b>'; return r + '<i>' + SUIT[c.s] + '</i>'; }
   function tvCard(txt, red, hid, sz, key, X, dx, dy, flip) {
     var cls = 'pc' + (hid ? ' back' : (red ? ' red' : '')) + (sz ? ' ' + sz : '') + (!hid && String(txt).indexOf('<i>') >= 0 ? ' su' : ''), st = '';
     if (key) {
@@ -6559,7 +6563,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     try { var pend = parseInt(localStorage.getItem('opa_pk_pend') || '0', 10); if (pend > 0) { chipsSet(chipsGet() + pend); localStorage.removeItem('opa_pk_pend'); } } catch (e) {}
     chipFree(); var buy = chipsGet(); if (buy < 20) { arcShow('<h2>♠ テキサスホールデム</h2><p>コインが足りません</p><button type="button" class="arcx" id="pkX0">とじる</button>'); $('pkX0').onclick = arcClose; return; }
     chipsSet(chipsGet() - buy); if (!(player && player.gm)) { try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {} }
-    arcShow('<div class="tvh"><b style="white-space:nowrap">♠ ホールデム</b><span id="pkInfo" class="chipb" style="white-space:nowrap;font-size:12px;padding:3px 8px"></span><button type="button" class="arcx" id="pkH" style="margin-right:4px">役</button><button type="button" class="arcx" id="pkM" style="margin-right:4px">☰</button><button type="button" class="arcx" id="pkX" style="white-space:nowrap">席を立つ</button></div><div class="tvAw"><div id="pkTbl" class="tvA tvAi"></div><div id="pkFl" class="tvFl"></div><button type="button" id="pkRest" class="pkRest">☕ 休憩</button><div id="pkHelp" style="display:none;position:absolute;left:6%;right:6%;top:8%;z-index:30;background:#101820ee;border:2px solid #ffd36a;border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.55;color:#fff"><b style="color:#ffd36a">役の強さ（上ほど強い）</b><br>① ストレートフラッシュ：同じマークの連番5枚<br>② フォーカード：同じ数字4枚<br>③ フルハウス：3枚＋2枚の組み合わせ<br>④ フラッシュ：同じマーク5枚（♠♥♦♣）<br>⑤ ストレート：連番5枚（マークはバラバラでOK）<br>⑥ スリーカード：同じ数字3枚<br>⑦ ツーペア：ペアが2組<br>⑧ ワンペア：同じ数字2枚<br>⑨ ハイカード：役なし（いちばん大きい数字）<br><span style="color:#9fd0ff">手札2枚＋場の5枚から、いちばん強い5枚で勝負。自分の役は「現在：○○」で出るよ。（タップで閉じる）</span></div></div><div id="pkMsg" class="tvM"></div><div id="pkCtl" class="tvC"></div>' + tcHTML('pk'), 'tv');
+    arcShow('<div class="tvh"><b style="white-space:nowrap;font-size:10.5px;letter-spacing:-.02em">♠ テキサスオパールホールデム</b><span id="pkInfo" class="chipb" style="white-space:nowrap;font-size:12px;padding:3px 8px"></span><button type="button" class="arcx" id="pkH" style="margin-right:4px">役</button><button type="button" class="arcx" id="pkM" style="margin-right:4px">☰</button><button type="button" class="arcx" id="pkX" style="white-space:nowrap">席を立つ</button></div><div class="tvAw"><div id="pkTbl" class="tvA tvAi"></div><div id="pkFl" class="tvFl"></div><button type="button" id="pkRest" class="pkRest">☕ 休憩</button><div id="pkHelp" style="display:none;position:absolute;left:6%;right:6%;top:8%;z-index:30;background:#101820ee;border:2px solid #ffd36a;border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.55;color:#fff"><b style="color:#ffd36a">役の強さ（上ほど強い）</b><br>① ストレートフラッシュ：同じマークの連番5枚<br>② フォーカード：同じ数字4枚<br>③ フルハウス：3枚＋2枚の組み合わせ<br>④ フラッシュ：同じマーク5枚（♠♥♦♣）<br>⑤ ストレート：連番5枚（マークはバラバラでOK）<br>⑥ スリーカード：同じ数字3枚<br>⑦ ツーペア：ペアが2組<br>⑧ ワンペア：同じ数字2枚<br>⑨ ハイカード：役なし（いちばん大きい数字）<br><span style="color:#9fd0ff">手札2枚＋場の5枚から、いちばん強い5枚で勝負。自分の役は「現在：○○」で出るよ。（タップで閉じる）</span></div></div><div id="pkMsg" class="tvM"></div><div id="pkCtl" class="tvC"></div>' + tcHTML('pk'), 'tv');
     PK = { T: null, me: -1, last: Date.now(), hb: 0, seen: {}, iv: 0, buy: buy, bub: {}, pos: {}, cl: [] }; tcInit('pk', PK, 'pk'); PK.iv = setInterval(pkTick, 250);
     $('pkM').onclick = pkMenu; $('pkRest').onclick = pkRest; $('pkX').onclick = pkLeave; $('pkH').onclick = function () { var h = $('pkHelp'); h.style.display = h.style.display === 'none' ? 'block' : 'none'; }; $('pkHelp').onclick = function () { this.style.display = 'none'; }; pkRender(); pkSend({ k: 'who' });
     var nm = (player && player.avatar && player.avatar.name) || 'あなた';
