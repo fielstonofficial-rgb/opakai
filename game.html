@@ -4947,7 +4947,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 151;
+  var GV = 152;
   (function () {
     var last = Date.now();
     function chk() {
@@ -8519,7 +8519,7 @@ var TB = {
   (function () {
     var st = document.createElement('style');
     st.textContent = '#tutB{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(8px + env(safe-area-inset-bottom));width:min(94vw,430px);z-index:250;display:none;pointer-events:none;font-family:inherit}' +
-      '#tutB.on{display:block}#tutB .tc{pointer-events:auto;background:linear-gradient(180deg,rgba(32,26,58,.96),rgba(18,14,36,.97));border:1.5px solid #e8c46a;border-radius:16px;padding:9px 12px 10px;color:#fff;box-shadow:0 6px 22px rgba(0,0,0,.55)}' +
+      '#tutB.on{display:block}#tutB.top{bottom:auto;top:calc(104px + env(safe-area-inset-top))}#tutB.top .ok{top:auto;bottom:-46px}#tutB.sh{top:auto;bottom:calc(74px + env(safe-area-inset-bottom))}#tutB.sh .ok{top:-46px;bottom:auto}#tutB .tc{pointer-events:auto;background:linear-gradient(180deg,rgba(32,26,58,.96),rgba(18,14,36,.97));border:1.5px solid #e8c46a;border-radius:16px;padding:9px 12px 10px;color:#fff;box-shadow:0 6px 22px rgba(0,0,0,.55)}' +
       '#tutB .th{display:flex;align-items:center;gap:8px;font-size:12px;color:#e8c46a;font-weight:800}#tutB .th span{flex:1}' +
       '#tutB .tp{height:5px;border-radius:3px;background:rgba(255,255,255,.14);margin:5px 0 7px;overflow:hidden}#tutB .tp i{display:block;height:100%;background:linear-gradient(90deg,#ffd36a,#ff9a4a);transition:width .5s}' +
       '#tutB .tt{font-size:15px;font-weight:900;line-height:1.35}#tutB .ts{font-size:12.5px;line-height:1.5;color:#dfe6f2;margin-top:3px}' +
@@ -8547,7 +8547,7 @@ var TB = {
     { k: 'lib', t: '📚 図書館をのぞいてみよう', s: '矢印の「図書館」に入ろう。装備もモンスターもオパールのことも、全部ここで調べられるよ。', door: 'lib', test: function () { return inLib; } },
     { k: 'map', t: '🗺 マップを開こう', s: '図書館を出て、画面の上の「🚪 マップへ」をタップ。世界の鉱山が見えるよ。', test: function () { return $('map').classList.contains('on'); } },
     { k: 'mine', t: '⛏ 最初の鉱山に入ろう', s: '光っているピンをタップ → 「掘りに行く」。最初はレベルの低い鉱山でOK。', test: function () { return $('field').classList.contains('on') && !inTown && !!curMine; } },
-    { k: 'dig', t: '💎 石を掘ってみよう', s: '地面の光ってる鉱脈をタップして近づき、出てくる「掘る！」を連打。ゲージがたまったら石が出るよ。\n掘ってる最中、超まれに「スペシャルチケット」が出ることもあるよ。', test: function () { return (player.digs || 0) > TUT.d0; }, snap: function () { TUT.d0 = player.digs || 0; } },
+    { k: 'dig', t: '💎 石を掘ってみよう', s: '地面の光ってる鉱脈をタップして近づき、出てくる「掘る！」を連打。ゲージがたまったら石が出るよ。\n掘ってる最中、超まれに「スペシャルチケット」が出ることもあるよ。', test: function () { return (player.digs || 0) > TUT.d0; }, snap: function () { TUT.d0 = player.digs || 0; if (eqItem('weapon') && wHand === 'weapon') { wHand = 'pick'; try { gearUi(); handUi(); } catch (e) {} toast('つるはしに持ちかえたよ'); } } },
     { k: 'kill', t: '👹 敵を1体たおそう', s: '敵が出たらタップで攻撃。買った武器で戦うよ。やられても町の病院で復活するから安心してな。敵が見つからんときは「とばす」でOK。', test: function () { return !!TUT.killed; }, snap: function () { TUT.killed = 0; } },
     { k: 'done', t: '🏘 町に戻って、ミミに報告しよう', s: '鉱山を出て、マップの「🏘️ オパ会の町へ」を押してな。矢印のミミに話しかけたら完了！', npc: 'guide', test: function () { return inTown && !!TUT.doors['npc:guide']; }, noSkip: 1 }
   ];
@@ -8626,10 +8626,10 @@ var TB = {
     var b = $('tutB');
     if (!scr || !st.t) { b.classList.remove('on'); }
     else {
-      var key = i + '|' + TUT.min + '|' + TUT.quit; b.classList.add('on');
+      var shO = !!document.querySelector('.sheet.on'), mn = shO ? (TUT.sOpen ? 0 : 1) : (TUT.min ? 1 : 0); b.classList.toggle('sh', shO); b.classList.toggle('top', !!fieldOn && !shO); var key = i + '|' + mn + '|' + shO + '|' + TUT.quit + '|' + (fieldOn ? 1 : 0) + '|' + (st.k === 'dig' && handW() ? 1 : 0); b.classList.add('on');
       if (TUT.key !== key) {
         TUT.key = key; var okEl = b.querySelector('.ok'), okH = okEl ? okEl.outerHTML : '';
-        b.innerHTML = '<div class="tc"><div class="th"><span>📘 はじめてのチュートリアル　' + i + ' / ' + (TSTEPS.length - 1) + '</span><button type="button" data-a="min">' + (TUT.min ? '▲ ひらく' : '▼ たたむ') + '</button></div><div class="tp"><i style="width:' + Math.round(i / (TSTEPS.length - 1) * 100) + '%"></i></div><div class="tt">' + esc(st.t) + '</div>' + (TUT.min ? '' : '<div class="ts">' + esc(st.s) + '</div><div class="tb">' + (st.noSkip ? '' : '<button type="button" data-a="skip">この項目をとばす</button>') + '<button type="button" data-a="quit">' + (TUT.quit ? 'ほんとにやめる？' : 'チュートリアルをやめる') + '</button></div>') + '</div>' + okH;
+        b.innerHTML = '<div class="tc"><div class="th"><span>📘 はじめてのチュートリアル　' + i + ' / ' + (TSTEPS.length - 1) + '</span><button type="button" data-a="min">' + (mn ? '▲ ひらく' : '▼ たたむ') + '</button></div><div class="tp"><i style="width:' + Math.round(i / (TSTEPS.length - 1) * 100) + '%"></i></div><div class="tt">' + esc(st.t) + '</div>' + (mn ? '' : '<div class="ts">' + esc(st.s + (st.k === 'dig' && handW() ? '\n※武器を持っている間は掘れないよ。下の「🔁 つるはし」ボタンで持ちかえてな。' : '')) + '</div><div class="tb">' + (st.noSkip ? '' : '<button type="button" data-a="skip">この項目をとばす</button>') + '<button type="button" data-a="quit">' + (TUT.quit ? 'ほんとにやめる？' : 'チュートリアルをやめる') + '</button></div>') + '</div>' + okH;
       }
     }
     tutArrow(scr || fieldOn ? st : null);
@@ -8639,7 +8639,7 @@ var TB = {
   $('tutB').addEventListener('click', function (e) {
     var bt = e.target.closest('button'); if (!bt) return; var a = bt.dataset.a; sfx(0);
     var i = tutIdx(), st = TSTEPS[i];
-    if (a === 'min') { TUT.min = TUT.min ? 0 : 1; }
+    if (a === 'min') { if (document.querySelector('.sheet.on')) TUT.sOpen = TUT.sOpen ? 0 : 1; else TUT.min = TUT.min ? 0 : 1; }
     else if (a === 'skip') { if (st && !st.noSkip) { TUT.pend = st.k; tutDone(st.k); } }
     else if (a === 'quit') { if (!TUT.quit) { TUT.quit = 1; } else tutQuit(); }
     TUT.key = '';
