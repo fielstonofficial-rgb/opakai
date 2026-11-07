@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:136-->
+<!--GV:137-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -4168,7 +4168,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 136;
+  var GV = 137;
   (function () {
     var last = Date.now();
     function chk() {
@@ -4222,7 +4222,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         { q: '石の品質', k: ['品質', 'くすみ', '極上', 'レア', '光', 'いい石', '良い石'], a: '石には4段階の品質があるよ。光が強い鉱脈ほど、いい品質が出やすい。いちばんいいのは、紫に光る深い穴です。深い穴は、掘るのに時間がかかります。' },
         { q: 'レベルと経験値', k: ['レベル', 'lv', '経験値', 'けいけん', 'xp', '上げ'], a: '石を掘ると経験値がたまって、レベルアップするよ。最大はレベル100です。1日にもらえる経験値には上限があって、超えるとぐっと増えにくくなる。ゆっくり毎日遊ぶのがおすすめです。' },
         { q: '鉱山が開きません', k: ['開か', '行けな', 'ロック', '鍵', '解放', '鉱山', '産地', 'マップ'], a: 'マップで鉱山をえらぶと、必要なレベルが出るよ。そのレベルになったら行けるようになる。まずは低いレベルの鉱山で掘って、レベルを上げてください。' },
-        { q: 'HPと病院', k: ['hp', '体力', '病院', '回復', 'やられ', '倒れ', 'たおれ', '死'], a: 'HPは自動では回復しません。町の病院の建物に入ると、全回復するよ。敵にやられて倒れたら、仲間がタップで起こしてくれるか、自動で病院の前に運ばれる。' },
+        { q: 'HPと病院', k: ['hp', '体力', '病院', '回復', 'やられ', '倒れ', 'たおれ', '死'], a: 'HPは自動では回復しません。町の病院の建物に入ると、全回復するよ。敵にやられて倒れたら、仲間が倒れた人を10回タップして起こしてくれる（HPが3割戻る）か、自動で病院の前に運ばれる。' },
         { q: '武器と戦い方', k: ['武器', '戦', '攻撃', '敵', 'モンスター', '弓', '銃', 'つるはし', '持ちかえ', '持ち替え'], a: '敵には武器で戦うのです。「持ちかえ」ボタンで、武器とつるはしを切りかえられる。つるはしは、敵にはほとんど効きません。届く距離は、近距離が2マス、弓が3マス、銃が4マスです。遠くから撃てる分、威力は少し弱めですよ。' },
         { q: 'ガード', k: ['ガード', '盾', 'たて', '防御'], a: '盾を持ってたら、ガードのボタンが出るよ。ガード中は受けるダメージが減る。そのかわり、ガード中は攻撃できませんから気をつけてください。' },
         { q: 'ゲームコイン', k: ['マネー', 'お金', 'コイン', '稼', '貯め', 'ためる', '通貨'], a: 'ゲームコインは、石を掘ったり、敵を倒したり、ゲームセンターで遊んだりでたまるよ。どこで貯めたコインも、おなじ財布だよ。本物のお金では買えません、遊んで貯めるものです。ショップで装備を買ったり、石や装備を売ったりできる。' },
@@ -5215,8 +5215,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     }
   }
   function reviveMe(who) {
-    clearTimeout(downT); hp.down = false; hp.cur = Math.max(1, Math.ceil(hp.max * .1)); hp.inv = performance.now() + 2500;
-    $('downov').classList.remove('on'); hpUi(); rtHp(); sfx(2); toast((who || '仲間') + ' が助けてくれた！ HPは1割だけ戻ったよ'); floatTxt(hero.x, hero.y - 74, '+' + hp.cur, 'g');
+    clearTimeout(downT); hp.down = false; hp.cur = Math.max(1, Math.ceil(hp.max * .3)); hp.inv = performance.now() + 2500;
+    $('downov').classList.remove('on'); hpUi(); rtHp(); sfx(2); toast((who || '仲間') + ' が助けてくれた！ HPが3割戻ったよ'); floatTxt(hero.x, hero.y - 74, '+' + hp.cur, 'g');
   }
   function respawnHospital() {
     clearTimeout(downT); hp.down = false; hp.cur = Math.max(1, Math.ceil(hp.max * .1)); hp.inv = performance.now() + 2500;
@@ -5231,7 +5231,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function doRevive(id) {
     var pr = peers[id]; if (!pr || !pr.dn || hp.down) return;
     if (Math.hypot(hero.x - pr.x, hero.y - pr.y) > 190) { ftarget = { x: pr.x - 44, y: pr.y + 8, spot: null, rev: id }; return; }
-    rtSend({ t: 'rev', to: id }); pr.dn = 0; if (pr.el) pr.el.classList.remove('dn'); sfx(2); toast((pr.n || '仲間') + ' を助けた！'); floatTxt(pr.x, pr.y - 74, '♥', 'g');
+    var nowT = performance.now(); if (!pr.rvT || nowT - pr.rvT > 2500) pr.rvN = 0; pr.rvT = nowT; pr.rvN = (pr.rvN || 0) + 1; vib(12);
+    if (pr.rvN < 10) { sfx(0); floatTxt(pr.x, pr.y - 74, '♥ ' + pr.rvN + '/10', 'g'); if (pr.rvN === 1) toast((pr.n || '仲間') + ' を起こしてる…！ あと9回タップ'); return; }
+    pr.rvN = 0; rtSend({ t: 'rev', to: id }); pr.dn = 0; if (pr.el) pr.el.classList.remove('dn'); sfx(2); toast((pr.n || '仲間') + ' を助けた！'); floatTxt(pr.x, pr.y - 74, '♥', 'g');
   }
   $('dnGo').addEventListener('click', function () { respawnHospital(); });
 
@@ -5481,7 +5483,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   /* ---- ボスステージのボス：範囲攻撃（円・直線）を予告してから撃つ ---- */
   var bsT = 5;
   function bsDef() { return (curMine && BSBY[curMine]) || null; }
-  function bsStat(d, n) { var L = d.rl, dps = ((6 + 1.5 * L + 3 + .8 * L) * 1.15) / .8; return { hp: Math.round(dps * 300 * .55 * d.pn * (.55 + .45 * n / d.pn) * (d.bl <= 100 ? .7 : 1)), atk: Math.round(.5 * (80 + 13 * L)) }; }
+  function bsStat(d, n) { var L = d.rl, dps = ((6 + 1.5 * L + 3 + .8 * L) * 1.15) / .8; return { hp: Math.round(dps * 300 * .55 * d.pn * (.55 + .45 * n / d.pn) * (d.bl <= 100 ? .7 : 1)), atk: Math.round(.5 * (80 + 13 * L) * (d.bl >= 300 ? 5 : (d.bl >= 180 ? 3 : (d.bl >= 70 ? 2 : 1)))) }; }
   function bsWatch(dt) {
     if (!bsDef() || !fieldOn || inTown || (netFoes() && !amHost())) return;
     if (foes.some(function (x) { return x.boss && x.mode !== 'dead'; })) return;
