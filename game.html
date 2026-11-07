@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:127-->
+<!--GV:128-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -2980,7 +2980,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   });
   $('lbBtns').addEventListener('click', function (e) {
     var b = e.target.closest('button'); if (!b || b.disabled || !room) return;
-    if (b.id === 'lbStart') { var lm = MBY[room.mine]; if (lm && lm.bs && !isGM() && room.members.length < lm.pn) { bsNeed(lm); return; } b.disabled = true; api({ action: 'room_start', room: room.id }).then(function (j) { if (j.room) { room = j.room; beginParty(); } else { toast(j.message || 'まだはじめられません'); renderLobby(false); } }); }
+    if (b.id === 'lbStart') { var lm = MBY[room.mine]; if (lm && lm.bs && !soloOk() && room.members.length < lm.pn) { bsNeed(lm); return; } b.disabled = true; api({ action: 'room_start', room: room.id }).then(function (j) { if (j.room) { room = j.room; beginParty(); } else { toast(j.message || 'まだはじめられません'); renderLobby(false); } }); }
     else if (b.id === 'lbReady') { var me = meRow(); api({ action: 'room_ready', room: room.id, ready: !(me && me.ready) }).then(function (j) { if (j.room) lobbyUp(j.room); }); }
     else if (b.id === 'lbLeave') { api({ action: 'room_leave', room: room.id }); closeLobby(); room = null; partyN = 1; }
   });
@@ -3962,7 +3962,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 127;
+  var GV = 128;
   (function () {
     var last = Date.now();
     function chk() {
@@ -4620,7 +4620,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('mineCancel').addEventListener('click', function () { $('mineSheet').classList.remove('on'); });
   $('mineGo').addEventListener('click', function () { var bm = MBY[sheetMine]; if (bm && bm.bs && !bsOk(bm)) { bsNeed(bm); return; } $('mineSheet').classList.remove('on'); enterMine(sheetMine); });
 
-  function bsOk(m) { if (isGM()) return true; return !!(room && room.mine === m.id && room.status !== 'closed' && room.members && room.members.length >= m.pn); }
+  function soloOk() { return isGM() || myMid === '50f1aafd-48bd-44c2-818a-82511c993514'; }
+  function bsOk(m) { if (soloOk()) return true; return !!(room && room.mine === m.id && room.status !== 'closed' && room.members && room.members.length >= m.pn); }
   function bsNeed(m) { toast('ここはパーティー専用。' + m.pn + '人以上で待合室に集まって、はじめてね'); }
   function enterMine(id) {
     curMine = id; var m = MBY[id];
