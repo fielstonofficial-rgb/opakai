@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:95-->
+<!--GV:96-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -240,6 +240,21 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #arc .tvG{flex:0 0 50px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;color:#ffe27a;height:72px;font-weight:800}
 #arc input.vr{writing-mode:vertical-lr;direction:rtl;width:24px;height:50px;margin:0;accent-color:#ffe27a}
 #arc .tvW{padding:80px 0;color:#9fb4c4}
+#arc #pkCtl.tvC{flex-direction:column;height:auto;min-height:118px;gap:4px;padding-bottom:2px}
+#arc .pkR2{display:flex;gap:6px;align-items:center;width:100%}
+#arc .pkR2 .pm{flex:0 0 34px;height:30px;border-radius:8px;border:2px solid #ffe27a;background:#3a3010;color:#ffe27a;font-size:18px;font-weight:800;padding:0;line-height:1}
+#arc .pkR2 input[type=range]{flex:1;min-width:0;height:30px;margin:0;accent-color:#ffe27a}
+#arc .pkR2 .pv{flex:0 0 74px;text-align:center;font-size:13px;font-weight:800;color:#ffe27a}
+#arc .pkR3{display:flex;gap:4px;width:100%}
+#arc .pkR3 button{flex:1;height:28px;border-radius:7px;border:1px solid #8a7a3a;background:#2a2410;color:#ffe27a;font-size:11px;font-weight:700;padding:0;min-width:0}
+#arc .pkR3 button:disabled,#arc .pkR2 button:disabled{opacity:.35}
+#arc .pkMn{display:none;position:absolute;left:4%;right:4%;top:6%;bottom:4%;overflow:auto;z-index:31;background:#101820f2;border:2px solid #ffd36a;border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.6;color:#fff;text-align:left}
+#arc .pkMn h4{margin:8px 0 4px;color:#ffd36a;font-size:12.5px}
+#arc .pkMn .sg{display:flex;gap:6px;margin:3px 0}
+#arc .pkMn .sg button{flex:1;height:30px;border-radius:8px;border:1px solid #667;background:#1c2030;color:#fff;font-size:12px}
+#arc .pkMn .sg button.on{border-color:#ffe27a;background:#3a3010;color:#ffe27a;font-weight:800}
+#arc .pkMn .hl{display:flex;justify-content:space-between;border-bottom:1px solid #fff2;padding:2px 0;font-size:11.5px}
+#arc .pkHt{color:#9fe8ff;font-weight:700}
 #arc .tvDl{position:absolute;left:50%;top:0;transform:translateX(-50%);height:17%;aspect-ratio:1.2;z-index:3}
 #arc .tvDl svg{height:100%;width:100%}
 #arc .tvDl .arm{transform-origin:80px 58px}
@@ -3744,7 +3759,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 95;
+  var GV = 96;
   (function () {
     var last = Date.now();
     function chk() {
@@ -5434,16 +5449,17 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (ARV) return ARV; try {
       var vs = window.speechSynthesis.getVoices().filter(function (v) { return /^ja/i.test(v.lang); }); if (!vs.length) return null;
       /* いちばん自然に聞こえる声を選ぶ（Natural・Neural・Online・Premium・Google などを優先） */
-      var sc = function (v) { var n = v.name || '', p = 0; if (/natural|neural|online|premium|enhanced|高品質/i.test(n)) p += 10; if (/google/i.test(n)) p += 6; if (/kyoko|nanami|keita|o-ren|hattori|otoya|ayumi|haruka|sayaka|ichiro|takumi/i.test(n)) p += 4; if (/compact|espeak/i.test(n)) p -= 6; if (v.localService === false) p += 2; return p; };
+      var sc = function (v) { var n = v.name || '', p = 0; if (/natural|neural|online|premium|enhanced|高品質/i.test(n)) p += 10; if (/google/i.test(n)) p += 6; if (/ichiro|otoya|hattori|keita|takumi|ken\b|male|男|ichirou|yuuma|naoki|daichi/i.test(n) && !/female|女/i.test(n)) p += 40; if (/kyoko|nanami|o-ren|ayumi|haruka|sayaka|mizuki|shiori|female|女/i.test(n)) p -= 12; if (/compact|espeak/i.test(n)) p -= 6; if (v.localService === false) p += 2; return p; };
       vs.sort(function (a, b) { return sc(b) - sc(a); }); var v0 = vs[0];
-      ARV = { v: v0, m: /ichiro|otoya|hattori|keita|takumi|male|男/i.test(v0.name || '') }; return ARV;
+      ARV = { v: v0, m: /ichiro|otoya|hattori|keita|takumi|ken\b|male|男|naoki|daichi/i.test(v0.name || '') && !/female|女/i.test(v0.name || '') }; return ARV;
     } catch (e) { return null; }
   }
   try { window.speechSynthesis.onvoiceschanged = function () { ARV = null; }; } catch (e) {}
-  function arSay(t) { try { if (!soundOn) return; var u = new SpeechSynthesisUtterance(t), V = arVoice(); u.lang = 'ja-JP'; if (V) u.voice = V.v; u.pitch = V && V.m ? .92 : 1; u.rate = 1.06; u.volume = 1; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); } catch (e) {} }
+  function arSay(t) { try { if (!soundOn) return; var u = new SpeechSynthesisUtterance(t), V = arVoice(); u.lang = 'ja-JP'; if (V) u.voice = V.v; u.pitch = V && V.m ? .55 : .1; u.rate = V && V.m ? .98 : .92; u.volume = 1; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); } catch (e) {} }
   var NPCN = ['ジョー', 'リナ', 'タクミ', 'ミサキ', 'ケン', 'サラ', 'ダイ', 'アヤ', 'レオ', 'ノア', 'ハル', 'ユウ', 'カイ', 'マリ'];
-  function tvAddNpc(T, n, mk, avoid) {
+  function tvAddNpc(T, n, mk, avoid, forb) {
     var free = [], i; for (i = 0; i < n; i++) if (!T.seats[i]) free.push(i); if (!free.length) return -1;
+    forb = forb || []; var ok = free.filter(function (k) { return forb.indexOf(k) < 0; }); if (ok.length) free = ok; else if (forb.length) return -1;
     var pref = free.filter(function (k) { return k !== avoid; }), pool = pref.length ? pref : free, idx = pool[Math.floor(Math.random() * pool.length)];
     var used = T.seats.filter(Boolean).map(function (s) { return s.nm; }), nm = NPCN.filter(function (x) { return used.indexOf(x) < 0 && x !== T.lastNpc; }); nm = nm[Math.floor(Math.random() * nm.length)] || 'ゲスト';
     T.seats[idx] = mk('npc' + Math.floor(Math.random() * 1e6), nm, 1000, 1); return idx;
@@ -5451,25 +5467,43 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function tvNote(T, x) { T.nev = (T.nev || 0) + 1; T.note = { x: x, e: T.nev }; }
   function tvDealer(X) {
     var el = Date.now() - (X.P.dt || 0), cl = el < 900 ? ' dealing' : '';
-    return '<div class="tvDl' + cl + '" style="--ad:' + Math.round(-el) + 'ms"><svg viewBox="0 0 120 100"><defs><linearGradient id="dkS" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#f7d9bd"/><stop offset="1" stop-color="#e3b894"/></linearGradient><linearGradient id="dkH" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#1c120d"/><stop offset="1" stop-color="#4a3123"/></linearGradient><linearGradient id="dkJ" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#22222c"/><stop offset="1" stop-color="#0f0f15"/></linearGradient></defs>' +
-      '<ellipse cx="60" cy="97" rx="36" ry="3.5" fill="#0007"/>' +
-      '<path d="M18 100C18 76 30 62 48 58L60 66L72 58C90 62 102 76 102 100Z" fill="url(#dkJ)" stroke="#d4a73a" stroke-width="1.2"/>' +
-      '<path d="M48 58L60 100L72 58L66 56L60 64L54 56Z" fill="#f8f4ea"/><path d="M48 58L56 80L46 100L30 100C30 80 36 66 48 58Z" fill="#17171f"/><path d="M72 58L64 80L74 100L90 100C90 80 84 66 72 58Z" fill="#17171f"/>' +
-      '<path d="M57 60L60 64L63 60L61 58H59Z" fill="#7a1022"/><path d="M59.4 64L58 82L60 86L62 82L60.6 64Z" fill="#7a1022"/><rect x="57.6" y="73" width="4.8" height="1.6" rx=".8" fill="#ffd45a"/>' +
-      '<circle cx="42" cy="72" r="1.8" fill="#ffd45a"/>' +
-      '<rect x="53" y="46" width="14" height="14" rx="4" fill="#e3b894"/>' +
-      '<path d="M44 25C44 12 51 7 60 7C69 7 76 12 76 25L75.5 34C74.5 42 69 50 60 51.5C51 50 45.5 42 44.5 34Z" fill="url(#dkS)"/>' +
-      '<path d="M60 51.5C69 50 74.5 42 75.5 34L76 25C76 22 75.5 20 75 18C73 30 69 44 60 51.5Z" fill="#c99a76" opacity=".35"/>' +
-      '<ellipse cx="43.6" cy="31" rx="2.2" ry="4" fill="#ecc3a0"/><ellipse cx="76.4" cy="31" rx="2.2" ry="4" fill="#d9ab86"/>' +
-      '<path d="M41.5 29C39 10 50 3 62 4.5C74 5 81 14 78.5 29C77 20 74 15 67 13C58 11 52 14.5 49 18C46 21 44 24 41.5 29Z" fill="url(#dkH)"/>' +
-      '<path d="M50 14C56 8 66 8 73 13" stroke="#6a4a36" stroke-width="1.1" fill="none" stroke-linecap="round" opacity=".7"/><path d="M45 20C47 15 51 12 56 11" stroke="#6a4a36" stroke-width=".9" fill="none" stroke-linecap="round" opacity=".6"/>' +
-      '<path d="M47.5 25.6L56.5 23.8" stroke="#22150f" stroke-width="2.3" stroke-linecap="round"/><path d="M63.5 23.8L72.5 25.6" stroke="#22150f" stroke-width="2.3" stroke-linecap="round"/>' +
-      '<path d="M48.5 30.5Q53 27.6 57.5 30.5Q53 32.6 48.5 30.5Z" fill="#fff"/><path d="M62.5 30.5Q67 27.6 71.5 30.5Q67 32.6 62.5 30.5Z" fill="#fff"/>' +
-      '<circle cx="53" cy="30.3" r="2" fill="#3b2a20"/><circle cx="67" cy="30.3" r="2" fill="#3b2a20"/><circle cx="52.4" cy="29.6" r=".7" fill="#fff"/><circle cx="66.4" cy="29.6" r=".7" fill="#fff"/>' +
-      '<path d="M60 31L58.6 38.5Q60 39.6 62 38.6" stroke="#c48e6c" stroke-width="1.1" fill="none" stroke-linecap="round" stroke-linejoin="round"/>' +
-      '<path d="M53.5 44Q60 47.6 66.5 43.6" stroke="#a8463a" stroke-width="1.7" fill="none" stroke-linecap="round"/><path d="M54.5 44.2Q60 46 65.5 43.8Q60 47 54.5 44.2Z" fill="#fff" opacity=".85"/>' +
-      '<path d="M48 41Q52 48 60 49Q68 48 72 41" stroke="#3a2a22" stroke-width=".7" fill="none" opacity=".28"/>' +
-      '<g class="arm"><path d="M82 62L101 74" stroke="#17171f" stroke-width="10" stroke-linecap="round" fill="none"/><path d="M96 71L104 76" stroke="#f8f4ea" stroke-width="3" stroke-linecap="round"/><circle cx="106" cy="77" r="4.6" fill="#f0cba9"/><rect x="104" y="67" width="8" height="12" rx="1.5" fill="#fff" stroke="#888" stroke-width=".6" transform="rotate(25 108 73)"/></g></svg></div>';
+    return '<div class="tvDl' + cl + '" style="--ad:' + Math.round(-el) + 'ms"><svg viewBox="0 0 120 100"><defs>' +
+      '<radialGradient id="dkS" cx=".46" cy=".36" r=".75"><stop offset="0" stop-color="#f6d2b2"/><stop offset=".55" stop-color="#e2ad86"/><stop offset="1" stop-color="#b9805c"/></radialGradient>' +
+      '<linearGradient id="dkN2" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8a07a"/><stop offset="1" stop-color="#a8704f"/></linearGradient>' +
+      '<linearGradient id="dkH" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#15100d"/><stop offset=".6" stop-color="#2b1d15"/><stop offset="1" stop-color="#4b3426"/></linearGradient>' +
+      '<linearGradient id="dkJ" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2a2a33"/><stop offset="1" stop-color="#0e0e14"/></linearGradient>' +
+      '<radialGradient id="dkI" cx=".4" cy=".35" r=".7"><stop offset="0" stop-color="#8a5a34"/><stop offset=".6" stop-color="#4a2e1a"/><stop offset="1" stop-color="#241408"/></radialGradient>' +
+      '<filter id="dkB" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation="1.6"/></filter><filter id="dkB2" x="-30%" y="-30%" width="160%" height="160%"><feGaussianBlur stdDeviation=".7"/></filter>' +
+      '<filter id="dkG" x="0" y="0" width="1" height="1"><feTurbulence type="fractalNoise" baseFrequency="1.9" numOctaves="1" seed="4" result="n"/><feColorMatrix in="n" type="matrix" values="0 0 0 0 .12  0 0 0 0 .08  0 0 0 0 .06  0 0 0 -2.6 1.45"/><feComposite in2="SourceGraphic" operator="in"/></filter>' +
+      '<clipPath id="dkF"><path d="M43 27C43 13 50 7 60 7C70 7 77 13 77 27L76.5 36C75.5 44 71 51 66 54C63 56 57 56 54 54C49 51 44.5 44 43.5 36Z"/></clipPath></defs>' +
+      '<ellipse cx="60" cy="98" rx="38" ry="3" fill="#0008"/>' +
+      '<path d="M14 100C14 77 28 63 47 59L60 68L73 59C92 63 106 77 106 100Z" fill="url(#dkJ)" stroke="#caa24a" stroke-width=".9"/>' +
+      '<path d="M47 59L60 100L73 59L66.5 56L60 65L53.5 56Z" fill="#f3efe6"/><path d="M47 59L55 80L45 100L28 100C28 80 34 67 47 59Z" fill="#101016"/><path d="M73 59L65 80L75 100L92 100C92 80 86 67 73 59Z" fill="#101016"/>' +
+      '<path d="M54 57L60 66L66 57L63 55H57Z" fill="#e9e4d8"/><path d="M53 56.5L60 61L67 56.5L65.5 55H54.5Z" fill="#000" opacity=".12"/>' +
+      '<path d="M52.5 61.5L60 64.5L67.5 61.5L67.5 67L60 65.6L52.5 67Z" fill="#14141a" stroke="#000" stroke-width=".4"/><circle cx="60" cy="64.6" r="1.7" fill="#24242c"/>' +
+      '<circle cx="46" cy="74" r="1.2" fill="#d8b04a"/><circle cx="47" cy="82" r="1.2" fill="#d8b04a"/><circle cx="48" cy="90" r="1.2" fill="#d8b04a"/>' +
+      '<path d="M51 44L51.5 58C54 62 66 62 68.5 58L69 44Z" fill="url(#dkN2)"/><path d="M51 49C56 55 64 55 69 49L69 53C64 58 56 58 51 53Z" fill="#6a3c28" opacity=".5" filter="url(#dkB2)"/>' +
+      '<ellipse cx="42.6" cy="32" rx="2.4" ry="4.6" fill="#d6a07c"/><ellipse cx="77.4" cy="32" rx="2.4" ry="4.6" fill="#c48f6c"/><path d="M42.4 29.5Q41.4 32 43 35" stroke="#9a6446" stroke-width=".6" fill="none"/><path d="M77.6 29.5Q78.6 32 77 35" stroke="#8a5638" stroke-width=".6" fill="none"/>' +
+      '<path d="M43 27C43 13 50 7 60 7C70 7 77 13 77 27L76.5 36C75.5 44 71 51 66 54C63 56 57 56 54 54C49 51 44.5 44 43.5 36Z" fill="url(#dkS)"/>' +
+      '<g clip-path="url(#dkF)"><ellipse cx="45" cy="38" rx="6" ry="12" fill="#7a4630" opacity=".28" filter="url(#dkB)"/><ellipse cx="75.5" cy="38" rx="6.5" ry="13" fill="#6a3a28" opacity=".38" filter="url(#dkB)"/>' +
+      '<ellipse cx="57" cy="14" rx="9" ry="3.4" fill="#fff3e0" opacity=".28" filter="url(#dkB)"/><ellipse cx="54" cy="35" rx="3.2" ry="5" fill="#fff0dc" opacity=".16" filter="url(#dkB)"/>' +
+      '<path d="M48 44Q54 57 60 57Q66 57 72 44L72 56L48 56Z" fill="#4a2e20" opacity=".3" filter="url(#dkB2)"/>' +
+      '<path d="M46 42Q51 51 56 52.5Q60 53.4 64 52.5Q69 51 74 42L74 58L46 58Z" fill="#2a1c14" filter="url(#dkG)" opacity=".75"/>' +
+      '<path d="M54 46.8Q60 45.2 66 46.8" stroke="#3a2418" stroke-width="2.4" fill="none" opacity=".35" filter="url(#dkB2)"/></g>' +
+      '<path d="M41.8 30C39.5 12 50 3.5 62 4.5C74 5.2 81.5 14 78.4 30C77 22 74 16.5 67.5 14.2C59 11.5 52.5 15 49.5 19C47 22.4 44.6 25.5 41.8 30Z" fill="url(#dkH)"/>' +
+      '<path d="M49 13.5C55.5 8 66 8 73.5 13.5" stroke="#8a6a52" stroke-width="1.2" fill="none" stroke-linecap="round" opacity=".55" filter="url(#dkB2)"/><path d="M45 21C47 16 51 13 56 11.8" stroke="#7a5a44" stroke-width="1" fill="none" stroke-linecap="round" opacity=".5"/>' +
+      '<path d="M46.4 23.6C49 21.6 54 21.4 58 23.2L57.6 25C54 23.8 50 24 46.8 25.6Z" fill="#1d130d"/><path d="M62 23.2C66 21.4 71 21.6 73.6 23.6L73.2 25.6C70 24 66 23.8 62.4 25Z" fill="#1d130d"/>' +
+      '<path d="M47.6 23.9L56.6 23.9M63.4 23.9L72.4 23.9" stroke="#2b1b12" stroke-width=".5" opacity=".6"/>' +
+      '<path d="M48 29.2Q53 26.4 58 29.4Q53 32 48 29.2Z" fill="#f2ece4"/><path d="M62 29.4Q67 26.4 72 29.2Q67 32 62 29.4Z" fill="#f2ece4"/>' +
+      '<circle cx="53.4" cy="29.2" r="2.35" fill="url(#dkI)"/><circle cx="66.6" cy="29.2" r="2.35" fill="url(#dkI)"/><circle cx="53.4" cy="29.2" r="1" fill="#0a0604"/><circle cx="66.6" cy="29.2" r="1" fill="#0a0604"/><circle cx="52.7" cy="28.4" r=".6" fill="#fff" opacity=".9"/><circle cx="65.9" cy="28.4" r=".6" fill="#fff" opacity=".9"/>' +
+      '<path d="M47.6 29.4Q53 25.6 58.4 29.6" stroke="#2a1a12" stroke-width="1.5" fill="none" stroke-linecap="round"/><path d="M61.6 29.6Q67 25.6 72.4 29.4" stroke="#2a1a12" stroke-width="1.5" fill="none" stroke-linecap="round"/>' +
+      '<path d="M48.6 30.8Q53 33 57.6 30.8" stroke="#9a6a50" stroke-width=".6" fill="none" opacity=".7"/><path d="M62.4 30.8Q67 33 71.4 30.8" stroke="#9a6a50" stroke-width=".6" fill="none" opacity=".7"/>' +
+      '<path d="M49 33.6Q53 35.4 57 33.8" stroke="#a87456" stroke-width=".7" fill="none" opacity=".45" filter="url(#dkB2)"/><path d="M63 33.8Q67 35.4 71 33.6" stroke="#a87456" stroke-width=".7" fill="none" opacity=".45" filter="url(#dkB2)"/>' +
+      '<path d="M57.4 29.5C57.6 34 57.2 37 56 39.4" stroke="#8a5a40" stroke-width="1.6" fill="none" opacity=".3" filter="url(#dkB2)"/><path d="M62.6 29.5C62.4 34 62.8 37 64 39.4" stroke="#8a5a40" stroke-width="1.6" fill="none" opacity=".3" filter="url(#dkB2)"/>' +
+      '<path d="M56 39.6Q58 41.4 60 41.2Q62 41.4 64 39.6" stroke="#8a5238" stroke-width="1" fill="none" stroke-linecap="round" opacity=".85"/><ellipse cx="57.6" cy="40.2" rx="1" ry=".7" fill="#4a2618" opacity=".75"/><ellipse cx="62.4" cy="40.2" rx="1" ry=".7" fill="#4a2618" opacity=".75"/><ellipse cx="60" cy="37.6" rx="1.3" ry="1.6" fill="#ffe8d0" opacity=".28"/>' +
+      '<path d="M54.4 45.2Q57 44.4 60 45.2Q63 44.4 65.6 45.2Q63 47.2 60 47.6Q57 47.2 54.4 45.2Z" fill="#a5564a"/><path d="M55 45.4Q60 46.6 65 45.4Q60 48.4 55 45.4Z" fill="#c4736a"/><path d="M54.2 45.2Q60 46.2 65.8 45.2" stroke="#5a2a26" stroke-width=".7" fill="none" stroke-linecap="round"/><ellipse cx="60" cy="47" rx="2.6" ry=".6" fill="#ffd8d0" opacity=".3"/>' +
+      '<path d="M50.6 37Q49.6 42 52.6 46" stroke="#7a4632" stroke-width=".9" fill="none" opacity=".35" filter="url(#dkB2)"/><path d="M69.4 37Q70.4 42 67.4 46" stroke="#6a3a28" stroke-width=".9" fill="none" opacity=".4" filter="url(#dkB2)"/>' +
+      '<g class="arm"><path d="M82 62L101 74" stroke="#101016" stroke-width="10" stroke-linecap="round" fill="none"/><path d="M96 71L104 76" stroke="#f3efe6" stroke-width="3" stroke-linecap="round"/><circle cx="106" cy="77" r="4.6" fill="#e2ad86"/><rect x="104" y="67" width="8" height="12" rx="1.5" fill="#fff" stroke="#888" stroke-width=".6" transform="rotate(25 108 73)"/></g></svg></div>';
   }
   /* --- テーブルのチャット・スタンプ・リアクション --- */
   var TC = null, TCCUR = '❤️', TCLP = 0, TCAT = 0;
@@ -5677,6 +5711,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   /* --- テキサスホールデム（最大8人・NPC1人が常駐。ゲーム用チップ・景品なし） --- */
   var PK = null, PKCAT = ['ハイカード', 'ワンペア', 'ツーペア', 'スリーカード', 'ストレート', 'フラッシュ', 'フルハウス', 'フォーカード', 'ストレートフラッシュ'], PKRK = ['', '', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
   var PKSB = 10, PKBB = 20, PKBUY = 1000;
+  var PKS = (function () { var d = { hint: 0, lv: 0, h: 0, w: 0, net: 0, big: 0, hist: [] }; try { var o = JSON.parse(localStorage.getItem('opa_pk_set') || 'null'); if (o) for (var k in o) d[k] = o[k]; } catch (e) {} return d; })();
+  function pkSave() { try { localStorage.setItem('opa_pk_set', JSON.stringify(PKS)); } catch (e) {} }
   function pkDeck() { var d = [], s, r, i; for (s = 0; s < 4; s++) for (r = 2; r <= 14; r++) d.push({ r: r, s: s }); for (i = d.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = d[i]; d[i] = d[j]; d[j] = t; } return d; }
   function pkScore5(cs) {
     var rs = cs.map(function (c) { return c.r; }).sort(function (a, b) { return b - a; }), fl = cs.every(function (c) { return c.s === cs[0].s; }), cnt = {}, i;
@@ -5709,10 +5745,13 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function pkNewTable() { var T = { v: 0, hid: myMid, hand: 0, seats: [null, null, null, null, null, null, null, null], btn: -1, st: 'wait', board: [], deck: [], pot: 0, cur: 0, minR: PKBB, turn: -1, tt: 0, nt: Date.now() + 1500, run: 0, res: null, npcAt: 0, log: '' }; T.seats[0] = pkSeat('npc', 'ジョー', PKBUY, 1); return T; }
   function pkNext(T, i, any) { for (var k = 1; k <= 8; k++) { var j = (i + k) % 8, s = T.seats[j]; if (s && !s.f && (any || !s.a)) return j; } return -1; }
   function pkElig(T) { var o = []; T.seats.forEach(function (s, i) { if (s && !s.gone && !s.out && s.stack > 0) o.push(i); }); return o; }
+  /* ディーラーは各プレイヤーから見て真向かいに立つ → その席（自分の席+4）にはNPCを座らせない */
+  function pkForb(T) { var o = []; T.seats.forEach(function (s, i) { if (s && !s.npc && !s.gone) { var k = (i + 4) % 8; if (o.indexOf(k) < 0) o.push(k); } }); return o; }
   function pkStart(T) {
     T.seats.forEach(function (s, i) { if (s && s.gone) T.seats[i] = null; });
-    T.seats.forEach(function (s, i) { if (s && s.npc && s.stack < PKBB) { var old = s.nm; T.lastNpc = old; T.seats[i] = null; var j = tvAddNpc(T, 8, pkSeat, i); if (j >= 0) tvNote(T, '「' + old + '」が飛ばされた！ 新しい対戦相手「' + T.seats[j].nm + '」が着席したよ'); } });
-    if (!T.seats.some(function (s) { return s && s.npc; })) { var j2 = tvAddNpc(T, 8, pkSeat, -1); if (j2 >= 0) tvNote(T, '新しい対戦相手「' + T.seats[j2].nm + '」が着席したよ'); }
+    (function () { var fb = pkForb(T); T.seats.forEach(function (s, i) { if (s && s.npc && fb.indexOf(i) >= 0) { var to = -1, q; for (q = 0; q < 8; q++) if (!T.seats[q] && fb.indexOf(q) < 0) { to = q; break; } if (to >= 0) { T.seats[to] = s; T.seats[i] = null; } } }); })();
+    T.seats.forEach(function (s, i) { if (s && s.npc && s.stack < PKBB) { var old = s.nm; T.lastNpc = old; T.seats[i] = null; var j = tvAddNpc(T, 8, pkSeat, i, pkForb(T)); if (j >= 0) tvNote(T, '「' + old + '」が飛ばされた！ 新しい対戦相手「' + T.seats[j].nm + '」が着席したよ'); } });
+    if (!T.seats.some(function (s) { return s && s.npc; })) { var j2 = tvAddNpc(T, 8, pkSeat, -1, pkForb(T)); if (j2 >= 0) tvNote(T, '新しい対戦相手「' + T.seats[j2].nm + '」が着席したよ'); }
     var el = pkElig(T); if (el.length < 2) { T.st = 'wait'; T.nt = Date.now() + 1500; return; }
     T.hand++; T.deck = pkDeck(); T.board = []; T.pot = 0; T.cur = 0; T.minR = PKBB; T.run = 0; T.res = null; T.npcAt = 0;
     T.seats.forEach(function (s, i) { if (!s) return; s.hole = []; s.bet = 0; s.tot = 0; s.a = 0; s.act = 0; s.f = el.indexOf(i) >= 0 ? 0 : 1; });
@@ -5781,7 +5820,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function pkNpcAct(T, i) {
     var s = T.seats[i], need = T.cur - s.bet, nOpp = Math.min(3, Math.max(1, pkInHand(T).length - 1)), eq = pkEquity(s.hole, T.board, nOpp, 90), pot = T.pot, odds = need > 0 ? need / (pot + need) : 0, r = Math.random();
     var sizeTo = function (frac) { return Math.max(T.cur + T.minR, Math.round((T.cur + pot * frac) / 10) * 10); };
-    var solo = T.seats.filter(function (q) { return q && !q.npc && !q.gone; }).length <= 1; /* ひとりで遊んでる時は、さらに弱く・すぐ降りない */
+    var lv = PKS.lv | 0, solo = lv === 0 && T.seats.filter(function (q) { return q && !q.npc && !q.gone; }).length <= 1; /* ひとりで遊んでる時は、さらに弱く・すぐ降りない */
     if (solo) {
       eq = eq * .78 + (Math.random() - .5) * .3;
       if (eq > .84 && r > .6) { var to0 = sizeTo(.25 + Math.random() * .3); return ['r', Math.min(to0, s.bet + s.stack)]; }
@@ -5789,7 +5828,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       if (eq > odds - .24 || (r < .5 && need <= pot * 1.1) || need <= T.minR * 2) return ['c', 0];
       return ['f', 0];
     }
-    eq = eq * .85 + (Math.random() - .5) * .2; /* 読みが甘い（ひとりでも遊びやすいよう、わざと弱め） */
+    eq = lv >= 2 ? eq * 1.03 + (Math.random() - .5) * .05 : eq * .85 + (Math.random() - .5) * .2; /* 読みが甘い（ひとりでも遊びやすいよう、わざと弱め） */
     if (eq > .78 && r > .45) { var to = sizeTo(.3 + Math.random() * .4); return ['r', Math.min(to, s.bet + s.stack)]; }
     if (need === 0) { if (eq > .62 && r < .25) return ['r', Math.min(sizeTo(.3), s.bet + s.stack)]; return ['c', 0]; }
     if (eq > odds - .04 || (r < .12 && need <= pot * .4)) return ['c', 0];
@@ -5817,7 +5856,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (m.k === 'st') { if (!T || m.T.v > T.v || (m.T.v === T.v && m.T.hid < T.hid)) { PK.T = m.T; PK.last = Date.now(); PK.me = pkMine(); pkRender(); } return; }
     if (!T || T.hid !== myMid) return;
     if (m.k === 'who') { pkPush(T); return; }
-    if (m.k === 'sit') { if (T.seats.some(function (s) { return s && s.id === m.f; })) { pkPush(T); return; } var fi = T.seats.findIndex(function (s) { return !s; }); if (fi < 0) return; T.seats[fi] = pkSeat(m.f, String(m.n || 'だれか').slice(0, 8), Math.max(20, Math.min(PKBUY, Math.floor(m.b) || PKBUY)), 0); if (T.st === 'wait') T.nt = Math.min(T.nt, Date.now() + 1200); pkPush(T); return; }
+    if (m.k === 'sit') { if (T.seats.some(function (s) { return s && s.id === m.f; })) { pkPush(T); return; } var fi = -1, q; for (q = 0; q < 8; q++) if (!T.seats[q] && !(T.seats[(q + 4) % 8] && T.seats[(q + 4) % 8].npc)) { fi = q; break; } if (fi < 0) fi = T.seats.findIndex(function (s) { return !s; }); if (fi < 0) return; T.seats[fi] = pkSeat(m.f, String(m.n || 'だれか').slice(0, 8), Math.max(20, Math.min(PKBUY, Math.floor(m.b) || PKBUY)), 0); if (T.st === 'wait') T.nt = Math.min(T.nt, Date.now() + 1200); pkPush(T); return; }
     if (m.k === 'act') { var i = T.seats.findIndex(function (s) { return s && s.id === m.f; }); if (i >= 0 && i === T.turn && m.h === T.hand && !T.run) { pkApply(T, i, m.a, m.amt); pkPush(T); } return; }
     if (m.k === 'leave') { var j = T.seats.findIndex(function (s) { return s && s.id === m.f; }); if (j >= 0) { var s2 = T.seats[j]; if (T.st === 'wait' || T.st === 'show') T.seats[j] = null; else { s2.gone = 1; if (j === T.turn) pkApply(T, j, 'f', 0); else s2.f = 1; if (pkInHand(T).length === 1 && T.st !== 'show') pkAward(T, null); } pkPush(T); } }
   }
@@ -5856,33 +5895,56 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var dk = T.hand + ':' + T.st + ':' + T.turn + ':' + T.cur; if (me >= 0 && T.turn === me && PK.dk !== dk && !T.run) { PK.dk = dk; setTimeout(sndDing, 250); }
     if (T.st === 'show' && T.res && PK.rh !== T.hand) {
       PK.rh = T.hand; var wi = Object.keys(T.res.won), ws = wi.map(function (i) { return T.seats[i]; }).filter(Boolean);
+      if (!X.first && me >= 0 && mineS && mineS.tot > 0) { var wn = T.res.won[me] || 0, nt = wn - mineS.tot; PKS.h++; if (wn > 0) PKS.w++; PKS.net += nt; if (wn > PKS.big) PKS.big = wn; PKS.hist.unshift({ n: T.hand, r: wn > 0 ? '勝' : (mineS.f ? '降' : '負'), d: (T.res.desc[me] || (rk ? rk.t : '')), v: nt }); PKS.hist = PKS.hist.slice(0, 15); pkSave(); }
       if (!X.first) { if (me >= 0 && T.res.won[me]) { sndWin(); arSay('おめでとうございます。' + (T.res.desc[me] || '')); } else { if (ws[0]) arSay(ws[0].nm + '、' + (T.res.desc[wi[0]] ? T.res.desc[wi[0]] + 'で' : '') + '勝ち'); if (me >= 0 && T.seats[me] && !T.seats[me].f) sndLose(); } }
     }
     if (T.note) { if (PK.noteSeen === undefined) PK.noteSeen = T.note.e; else if (T.note.e > PK.noteSeen) { PK.noteSeen = T.note.e; tcAdd('', T.note.x, 0, 1); arSay('新しい対戦相手が着席しました'); } }
     if (T.nb) { if (PK.nbSeen === undefined) PK.nbSeen = T.nb.e; else if (T.nb.e > PK.nbSeen) { PK.nbSeen = T.nb.e; var ns = T.seats.filter(function (q) { return q && q.id === T.nb.id; })[0]; if (ns) { tcAdd(ns.nm, T.nb.x); PK.bub[ns.id] = { x: T.nb.x, exp: now + 3600 }; setTimeout(pkRender, 3700); } } }
     /* メッセージと操作 */
     var msg = T.st === 'show' ? T.log : (me >= 0 && mineS && mineS.stack <= 0 && (T.st === 'wait' || mineS.f) ? 'チップがなくなったよ。「席を立つ」で戻って、もう一回すわってね' : (T.st === 'wait' ? '次のハンドを準備中…' : (T.turn >= 0 && T.seats[T.turn] ? (T.turn === me ? 'あなたの番だよ' : T.seats[T.turn].nm + ' さんの番') : '')));
-    if ($('pkMsg')) $('pkMsg').textContent = msg;
+    var htx = ''; if (PKS.hint && me >= 0 && mineS && !mineS.f && T.hand > 0 && T.st !== 'wait' && T.st !== 'show' && mineS.hole.length === 2) { var hk = T.hand + ':' + T.board.length + ':' + T.cur + ':' + pkInHand(T).length; if (PK.hk !== hk) { PK.hk = hk; PK.hv = pkEquity(mineS.hole, T.board, Math.max(1, Math.min(5, pkInHand(T).length - 1)), 260); } var nd = T.cur - mineS.bet, po = nd > 0 ? nd / (T.pot + nd) : 0; htx = '💡 勝率 ' + Math.round(PK.hv * 100) + '%' + (nd > 0 ? '／必要 ' + Math.round(po * 100) + '% → ' + (PK.hv > po + .05 ? 'コール有利' : (PK.hv > po - .05 ? 'ギリギリ' : 'フォールド寄り')) : '／チェック可'); }
+    if ($('pkMsg')) { $('pkMsg').textContent = msg; if (htx) { var hs = document.createElement('div'); hs.className = 'pkHt'; hs.textContent = htx; $('pkMsg').appendChild(hs); } }
     var myTurn = !!(mineS && T.turn === me && !T.run && T.st !== 'show' && T.st !== 'wait'), key = [T.hand, T.st, T.turn, T.cur, me, mineS ? mineS.stack : 0, myTurn ? 1 : 0].join('|'), cb = $('pkCtl');
     if (cb.dataset.k !== key) {
       cb.dataset.k = key; var s = mineS || { bet: 0, stack: 0 }, need = T.cur - s.bet, maxTo = s.bet + s.stack, minTo = Math.min(maxTo, T.cur + T.minR), canR = myTurn && maxTo > T.cur, dis = myTurn ? '' : ' disabled';
-      cb.innerHTML = '<div class="tvB"><button type="button" class="b fo" id="pkF"' + dis + '>フォールド</button><button type="button" class="b ca" id="pkC"' + dis + '>' + (myTurn && need > 0 ? 'コール ' + Math.min(need, s.stack).toLocaleString() : 'チェック') + '</button><button type="button" class="b ra" id="pkRb"' + (canR ? '' : ' disabled') + '>レイズ</button></div>' +
-        '<div class="tvG"><span id="pkRv">' + (canR ? '' : '－') + '</span><input type="range" class="vr" id="pkRs" min="0" max="100" value="0"' + (canR ? '' : ' disabled') + '></div>';
+      cb.innerHTML = '<div class="tvB" style="width:100%"><button type="button" class="b fo" id="pkF"' + dis + '>フォールド</button><button type="button" class="b ca" id="pkC"' + dis + '>' + (myTurn && need > 0 ? 'コール ' + Math.min(need, s.stack).toLocaleString() : 'チェック') + '</button><button type="button" class="b ra" id="pkRb"' + (canR ? '' : ' disabled') + '>レイズ</button></div>' +
+        '<div class="pkR2"><button type="button" class="pm" id="pkMi"' + (canR ? '' : ' disabled') + '>−</button><input type="range" id="pkRs" min="' + minTo + '" max="' + Math.max(minTo, maxTo) + '" step="10" value="' + minTo + '"' + (canR ? '' : ' disabled') + '><button type="button" class="pm" id="pkPl"' + (canR ? '' : ' disabled') + '>＋</button><span class="pv" id="pkRv">' + (canR ? '' : '－') + '</span></div>' +
+        '<div class="pkR3">' + [['½', 'h'], ['ポット', 'p'], ['+100', 100], ['+200', 200], ['+400', 400], ['+800', 800], ['ALL IN', 'a']].map(function (q) { return '<button type="button" data-q="' + q[1] + '"' + (canR ? '' : ' disabled') + '>' + q[0] + '</button>'; }).join('') + '</div>';
       if (myTurn) { $('pkF').onclick = function () { pkAct('f', 0); }; $('pkC').onclick = function () { pkAct('c', 0); }; }
       if (canR) {
-        var upd = function () { var pc = +$('pkRs').value, amt = pc >= 100 ? maxTo : Math.min(maxTo, Math.max(minTo, Math.round((minTo + (maxTo - minTo) * pc / 100) / 10) * 10)); $('pkRv').textContent = amt >= maxTo ? 'ALL IN' : amt.toLocaleString(); $('pkRb').textContent = amt >= maxTo ? 'オールイン' : 'レイズ ' + amt.toLocaleString(); return amt; };
-        $('pkRs').oninput = upd; upd(); $('pkRb').onclick = function () { pkAct('r', upd()); };
+        var sl = $('pkRs'), clampA = function (v) { v = Math.round(v / 10) * 10; return Math.max(Math.min(minTo, maxTo), Math.min(maxTo, v)); };
+        var upd = function () { var amt = Math.min(maxTo, +sl.value); if (amt >= maxTo) amt = maxTo; $('pkRv').textContent = amt >= maxTo ? 'ALL IN' : amt.toLocaleString(); $('pkRb').textContent = amt >= maxTo ? 'オールイン' : 'レイズ ' + amt.toLocaleString(); return amt; };
+        var setA = function (v) { sl.value = clampA(v); upd(); };
+        sl.oninput = upd; upd();
+        $('pkMi').onclick = function () { setA(+sl.value - 20); }; $('pkPl').onclick = function () { setA(+sl.value + 20); };
+        cb.querySelectorAll('.pkR3 button').forEach(function (bt) { bt.onclick = function () { var q = bt.getAttribute('data-q'), v; if (q === 'a') v = maxTo; else if (q === 'h') v = T.cur + (T.pot + need) / 2; else if (q === 'p') v = T.cur + T.pot + need; else v = T.cur + (+q); setA(v); }; });
+        $('pkRb').onclick = function () { pkAct('r', upd()); };
       }
     }
+  }
+  function pkMenu() {
+    var m = $('pkMn'); if (!m) { m = document.createElement('div'); m.id = 'pkMn'; m.className = 'pkMn'; $('pkTbl').parentNode.appendChild(m); }
+    if (m.style.display === 'block') { m.style.display = 'none'; return; }
+    var wr = PKS.h ? Math.round(PKS.w / PKS.h * 100) : 0;
+    m.innerHTML = '<b style="color:#ffd36a;font-size:14px">☰ メニュー</b> <span style="float:right;color:#9fd0ff" id="pkMc">✕ とじる</span><h4>💡 ヒント（勝率・ポットオッズ）</h4><div class="sg"><button data-h="0" class="' + (PKS.hint ? '' : 'on') + '">OFF</button><button data-h="1" class="' + (PKS.hint ? 'on' : '') + '">ON</button></div>' +
+      '<h4>🤖 NPCの強さ（あなたがホストの時）</h4><div class="sg">' + ['やさしい', 'ふつう', 'つよい'].map(function (t, i) { return '<button data-l="' + i + '" class="' + ((PKS.lv | 0) === i ? 'on' : '') + '">' + t + '</button>'; }).join('') + '</div><div style="font-size:10.5px;color:#9fb4c4">やさしい＝ひとり時は特に弱め／ふつう＝標準／つよい＝読みが鋭い</div>' +
+      '<h4>📊 成績</h4><div class="hl"><span>プレイしたハンド</span><b>' + PKS.h + '</b></div><div class="hl"><span>勝ち（勝率）</span><b>' + PKS.w + '（' + wr + '%）</b></div><div class="hl"><span>通算の増減</span><b style="color:' + (PKS.net >= 0 ? '#7dff9a' : '#ff8a8a') + '">' + (PKS.net >= 0 ? '+' : '') + PKS.net.toLocaleString() + '</b></div><div class="hl"><span>最大ポット獲得</span><b>' + PKS.big.toLocaleString() + '</b></div>' +
+      '<h4>🕘 ハンド履歴（新しい順）</h4>' + (PKS.hist.length ? PKS.hist.map(function (x) { return '<div class="hl"><span>#' + x.n + ' ' + x.r + ' ' + esc(x.d || '') + '</span><b style="color:' + (x.v >= 0 ? '#7dff9a' : '#ff8a8a') + '">' + (x.v >= 0 ? '+' : '') + x.v.toLocaleString() + '</b></div>'; }).join('') : '<div style="color:#9fb4c4">まだありません</div>') +
+      '<div style="margin-top:8px"><button type="button" class="arcx" id="pkMr">成績をリセット</button></div>';
+    m.style.display = 'block';
+    m.querySelectorAll('[data-h]').forEach(function (b) { b.onclick = function () { PKS.hint = +b.getAttribute('data-h'); PK.hk = null; pkSave(); m.style.display = 'none'; pkMenu(); pkRender(); }; });
+    m.querySelectorAll('[data-l]').forEach(function (b) { b.onclick = function () { PKS.lv = +b.getAttribute('data-l'); pkSave(); m.style.display = 'none'; pkMenu(); }; });
+    $('pkMc').onclick = function () { m.style.display = 'none'; };
+    $('pkMr').onclick = function () { PKS.h = PKS.w = PKS.net = PKS.big = 0; PKS.hist = []; pkSave(); m.style.display = 'none'; pkMenu(); };
   }
   function openHoldem() {
     tvQuiet(true);
     try { var pend = parseInt(localStorage.getItem('opa_pk_pend') || '0', 10); if (pend > 0) { chipsSet(chipsGet() + pend); localStorage.removeItem('opa_pk_pend'); } } catch (e) {}
     chipFree(); var buy = Math.min(PKBUY, chipsGet()); if (buy < 20) { arcShow('<h2>♠ テキサスホールデム</h2><p>チップが足りません</p><button type="button" class="arcx" id="pkX0">とじる</button>'); $('pkX0').onclick = arcClose; return; }
     chipsSet(chipsGet() - buy); if (!(player && player.gm)) { try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {} }
-    arcShow('<div class="tvh"><b>♠ テキサスホールデム</b><span id="pkInfo" class="chipb"></span><button type="button" class="arcx" id="pkH" style="margin-right:6px">役</button><button type="button" class="arcx" id="pkX">席を立つ</button></div><div class="tvAw"><div id="pkTbl" class="tvA tvAi"></div><div id="pkFl" class="tvFl"></div><div id="pkHelp" style="display:none;position:absolute;left:6%;right:6%;top:8%;z-index:30;background:#101820ee;border:2px solid #ffd36a;border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.55;color:#fff"><b style="color:#ffd36a">役の強さ（上ほど強い）</b><br>① ストレートフラッシュ：同じマークの連番5枚<br>② フォーカード：同じ数字4枚<br>③ フルハウス：3枚＋2枚の組み合わせ<br>④ フラッシュ：同じマーク5枚（♠♥♦♣）<br>⑤ ストレート：連番5枚（マークはバラバラでOK）<br>⑥ スリーカード：同じ数字3枚<br>⑦ ツーペア：ペアが2組<br>⑧ ワンペア：同じ数字2枚<br>⑨ ハイカード：役なし（いちばん大きい数字）<br><span style="color:#9fd0ff">手札2枚＋場の5枚から、いちばん強い5枚で勝負。自分の役は「現在：○○」で出るよ。（タップで閉じる）</span></div></div><div id="pkMsg" class="tvM"></div><div id="pkCtl" class="tvC"></div>' + tcHTML('pk'), 'tv');
+    arcShow('<div class="tvh"><b>♠ テキサスホールデム</b><span id="pkInfo" class="chipb"></span><button type="button" class="arcx" id="pkH" style="margin-right:4px">役</button><button type="button" class="arcx" id="pkM" style="margin-right:4px">☰</button><button type="button" class="arcx" id="pkX">席を立つ</button></div><div class="tvAw"><div id="pkTbl" class="tvA tvAi"></div><div id="pkFl" class="tvFl"></div><div id="pkHelp" style="display:none;position:absolute;left:6%;right:6%;top:8%;z-index:30;background:#101820ee;border:2px solid #ffd36a;border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.55;color:#fff"><b style="color:#ffd36a">役の強さ（上ほど強い）</b><br>① ストレートフラッシュ：同じマークの連番5枚<br>② フォーカード：同じ数字4枚<br>③ フルハウス：3枚＋2枚の組み合わせ<br>④ フラッシュ：同じマーク5枚（♠♥♦♣）<br>⑤ ストレート：連番5枚（マークはバラバラでOK）<br>⑥ スリーカード：同じ数字3枚<br>⑦ ツーペア：ペアが2組<br>⑧ ワンペア：同じ数字2枚<br>⑨ ハイカード：役なし（いちばん大きい数字）<br><span style="color:#9fd0ff">手札2枚＋場の5枚から、いちばん強い5枚で勝負。自分の役は「現在：○○」で出るよ。（タップで閉じる）</span></div></div><div id="pkMsg" class="tvM"></div><div id="pkCtl" class="tvC"></div>' + tcHTML('pk'), 'tv');
     PK = { T: null, me: -1, last: Date.now(), hb: 0, seen: {}, iv: 0, buy: buy, bub: {}, pos: {}, cl: [] }; tcInit('pk', PK, 'pk'); PK.iv = setInterval(pkTick, 250);
-    $('pkX').onclick = pkLeave; $('pkH').onclick = function () { var h = $('pkHelp'); h.style.display = h.style.display === 'none' ? 'block' : 'none'; }; $('pkHelp').onclick = function () { this.style.display = 'none'; }; pkRender(); pkSend({ k: 'who' });
+    $('pkM').onclick = pkMenu; $('pkX').onclick = pkLeave; $('pkH').onclick = function () { var h = $('pkHelp'); h.style.display = h.style.display === 'none' ? 'block' : 'none'; }; $('pkHelp').onclick = function () { this.style.display = 'none'; }; pkRender(); pkSend({ k: 'who' });
     var nm = (player && player.avatar && player.avatar.name) || 'あなた';
     setTimeout(function () {
       if (!PK) return; if (!PK.T) { PK.T = pkNewTable(); PK.T.seats[1] = pkSeat(myMid, String(nm).slice(0, 8), buy, 0); PK.me = 1; pkPush(PK.T); }
