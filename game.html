@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:137-->
+<!--GV:139-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -2845,7 +2845,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     pk.style.filter = (w && w.hu) ? 'hue-rotate(' + w.hu + 'deg) saturate(1.25)' : '';
     pk.innerHTML = mode === 'pick' ? toolHandHTML(SKIN[normAv(player.avatar).skin]) : weaponSVG(mode);
   }
-  var SBASE = [40, 120, 320, 1000], SMULT = { quartz: 1, amethyst: 1, citrine: 1, garnet: 1, peridot: 1, sapphire: 1.5, emerald: 1.5, ruby: 1.5, diamond: 1.5, whiteopal: 1.5, paraiba: 2.5, alexandrite: 2.5, colordiamond: 2.5, crystalopal: 2.5, boulderopal: 4, fireopal: 4, blackopal: 4 };
+  var SBASE = [120, 360, 960, 3000], SMULT = { quartz: 1, amethyst: 1, citrine: 1, garnet: 1, peridot: 1, sapphire: 1.5, emerald: 1.5, ruby: 1.5, diamond: 1.5, whiteopal: 1.5, paraiba: 2.5, alexandrite: 2.5, colordiamond: 2.5, crystalopal: 2.5, boulderopal: 4, fireopal: 4, blackopal: 4 };
   function stonePrice(id, g) { return Math.round(SBASE[g] * (SMULT[id] || 1)); }
   var TIERCOL = ['#9db0b8', '#58a6ff', '#b583ff', '#ffd36a'];
   function openBag(tab) { bagTab = tab || 0; buyArm = null; sellArm = null; skArm = null; renderBag(); $('bag').classList.add('on'); }
@@ -4168,7 +4168,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 137;
+  var GV = 139;
   (function () {
     var last = Date.now();
     function chk() {
@@ -5074,14 +5074,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     { id: 'sk02', nm: '突進斬り', ic: '⚡', price: 2400, cd: 9000, t: 'rush', len: 320, m: 1.6, ds: 'まっすぐ突進して、通り道の敵を全員斬る（×1.6）。突進中は無敵' },
     { id: 'sk03', nm: '落雷', ic: '🌩️', price: 3000, cd: 11000, t: 'bolt', r: 450, sr: 110, m: 2.6, ds: 'いちばん近い敵に雷を落とす（×2.6）。まわりにも少しダメージ' },
     { id: 'sk04', nm: '五月雨撃ち', ic: '🎯', price: 3600, cd: 10000, t: 'volley', r: 500, n: 5, m: .8, ds: '遠くの敵にも5連続で攻撃（×0.8を5回）' },
-    { id: 'sk05', nm: '大地の怒り', ic: '🌋', price: 5200, cd: 14000, t: 'quake', r: 520, sr: 190, m: 2, ds: '離れた敵の足もとを爆発させる（×2）。広い範囲に当たる' },
-    { id: 'sk06', nm: '癒しの光', ic: '💚', price: 2800, cd: 28000, t: 'heal', m: .3, ds: 'HPを30%回復する（決闘中は使えません）' },
+    { id: 'sk05', nm: '大地の怒り', ic: '🌋', price: 5200, cd: 14000, t: 'quake', r: 520, sr: 190, m: 6, ds: '離れた敵の足もとを爆発させる（×6）。広い範囲に当たる。レベルが高いほど、威力アップ（Lv100で2倍）' },
+    { id: 'sk06', nm: '癒しの光', ic: '💚', price: 2800, cd: 28000, t: 'heal', m: .3, ds: 'HPを30%回復する' },
     { id: 'sk07', nm: '鉄壁の構え', ic: '🧱', price: 2200, cd: 22000, t: 'guardUp', d: 5000, ds: '5秒間、受けるダメージを50%カットする' },
     { id: 'sk08', nm: '闘気解放', ic: '🔥', price: 3200, cd: 24000, t: 'atkUp', d: 8000, ds: '8秒間、こうげき力が +40%' },
     { id: 'sk09', nm: '疾風の足', ic: '🍃', price: 1800, cd: 18000, t: 'haste', d: 6000, ds: '6秒間、移動速度が +50%' },
     { id: 'sk10', nm: '吸血の刃', ic: '🩸', price: 4800, cd: 26000, t: 'leech', d: 8000, ds: '8秒間、与えたダメージの12%ぶん、HPが回復する（決闘中は使えません）' },
     { id: 'sk11', nm: 'ダッシュ', ic: '💨', price: 1500, cd: 4000, t: 'dashTo', len: 225, ds: '敵の方向へ3マス近づく。一瞬、攻撃をよけられる' },
-    { id: 'sk12', nm: 'ワープ', ic: '🌀', price: 2000, cd: 4000, t: 'warpTo', len: 375, ds: '敵から5マス離れた場所へワープする。遠距離の武器むき' }
+    { id: 'sk12', nm: 'ワープ', ic: '🌀', price: 2000, cd: 4000, t: 'warpTo', sh: 'ワープ', len: 375, ds: '敵から5マス離れた場所へワープする。遠距離の武器むき' }
   ];
   SKD.forEach(function (d) { d.price = d.price * 75; }); /* スキルの値段は75倍（15倍のさらに5倍）。サーバー(opa-kill)も同じ */
   var SKBY = {}; SKD.forEach(function (d) { SKBY[d.id] = d; });
@@ -5093,10 +5093,10 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function skBtnUi() {
     var eq = ((player || {}).skEq) || [], n = performance.now();
     for (var i = 0; i < 3; i++) {
-      var b = $('sk' + i); if (!b) continue; var d = SKBY[eq[i]], show = !!(d && fieldOn && !inTown && !hp.down && !(inArena && (d.t === 'heal' || d.t === 'leech')));
+      var b = $('sk' + i); if (!b) continue; var d = SKBY[eq[i]], show = !!(d && fieldOn && !inTown && !hp.down && !(inArena && d.t === 'leech'));
       b.style.display = show ? 'block' : 'none'; if (!show) continue;
       var r = (skCd[d.id] || 0) - n, act = (d.t === 'guardUp' && n < skGuardUntil) || (d.t === 'atkUp' && n < skAtkUntil) || (d.t === 'haste' && n < skHasteUntil) || (d.t === 'leech' && n < skLeechUntil);
-      b.classList.toggle('cd', r > 0 && !act); b.classList.toggle('act', act); b.textContent = (inArena || inPlaza) ? (act ? '発動' : (r > 0 ? Math.ceil(r / 1000) : d.nm.slice(0, 2))) : d.ic + ' ' + (act ? '発動中' : (r > 0 ? Math.ceil(r / 1000) : d.nm));
+      b.classList.toggle('cd', r > 0 && !act); b.classList.toggle('act', act); b.textContent = (inArena || inPlaza) ? (act ? '発動' : (r > 0 ? Math.ceil(r / 1000) : (d.sh || d.nm.slice(0, 2)))) : d.ic + ' ' + (act ? '発動中' : (r > 0 ? Math.ceil(r / 1000) : d.nm));
     }
   }
   function ringAt(x, y, r) { var e = document.createElement('i'); e.className = 'spfx'; e.style.left = x + 'px'; e.style.top = (y - 20) + 'px'; e.style.width = e.style.height = (r * 2) + 'px'; $('world').appendChild(e); setTimeout(function () { e.remove(); }, 700); }
@@ -5104,7 +5104,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var id = (((player || {}).skEq) || [])[i], d = SKBY[id]; if (!d || hp.down || busy || inTown) return;
     var n = performance.now(); if (n < (skCd[id] || 0)) { toast('「' + d.nm + '」は、あと ' + Math.ceil((skCd[id] - n) / 1000) + ' 秒で使えるよ'); return; }
     if (guard) { toast('ガード中は、使えません'); return; }
-    if (inArena && (d.t === 'heal' || d.t === 'leech')) { toast('決闘中は、回復のスキルは使えません'); return; }
+    if (inArena && d.t === 'leech') { toast('決闘中は、回復のスキルは使えません'); return; }
     var atk = ['ring', 'rush', 'bolt', 'volley', 'quake', 'dashTo', 'warpTo'].indexOf(d.t) >= 0, en = [], ne = null, k;
     if (atk) {
       en = enemies(); if (!en.length) { toast(pvpMode() ? 'ほかの人がいないよ' : '敵がいないよ'); return; }
@@ -5131,13 +5131,16 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       fin();
     } else if (d.t === 'quake') {
       if (ne.d > d.r) { toastQ(); return; }
-      var t3 = ne.e; ringAt(t3.x, t3.y, d.sr); hitE(t3, d.m); en.forEach(function (e) { if (e !== t3 && Math.hypot(e.x - t3.x, e.y - t3.y) <= d.sr) hitE(e, d.m * .6); }); fin();
+      var t3 = ne.e, qm = d.m * (1 + Math.min(plv(), 100) / 100); ringAt(t3.x, t3.y, d.sr); hitE(t3, qm); en.forEach(function (e) { if (e !== t3 && Math.hypot(e.x - t3.x, e.y - t3.y) <= d.sr) hitE(e, qm * .6); }); fin();
     } else if (d.t === 'dashTo') {
       var ddx = ne.e.x - hero.x, ddy = ne.e.y - hero.y, dL = Math.hypot(ddx, ddy) || 1, dmv = Math.min(d.len, Math.max(0, dL - 40));
       hero.dir = ddx >= 0 ? 1 : -1; dashInv = performance.now() + 350; hp.inv = Math.max(hp.inv, dashInv); heroTo(hero.x + ddx / dL * dmv, hero.y + ddy / dL * dmv); fin(true);
     } else if (d.t === 'warpTo') {
-      var wex = hero.x - ne.e.x, wey = hero.y - ne.e.y, wM = Math.hypot(wex, wey) || 1;
-      dashInv = performance.now() + 350; hp.inv = Math.max(hp.inv, dashInv); heroTo(ne.e.x + wex / wM * d.len, ne.e.y + wey / wM * d.len); fin(true);
+      var wex = hero.x - ne.e.x, wey = hero.y - ne.e.y, wM = Math.hypot(wex, wey) || 1, wl = d.len, wx1, wy1;
+      if (bsDef() && ne.e.k === 'f') wl += ne.e.r; /* ボス戦：ボスの端から5マス */
+      wx1 = ne.e.x + wex / wM * wl; wy1 = ne.e.y + wey / wM * wl;
+      if (bsDef() && Math.hypot(wx1 - hero.x, wy1 - hero.y) < 90) { wx1 = ne.e.x - wex / wM * wl; wy1 = ne.e.y - wey / wM * wl; } /* 動かないなら、ボスの反対側へ */
+      dashInv = performance.now() + 350; hp.inv = Math.max(hp.inv, dashInv); heroTo(wx1, wy1); fin(true);
     } else if (d.t === 'heal') {
       var add = Math.min(hp.max - hp.cur, Math.round(hp.max * d.m)); if (add <= 0) { toast('HPは、もう満タンだよ'); return; }
       hp.cur += add; hpUi(); rtHp(); floatTxt(hero.x, hero.y - 74, '+' + add, 'g'); fin(true);
@@ -5296,7 +5299,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!atkReady()) return false;
     var w = curW(); skAdd(w && w.rng ? 9 : 12); return true;
   }
-  $('swBtn').addEventListener('click', function () { wHand = wHand === 'weapon' ? 'pick' : 'weapon'; if (wHand === 'weapon' && curSpot) holdStop(); gearUi(); sfx(2); });
+  $('swBtn').addEventListener('click', function () { wHand = wHand === 'weapon' ? 'pick' : 'weapon'; if (wHand === 'weapon' && curSpot) { holdStop(); cancelDig(); } gearUi(); sfx(2); });
   var QC = [['🆘 たすけて！', 'たすけて！', 1], ['❗ ヘルプ！', 'ヘルプ！', 1], ['👍 ナイス！', 'ナイス！'], ['🙌 グッジョブ！', 'グッジョブ！'], ['👉 こっち！', 'こっち来て！'], ['🙏 ありがとう', 'ありがとう！'], ['🆗 りょうかい', 'りょうかい！'], ['⚠️ きをつけて', '気をつけて！']];
   var QCT = [['👋 こんにちは！', 'こんにちは！'], ['🌅 おはよう！', 'おはよう！'], ['🌙 こんばんは！', 'こんばんは！'], ['😊 よろしくね！', 'よろしくね！'], ['✨ はじめまして！', 'はじめまして！'], ['🙏 ありがとう！', 'ありがとう！'], ['🎉 おめでとう！', 'おめでとう！'], ['👋 またね！', 'またね！']], QCcur = QC;
   function qcFill() { QCcur = inTown ? QCT : QC; $('qcPanel').innerHTML = QCcur.map(function (q, i) { return '<button type="button" data-q="' + i + '"' + (q[2] ? ' class="hl"' : '') + '>' + q[0] + '</button>'; }).join(''); }
@@ -5483,7 +5486,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   /* ---- ボスステージのボス：範囲攻撃（円・直線）を予告してから撃つ ---- */
   var bsT = 5;
   function bsDef() { return (curMine && BSBY[curMine]) || null; }
-  function bsStat(d, n) { var L = d.rl, dps = ((6 + 1.5 * L + 3 + .8 * L) * 1.15) / .8; return { hp: Math.round(dps * 300 * .55 * d.pn * (.55 + .45 * n / d.pn) * (d.bl <= 100 ? .7 : 1)), atk: Math.round(.5 * (80 + 13 * L) * (d.bl >= 300 ? 5 : (d.bl >= 180 ? 3 : (d.bl >= 70 ? 2 : 1)))) }; }
+  function bsStat(d, n) { var L = d.rl, dps = ((6 + 1.5 * L + 3 + .8 * L) * 1.15) / .8; return { hp: Math.round(dps * 300 * .55 * d.pn * (.55 + .45 * n / d.pn) * (d.bl <= 100 ? .7 : 1) * 1.2), atk: Math.round(.5 * (80 + 13 * L) * (d.bl >= 300 ? 5 : (d.bl >= 180 ? 3 : (d.bl >= 70 ? 2 : 1)))) }; }
   function bsWatch(dt) {
     if (!bsDef() || !fieldOn || inTown || (netFoes() && !amHost())) return;
     if (foes.some(function (x) { return x.boss && x.mode !== 'dead'; })) return;
