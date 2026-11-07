@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:129-->
+<!--GV:130-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -3962,7 +3962,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 129;
+  var GV = 130;
   (function () {
     var last = Date.now();
     function chk() {
@@ -5264,7 +5264,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   /* ---- ボスステージのボス：範囲攻撃（円・直線）を予告してから撃つ ---- */
   var bsT = 5;
   function bsDef() { return (curMine && BSBY[curMine]) || null; }
-  function bsStat(d, n) { var L = d.rl, dps = ((6 + 1.5 * L + 3 + .8 * L) * 1.15) / .8; return { hp: Math.round(dps * 300 * .55 * d.pn * (.55 + .45 * n / d.pn)), atk: Math.round(.5 * (80 + 13 * L)) }; }
+  function bsStat(d, n) { var L = d.rl, dps = ((6 + 1.5 * L + 3 + .8 * L) * 1.15) / .8; return { hp: Math.round(dps * 300 * .55 * d.pn * (.55 + .45 * n / d.pn) * (d.bl <= 100 ? .7 : 1)), atk: Math.round(.5 * (80 + 13 * L)) }; }
   function bsWatch(dt) {
     if (!bsDef() || !fieldOn || inTown || (netFoes() && !amHost())) return;
     if (foes.some(function (x) { return x.boss && x.mode !== 'dead'; })) return;
