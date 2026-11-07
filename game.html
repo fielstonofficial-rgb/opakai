@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:114-->
+<!--GV:116-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -3409,8 +3409,6 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       dc('<svg viewBox="0 0 56 26"><rect x="8" y="14" width="5" height="12" fill="#7c4c27"/><rect x="43" y="14" width="5" height="12" fill="#7c4c27"/><ellipse cx="28" cy="9" rx="25" ry="9" fill="#d9534f" stroke="#a63a37" stroke-width="2.4"/><ellipse cx="28" cy="7" rx="16" ry="4" fill="rgba(255,255,255,.22)"/></svg>', sa.x, sa.y + 8, 56, 26, sa.y + 1);
     });
     em('🪴', 40, 330, 52, 330); em('🪴', 960, 330, 52, 330); em('🪴', 40, 760, 52, 760); em('🪴', 960, 760, 52, 760); em('🖼️', 570, 130, 40, 5);
-    dc(arcRankSVG(), 690, 245, 170, 110, 245); dc(arcPrizeSVG(), 880, 250, 230, 115, 250);
-    html += '<div class="tlbl" style="left:690px;top:262px">🏆 コインランキング</div><div class="tlbl" style="left:880px;top:268px">🎁 景品交換所</div>';
     html += '<div class="tlbl" style="left:500px;top:766px">🚪 出口</div>';
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
@@ -3579,7 +3577,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     html += arcGround(W, H);
     var dc = function (svg, x, y, wd, ht, z) { html += '<div class="dc" style="left:' + x + 'px;top:' + y + 'px;width:' + wd + 'px;height:' + ht + 'px;z-index:' + Math.round(z == null ? y : z) + '">' + svg + '</div>'; };
     var lb = function (t, x, y) { html += '<div class="tlbl" style="left:' + x + 'px;top:' + y + 'px">' + t + '</div>'; };
-    dc(arcDoorSVG(), 500, 330, 220, 170, 330); lb('対戦会場入口', 500, 360); dc(arcDispSVG(), 880, 352, 74, 96, 352); html += '<div class="tlbl" style="left:880px;top:366px;white-space:nowrap">🪙 コイン受け取り機</div>'; dc(arcRankSVG(), 800, 200, 160, 110, 200); html += '<div class="tlbl" style="left:800px;top:216px;white-space:nowrap">🏆 コインランキング掲示板</div>';
+    dc(arcDoorSVG(), 500, 330, 220, 170, 330); lb('対戦会場入口', 500, 360); dc(arcPrizeKSVG(), 700, 352, 74, 96, 352); html += '<div class="tlbl" style="left:700px;top:392px;white-space:nowrap">🎁 景品交換所</div>'; dc(arcDispSVG(), 880, 352, 74, 96, 352); html += '<div class="tlbl" style="left:880px;top:366px;white-space:nowrap">🪙 コイン受け取り機</div>'; dc(arcRankSVG(), 800, 200, 160, 110, 200); html += '<div class="tlbl" style="left:800px;top:216px;white-space:nowrap">🏆 コインランキング掲示板</div>';
     dc(arcBarSVG(), 210, 336, 360, 84, 336); lb('🍸 バーカウンター', 210, 262); html += '<div class="cfe" style="left:70px;top:296px;font-size:26px;z-index:337">🍸</div><div class="cfe" style="left:150px;top:296px;font-size:26px;z-index:337">🥃</div><div class="cfe" style="left:290px;top:296px;font-size:26px;z-index:337">🍷</div><div class="cfe" style="left:350px;top:296px;font-size:26px;z-index:337">🥂</div>';
     LGT.forEach(function (t) { dc(arcLoungeTableSVG(), t[0], t[1] + 36, 130, 74, t[1] + 36); });
     SEATS.forEach(function (sa) { if (sa.stool) dc(arcStoolSVG(), sa.x, sa.y + 8, 40, 52, sa.y - 1); else { dc(arcChairSVG(), sa.x, sa.y - 2, 31, 28, sa.y - 1); dc(arcSeatSVG(), sa.x, sa.y + 5, 34, 17, sa.y + 1); } });
@@ -3591,7 +3589,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     html += '<div class="tlbl" style="left:500px;top:766px">🚪 出口</div>';
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
-    DOORS = [{ k: 'arc:fps', x: 500, y: 330, w: 200, h: 160 }, { k: 'arc:holdem', x: 186, y: 616, w: 250, h: 105 }, { k: 'arc:bi', x: 828, y: 607, w: 210, h: 92 }, { k: 'arc:un', x: 828, y: 797, w: 210, h: 92 }, { k: 'arcout', x: 500, y: 800, w: 120, h: 70 }, { k: 'arc:rank', x: 800, y: 215, w: 160, h: 110 }, { k: 'arc:dis', x: 880, y: 352, w: 74, h: 80 }, { k: 'arc:prize', x: 880, y: 250, w: 220, h: 110 }];
+    DOORS = [{ k: 'arc:fps', x: 500, y: 330, w: 200, h: 160 }, { k: 'arc:holdem', x: 186, y: 616, w: 250, h: 105 }, { k: 'arc:bi', x: 828, y: 607, w: 210, h: 92 }, { k: 'arc:un', x: 828, y: 797, w: 210, h: 92 }, { k: 'arcout', x: 500, y: 800, w: 120, h: 70 }, { k: 'arc:rank', x: 800, y: 215, w: 160, h: 110 }, { k: 'arc:dis', x: 880, y: 352, w: 74, h: 80 }, { k: 'arc:prize', x: 700, y: 352, w: 74, h: 80 }];
     hero.x = 500; hero.y = 760; hero.dir = 1; hero.sit = null; ftarget = null; fz = zoomT;
     $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi(); addNpcs('arcade');
   }
@@ -3930,7 +3928,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 114;
+  var GV = 116;
   (function () {
     var last = Date.now();
     function chk() {
@@ -5595,26 +5593,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     };
   }
   function openPrize() {
-    arcFlush(); arcShow('<div class="tvh"><b>🎁 景品交換所</b><span id="pzInfo" class="chipb"></span><button type="button" class="arcx" id="pzX">とじる</button></div><div class="rkL" id="pzL">読み込み中…</div><div class="tvM" id="pzM"></div>', 'tv'); $('pzX').onclick = arcClose; $('pzInfo').textContent = '🪙 ' + chipsGet().toLocaleString();
-    if (!ARC.on) { $('pzL').textContent = '景品交換はサーバーにつながっている時だけ使えます'; return; }
-    function load() {
-      arcApi({ action: 'prize_list' }).then(function (j) {
-        if (!$('pzL')) return; if (j._s !== 200) { $('pzL').textContent = 'つながりませんでした。もう一回ためしてね'; return; }
-        if (!j.prizes.length) { $('pzL').innerHTML = '<div class="pzE">🎁<br>景品は、じゅんび中だよ。<br>コインを貯めて、楽しみに待っててね</div>'; return; }
-        $('pzL').innerHTML = j.prizes.map(function (p) { var poor = chipsGet() < p.cost, out = p.stock !== null && p.stock <= 0; return '<div class="pz"><div class="pn"><b>' + esc(p.name) + '</b><small>' + ({ item: 'ゲーム内アイテム', skill: 'スキル', coupon: 'イベントクーポン' }[p.kind] || '') + (p.note ? '　' + esc(p.note) : '') + '</small></div><div class="pc2">🪙 ' + Number(p.cost).toLocaleString() + (p.stock !== null ? '<small>のこり ' + p.stock + '</small>' : '') + '</div><button type="button" class="b ra" data-id="' + esc(p.id) + '"' + (poor || out ? ' disabled' : '') + '>' + (out ? '売り切れ' : '交換') + '</button></div>'; }).join('');
-        Array.prototype.forEach.call($('pzL').querySelectorAll('button[data-id]'), function (bt) {
-          var armed = 0; bt.onclick = function () {
-            if (!armed) { armed = 1; bt.textContent = 'ほんとうに交換？'; setTimeout(function () { armed = 0; if (bt) bt.textContent = '交換'; }, 3000); return; }
-            bt.disabled = true; arcFlush().then(function () { return arcApi({ action: 'prize_buy', id: bt.dataset.id }); }).then(function (r) {
-              if (r._s === 200 && r.ok) { try { localStorage.setItem('opa_chips', String(r.chips)); } catch (e) {} sndWin(); arSay('交換しました'); $('pzM').textContent = r.delivered ? '「' + r.name + '」と交換したよ！カバンに入ったよ' : '「' + r.name + '」と交換したよ！使い方は、あとでお知らせします'; if (r.delivered) api({ action: 'game_load' }).then(function (j) { if (j && j.player) { player = j.player; applyAura(); gearUi(); hpUi(); } }); if ($('pzInfo')) $('pzInfo').textContent = '🪙 ' + chipsGet().toLocaleString(); load(); }
-              else { $('pzM').textContent = r.message || 'できませんでした'; bt.disabled = false; }
-            });
-          };
-        });
-      });
-    }
-    setTimeout(load, 500);
+    arcShow('<div class="tvh"><b>🎁 景品交換所</b><button type="button" class="arcx" id="pzX">とじる</button></div><div class="tvM" style="padding:46px 10px;font-size:20px;line-height:1.8;text-align:center;color:#ffe27a;white-space:normal">🚧 ただいま準備中です<br><span style="font-size:13px;color:#cfd8e3">もうすこし待っててね</span></div>', 'tv'); $('pzX').onclick = arcClose;
   }
+  function arcPrizeKSVG() { return '<svg viewBox="0 0 80 100"><rect x="3" y="3" width="74" height="94" rx="8" fill="#1a1020" stroke="#d8b04a" stroke-width="4"/><rect x="9" y="9" width="62" height="15" rx="3" fill="#7a1230"/><text x="40" y="20.5" text-anchor="middle" font-size="10" font-weight="900" font-family="Arial,sans-serif" fill="#ffe27a" letter-spacing="1">PRIZE</text><rect x="9" y="28" width="62" height="42" rx="3" fill="#0d2a3a" stroke="#7fd6ff" stroke-width="1"/><path d="M9 49H71" stroke="#7fd6ff" stroke-width="1"/><text x="22" y="46" text-anchor="middle" font-size="15">🎁</text><text x="40" y="46" text-anchor="middle" font-size="15">💎</text><text x="58" y="46" text-anchor="middle" font-size="15">🎀</text><text x="22" y="67" text-anchor="middle" font-size="15">🧸</text><text x="40" y="67" text-anchor="middle" font-size="15">👑</text><text x="58" y="67" text-anchor="middle" font-size="15">🎁</text><rect x="9" y="75" width="62" height="16" rx="3" fill="#5a3416" stroke="#c9954a" stroke-width="1"/><text x="40" y="87" text-anchor="middle" font-size="9" font-weight="800" fill="#ffe9a8" font-family="sans-serif">準備中</text></svg>'; }
   function arcRankSVG() { return '<svg viewBox="0 0 200 130"><defs><linearGradient id="rG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a6410"/><stop offset=".5" stop-color="#ffe27a"/><stop offset="1" stop-color="#8a6410"/></linearGradient></defs><rect x="8" y="6" width="184" height="118" rx="8" fill="#150c0a" stroke="url(#rG)" stroke-width="3.5"/><text x="100" y="32" font-size="15" font-weight="800" fill="#ffe27a" text-anchor="middle" letter-spacing="1" font-family="sans-serif">コインランキング</text><text x="100" y="62" font-size="26" text-anchor="middle">🏆</text><g fill="#c9a24a" font-size="11"><text x="40" y="86">1 ――――――</text><text x="40" y="102">2 ――――――</text><text x="40" y="118">3 ――――――</text></g></svg>'; }
   function arcDispSVG() { return '<svg viewBox="0 0 80 104"><defs><linearGradient id="dpG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a6410"/><stop offset=".5" stop-color="#ffe27a"/><stop offset="1" stop-color="#8a6410"/></linearGradient></defs><ellipse cx="40" cy="100" rx="32" ry="4" fill="rgba(0,0,0,.45)"/><rect x="8" y="4" width="64" height="94" rx="8" fill="#2a0f18" stroke="url(#dpG)" stroke-width="3"/><rect x="16" y="12" width="48" height="22" rx="4" fill="#0a0a10" stroke="#ffe27a" stroke-width="1.4"/><text x="40" y="28" font-size="12" font-weight="800" fill="#7af0ff" text-anchor="middle">COIN</text><text x="40" y="54" font-size="20" text-anchor="middle">🪙</text><rect x="22" y="60" width="36" height="5" rx="2" fill="#000" stroke="#ffe27a" stroke-width="1"/><rect x="16" y="74" width="48" height="18" rx="4" fill="#120a0c" stroke="url(#dpG)" stroke-width="2"/><circle cx="30" cy="86" r="4" fill="#ffd84a"/><circle cx="40" cy="87" r="4" fill="#ffe27a"/><circle cx="50" cy="86" r="4" fill="#ffd84a"/></svg>'; }
   function arcPrizeSVG() { return '<svg viewBox="0 0 260 130"><defs><linearGradient id="pG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a6410"/><stop offset=".5" stop-color="#ffe27a"/><stop offset="1" stop-color="#8a6410"/></linearGradient></defs><rect x="8" y="4" width="244" height="124" rx="8" fill="#1d1013" stroke="url(#pG)" stroke-width="3.5"/><rect x="60" y="8" width="140" height="22" rx="4" fill="#0e0608" stroke="url(#pG)" stroke-width="1.6"/><text x="130" y="24" font-size="13" font-weight="800" fill="#ffe27a" text-anchor="middle" letter-spacing="2">景品交換所</text><rect x="22" y="62" width="216" height="3" fill="#7a5a1c"/><text x="46" y="58" font-size="22">🎁</text><text x="96" y="58" font-size="22">💎</text><text x="150" y="58" font-size="22">🎀</text><text x="196" y="58" font-size="22">🎁</text><rect x="14" y="84" width="232" height="40" rx="5" fill="#5a1626" stroke="url(#pG)" stroke-width="2.4"/><path d="M26 98H234" stroke="#ffe27a" stroke-width="1" opacity=".5"/></svg>'; }
