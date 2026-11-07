@@ -1182,7 +1182,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     <div class="sheet" id="bag">
       <div class="bar"><span style="width:42px"></span><h1>そうび・ショップ</h1><button class="ib" data-close="bag" type="button" aria-label="とじる">✕</button></div>
       <div class="coinbar" id="coinBar"></div>
-      <div class="tabs" id="bagTabs"><button type="button" data-t="0" class="on">⚔️ 装備</button><button type="button" data-t="1">🛍️ ショップ</button><button type="button" data-t="2">💰 売る</button></div>
+      <div class="tabs" id="bagTabs"><button type="button" data-t="1">🛍️ ショップ</button><button type="button" data-t="0" class="on">⚔️ 装備</button><button type="button" data-t="2">💰 売る</button></div>
       <div class="body" id="bagBody"></div>
     </div>
     <div class="sheet" id="skp">
@@ -3761,7 +3761,7 @@ var TB = {
   function townDoorAt(wx, wy) { for (var i = 0; i < DOORS.length; i++) { var d = DOORS[i]; if (Math.abs(wx - d.x) < d.w / 2 + 10 && wy < d.y + 40 && wy > d.y - d.h) return d; } return null; }
   function openDoor(k) {
     TUT.doors[k] = 1;
-    if (k === 'shop') { sfx(2); $('fBag').click(); }
+    if (k === 'shop') { sfx(2); openBag(1); }
     else if (k === 'guild') { sfx(2); openGuild(); }
     else if (k === 'hospital') healFull();
     else if (k === 'exch') { sfx(2); openMarket(); }
@@ -4952,7 +4952,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 154;
+  var GV = 155;
   (function () {
     var last = Date.now();
     function chk() {
@@ -8545,7 +8545,7 @@ var TB = {
   function tutIdx() { return TUT.test ? TUT.ld.length : (player.tut.d || []).length; }
   var TSTEPS = [
     { k: 'intro' },
-    { k: 'shop', t: '🏪 ショップに入ろう', s: '光る矢印の「ショップ」をタップ。開いたら、上の「🛍️ ショップ」タブを押してみてな。', door: 'shop', test: function () { return $('bag').classList.contains('on') && bagTab === 1; }, n: '装備はここで買えるよ。' },
+    { k: 'shop', t: '🏪 ショップに入ろう', s: '光る矢印の「ショップ」をタップして、お店に入ろう。入れたらクリア！', door: 'shop', test: function () { return $('bag').classList.contains('on') && (bagTab === 1 || !!TUT.doors.shop); }, n: '装備はここで買えるよ。' },
     { k: 'buy', t: '🛒 装備を1つ買おう', s: '「木の剣」がおすすめ（2,500コイン）。装備をタップ → もう一度タップで購入。コインは3,000あるよ。', test: function () { return (player.items || []).length > TUT.n0; }, snap: function () { TUT.n0 = (player.items || []).length; } },
     { k: 'equip', t: '⚔ 買った装備を身につけよう', s: '「⚔️ 装備」タブで、武器のマスをタップ → 買った装備をタップ。つけると見た目と強さが変わるよ。', test: function () { return JSON.stringify(player.equip || {}) !== TUT.e0; }, snap: function () { TUT.e0 = JSON.stringify(player.equip || {}); } },
     { k: 'mkt', t: '💱 取引所で装備を出品してみよう', s: '閉じて、矢印の「取引所」へ。「➕ 出す」タブで装備をタップ → 値段を決めて出品。プレイヤー同士で売り買いできる場所やで。（今回は出さなくてOK、画面を開けたらクリア）', door: 'exch', test: function () { return $('mkt').classList.contains('on') && mkTab === 1 && !!mkSel; } },
