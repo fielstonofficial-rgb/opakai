@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:120-->
+<!--GV:121-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -710,6 +710,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #fTools #goTown,#fTools #goMine{border:1.5px solid #ffd36a;background:rgba(30,22,6,.82);color:#ffe9a8}
 #fTools #swBtn{border:1.5px solid #ffd36a;background:rgba(30,22,6,.82);color:#ffe9a8}
 #fTools #qcBtn{border:1.5px solid #9ff0c0;background:rgba(6,30,20,.82);color:#c9ffe0}
+#field .bar #gmTog{position:static;margin:0 2px 0 auto;padding:6px 9px;font-size:10px;white-space:nowrap;flex:0 0 auto;border:1.5px solid rgba(255,255,255,.3);background:rgba(10,18,24,.82);color:#fff}
 #fTools #gmTog{position:static;margin-right:auto;border:1.5px solid rgba(255,255,255,.3);background:rgba(10,18,24,.82);color:#fff}
 #fTools #gmTog.on{border-color:#ffd36a;color:#ffe9a8;background:rgba(40,30,6,.88)}
 #field.digging #fTools{bottom:70px}
@@ -823,11 +824,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #fTools #guardBtn{background:linear-gradient(#123a52,#081a28);color:#d6f1ff;border-color:#7fd6ff!important}
 #fTools #plChat{background:linear-gradient(#ffe27a,#f0a81c);color:#3a2400;border-color:#fff3b0!important;font-size:15px;padding:10px 18px;box-shadow:0 0 14px #ffc83a,0 3px 8px #0009}
 #fTools #qcBtn{background:linear-gradient(#7af0b0,#1fae6a);color:#032a16;border-color:#d8ffea!important;font-size:15px;padding:10px 16px;box-shadow:0 0 14px #3be08a,0 3px 8px #0009}
-#field.ms #fTools{flex-wrap:nowrap;overflow-x:auto;left:0;right:0;bottom:0;height:34px;padding:3px 6px;gap:4px;align-items:center;justify-content:flex-start;background:linear-gradient(#0a1216f0,#05090c);border-top:2px solid #ffd36a66;pointer-events:auto;scrollbar-width:none}
+#field.ms #fTools{flex-wrap:nowrap;overflow:hidden;left:0;right:0;bottom:0;height:34px;padding:2px 3px;gap:3px;align-items:center;justify-content:flex-start;background:linear-gradient(#0a1216f0,#05090c);border-top:2px solid #ffd36a66;pointer-events:auto;scrollbar-width:none}
 #field.ms #fTools::-webkit-scrollbar{display:none}
-#field.ms #fTools button{flex:0 0 auto;padding:3px 8px;font-size:10px;border-width:1.5px!important;box-shadow:none;line-height:1.2}
+#field.ms #fTools button{flex:1 1 0;min-width:0;height:28px;padding:1px 2px;font-size:9px;border-width:1.5px!important;box-shadow:none;line-height:1.05;overflow:hidden;white-space:normal;word-break:break-all;text-align:center}
 #field.ms #fTools #gmTog{margin-right:6px}
-#field.ms #fTools #plChat,#field.ms #fTools #qcBtn{font-size:10.5px;padding:3px 9px;box-shadow:none}
+#field.ms #fTools #plChat,#field.ms #fTools #qcBtn{font-size:9px;padding:1px 2px;box-shadow:none}
 #field.ms.digging #fTools{bottom:70px}
 #field.ms #fTools #gmTog{margin-right:3px}
 @keyframes spg{to{box-shadow:0 0 20px #ff8a3c}}
@@ -1055,7 +1056,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   <div id="cfm"><div class="gc"><h3>ゲームをとじる？</h3><p class="tiny">とじても、ここまでの記録は残るよ。</p><div class="rw" style="display:flex;gap:8px;margin-top:12px"><button id="cfmNo" type="button" class="gbtn" style="flex:1">つづける</button><button id="cfmYes" type="button" class="gbtn dim" style="flex:1;margin-top:0">とじる</button></div></div></div>
   <section class="scr" id="field">
     <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="装備・もちもの">🎒<small>装備・持物</small></button><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
-    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span id="phLv" style="color:#ffe08a">Lv 1</span><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="plDown"><span>やられた…（このままチャットもできるよ）</span><button type="button" class="gbtn" id="plDownGo">🏥 病院へ向かう</button></div><div id="fTools"><button id="goTown" type="button">🏘️ 町へ</button><button id="goMine" type="button">🗺 マップ</button><button id="plChat" type="button">💬 チャット</button><button id="spBtn" type="button">✨ 0%</button><button id="sk0" class="skb" type="button"></button><button id="sk1" class="skb" type="button"></button><button id="sk2" class="skb" type="button"></button><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">⚡ ひとこと</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしまった…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
+    <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span id="phLv" style="color:#ffe08a">Lv 1</span><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="plDown"><span>やられた…（このままチャットもできるよ）</span><button type="button" class="gbtn" id="plDownGo">🏥 病院へ向かう</button></div><div id="fTools"><button id="goMine" type="button">🗺 マップ</button><button id="plChat" type="button">💬 チャット</button><button id="spBtn" type="button">✨ 0%</button><button id="sk0" class="skb" type="button"></button><button id="sk1" class="skb" type="button"></button><button id="sk2" class="skb" type="button"></button><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">⚡ ひとこと</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしまった…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
         <div id="gld"><div class="gc"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="tiny">ギルドの部屋</span><button id="gClose" type="button" class="gbtn" style="padding:6px 12px">とじる</button></div><div id="gBody"></div></div></div>
         <div id="npc"><div class="nc"><div class="nh"><b id="npcN"></b><button type="button" class="gbtn" id="npcX" style="padding:6px 12px">とじる</button></div><div id="npcSay"></div><div id="npcQs"></div><div class="nin"><input id="npcIn" maxlength="30" placeholder="聞きたいこと（例：HP、闘技場、売る）" autocomplete="off"><button type="button" class="gbtn" id="npcGo">きく</button></div><div id="npcAct"></div></div></div><div id="arInv"><b id="arInvT"></b><div><button type="button" class="abtn" id="arInvY">受ける</button><button type="button" class="gbtn" id="arInvN">ことわる</button></div></div><div id="updBar" role="button">🔄 新しい版があるよ。ここをタップして更新</div>
         <div id="arBig"></div>
@@ -1214,11 +1215,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var soundOn = LSget('opa_game_sound') !== '0', vibOn = LSget('opa_game_vib') !== '0';
 
   /* ---------- 通信 ---------- */
-  function api(body) {
+  function api(body) { return (typeof CD !== 'undefined' && CD.pend) ? cdFlush().then(function () { return apiRaw(body); }) : apiRaw(body); }
+  function apiRaw(body) {
     body.token = token;
     var url = (/^skill_/.test(body.action) && (body.id === 'sk11' || body.id === 'sk12')) ? API + '-sk' : API;
     return fetch(url, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
-      .then(function (r) { return r.json().then(function (j) { j._s = r.status; if (j && j.me === GM_ID) LSset('opa_is_master', '1'); if (j && j.player && (j.me === GM_ID || myMidG === GM_ID)) { j.player.gmReal = true; j.player.lvReal = j.player.lv; j.player.avReal = j.player.avatar; if (gmOn) { j.player.lv = 999; j.player.gm = true; } else { j.player.lv = GEN_LV; j.player.avatar = genAv(j.player.avatar); } } return j; }); });
+      .then(function (r) { return r.json().then(function (j) { j._s = r.status; try { var cp = CD.pend + CD.fly; if (cp) { if (j && j.player && typeof j.player.coins === 'number') j.player.coins += cp; if (j && typeof j.coins === 'number') j.coins += cp; } } catch (e) {} if (j && j.me === GM_ID) LSset('opa_is_master', '1'); if (j && j.player && (j.me === GM_ID || myMidG === GM_ID)) { j.player.gmReal = true; j.player.lvReal = j.player.lv; j.player.avReal = j.player.avatar; if (gmOn) { j.player.lv = 999; j.player.gm = true; } else { j.player.lv = GEN_LV; j.player.avatar = genAv(j.player.avatar); } } return j; }); });
   }
   var GM_ID = '4a324658-8414-4361-9962-9a6963982a39', myMidG = '', gmOn = LSget('opa_gm_off') !== '1';
   var genMode = (LSget('opa_gm_off') === '1' && !!GTOK && LSget('opa_is_master') === '1'); if (genMode) { token = GTOK; gmOn = false; }
@@ -1995,7 +1997,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('openGo').addEventListener('click', fromOpening);
   $('skip').addEventListener('click', fromOpening);
 
-  /* ---------- ゲームマネー・もちもの・ショップ ---------- */
+  /* ---------- ゲームコイン・もちもの・ショップ ---------- */
   var SPD = {
     k_dagger: { nm: '連続突き', ds: 'すぐそばの敵（1.5マス以内）を、すばやく突いて大ダメージ（×2.2）', t: 'ring', r: 110, m: 2.2 },
     k_sword: { nm: '円月斬', ds: 'まわりの3マス以内の敵をまとめて斬る（×2.5）', t: 'ring', r: 225, m: 2.5 },
@@ -2513,6 +2515,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   ITEMS.forEach(function (i) { if (i.slot === 'outfit') i.ic = gSVG(i); else if (i.slot === 'tool') i.ic = toolSVG(i); });
   ITEMS.forEach(function (i) { if (i.slot === 'outfit') i.price = Math.max(100, Math.round(i.price * 0.1175 / 50) * 50); }); /* 服は安く（平均500）。サーバー(opa-kill)も同じ式 */
+  ITEMS.forEach(function (i) { if (i.slot === 'weapon' || i.slot === 'shield' || i.slot === 'armor') i.price = i.price * 5; }); /* 武器・盾・防具の値段は5倍（服・採掘道具はそのまま）。サーバー(opa-game)も同じ */
   ITEMS.forEach(function (i) { if (i.slot !== 'weapon') return; var d = SPD[i.sp || ('k_' + i.kind)]; if (i.kind === 'sword') i.fx += ' ／ 近距離ボーナス：ダメージ +15%'; if (d) i.fx += ' ／ 必殺技「' + d.nm + '」：' + d.ds; });
 
 
@@ -2599,7 +2602,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     helm: { id: 'gm_h', slot: 'helm', nm: '黄金の兜', def: .05, ic: '⛑️' }
   };
   function isGM() { return !!(player && player.gm); }
-  function gmTogUi() { var b = $('gmTog'); if (!b) return; var on = $('map').classList.contains('on') || $('field').classList.contains('on'); var inF = $('field').classList.contains('on'), tl = $('fTools'); if (!b._home) b._home = b.parentNode; var host = inF ? tl : b._home; if (host && b.parentNode !== host) { if (inF) host.insertBefore(b, host.firstChild); else host.appendChild(b); } b.style.display = (player && (player.gmReal || genMode) && on) ? 'block' : 'none'; b.className = gmOn ? 'on' : ''; b.textContent = inF ? (gmOn ? '👑 マスター' : '🙂 一般') : (gmOn ? '👑 マスター中（タップで一般に変身）' : '🙂 一般中（タップでマスターに変身）'); }
+  function gmTogUi() { var b = $('gmTog'); if (!b) return; var on = $('map').classList.contains('on') || $('field').classList.contains('on'); var inF = $('field').classList.contains('on'), tl = $('fTools'); if (!b._home) b._home = b.parentNode; var fb = $('fBag'), host = inF ? (fb && fb.parentNode) : b._home; if (host && b.parentNode !== host) { if (inF) host.insertBefore(b, fb); else host.appendChild(b); } b.style.display = (player && (player.gmReal || genMode) && on) ? 'block' : 'none'; b.className = gmOn ? 'on' : ''; b.textContent = inF ? (gmOn ? '👑 マスター' : '🙂 一般') : (gmOn ? '👑 マスター中（タップで一般に変身）' : '🙂 一般中（タップでマスターに変身）'); }
   var GEN_LV = 30;
   function genName() { return (LSget('opa_gen_name') || '').trim() || 'たかお'; }
   function genAv(a) { var o = {}; for (var k in a) o[k] = a[k]; o.name = genName(); o.acc = 0; return o; }
@@ -2654,7 +2657,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function peerGlow(pr) { if (!pr || !pr.hb) return; var o = peerItem(pr), t = (o && o.tier > 0 && !pr.gm) ? o.tier : 0; if (pr.glk === t + '|' + (o ? o.id : '')) return; pr.glk = t + '|' + (o ? o.id : ''); glowOn(pr.hb, pr.el, t > 0 ? o : null); }
   function renderBag() {
     var coins = (player || {}).coins || 0, have = (player || {}).items || [], h = '';
-    $('coinBar').innerHTML = '<span>Lv ' + ((player || {}).lv || 1) + '</span><span>🪙 ゲームマネー</span><b>' + coins.toLocaleString() + '</b>';
+    $('coinBar').innerHTML = '<span>Lv ' + ((player || {}).lv || 1) + '</span><span>🪙 ゲームコイン</span><b>' + coins.toLocaleString() + '</b>';
     Array.prototype.forEach.call($('bagTabs').children, function (b) { b.classList.toggle('on', +b.dataset.t === bagTab); });
     if (bagTab === 0) {
       var any = false;
@@ -2666,7 +2669,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       tl.forEach(function (t) { var k = TKN[t.kind] || TKN.r;
         h += '<div class="it"><div class="ic">' + k.ic + '</div><div class="tx"><b>' + k.nm + '</b><span class="rt" style="color:' + k.col + '">' + k.rk + '</span><br>' + k.ds.split('。')[0] + '。<br>番号 <b>' + t.code + '</b>　' + tkDate(t.created_at) + ' にゲット</div></div>'; });
     } else if (bagTab === 3) {
-      h += '<p class="tiny">スキルは、ゲームマネーで買えるよ。買ったら「装備」タブのスキル枠にセットして、戦いで使ってね。使ったあとは、クールタイム（もう一度使えるまでの時間）があります。</p>';
+      h += '<p class="tiny">スキルは、ゲームコインで買えるよ。買ったら「装備」タブのスキル枠にセットして、戦いで使ってね。使ったあとは、クールタイム（もう一度使えるまでの時間）があります。</p>';
       var haveS = player.skills || [], eqS = player.skEq || [];
       SKD.slice().sort(function (a, b) { return a.price - b.price; }).forEach(function (d) {
         var own = haveS.indexOf(d.id) >= 0, poorS = coins < d.price, armS = skArm === d.id, sl = eqS.indexOf(d.id);
@@ -2674,7 +2677,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       });
     } else if (bagTab === 2) {
       h += eqStage(true);
-      h += '<p class="tiny">掘った石と、ひろった武器・防具を、ゲームマネーに換えられるよ。レア度が高いほど高く売れる。図鑑の記録は減りませんから安心してください。</p>';
+      h += '<p class="tiny">掘った石と、ひろった武器・防具を、ゲームコインに換えられるよ。レア度が高いほど高く売れる。図鑑の記録は減りませんから安心してください。</p>';
       var gr = player.grades || {}, so = player.sold || {}, rows = 0;
       h += '<div class="sec">石</div>';
       STONES.forEach(function (s) { for (var g = 3; g >= 0; g--) {
@@ -2690,7 +2693,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       if (!gl.length) h += '<p class="tiny">売れる装備は、まだ持っていません。</p>';
     } else {
       h += eqStage(true);
-      h += '<p class="tiny">ゲームマネーは、石を掘ると貯まるよ（お金では買えません）。いいランクの石ほど、たくさんもらえるよ。</p>';
+      h += '<p class="tiny">ゲームコインは、石を掘ると貯まるよ（お金では買えません）。いいランクの石ほど、たくさんもらえるよ。</p>';
       h += '<div class="chips">' + SLOTS.map(function (s) { return '<button type="button" class="' + (shopSlot === s ? 'on' : '') + '" data-shs="' + s + '">' + SLN[s] + '</button>'; }).join('') + '</div>';
       var subs = shopSlot === 'weapon' ? WKINDS : (shopSlot === 'outfit' ? OSTY : null);
       if (subs) h += '<div class="chips s">' + subs.map(function (k) { return '<button type="button" class="' + (shopKind === k[0] ? 'on' : '') + '" data-shk="' + k[0] + '">' + k[1] + '</button>'; }).join('') + '</div>';
@@ -2707,14 +2710,19 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   var sellArm = null, skArm = null, eqPick = null, eqScroll = false;
   function skBuy(id) {
-    return fetch(API.replace(/opa-game$/, 'opa-kill'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'buy_skill', token: token, id: id }) })
+    return cdFlush().then(function () { return fetch(API.replace(/opa-game$/, 'opa-kill'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'buy_skill', token: token, id: id }) }); })
       .then(function (r) { return r.json(); }).then(function (j) { if (!j || !j.ok) return { message: (j && j.message) || null }; return api({ action: 'game_load' }); })
+      .catch(function () { return { message: 'つながりませんでした。もう一度お試しください' }; });
+  }
+  function sellCall(id) {
+    return cdFlush().then(function () { return fetch(API.replace(/opa-game$/, 'opa-kill'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'sell_gear', token: token, item: id }) }); })
+      .then(function (r) { return r.json(); }).then(function (j) { if (!j || !j.ok) return { message: (j && j.message) || null }; return api({ action: 'game_load' }).then(function (g) { g.got = j.got; return g; }); })
       .catch(function () { return { message: 'つながりませんでした。もう一度お試しください' }; });
   }
   function buyCall(id) {
     var it = IBY[id];
-    if (it && it.slot === 'outfit') {
-      return fetch(API.replace(/opa-game$/, 'opa-kill'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'buy_outfit', token: token, item: id }) })
+    if (it && (it.slot === 'outfit' || it.slot === 'weapon' || it.slot === 'shield' || it.slot === 'armor')) {
+      return cdFlush().then(function () { return fetch(API.replace(/opa-game$/, 'opa-kill'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: it.slot === 'outfit' ? 'buy_outfit' : 'buy_gear', token: token, item: id }) }); })
         .then(function (r) { return r.json(); }).then(function (j) { if (!j || !j.ok) return { message: (j && j.message) || null }; return api({ action: 'game_load' }); })
         .catch(function () { return { message: 'つながりませんでした。もう一度お試しください' }; });
     }
@@ -2797,7 +2805,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       if (Object.keys(player.equip || {}).some(function (k) { return player.equip[k] === b.dataset.si; })) { toast('装備中は売れないよ。外してから売ってね'); return; }
       if (sellArm !== b.dataset.si) { sellArm = b.dataset.si; renderBag(); return; }
       sellArm = null; b.disabled = true;
-      api({ action: 'game_sell_item', item: b.dataset.si }).then(function (j) {
+      sellCall(b.dataset.si).then(function (j) {
         if (j.player) { player = j.player; applyAura(); gearUi(); hpUi(); toast('🪙' + j.got.toLocaleString() + ' で売れたよ'); sfx(1); } else toast(j.message || 'うまく売れませんでした');
         renderBag();
       });
@@ -2819,14 +2827,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   });
 
 
-  /* ---------- 取引所（ゲームマネーで、装備・アイテム・チケットを売り買い。手数料5%） ---------- */
+  /* ---------- 取引所（ゲームコインで、装備・アイテム・チケットを売り買い。手数料5%） ---------- */
   var mkTab = 0, mkList = [], mkArm = null, mkSel = null, mkBusy = false;
   function openMarket() { mkTab = 0; mkArm = null; mkSel = null; $('mkt').classList.add('on'); loadMarket(); }
   function loadMarket() {
     $('mxBody').innerHTML = '<p class="tiny">しらべてるよ…</p>'; mxCoinUi();
     api({ action: 'market_list' }).then(function (j) { mkList = j.listings || []; renderMarket(); }).catch(function () { $('mxBody').innerHTML = '<p class="tiny">つながりませんでした。もう一回開いてください</p>'; });
   }
-  function mxCoinUi() { $('mxCoin').innerHTML = '<span>🪙 ゲームマネー</span><b>' + (((player || {}).coins) || 0).toLocaleString() + '</b>'; }
+  function mxCoinUi() { $('mxCoin').innerHTML = '<span>🪙 ゲームコイン</span><b>' + (((player || {}).coins) || 0).toLocaleString() + '</b>'; }
   function mkInfo(l) {
     if (l.kind === 'ticket') { var k = TKN[l.tk] || TKN.r; return { ic: k.ic, nm: k.nm, rk: k.rk, col: k.col, fx: 'リアルのお店で使えるチケット。' + k.ds.split('。')[0] + '。' }; }
     var i = IBY[l.item]; if (!i) return { ic: '❓', nm: l.item, rk: '', col: '#9db0b8', fx: '' };
@@ -2837,14 +2845,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     mxCoinUi(); Array.prototype.forEach.call($('mxTabs').children, function (b) { b.classList.toggle('on', +b.dataset.t === mkTab); });
     var h = '', coins = (player || {}).coins || 0;
     if (mkTab === 0) {
-      h += '<p class="tiny">ほかの人が出してるものを、ゲームマネーで買えるよ。チケットも、ここで売り買いできる。</p>';
+      h += '<p class="tiny">ほかの人が出してるものを、ゲームコインで買えるよ。チケットも、ここで売り買いできる。</p>';
       var ls = mkList.filter(function (l) { return !l.mine; });
       if (!ls.length) h += '<p class="tiny">いまは、出品がないみたい。</p>';
       ls.forEach(function (l) { var inf = mkInfo(l), arm = mkArm === l.id, own = l.kind === 'item' && ((player || {}).items || []).indexOf(l.item) >= 0, poor = coins < l.price;
         h += mkCard(inf, '<button type="button" data-mb="' + l.id + '"' + (own || poor ? ' disabled' : '') + '>' + (own ? '持ってる' : (poor ? 'たりません' : (arm ? '本当に？' : '買う'))) + '</button>', '出した人：' + esc(l.name) + '　🪙 <b>' + l.price.toLocaleString() + '</b>'); });
     } else if (mkTab === 1) {
       var have = ((player || {}).items || []), eq = (player || {}).equip || {}, any = false;
-      h += '<p class="tiny">出すと、売れるまで取引所にあずけるよ（いつでも取り下げできる）。売れたら、手数料5%を引いたゲームマネーが入る。つけてる装備は、自動ではずれるよ。</p>';
+      h += '<p class="tiny">出すと、売れるまで取引所にあずけるよ（いつでも取り下げできる）。売れたら、手数料5%を引いたゲームコインが入る。つけてる装備は、自動ではずれるよ。</p>';
       if (mkSel) {
         var si = mkSel.kind === 'item' ? mkInfo({ kind: 'item', item: mkSel.id }) : mkInfo({ kind: 'ticket', tk: mkSel.tk });
         h += '<div class="sec">出すもの</div>' + mkCard(si, '', mkSel.kind === 'ticket' ? '番号 ' + mkSel.code : '') +
@@ -3297,7 +3305,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function openSkillShop() { skArm = null; renderSkillShop(); $('skp').classList.add('on'); }
   function renderSkillShop() {
     var coins = (player || {}).coins || 0, haveS = player.skills || [], eqS = player.skEq || [], h = '';
-    $('skpCoin').innerHTML = '<span>🪙 ゲームマネー</span><b>' + coins.toLocaleString() + '</b>';
+    $('skpCoin').innerHTML = '<span>🪙 ゲームコイン</span><b>' + coins.toLocaleString() + '</b>';
     h += '<div class="skmaster"><div class="skm-ic">🧙</div><div class="skm-tx"><b>館の主</b><br>いらっしゃい。ここは、戦いの技を売る「スキルの館」だよ。買った技は、「そうび」のスキル枠にセットすると、戦いで使えるようになる。ここでも、すぐセットできるからね。枠は3つ。どの技を組み合わせるかで、戦い方が変わるよ。</div></div>';
     h += '<div class="sec">スキル枠　<span class="tiny" style="margin:0">' + [0, 1, 2].map(function (i) { var d = SKBY[eqS[i]]; return (i + 1) + ':' + (d ? d.ic + d.nm : 'なし'); }).join('　') + '</span></div>';
     SKD.slice().sort(function (a, b) { return a.price - b.price; }).forEach(function (d) {
@@ -3335,7 +3343,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     } else if (lv < 10) {
       h += '<h3>🏰 ギルドの部屋</h3><p>ギルドは <b>Lv10</b> から作れる・入れるよ。</p><p class="tiny">いまは Lv ' + lv + ' です。石を掘って、経験値をためましょう。</p>';
     } else {
-      h += '<h3>🏰 ギルドの部屋</h3><p class="tiny">ギルドは、仲間が最大30人。Lv10 になったら、すぐ作れるよ（承認はいりません）。作る費用は <b>🪙10,000</b>（ゲームマネー）です。</p>';
+      h += '<h3>🏰 ギルドの部屋</h3><p class="tiny">ギルドは、仲間が最大30人。Lv10 になったら、すぐ作れるよ（承認はいりません）。作る費用は <b>🪙10,000</b>（ゲームコイン）です。</p>';
       h += '<div class="grow"><input id="gName" maxlength="12" placeholder="ギルドの名前（2〜12字）"><button class="gbtn" id="gApply" type="button">🪙10,000で作る</button></div>';
       h += '<h4>入れるギルド</h4>';
       if (!j.list || !j.list.length) h += '<p class="tiny">まだ、承認されたギルドはないよ。</p>';
@@ -3935,7 +3943,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 120;
+  var GV = 121;
   (function () {
     var last = Date.now();
     function chk() {
@@ -3956,7 +3964,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         { q: 'ここは、どんな場所？', k: ['カフェ', 'ここ', 'とは', '何', '場所'], a: 'オパ会のカフェです。仲のいい友達と、椅子に座って、ゆっくり話すための場所ですよ。店の中は、自由に歩ける。ドリンクも、ぜんぶタダです。' },
         { q: '椅子に座るには？', k: ['座', 'すわ', '椅子', 'いす', 'イス', '席'], a: '座りたい椅子をタップすると、そこまで歩いて座ります。座っている姿は、ほかの人にも見えます。立つときは、行きたい所をタップするだけです。先に座ってる人がいる椅子には、座られません。' },
         { q: '友達と話すには？', k: ['話', '友達', 'ともだち', 'チャット', '会話', 'おしゃべり'], a: '同じ時間にカフェにいる人と、話せる。下の「💬」ボタンで、文字を打って話せるし、短縮チャットなら、ワンタップで送れる。ことばは保存されませんから、安心してください。同じテーブルに座ると、話しやすいで。' },
-        { q: 'ドリンクは？', k: ['ドリンク', '飲', 'のみ', 'ジュース', 'コーヒー', '無料', 'タダ', 'お金'], a: 'ぜんぶ無料で、何杯でもどうぞ。ゲームマネーは要りません。ドリンクを選んで椅子に座ると、私がテーブルまでお持ちします（先に座っていれば、すぐお持ちします）。見た目を楽しむドリンクで、ステータスは変わりません。テーブルのドリンクは、友達にも見えます。' },
+        { q: 'ドリンクは？', k: ['ドリンク', '飲', 'のみ', 'ジュース', 'コーヒー', '無料', 'タダ', 'お金'], a: 'ぜんぶ無料で、何杯でもどうぞ。ゲームコインは要りません。ドリンクを選んで椅子に座ると、私がテーブルまでお持ちします（先に座っていれば、すぐお持ちします）。見た目を楽しむドリンクで、ステータスは変わりません。テーブルのドリンクは、友達にも見えます。' },
         { q: '外に出るには？', k: ['出', '帰', '戻', '町', '出口'], a: '画面の「🚪 町へ」ボタンか、お店の下にある「出口」をタップしたら、町に戻れるよ。' }
       ] },
     kanon: { nm: '闘技場の解説 カノン', where: 'plaza', wk: 'sword', x: 210, y: 140, av: { name: 'カノン', gender: 1, skin: 1, face: 1, hair: 4, hairColor: 5, outfit: 7, outfitColor: 2, pattern: 0, patColor: 6, bottom: 1, bottomColor: 3, acc: 3 },
@@ -3972,7 +3980,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         { q: '武器の違いは？', k: ['武器', '剣', '弓', '銃', '近距離', '遠距離'], a: '剣などの近距離は、ダメージが+15%で、そのかわり近づく必要があります。弓と銃は遠くから撃てるけど、ダメージは少なめです。近づいたら強い、離れたら有利、っていう読み合いが楽しいで。「つるはし」ボタンで、つるはしと武器を持ちかえられる。' },
         { q: 'コツを教えて', k: ['コツ', 'ヒント', '強く', '勝つ', '上手'], a: '一番のコツは、ステータスより「ダッシュと間合い」です。①相手の攻撃の直前にダッシュで避ける ②ゲージを溜めて、近くに集まったところで必殺技 ③遠距離の人には、ダッシュで一気に詰める。練習相手のガロに頼むと、レベル別の相手と練習できるよ。' },
         { q: 'チャットは？', k: ['チャット', '話', '短縮', 'あいさつ', '挨拶'], a: '下の「💬 チャット」を押すと、入力欄が出る。戦いの邪魔にならんように、普段はたたんであるのです。「💬」だけのボタンは短縮チャットで、「たすけて！」「ナイス！」みたいなのを、一回のタップで送れるよ。' },
-        { q: '超レアな武器は？', k: ['レア', '超レア', 'ボス', '必殺技つき', '新武器', '手に入'], a: '必殺技つきの超レア武器は、強い敵からごくまれに落ちる。ボス限定の武器は、2人以上のパーティーでボスを倒したときのごほうびで出ることがあるよ。店では売っていません。ちなみに、もう持ってる武器が落ちたら、ゲームマネーに換わるのです。' }
+        { q: '超レアな武器は？', k: ['レア', '超レア', 'ボス', '必殺技つき', '新武器', '手に入'], a: '必殺技つきの超レア武器は、強い敵からごくまれに落ちる。ボス限定の武器は、2人以上のパーティーでボスを倒したときのごほうびで出ることがあるよ。店では売っていません。ちなみに、もう持ってる武器が落ちたら、ゲームコインに換わるのです。' }
       ] },
     garo: { nm: '練習相手の手配師 ガロ', where: 'plaza', wk: 'gun', x: 690, y: 140, spar: true, av: { name: 'ガロ', gender: 0, skin: 2, face: 3, hair: 2, hairColor: 8, outfit: 4, outfitColor: 7, pattern: 1, patColor: 3, bottom: 2, bottomColor: 4, acc: 1 },
       hi: 'おう、手配師のガロです。闘技場の中で戦ってくれる練習相手を、派遣するよ。レベルは10〜40で、好きに決めてください。高いほど強いだけではなくて、ガードやダッシュ、必殺技も上手くなる。倒してもごほうびは出ません、練習用ですよ。',
@@ -3992,8 +4000,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         { q: 'HPと病院', k: ['hp', '体力', '病院', '回復', 'やられ', '倒れ', 'たおれ', '死'], a: 'HPは自動では回復しません。町の病院の建物に入ると、全回復するよ。敵にやられて倒れたら、仲間がタップで起こしてくれるか、自動で病院の前に運ばれる。' },
         { q: '武器と戦い方', k: ['武器', '戦', '攻撃', '敵', 'モンスター', '弓', '銃', 'つるはし', '持ちかえ', '持ち替え'], a: '敵には武器で戦うのです。「持ちかえ」ボタンで、武器とつるはしを切りかえられる。つるはしは、敵にはほとんど効きません。届く距離は、近距離が2マス、弓が3マス、銃が4マスです。遠くから撃てる分、威力は少し弱めですよ。' },
         { q: 'ガード', k: ['ガード', '盾', 'たて', '防御'], a: '盾を持ってたら、ガードのボタンが出るよ。ガード中は受けるダメージが減る。そのかわり、ガード中は攻撃できませんから気をつけてください。' },
-        { q: 'ゲームマネー', k: ['マネー', 'お金', 'コイン', '稼', '貯め', 'ためる', '通貨'], a: 'ゲームマネーは、石を掘ったり、敵を倒したりでたまるよ。本物のお金では買えません、遊んで貯めるものです。ショップで装備を買ったり、石や装備を売ったりできる。' },
-        { q: 'ショップと取引所', k: ['ショップ', '買', '売', '取引', '交換', '手数料', '値段'], a: 'ショップは、装備や道具をゲームマネーで買う所です。取引所は、プレイヤー同士で、装備やスペシャルチケットをゲームマネーで売り買いする所で、手数料は5％ですよ。建物をタップしたら入れる。' },
+        { q: 'ゲームコイン', k: ['マネー', 'お金', 'コイン', '稼', '貯め', 'ためる', '通貨'], a: 'ゲームコインは、石を掘ったり、敵を倒したり、ゲームセンターで遊んだりでたまるよ。どこで貯めたコインも、おなじ財布だよ。本物のお金では買えません、遊んで貯めるものです。ショップで装備を買ったり、石や装備を売ったりできる。' },
+        { q: 'ショップと取引所', k: ['ショップ', '買', '売', '取引', '交換', '手数料', '値段'], a: 'ショップは、装備や道具をゲームコインで買う所です。取引所は、プレイヤー同士で、装備やスペシャルチケットをゲームコインで売り買いする所で、手数料は5％ですよ。建物をタップしたら入れる。' },
         { q: '装備の付けかえ', k: ['装備', '付け', '着替', 'リュック', '持ち物', '持物', 'もちもの'], a: '画面の右上の「装備・持物」ボタンで、持ってる装備の付けかえができるよ。持ち物の確認もそこです。' },
         { q: 'ギルド', k: ['ギルド', '仲間', 'チーム', '入る', '申請'], a: 'ギルドはレベル10から。町のギルドの建物で、🪙10,000を払えば、承認なしですぐ作れるよ。最大30人まで入れます。' },
         { q: '仲間と協力', k: ['協力', 'パーティ', '待合', '招待', 'みんな', '一緒', 'ボス', '複数'], a: 'マップの下の「パーティーの待合室」で、最大5人まで仲間を集められるよ。同じ鉱山に入ったら協力プレイです。人数が多いほど、掘るのが早くなる。2人以上だと、ボスのごほうびも出るよ。' },
@@ -4009,7 +4017,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         { q: '観客席って？', k: ['観客', '安全', 'セーフ'], a: '観客席は、攻撃されません安全な場所です。ここから、戦いたい人をタップして「戦いを挑む」を押せるよ。' },
         { q: '闘技場内のルール', k: ['闘技場内', 'ルール', '攻撃', '無差別'], a: '闘技場内にいる人は、だれでも攻撃できて、だれからでも攻撃される。相手をタップするだけで攻撃です。やられたら、「病院へ向かう」ボタンが出るよ。押さなかったら、倒れたままチャットもできる。' },
         { q: '1対1の決闘', k: ['決闘', '1対1', '挑む', '承認', '申し込'], a: '観客席で相手をタップして「戦いを挑む」を押してください。相手が「受ける」を押したら、決闘場で1対1です。制限時間は90秒で、HPが多く残った方の勝ちになる。' },
-        { q: '持ち物は減る？', k: ['減る', '失う', '負け', '罰', '報酬', 'ごほうび'], a: '減りません！ 勝っても負けても、ゲームマネーや装備は変わりません。今のところ、ごほうびもないから、気楽に腕試ししてください。' }
+        { q: '持ち物は減る？', k: ['減る', '失う', '負け', '罰', '報酬', 'ごほうび'], a: '減りません！ 勝っても負けても、ゲームコインや装備は変わりません。今のところ、ごほうびもないから、気楽に腕試ししてください。' }
       ] }
   };
   function addNpcs(where) {
@@ -4154,7 +4162,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   });
 
 
-  /* ---------- プレイヤー同士のトレード（お互いの承認で成立。ゲームマネーを0にすると、無料のプレゼント） ---------- */
+  /* ---------- プレイヤー同士のトレード（お互いの承認で成立。ゲームコインを0にすると、無料のプレゼント） ---------- */
   var trade = null, trDraft = { items: [], tickets: [], coins: 0 }, trDirty = false, trPick = false, trBusy = false, trSig = '', trTimer = 0, trGl = 0;
   function uuidish(s) { return /^[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}$/i.test(String(s || '')); }
   function trMineDraft() { return { items: trade.mine.items.slice(), tickets: trade.mine.tickets.map(function (x) { return x.id; }), coins: trade.mine.coins }; }
@@ -4168,7 +4176,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       if (!trDirty) trDraft = trMineDraft();
     }
   }
-  function trCoinUi() { $('trCoin').innerHTML = '<span>🪙 あなたのゲームマネー</span><b>' + (((player || {}).coins) || 0).toLocaleString() + '</b>'; }
+  function trCoinUi() { $('trCoin').innerHTML = '<span>🪙 あなたのゲームコイン</span><b>' + (((player || {}).coins) || 0).toLocaleString() + '</b>'; }
   function trShow() { $('trd').classList.add('on'); trSig = ''; trCoinUi(); trRender(); clearInterval(trTimer); trTimer = setInterval(trPoll, 2500); }
   function trClose() { clearInterval(trTimer); trTimer = 0; trade = null; trDirty = false; trPick = false; $('trd').classList.remove('on'); }
   function trStart(pr) {
@@ -4204,20 +4212,20 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       h += '<button class="gbtn trbtn" id="trBack" type="button">選び終わった</button>';
       body.innerHTML = h; return;
     }
-    h += '<p class="tiny">お互いが「承認」を押すと、トレードが成立します。内容を変えると、承認はやり直しになります。ゲームマネーを 0 にすると、無料のプレゼントになります。</p>';
+    h += '<p class="tiny">お互いが「承認」を押すと、トレードが成立します。内容を変えると、承認はやり直しになります。ゲームコインを 0 にすると、無料のプレゼントになります。</p>';
     h += '<div class="sec">あなたが出すもの</div>';
     var any = false;
     trDraft.items.forEach(function (id) { any = true; h += trItemCard(id, '<button type="button" data-rm="i:' + id + '">はずす</button>'); });
     trDraft.tickets.forEach(function (id) { var x = (tickets || []).filter(function (q) { return q.id === id; })[0]; if (!x) return; any = true; h += trTkCard(x, '<button type="button" data-rm="t:' + id + '">はずす</button>'); });
     if (!any) h += '<div class="tre">装備・アイテム・チケットは、まだ出していません</div>';
     h += '<button class="gbtn dim" id="trAdd" type="button" style="margin-top:0">＋ 装備・アイテム・チケットを選ぶ</button>';
-    h += '<div class="trc"><span>ゲームマネー 🪙</span><input id="trCoinIn" type="number" inputmode="numeric" min="0" value="' + (trDraft.coins || 0) + '"></div>';
+    h += '<div class="trc"><span>ゲームコイン 🪙</span><input id="trCoinIn" type="number" inputmode="numeric" min="0" value="' + (trDraft.coins || 0) + '"></div>';
     h += '<button class="gbtn trbtn" id="trSend" type="button"' + (trDirty ? '' : ' style="display:none"') + '>この内容にする</button>';
     h += '<div class="sec">' + nm + ' さんが出すもの</div>';
     var oa = false;
     t.theirs.items.forEach(function (id) { oa = true; h += trItemCard(id, ''); });
     t.theirs.tickets.forEach(function (x) { oa = true; h += trTkCard(x, ''); });
-    if (t.theirs.coins > 0) { oa = true; h += '<div class="trc"><span>ゲームマネー</span><b>🪙 ' + t.theirs.coins.toLocaleString() + '</b></div>'; }
+    if (t.theirs.coins > 0) { oa = true; h += '<div class="trc"><span>ゲームコイン</span><b>🪙 ' + t.theirs.coins.toLocaleString() + '</b></div>'; }
     if (!oa) h += '<div class="tre">まだ何も出していません</div>';
     var sum = '渡すもの：' + esc(trDesc(t.mine)) + '<br>もらうもの：' + esc(trDesc(t.theirs));
     if (trEmpty(t.theirs) && !trEmpty(t.mine)) sum += '<br>🎁 無料のプレゼント（あなたから ' + nm + ' さんへ）';
@@ -4837,7 +4845,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     { id: 'sk11', nm: 'ダッシュ', ic: '💨', price: 1500, cd: 4000, t: 'dashTo', len: 225, ds: '敵の方向へ3マス近づく。一瞬、攻撃をよけられる' },
     { id: 'sk12', nm: 'ワープ', ic: '🌀', price: 2000, cd: 4000, t: 'warpTo', len: 375, ds: '敵から5マス離れた場所へワープする。遠距離の武器むき' }
   ];
-  SKD.forEach(function (d) { d.price = d.price * 15; }); /* スキルの値段は15倍。サーバー(opa-kill)も同じ */
+  SKD.forEach(function (d) { d.price = d.price * 75; }); /* スキルの値段は75倍（15倍のさらに5倍）。サーバー(opa-kill)も同じ */
   var SKBY = {}; SKD.forEach(function (d) { SKBY[d.id] = d; });
   function skLeechFx(dm) {
     var n = performance.now(); if (n >= skLeechUntil || hp.down || inArena || hp.cur >= hp.max) return;
@@ -5110,7 +5118,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         .then(function (r) { return r.json(); }).then(function (j) {
           if (!j || !j.ok || !player) return;
           if (j.xpGain || j.coGain) {
-            player.xp = j.xp; player.coins = j.coins; if (j.xpToday != null) player.xpToday = j.xpToday;
+            player.xp = j.xp; player.coins = j.coins + CD.pend + CD.fly; if (j.xpToday != null) player.xpToday = j.xpToday;
             if (player.gmReal) { player.lvReal = j.lv; } else { player.lv = j.lv; player.xpInto = j.xpInto; player.xpNeed = j.xpNeed; }
             try { stats(); } catch (e) {}
             if (at && body.action !== 'dig') floatTxt(at.x, at.y - 90, (j.party ? '👥×3 ' : '') + '✨+' + j.xpGain, 'y');
@@ -5355,8 +5363,42 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   /* ---------- ゲームセンター（室内・スロット・ブラックジャック・FPS） ---------- */
   var FP = null, inArcRoom = false, arcTm = [];
-  function chipsGet() { if (player && player.gm) return 99999; try { var v = localStorage.getItem('opa_chips'); return v == null ? 1000 : Math.max(0, parseInt(v, 10) || 0); } catch (e) { return 1000; } }
-  function chipsSet(n) { if (player && player.gm) { return; } try { localStorage.setItem('opa_chips', String(Math.max(0, Math.floor(n)))); } catch (e) {} arcSched(); }
+  function chipsRaw() { try { var v = localStorage.getItem('opa_chips'); return v == null ? 1000 : Math.max(0, parseInt(v, 10) || 0); } catch (e) { return 1000; } }
+  /* ゲームコインとゲームセンターのコインは、同じ財布（player.coins）。ゲームセンター側の増減は「差分」をサーバーに送る */
+  var CD = { pend: 0, fly: 0, tm: 0, q: Promise.resolve() };
+  function chipsGet() { if (player && player.gm) return 99999; if (player && token && typeof player.coins === 'number') return Math.max(0, Math.floor(player.coins)); return chipsRaw(); }
+  function chipsSet(n) {
+    if (player && player.gm) { return; } n = Math.max(0, Math.floor(n));
+    if (player && token && typeof player.coins === 'number') { CD.pend += n - Math.floor(player.coins); player.coins = n; cdSched(); }
+    else { try { localStorage.setItem('opa_chips', String(n)); } catch (e) {} }
+    arcSched();
+  }
+  function cdSched() { clearTimeout(CD.tm); CD.tm = setTimeout(cdFlush, 1200); }
+  function cdPost(body) { body.token = token; return fetch(API.replace(/opa-game$/, 'opa-kill'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+  function cdFlush() {
+    clearTimeout(CD.tm);
+    CD.q = CD.q.then(function () {
+      if (!CD.pend || !token || !player || player.gm) return;
+      var d = CD.pend; CD.pend = 0; CD.fly = d;
+      return cdPost({ action: 'coin_delta', d: d }).then(function (j) {
+        CD.fly = 0;
+        if (j && j.ok) { if (typeof j.coins === 'number') player.coins = j.coins + CD.pend; }
+        else if (j && typeof j.coins === 'number') { player.coins = j.coins + CD.pend; }
+      }).catch(function () { CD.fly = 0; CD.pend += d; cdSched(); });
+    });
+    return CD.q;
+  }
+  document.addEventListener('visibilitychange', function () { if (document.hidden) cdFlush(); });
+  setInterval(function () { /* 前のゲームセンターのコインを、一度だけ財布にまとめる */
+    try {
+      if (!player || !token || player.gm || CD.mig || localStorage.getItem('opa_unify1108') === '1') return; CD.mig = 1;
+      arcApi({ action: 'arc_get' }).then(function (j) {
+        var amt = Math.max(0, chipsRaw() + pendGet()); if (j && j._s === 200) amt = Math.max(amt, (j.chips | 0) + (j.pend | 0));
+        amt = Math.min(amt, 900000);
+        return cdPost({ action: 'coin_delta', d: amt, mig: 1 }).then(function (r) { if (r && (r.ok || r.migrated)) { localStorage.setItem('opa_unify1108', '1'); if (typeof r.coins === 'number') player.coins = r.coins + CD.pend; toast('🪙 ゲームセンターのコインを、ゲームコインにまとめたよ'); } CD.mig = 0; });
+      }).catch(function () { CD.mig = 0; });
+    } catch (e) { CD.mig = 0; }
+  }, 4000);
   function arTone(f, dur, type, vol, delay) {
     if (!soundOn) return; var A = actx(); if (!A) return; var o = A.createOscillator(), g = A.createGain(), t0 = A.currentTime + (delay || 0);
     o.type = type || 'sine'; o.frequency.setValueAtTime(f, t0); g.gain.setValueAtTime(vol || .08, t0); g.gain.exponentialRampToValueAtTime(.001, t0 + dur); o.connect(g); g.connect(A.destination); o.start(t0); o.stop(t0 + dur + .02);
@@ -6966,7 +7008,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function startLoop() { if (fraf) return; flast = performance.now(); fraf = requestAnimationFrame(tick); }
   function tick(t) {
     fraf = 0; if (!fieldOn) return;
-    var onMine = fieldOn && !inTown && !inArena && !inPlaza && !inCafe; $('field').classList.toggle('ms', !!onMine); if ($('goTown')) { $('goTown').style.display = onMine ? 'block' : 'none'; $('goMine').style.display = (fieldOn && inTown && !inArena && !inPlaza && !inCafe) ? 'block' : 'none'; }
+    var onMine = fieldOn && !inTown && !inArena && !inPlaza && !inCafe; $('field').classList.toggle('ms', !!onMine); if ($('goMine')) { $('goMine').style.display = (fieldOn && inTown && !inArena && !inPlaza && !inCafe) ? 'block' : 'none'; }
     var bl = inArena ? '🏳 あきらめる' : ((inPlaza || inCafe) ? '🚪 町へ' : (inTown ? '🚪 マップへ' : '🚪 鉱山を出る')); if (bl !== window.__bl) { window.__bl = bl; var bb = $('fBack'); bb.className = 'ib wide'; bb.textContent = bl; }
     var dt = Math.min(.05, (t - flast) / 1000); flast = t;
     var hh = $('hero2'), moved = false;
@@ -7077,9 +7119,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   $('atkBtn').addEventListener('click', attackNearest);
   $('fCancel').addEventListener('click', function () { if (inArena) { arGiveUp(); return; } if (inPlaza) { leaveArena(); return; } if (!busy) cancelDig(); });
-  $('goTown').addEventListener('click', function () { if (busy) return; if (curSpot) cancelDig(); leaveTown(); openTown(); });
   $('goMine').addEventListener('click', function () { if (busy) return; if (curSpot) cancelDig(); leaveTown(); openMap(null); });
-  ['goTown', 'goMine'].forEach(function (id) { $(id).addEventListener('pointerdown', function (e) { e.stopPropagation(); }); });
+  ['goMine'].forEach(function (id) { $(id).addEventListener('pointerdown', function (e) { e.stopPropagation(); }); });
   $('fBack').addEventListener('click', function () { if (inCafe) { leaveCafe(); return; } if (inArena) { arGiveUp(); return; } if (inPlaza) { leaveArena(); return; } if (curSpot) cancelDig(); var wasTown = inTown; leaveTown(); openMap(wasTown ? null : curMine); });
   $('fBook').addEventListener('click', function () { renderBook(); $('book').classList.add('on'); });
   $('fSet').addEventListener('click', function () { $('setName').textContent = player.avatar.name + ' さん'; $('set').classList.add('on'); });
