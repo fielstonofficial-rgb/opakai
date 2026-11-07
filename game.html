@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:145-->
+<!--GV:146-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -3373,6 +3373,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function townDoorAt(wx, wy) { for (var i = 0; i < DOORS.length; i++) { var d = DOORS[i]; if (Math.abs(wx - d.x) < d.w / 2 + 10 && wy < d.y + 40 && wy > d.y - d.h) return d; } return null; }
   function openDoor(k) {
+    TUT.doors[k] = 1;
     if (k === 'shop') { sfx(2); $('fBag').click(); }
     else if (k === 'guild') { sfx(2); openGuild(); }
     else if (k === 'hospital') healFull();
@@ -4562,7 +4563,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 145;
+  var GV = 146;
   (function () {
     var last = Date.now();
     function chk() {
@@ -5939,6 +5940,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       return fetch(API.replace(/opa-game$/, 'opa-kill'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
         .then(function (r) { return r.json(); }).then(function (j) {
           if (!j || !j.ok || !player) return;
+          if (body.action !== 'dig') TUT.killed = 1;
           if (j.xpGain || j.coGain) {
             player.xp = j.xp; player.coins = j.coins + CD.pend + CD.fly; if (j.xpToday != null) player.xpToday = j.xpToday;
             if (player.gmReal) { player.lvReal = j.lv; } else { player.lv = j.lv; player.xpInto = j.xpInto; player.xpNeed = j.xpNeed; }
@@ -8128,9 +8130,134 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
 
   /* ---------- 起動 ---------- */
+  /* ---------- 🎓 はじめてのチュートリアル（新しい人だけ。町からスタート。終わるとLv7） ---------- */
+  var TUT = { on: false, tm: 0, busy: 0, dlg: 0, cur: -1, killed: 0, doors: {}, min: 0, quit: 0, n0: 0, e0: 0, d0: 0, key: '' };
+  (function () {
+    var st = document.createElement('style');
+    st.textContent = '#tutB{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(8px + env(safe-area-inset-bottom));width:min(94vw,430px);z-index:250;display:none;pointer-events:none;font-family:inherit}' +
+      '#tutB.on{display:block}#tutB .tc{pointer-events:auto;background:linear-gradient(180deg,rgba(32,26,58,.96),rgba(18,14,36,.97));border:1.5px solid #e8c46a;border-radius:16px;padding:9px 12px 10px;color:#fff;box-shadow:0 6px 22px rgba(0,0,0,.55)}' +
+      '#tutB .th{display:flex;align-items:center;gap:8px;font-size:12px;color:#e8c46a;font-weight:800}#tutB .th span{flex:1}' +
+      '#tutB .tp{height:5px;border-radius:3px;background:rgba(255,255,255,.14);margin:5px 0 7px;overflow:hidden}#tutB .tp i{display:block;height:100%;background:linear-gradient(90deg,#ffd36a,#ff9a4a);transition:width .5s}' +
+      '#tutB .tt{font-size:15px;font-weight:900;line-height:1.35}#tutB .ts{font-size:12.5px;line-height:1.5;color:#dfe6f2;margin-top:3px}' +
+      '#tutB .tb{display:flex;gap:6px;margin-top:7px;justify-content:flex-end}#tutB button{border:0;border-radius:9px;padding:5px 10px;font-size:12px;font-weight:800;background:rgba(255,255,255,.14);color:#e8ecf4}' +
+      '#tutB .ok{position:absolute;left:0;right:0;top:-46px;text-align:center;pointer-events:none}#tutB .ok b{display:inline-block;background:linear-gradient(180deg,#7ee08a,#2fae55);color:#06280f;border-radius:20px;padding:7px 18px;font-size:15px;box-shadow:0 4px 14px rgba(0,0,0,.5);animation:tutPop .5s ease-out}' +
+      '@keyframes tutPop{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}' +
+      '#tutDir{position:fixed;z-index:249;pointer-events:none;transform:translate(-50%,-50%);text-align:center;display:none}#tutDir i{display:block;font-style:normal;font-size:46px;line-height:1;color:#ffd36a;text-shadow:0 0 10px #000,0 0 18px #f0a030;animation:tutPul .8s ease-in-out infinite alternate}#tutDir small{display:inline-block;background:rgba(0,0,0,.75);color:#ffd36a;border-radius:10px;padding:2px 8px;font-size:12px;font-weight:800}@keyframes tutPul{from{opacity:.55}to{opacity:1}}' +
+      '#tutArrow{position:absolute;transform:translate(-50%,-100%);z-index:99998;pointer-events:none;font-size:120px;line-height:1;filter:drop-shadow(0 0 14px #ffd36a);animation:tutBn .75s ease-in-out infinite alternate}@keyframes tutBn{from{margin-top:0}to{margin-top:-34px}}' +
+      '#tutD{position:fixed;inset:0;z-index:320;background:rgba(0,0,0,.62);display:none;align-items:flex-end;justify-content:center;padding:16px 12px calc(16px + env(safe-area-inset-bottom))}#tutD.on{display:flex}' +
+      '#tutD .dc2{width:100%;max-width:440px;background:linear-gradient(180deg,#232a40,#161b2c);border:1.5px solid #e8c46a;border-radius:20px;padding:14px 16px 16px;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,.65)}' +
+      '#tutD .dn{display:flex;align-items:flex-end;gap:10px}#tutD .tpav{height:120px;width:70px;flex:none;display:flex;justify-content:center}#tutD .tpav .hb2{width:64px;height:118px;position:relative}#tutD .tpav svg{height:100%;width:auto}' +
+      '#tutD .dt{flex:1;font-size:14.5px;line-height:1.7;white-space:pre-wrap;background:rgba(255,255,255,.08);border-radius:14px;padding:12px;min-height:96px}#tutD .nm{color:#ffd36a;font-weight:900;font-size:13px;margin-bottom:3px}' +
+      '#tutD .nx{width:100%;margin-top:12px;border:0;border-radius:14px;padding:12px;font-size:16px;font-weight:900;background:linear-gradient(180deg,#ffd36a,#f0a030);color:#3a2a08}#tutD .pg{font-size:11px;color:#9aa6bd;text-align:right;margin-top:6px}';
+    document.head.appendChild(st);
+    var b = document.createElement('div'); b.id = 'tutB'; document.body.appendChild(b);
+    var d = document.createElement('div'); d.id = 'tutD'; document.body.appendChild(d);
+  })();
+  var TSTEPS = [
+    { k: 'intro' },
+    { k: 'shop', t: '🏪 ショップに入ろう', s: '光る矢印の「ショップ」をタップ。開いたら、上の「🛍️ ショップ」タブを押してみてな。', door: 'shop', test: function () { return $('bag').classList.contains('on') && bagTab === 1; }, n: '装備はここで買えるよ。' },
+    { k: 'buy', t: '🛒 装備を1つ買おう', s: '「木の剣」がおすすめ（2,500コイン）。装備をタップ → もう一度タップで購入。コインは3,000あるよ。', test: function () { return (player.items || []).length > TUT.n0; }, snap: function () { TUT.n0 = (player.items || []).length; } },
+    { k: 'equip', t: '⚔ 買った装備を身につけよう', s: '「⚔️ 装備」タブで、武器のマスをタップ → 買った装備をタップ。つけると見た目と強さが変わるよ。', test: function () { var e = player.equip || {}, n = 0; for (var k in e) if (e[k]) n++; return n > TUT.e0; }, snap: function () { var e = player.equip || {}, n = 0; for (var k in e) if (e[k]) n++; TUT.e0 = n; } },
+    { k: 'mkt', t: '💱 取引所で装備を出品してみよう', s: '閉じて、矢印の「取引所」へ。「➕ 出す」タブで装備をタップ → 値段を決めて出品。プレイヤー同士で売り買いできる場所やで。（今回は出さなくてOK、画面を開けたらクリア）', door: 'exch', test: function () { return $('mkt').classList.contains('on') && mkTab === 1 && !!mkSel; } },
+    { k: 'lib', t: '📚 図書館をのぞいてみよう', s: '矢印の「図書館」に入ろう。装備もモンスターもオパールのことも、全部ここで調べられるよ。', door: 'lib', test: function () { return inLib; } },
+    { k: 'map', t: '🗺 マップを開こう', s: '図書館を出て、画面の上の「🚪 マップへ」をタップ。世界の鉱山が見えるよ。', test: function () { return $('map').classList.contains('on'); } },
+    { k: 'mine', t: '⛏ 最初の鉱山に入ろう', s: '光っているピンをタップ → 「掘りに行く」。最初はレベルの低い鉱山でOK。', test: function () { return $('field').classList.contains('on') && !inTown && !!curMine; } },
+    { k: 'dig', t: '💎 石を掘ってみよう', s: '地面の光ってる鉱脈をタップして近づき、出てくる「掘る！」を連打。ゲージがたまったら石が出るよ。', test: function () { return (player.digs || 0) > TUT.d0; }, snap: function () { TUT.d0 = player.digs || 0; } },
+    { k: 'kill', t: '👹 敵を1体たおそう', s: '敵が出たらタップで攻撃。買った武器で戦うよ。やられても町の病院で復活するから安心してな。敵が見つからんときは「とばす」でOK。', test: function () { return !!TUT.killed; }, snap: function () { TUT.killed = 0; } },
+    { k: 'done', t: '🏘 町に戻って、ミミに報告しよう', s: '鉱山を出て、マップの「🏘️ オパ会の町へ」を押してな。矢印のミミに話しかけたら完了！', npc: 'guide', test: function () { return inTown && !!TUT.doors['npc:guide']; }, noSkip: 1 }
+  ];
+  function tutDlg(pages, cb) {
+    var i = 0, d = $('tutD'); TUT.dlg = 1;
+    function draw() {
+      var last = i >= pages.length - 1;
+      d.innerHTML = '<div class="dc2"><div class="dn"><div class="tpav"><div class="hb2">' + charHTML(NPCS.guide.av) + '</div></div><div class="dt"><div class="nm">案内役 ミミ</div>' + esc(pages[i]) + '</div></div><button class="nx" type="button">' + (last ? 'OK！' : '次へ ▶') + '</button><div class="pg">' + (i + 1) + ' / ' + pages.length + '</div></div>';
+      d.classList.add('on');
+    }
+    d.onclick = function (e) { if (!e.target.closest('.nx')) return; sfx(0); if (i >= pages.length - 1) { d.classList.remove('on'); TUT.dlg = 0; d.onclick = null; if (cb) cb(); } else { i++; draw(); } };
+    draw();
+  }
+  function tutIntro() {
+    tutDlg([
+      'ようこそ、オパ会の町へ！ 私は案内役のミミです。\nここは冒険の拠点。装備を買ったり、石を売ったり、仲間と会ったりする町やで。',
+      'このゲームは、世界中の鉱山でオパールや宝石を掘って、レベルを上げて、装備を強くして、もっと奥の鉱山をめざす冒険です。',
+      'いまからチュートリアルをやるね。画面の下に「やること」が出るから、順番にやってみて。\n光る矢印がついてたら、そこが行き先やで。\n行きたい所は、タップしたら歩いていくよ。',
+      '1つクリアするごとに経験値がもらえて、最後まで終わったらレベル7になるよ！\n最初の軍資金に、3,000コインあげる。まずはショップに行こう！'
+    ], function () { tutDone('intro'); });
+  }
+  function tutFlash(msg) {
+    var b = $('tutB'); var o = b.querySelector('.ok'); if (o) o.remove();
+    var e = document.createElement('div'); e.className = 'ok'; e.innerHTML = '<b>' + msg + '</b>'; b.appendChild(e); setTimeout(function () { if (e.parentNode) e.remove(); }, 2400);
+  }
+  function tutDone(k) {
+    if (TUT.busy) return; TUT.busy = 1;
+    api({ action: 'game_tut', step: k }).then(function (j) {
+      TUT.busy = 0;
+      if (j && j.ok && j.player) {
+        var cp = (typeof CD !== 'undefined') ? (CD.pend || 0) + (CD.fly || 0) : 0;
+        player = j.player; player.coins = (player.coins || 0) + cp;
+        try { stats(); } catch (e) {} try { gearUi(); hpUi(); } catch (e) {}
+        sfx(1); vib([30, 20, 40]);
+        if (k === 'done') { tutStop(); tutDlg(['おめでとう！ チュートリアルは全部クリア。いまのキミは Lv' + (player.lv || 7) + ' やで！\nごほうびに500コインもプレゼント。', '最初のうちは、低いレベルの鉱山で掘って、お金をためて、装備を強くしていこう。レベルが上がると、新しい鉱山やお店の品物が増えていくよ。', '仲間とパーティーを組むと、経験値が3倍になるよ。わからんことは、図書館の司書さんか、ワタシ（町のミミ）にいつでも聞いてな。\nそれじゃ、いってらっしゃい！ 💎'], function () { tutFlash('🎉 Lv' + (player.lv || 7) + ' になったよ！'); }); }
+        else tutFlash('✅ クリア！' + (j.xp ? ' ✨+' + j.xp + ' XP' : '') + (j.coins ? ' 🪙+' + j.coins : ''));
+        TUT.key = '';
+      } else if (j && (j.error === 'bad_step' || j.error === 'no_tut')) {
+        api({ action: 'game_load' }).then(function (r) { if (r && r.player) { player = r.player; if (!player.tut || player.tut.fin) tutStop(); TUT.key = ''; } });
+      }
+    }).catch(function () { TUT.busy = 0; });
+  }
+  function tutStop() { TUT.on = false; clearInterval(TUT.tm); $('tutB').classList.remove('on'); var a = $('tutArrow'); if (a) a.remove(); var dr = $('tutDir'); if (dr) dr.remove(); }
+  function tutQuit() {
+    api({ action: 'game_tut_skip' }).then(function (j) { if (j && j.player) player = j.player; tutStop(); toast('チュートリアルをやめたよ。わからんことは町のミミに聞いてな'); });
+  }
+  function tutArrow(st) {
+    var w = $('world'), a = $('tutArrow'), pos = null;
+    if (st && fieldOn && w) {
+      if (st.door) { for (var i = 0; i < DOORS.length; i++) if (DOORS[i].k === st.door) pos = { x: DOORS[i].x, y: DOORS[i].y - DOORS[i].h / 2 - 30 }; }
+      else if (st.npc && NPCS[st.npc] && inTown && !inCafe) pos = { x: NPCS[st.npc].x, y: NPCS[st.npc].y - 150 };
+    }
+    var dr = $('tutDir');
+    if (!pos) { if (a) a.remove(); if (dr) dr.style.display = 'none'; return; }
+    if (!a || !a.isConnected) { a = document.createElement('div'); a.id = 'tutArrow'; a.textContent = '👇'; w.appendChild(a); }
+    a.style.left = pos.x + 'px'; a.style.top = pos.y + 'px';
+    if (!dr) { dr = document.createElement('div'); dr.id = 'tutDir'; document.body.appendChild(dr); }
+    var dx = pos.x - hero.x, dy = (pos.y + 110) - hero.y, dist = Math.hypot(dx, dy);
+    if (dist < 330) { dr.style.display = 'none'; return; }
+    var ang = Math.atan2(dy, dx), R = Math.min(window.innerWidth, window.innerHeight) * .34, nm = st.door ? ({ shop: 'ショップ', exch: '取引所', lib: '図書館' }[st.door] || '') : (st.npc ? 'ミミ' : '');
+    dr.style.display = 'block'; dr.style.left = (window.innerWidth / 2 + Math.cos(ang) * R) + 'px'; dr.style.top = (window.innerHeight * .46 + Math.sin(ang) * R) + 'px';
+    dr.innerHTML = '<i style="transform:rotate(' + ang + 'rad)">➤</i><small>' + nm + '</small>';
+  }
+  function tutTick() {
+    if (!TUT.on || !player || !player.tut || player.tut.fin) { if (TUT.on) tutStop(); return; }
+    var i = (player.tut.d || []).length, st = TSTEPS[i]; if (!st) { tutStop(); return; }
+    if (TUT.cur !== i) { TUT.cur = i; TUT.doors = {}; TUT.quit = 0; if (st.snap) st.snap(); }
+    var scr = ['field', 'map', 'play'].some(function (x) { return $(x).classList.contains('on'); }) && !$('story').classList.contains('on') && !TUT.dlg;
+    var b = $('tutB');
+    if (!scr || !st.t) { b.classList.remove('on'); }
+    else {
+      var key = i + '|' + TUT.min + '|' + TUT.quit; b.classList.add('on');
+      if (TUT.key !== key) {
+        TUT.key = key; var okEl = b.querySelector('.ok'), okH = okEl ? okEl.outerHTML : '';
+        b.innerHTML = '<div class="tc"><div class="th"><span>📘 はじめてのチュートリアル　' + i + ' / ' + (TSTEPS.length - 1) + '</span><button type="button" data-a="min">' + (TUT.min ? '▲ ひらく' : '▼ たたむ') + '</button></div><div class="tp"><i style="width:' + Math.round(i / (TSTEPS.length - 1) * 100) + '%"></i></div><div class="tt">' + esc(st.t) + '</div>' + (TUT.min ? '' : '<div class="ts">' + esc(st.s) + '</div><div class="tb">' + (st.noSkip ? '' : '<button type="button" data-a="skip">この項目をとばす</button>') + '<button type="button" data-a="quit">' + (TUT.quit ? 'ほんとにやめる？' : 'チュートリアルをやめる') + '</button></div>') + '</div>' + okH;
+      }
+    }
+    tutArrow(scr || fieldOn ? st : null);
+    if (!TUT.busy && !TUT.dlg && st.test) { var ok = false; try { ok = st.test(); } catch (e) {} if (ok) tutDone(st.k); }
+  }
+  $('tutB').addEventListener('click', function (e) {
+    var bt = e.target.closest('button'); if (!bt) return; var a = bt.dataset.a; sfx(0);
+    var i = (player.tut.d || []).length, st = TSTEPS[i];
+    if (a === 'min') { TUT.min = TUT.min ? 0 : 1; }
+    else if (a === 'skip') { if (st && !st.noSkip) tutDone(st.k); }
+    else if (a === 'quit') { if (!TUT.quit) { TUT.quit = 1; } else tutQuit(); }
+    TUT.key = '';
+  });
+  function tutBegin() {
+    TUT.on = true; TUT.cur = -1; TUT.key = ''; openTown(); clearInterval(TUT.tm); TUT.tm = setInterval(tutTick, 500);
+    if (!(player.tut.d || []).length) setTimeout(tutIntro, 800);
+  }
   function startGame() {
     startInvPoll();
-    function toMap() { openMap(player.digs ? null : 'queretaro'); }
+    function toMap() { if (player.tut && !player.tut.fin) tutBegin(); else openMap(player.digs ? null : 'queretaro'); }
     if (!hasSeen('prologue')) storyStart(PROLOGUE, function () { markSeen('prologue'); toMap(); }, null);
     else toMap();
   }
