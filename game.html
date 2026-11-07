@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:124-->
+<!--GV:125-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1009,6 +1009,17 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #fTools .skb{display:none;border:1.5px solid #c9a6ff;background:rgba(30,16,50,.82);color:#eadcff}
 #fTools .skb.cd{opacity:.55}
 #fTools .skb.act{border-color:#ffd36a;background:linear-gradient(#7a4ad0,#4a2a90);color:#fff;box-shadow:0 0 10px #b583ff}
+
+/* 闘技場：ボタンを、すっきり（下に1列・右下に丸スキル・左下に必殺技） */
+#field.plaza #fTools,#field.arena #fTools,#field.plaza.chat #fTools,#field.arena.chat #fTools{left:0;right:0;bottom:0!important;height:40px;padding:3px 6px;gap:6px;flex-wrap:nowrap;justify-content:stretch;align-items:center;background:linear-gradient(#0a1216f0,#05090c);border-top:2px solid #ffd36a66;pointer-events:auto}
+#field.plaza #fTools #plChat,#field.plaza #fTools #qcBtn,#field.arena #fTools #qcBtn{flex:1;height:32px;padding:0 6px;font-size:13px;box-shadow:none}
+#field.plaza #fTools #swBtn,#field.plaza #fTools #guardBtn,#field.plaza #fTools #goMine,#field.plaza #fTools #gmTog,#field.arena #fTools #swBtn,#field.arena #fTools #guardBtn,#field.arena #fTools #goMine,#field.arena #fTools #gmTog{display:none!important}
+#field.plaza #fTools .skb,#field.arena #fTools .skb,#field.plaza #fTools #spBtn,#field.arena #fTools #spBtn{position:absolute;width:58px;height:58px;padding:0;border-radius:50%;font-size:14px;line-height:1.1;white-space:normal;text-align:center;box-shadow:0 3px 10px #000a}
+#field.plaza #fTools #sk0,#field.arena #fTools #sk0{right:8px;bottom:48px}
+#field.plaza #fTools #sk1,#field.arena #fTools #sk1{right:72px;bottom:48px}
+#field.plaza #fTools #sk2,#field.arena #fTools #sk2{right:40px;bottom:112px}
+#field.plaza #fTools #spBtn,#field.arena #fTools #spBtn{left:10px;bottom:52px;width:66px;height:66px;font-size:15px}
+#field.plaza.chat #tchat{bottom:44px}
 
 .wic{display:block;width:42px;height:42px}
 .wic svg{width:100%;height:100%;display:block}
@@ -3949,7 +3960,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 124;
+  var GV = 125;
   (function () {
     var last = Date.now();
     function chk() {
@@ -4805,7 +4816,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function spDef() { var w = curW(); if (!w) return null; return SPD[w.sp || ('k_' + (w.kind || 'sword'))] || null; }
   function skUi() {
     var b = $('spBtn'); if (!b || b.style.display === 'none') return; var d = spDef(); if (!d) return;
-    var rdy = isGM() || skG >= 100; b.classList.toggle('rdy', rdy); b.textContent = rdy ? '✨ ' + d.nm : '✨ ' + Math.floor(skG) + '%';
+    var rdy = isGM() || skG >= 100; b.classList.toggle('rdy', rdy); b.textContent = (inArena || inPlaza) ? (rdy ? d.nm.slice(0, 2) : Math.floor(skG) + '%') : (rdy ? '✨ ' + d.nm : '✨ ' + Math.floor(skG) + '%');
   }
   function dashUi() {}
   setInterval(function () { if (fieldOn) { dashUi(); skBtnUi(); } }, 200);
@@ -4863,10 +4874,10 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function skBtnUi() {
     var eq = ((player || {}).skEq) || [], n = performance.now();
     for (var i = 0; i < 3; i++) {
-      var b = $('sk' + i); if (!b) continue; var d = SKBY[eq[i]], show = !!(d && fieldOn && !inTown && !hp.down);
+      var b = $('sk' + i); if (!b) continue; var d = SKBY[eq[i]], show = !!(d && fieldOn && !inTown && !hp.down && !(inArena && (d.t === 'heal' || d.t === 'leech')));
       b.style.display = show ? 'block' : 'none'; if (!show) continue;
       var r = (skCd[d.id] || 0) - n, act = (d.t === 'guardUp' && n < skGuardUntil) || (d.t === 'atkUp' && n < skAtkUntil) || (d.t === 'haste' && n < skHasteUntil) || (d.t === 'leech' && n < skLeechUntil);
-      b.classList.toggle('cd', r > 0 && !act); b.classList.toggle('act', act); b.textContent = d.ic + ' ' + (act ? '発動中' : (r > 0 ? Math.ceil(r / 1000) : d.nm));
+      b.classList.toggle('cd', r > 0 && !act); b.classList.toggle('act', act); b.textContent = (inArena || inPlaza) ? (act ? '発動' : (r > 0 ? Math.ceil(r / 1000) : d.nm.slice(0, 2))) : d.ic + ' ' + (act ? '発動中' : (r > 0 ? Math.ceil(r / 1000) : d.nm));
     }
   }
   function ringAt(x, y, r) { var e = document.createElement('i'); e.className = 'spfx'; e.style.left = x + 'px'; e.style.top = (y - 20) + 'px'; e.style.width = e.style.height = (r * 2) + 'px'; $('world').appendChild(e); setTimeout(function () { e.remove(); }, 700); }
