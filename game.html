@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:109-->
+<!--GV:110-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -306,7 +306,6 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #arc .bgL{text-align:center;font-weight:900;color:#ffe27a;font-size:13px}
 #arc .bgc{display:flex;align-items:center;justify-content:center;border-radius:8px;background:#f7f2e4;color:#222;font-weight:800;font-size:17px;border:2px solid #8a7a50;padding:0;min-height:0}
 #arc .bgc.hit{background:#ff9f1a;color:#fff;border-color:#ffd86a}#arc .bgc.fr{background:#d4a73a;color:#fff}
-#arc .bgc.can{border-color:#4cd964;box-shadow:0 0 10px #4cd964;animation:bgp .5s infinite alternate}
 @keyframes bgp{from{transform:scale(1)}to{transform:scale(1.07)}}
 #arc .unM{flex:0 0 auto;display:flex;align-items:center;justify-content:center;gap:14px;margin:2px 0}
 #arc .uc{display:inline-flex;align-items:center;justify-content:center;width:42px;height:62px;border-radius:7px;border:2px solid #fff;font-weight:900;font-size:19px;color:#fff;text-shadow:0 1px 2px #000;flex:0 0 auto;padding:0;position:relative}
@@ -349,6 +348,23 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #arc .tgTm{flex:0 0 auto;height:5px;border-radius:3px;background:#fff2;overflow:hidden;margin:0 10px}
 #arc .tgTm i{display:block;height:100%;background:linear-gradient(90deg,#ff5a5a,#ffe27a,#4cd964);transform-origin:left;animation-name:tgTm;animation-timing-function:linear;animation-fill-mode:forwards}
 @keyframes tgTm{from{transform:scaleX(1)}to{transform:scaleX(0)}}
+#arc .bgc.can{border:3px solid #ffd700;background:linear-gradient(#fff9d0,#ffe27a);color:#5a3a00;box-shadow:0 0 0 2px #fff,0 0 14px 4px #ffd700;animation:bgGold .55s infinite alternate;position:relative;z-index:2}
+@keyframes bgGold{from{box-shadow:0 0 0 2px #fff,0 0 8px 2px #ffd700;transform:scale(1)}to{box-shadow:0 0 0 2px #fff,0 0 22px 8px #ffb300;transform:scale(1.09)}}
+#arc .bgTop{gap:6px}
+#arc .bgMc{flex:0 0 auto;width:74px;height:80px}#arc .bgMc svg{width:100%;height:100%;overflow:visible}
+#arc .bgMc .mcB{transform-box:fill-box;transform-origin:center;animation:mcSp 7s linear infinite}
+#arc .bgMc.mcgo .mcB{animation-duration:.45s}#arc .bgMc.mcgo svg{animation:mcSh .9s ease-in-out}
+#arc .bgMc .mcK{transform-box:fill-box;transform-origin:left center}#arc .bgMc.mcgo .mcK{animation:mcK .9s ease-in-out}
+@keyframes mcSp{to{transform:rotate(360deg)}}
+@keyframes mcSh{0%,100%{transform:none}15%{transform:translate(-2px,1px) rotate(-2deg)}35%{transform:translate(2px,-1px) rotate(2deg)}55%{transform:translate(-2px,0) rotate(-1.5deg)}75%{transform:translate(1px,1px)}}
+@keyframes mcK{0%,100%{transform:rotate(0)}50%{transform:rotate(180deg)}}
+#arc .bgBw{flex:0 0 66px;display:flex;justify-content:center}
+#arc .bgB.pop{animation:bgDrop 1.4s cubic-bezier(.3,.7,.4,1) both}
+@keyframes bgDrop{0%{transform:translate(-78px,-34px) scale(.45) rotate(-540deg);opacity:0}12%{opacity:1}34%{transform:translate(-62px,16px) scale(.6) rotate(-300deg)}52%{transform:translate(-30px,34px) scale(.85) rotate(-120deg)}66%{transform:translate(-8px,-10px) scale(1.05) rotate(-30deg)}80%{transform:translate(0,6px) scale(1)}92%{transform:translate(0,-3px)}100%{transform:none;opacity:1}}
+#arc .bgLb{flex:1 1 0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:6px;text-align:center;color:#fff;padding:6px}
+#arc .bgLb .t1{font-size:18px;font-weight:900;color:#ffe27a;text-shadow:0 0 10px #ffb300}#arc .bgLb .t2{font-size:13px;line-height:1.6;color:#e8eef5}#arc .bgLb .t3{font-size:15px;color:#7af0ff}
+#arc .tgP .jn{color:#7affa0}
+#arc .tvB .b.bgJoin{font-size:17px;border-width:3px;border-color:#ffd700;background:linear-gradient(#5a4210,#2a1e06);box-shadow:0 0 10px #ffd700}
 #arc .tvB .b.uk{color:#fff;font-weight:900}#arc .tvB .b.ur{background:#d6342c}#arc .tvB .b.uy{background:#e8b923;color:#2a2000}#arc .tvB .b.ug{background:#2e9b4b}#arc .tvB .b.ub{background:#2b63c4}
 @keyframes dlA{0%{transform:translate(var(--dx),var(--dy)) rotate(220deg) scale(.45);opacity:0}12%{opacity:1}100%{transform:none;opacity:1}}
 #arc .pc.dl{animation:dlA .5s cubic-bezier(.2,.8,.3,1) both}
@@ -3500,7 +3516,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     html += arcGround(W, H);
     var dc = function (svg, x, y, wd, ht, z) { html += '<div class="dc" style="left:' + x + 'px;top:' + y + 'px;width:' + wd + 'px;height:' + ht + 'px;z-index:' + Math.round(z == null ? y : z) + '">' + svg + '</div>'; };
     var lb = function (t, x, y) { html += '<div class="tlbl" style="left:' + x + 'px;top:' + y + 'px">' + t + '</div>'; };
-    dc(arcDoorSVG(), 500, 330, 220, 170, 330); lb('対戦会場入口', 500, 360); dc(arcDispSVG(), 880, 352, 74, 96, 352); html += '<div class="tlbl" style="left:880px;top:366px;white-space:nowrap">🪙 コイン受け取り機</div>'; dc(arcRankSVG(), 690, 200, 160, 110, 200); lb('🏆 コインランキング掲示板', 690, 218);
+    dc(arcDoorSVG(), 500, 330, 220, 170, 330); lb('対戦会場入口', 500, 360); dc(arcDispSVG(), 880, 352, 74, 96, 352); html += '<div class="tlbl" style="left:880px;top:366px;white-space:nowrap">🪙 コイン受け取り機</div>'; dc(arcRankSVG(), 800, 200, 160, 110, 200); html += '<div class="tlbl" style="left:800px;top:216px;white-space:nowrap">🏆 コインランキング掲示板</div>';
     dc(arcBarSVG(), 210, 336, 360, 84, 336); lb('🍸 バーカウンター', 210, 262); html += '<div class="cfe" style="left:70px;top:296px;font-size:26px;z-index:337">🍸</div><div class="cfe" style="left:150px;top:296px;font-size:26px;z-index:337">🥃</div><div class="cfe" style="left:290px;top:296px;font-size:26px;z-index:337">🍷</div><div class="cfe" style="left:350px;top:296px;font-size:26px;z-index:337">🥂</div>';
     LGT.forEach(function (t) { dc(arcLoungeTableSVG(), t[0], t[1] + 36, 130, 74, t[1] + 36); });
     SEATS.forEach(function (sa) { if (sa.stool) dc(arcStoolSVG(), sa.x, sa.y + 8, 40, 52, sa.y - 1); else { dc(arcChairSVG(), sa.x, sa.y - 2, 31, 28, sa.y - 1); dc(arcSeatSVG(), sa.x, sa.y + 5, 34, 17, sa.y + 1); } });
@@ -3512,7 +3528,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     html += '<div class="tlbl" style="left:500px;top:766px">🚪 出口</div>';
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
-    DOORS = [{ k: 'arc:fps', x: 500, y: 330, w: 200, h: 160 }, { k: 'arc:holdem', x: 186, y: 616, w: 250, h: 105 }, { k: 'arc:bi', x: 828, y: 607, w: 210, h: 92 }, { k: 'arc:un', x: 828, y: 797, w: 210, h: 92 }, { k: 'arcout', x: 500, y: 800, w: 120, h: 70 }, { k: 'arc:rank', x: 690, y: 215, w: 160, h: 110 }, { k: 'arc:dis', x: 880, y: 352, w: 74, h: 80 }, { k: 'arc:prize', x: 880, y: 250, w: 220, h: 110 }];
+    DOORS = [{ k: 'arc:fps', x: 500, y: 330, w: 200, h: 160 }, { k: 'arc:holdem', x: 186, y: 616, w: 250, h: 105 }, { k: 'arc:bi', x: 828, y: 607, w: 210, h: 92 }, { k: 'arc:un', x: 828, y: 797, w: 210, h: 92 }, { k: 'arcout', x: 500, y: 800, w: 120, h: 70 }, { k: 'arc:rank', x: 800, y: 215, w: 160, h: 110 }, { k: 'arc:dis', x: 880, y: 352, w: 74, h: 80 }, { k: 'arc:prize', x: 880, y: 250, w: 220, h: 110 }];
     hero.x = 500; hero.y = 760; hero.dir = 1; hero.sit = null; ftarget = null; fz = zoomT;
     $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi(); addNpcs('arcade');
   }
@@ -3851,7 +3867,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 109;
+  var GV = 110;
   (function () {
     var last = Date.now();
     function chk() {
@@ -5536,7 +5552,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     }
     setTimeout(load, 500);
   }
-  function arcRankSVG() { return '<svg viewBox="0 0 200 130"><defs><linearGradient id="rG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a6410"/><stop offset=".5" stop-color="#ffe27a"/><stop offset="1" stop-color="#8a6410"/></linearGradient></defs><rect x="8" y="6" width="184" height="118" rx="8" fill="#150c0a" stroke="url(#rG)" stroke-width="3.5"/><text x="100" y="32" font-size="15" font-weight="800" fill="#ffe27a" text-anchor="middle" letter-spacing="2" font-family="Georgia,serif">CHIP RANKING</text><text x="100" y="62" font-size="26" text-anchor="middle">🏆</text><g fill="#c9a24a" font-size="11"><text x="40" y="86">1 ――――――</text><text x="40" y="102">2 ――――――</text><text x="40" y="118">3 ――――――</text></g></svg>'; }
+  function arcRankSVG() { return '<svg viewBox="0 0 200 130"><defs><linearGradient id="rG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a6410"/><stop offset=".5" stop-color="#ffe27a"/><stop offset="1" stop-color="#8a6410"/></linearGradient></defs><rect x="8" y="6" width="184" height="118" rx="8" fill="#150c0a" stroke="url(#rG)" stroke-width="3.5"/><text x="100" y="32" font-size="15" font-weight="800" fill="#ffe27a" text-anchor="middle" letter-spacing="1" font-family="sans-serif">コインランキング</text><text x="100" y="62" font-size="26" text-anchor="middle">🏆</text><g fill="#c9a24a" font-size="11"><text x="40" y="86">1 ――――――</text><text x="40" y="102">2 ――――――</text><text x="40" y="118">3 ――――――</text></g></svg>'; }
   function arcDispSVG() { return '<svg viewBox="0 0 80 104"><defs><linearGradient id="dpG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a6410"/><stop offset=".5" stop-color="#ffe27a"/><stop offset="1" stop-color="#8a6410"/></linearGradient></defs><ellipse cx="40" cy="100" rx="32" ry="4" fill="rgba(0,0,0,.45)"/><rect x="8" y="4" width="64" height="94" rx="8" fill="#2a0f18" stroke="url(#dpG)" stroke-width="3"/><rect x="16" y="12" width="48" height="22" rx="4" fill="#0a0a10" stroke="#ffe27a" stroke-width="1.4"/><text x="40" y="28" font-size="12" font-weight="800" fill="#7af0ff" text-anchor="middle">COIN</text><text x="40" y="54" font-size="20" text-anchor="middle">🪙</text><rect x="22" y="60" width="36" height="5" rx="2" fill="#000" stroke="#ffe27a" stroke-width="1"/><rect x="16" y="74" width="48" height="18" rx="4" fill="#120a0c" stroke="url(#dpG)" stroke-width="2"/><circle cx="30" cy="86" r="4" fill="#ffd84a"/><circle cx="40" cy="87" r="4" fill="#ffe27a"/><circle cx="50" cy="86" r="4" fill="#ffd84a"/></svg>'; }
   function arcPrizeSVG() { return '<svg viewBox="0 0 260 130"><defs><linearGradient id="pG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a6410"/><stop offset=".5" stop-color="#ffe27a"/><stop offset="1" stop-color="#8a6410"/></linearGradient></defs><rect x="8" y="4" width="244" height="124" rx="8" fill="#1d1013" stroke="url(#pG)" stroke-width="3.5"/><rect x="60" y="8" width="140" height="22" rx="4" fill="#0e0608" stroke="url(#pG)" stroke-width="1.6"/><text x="130" y="24" font-size="13" font-weight="800" fill="#ffe27a" text-anchor="middle" letter-spacing="2">景品交換所</text><rect x="22" y="62" width="216" height="3" fill="#7a5a1c"/><text x="46" y="58" font-size="22">🎁</text><text x="96" y="58" font-size="22">💎</text><text x="150" y="58" font-size="22">🎀</text><text x="196" y="58" font-size="22">🎁</text><rect x="14" y="84" width="232" height="40" rx="5" fill="#5a1626" stroke="url(#pG)" stroke-width="2.4"/><path d="M26 98H234" stroke="#ffe27a" stroke-width="1" opacity=".5"/></svg>'; }
 
@@ -5579,6 +5595,16 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     } catch (e) { return null; }
   }
   try { window.speechSynthesis.onvoiceschanged = function () { ARV = null; }; } catch (e) {}
+  var ARVF = null;
+  function arVoiceF() {
+    if (ARVF) return ARVF; try {
+      var vs = window.speechSynthesis.getVoices().filter(function (v) { return /^ja/i.test(v.lang); }); if (!vs.length) return null;
+      var sc = function (v) { var n = v.name || '', p = 0; if (/kyoko|nanami|o-ren|ayumi|haruka|sayaka|mizuki|shiori|female|女|hikari|sakura|momo/i.test(n)) p += 40; if (/ichiro|otoya|hattori|keita|takumi|ken\b|male|男|naoki|daichi/i.test(n) && !/female|女/i.test(n)) p -= 40; if (/natural|neural|online|premium|enhanced|高品質/i.test(n)) p += 10; if (/google/i.test(n)) p += 4; if (/compact|espeak/i.test(n)) p -= 6; return p; };
+      vs.sort(function (a, b) { return sc(b) - sc(a); }); ARVF = { v: vs[0] }; return ARVF;
+    } catch (e) { return null; }
+  }
+  try { var ovc = window.speechSynthesis.onvoiceschanged; window.speechSynthesis.onvoiceschanged = function () { ARVF = null; if (ovc) ovc(); }; } catch (e) {}
+  function arSayF(t) { try { if (!soundOn) return; var u = new SpeechSynthesisUtterance(t), V = arVoiceF(); u.lang = 'ja-JP'; if (V) u.voice = V.v; u.pitch = 1.7; u.rate = 1.08; u.volume = 1; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); } catch (e) {} }
   function arSay(t) { try { if (!soundOn) return; var u = new SpeechSynthesisUtterance(t), V = arVoice(); u.lang = 'ja-JP'; if (V) u.voice = V.v; u.pitch = V && V.m ? .55 : .1; u.rate = V && V.m ? .98 : .92; u.volume = 1; window.speechSynthesis.cancel(); window.speechSynthesis.speak(u); } catch (e) {} }
   var NPCN = ['ジョー', 'リナ', 'タクミ', 'ミサキ', 'ケン', 'サラ', 'ダイ', 'アヤ', 'レオ', 'ノア', 'ハル', 'ユウ', 'カイ', 'マリ'];
   function tvAddNpc(T, n, mk, avoid, forb) {
@@ -5837,15 +5863,15 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var TG = null, TGG = {};
   function tgShuf(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
   function tgRange(a, b) { var r = []; for (var i = a; i <= b; i++) r.push(i); return r; }
-  function tgSeat(id, nm, stack, npc) { return { id: id, nm: nm, stack: stack, npc: npc ? 1 : 0, gone: 0, in: 0, pay: 0, res: '' }; }
-  function tgNew(k) { var T0 = { v: 0, hid: myMid, k: k, rd: 0, seats: [null, null, null, null, null], st: 'lobby', nt: Date.now() + 8000, pot: 0, log: '', ev: 0, la: null, npcBuy: 2000, g: {}, winner: -1 }; T0.seats[0] = tgSeat('npc', 'ケン', 2000, 1); return T0; }
+  function tgSeat(id, nm, stack, npc) { return { id: id, nm: nm, stack: stack, npc: npc ? 1 : 0, gone: 0, in: 0, pay: 0, res: '', join: 0 }; }
+  function tgNew(k) { var T0 = { v: 0, hid: myMid, k: k, rd: 0, seats: [null, null, null, null, null], st: 'lobby', nt: Date.now() + (TGG[k].join ? 20000 : 8000), pot: 0, log: '', ev: 0, la: null, npcBuy: 2000, g: {}, winner: -1 }; T0.seats[0] = tgSeat('npc', 'ケン', 2000, 1); return T0; }
   function tgMine() { var T = TG && TG.T; if (!T) return -1; return T.seats.findIndex(function (s) { return s && s.id === myMid && !s.gone; }); }
   function tgSend(m) { m.t = 'tg'; m.gk = TG ? TG.k : ''; m.f = myMid; try { if (rtOn) RT.send(m); } catch (e) {} }
   function tgPush(T) { T.v++; TG.hb = Date.now(); TG.last = Date.now(); tgSend({ k: 'st', T: T }); tgRender(); }
   function tgActive(T) { return T.seats.filter(function (s) { return s && s.in && !s.gone; }); }
   function tgStart(T) {
     var G = TGG[T.k], ps = [];
-    T.seats.forEach(function (s, i) { if (s) { s.res = ''; s.pay = 0; s.in = 0; if (!s.gone && s.stack >= G.ante) ps.push(i); } });
+    T.seats.forEach(function (s, i) { if (s) { s.res = ''; s.pay = 0; s.in = 0; if (!s.gone && s.stack >= G.ante && (!G.join || s.npc || s.join)) ps.push(i); } });
     if (ps.length < 2) { T.st = 'lobby'; T.nt = Date.now() + 6000; return false; }
     ps.forEach(function (i) { T.seats[i].stack -= G.ante; T.seats[i].in = 1; });
     T.rd++; T.pot = G.ante * ps.length; T.st = 'play'; T.g = {}; T.winner = -1; G.start(T, ps); T.ev++; T.la = { e: T.ev, k: 'start' }; return true;
@@ -5868,6 +5894,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     }
     if (T.st === 'lobby') {
       if (!T.seats.some(function (q) { return q && q.npc; })) { var j0 = tvAddNpc(T, 5, tgSeat, -1); if (j0 >= 0) { tvNote(T, '対戦相手「' + T.seats[j0].nm + '」が着席したよ'); ch = true; } }
+      if (G.join) { var hu = T.seats.filter(function (q) { return q && !q.npc && !q.gone && q.stack >= G.ante; }); if (hu.length && hu.every(function (q) { return q.join; }) && T.nt - now > 3500) { T.nt = now + 3500; ch = true; } }
       if (now >= T.nt) { tgStart(T); ch = true; }
     } else if (T.st === 'play') {
       var act = tgActive(T);
@@ -5875,8 +5902,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       else if (G.tick(T, now)) ch = true;
     } else if (T.st === 'end') {
       if (now >= T.nt) {
-        T.seats.forEach(function (s, i) { if (s && s.gone) T.seats[i] = null; else if (s) { s.in = 0; s.res = ''; s.pay = 0; } });
-        T.st = 'lobby'; T.nt = now + 8000; T.g = {}; ch = true;
+        T.seats.forEach(function (s, i) { if (s && s.gone) T.seats[i] = null; else if (s) { s.in = 0; s.res = ''; s.pay = 0; if (!s.npc) s.join = 0; } });
+        T.st = 'lobby'; T.nt = now + (G.join ? 20000 : 8000); T.g = {}; ch = true; T.ev++; T.la = { e: T.ev, k: 'lobby' };
         T.seats.forEach(function (q, qi) { if (q && q.npc && q.stack < G.ante) { var old = q.nm; T.lastNpc = old; T.seats[qi] = null; var j = tvAddNpc(T, 5, tgSeat, qi); if (j >= 0) tvNote(T, '「' + old + '」が飛ばされた！ 新しい対戦相手「' + T.seats[j].nm + '」が着席したよ'); } });
       }
     }
@@ -5889,14 +5916,37 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (m.k === 'who') { tgPush(T); return; }
     if (m.k === 'sit') { if (T.seats.some(function (s) { return s && s.id === m.f; })) { tgPush(T); return; } var fi = T.seats.findIndex(function (s) { return !s; }); if (fi < 0) return; T.seats[fi] = tgSeat(m.f, String(m.n || 'だれか').slice(0, 8), Math.max(0, Math.min(1e9, Math.floor(+m.b) || 0))); tgPush(T); return; }
     if (m.k === 'act') { var i = T.seats.findIndex(function (s) { return s && s.id === m.f; }); if (i >= 0 && m.r === T.rd && T.st === 'play' && TGG[T.k].act(T, i, String(m.a))) tgPush(T); return; }
+    if (m.k === 'join') { var ji = T.seats.findIndex(function (s) { return s && s.id === m.f; }); if (ji >= 0 && T.st === 'lobby' && T.seats[ji].stack >= TGG[T.k].ante) { T.seats[ji].join = m.v ? 1 : 0; tgPush(T); } return; }
     if (m.k === 'go') { if (T.st === 'lobby') { T.nt = Date.now(); tgPush(T); } return; }
     if (m.k === 'leave') { var j = T.seats.findIndex(function (s) { return s && s.id === m.f; }); if (j >= 0) { tgDrop(T, j); tgPush(T); } return; }
   }
   function tgDrop(T, j) { var s = T.seats[j]; if (!s) return; if (T.st !== 'play' || !s.in) T.seats[j] = null; else s.gone = 1; }
   function tgDo(a) { var T = TG && TG.T; if (!T || TG.me < 0 || T.st !== 'play') return; if (T.hid === myMid) { if (TGG[T.k].act(T, TG.me, a)) tgPush(T); } else tgSend({ k: 'act', a: a, r: T.rd }); }
+  function tgJoin(v) { var T = TG && TG.T; if (!T || TG.me < 0 || T.st !== 'lobby') return; if (T.hid === myMid) { var s = T.seats[TG.me]; if (s && s.stack >= TGG[T.k].ante) { s.join = v ? 1 : 0; tgPush(T); } } else tgSend({ k: 'join', v: v ? 1 : 0 }); sndChip(); }
   function tgGoNow() { var T = TG && TG.T; if (!T || T.st !== 'lobby') return; if (T.hid === myMid) { T.nt = Date.now(); tgPush(T); } else tgSend({ k: 'go' }); }
 
   function tgDealerH() { return tvDealer({ P: TG }); }
+  function tgStaffH() {
+    var el = Date.now() - (TG.dt || 0), cl = el < 900 ? ' dealing' : '';
+    return '<div class="tvDl tgSt' + cl + '" style="--ad:' + Math.round(-el) + 'ms"><svg viewBox="0 0 120 100"><defs><radialGradient id="sfS" cx=".45" cy=".4" r=".7"><stop offset="0" stop-color="#fff0e4"/><stop offset="1" stop-color="#f6cdb4"/></radialGradient><radialGradient id="sfB" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fff6c2"/><stop offset=".6" stop-color="#ffc83a"/><stop offset="1" stop-color="#c98a10"/></radialGradient><linearGradient id="sfU" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ff6fa0"/><stop offset="1" stop-color="#d63a70"/></linearGradient></defs>' +
+      '<ellipse cx="60" cy="98" rx="36" ry="3" fill="#0006"/>' +
+      '<path d="M37 34C32 8 50 1 60 1C70 1 88 8 83 34L86 74C86 84 76 88 68 84L52 84C44 88 34 84 34 74Z" fill="#6a3a22"/>' +
+      '<path d="M16 100C16 78 33 66 48 62L72 62C87 66 104 78 104 100Z" fill="url(#sfU)" stroke="#fff" stroke-width="1"/><path d="M47 62L60 78L73 62Z" fill="#fff"/><path d="M60 78L51 72L51 84Z" fill="#ff3b5c"/><path d="M60 78L69 72L69 84Z" fill="#ff3b5c"/><circle cx="60" cy="78" r="3" fill="#c81e44"/><rect x="72" y="84" width="16" height="8" rx="2" fill="#fff" stroke="#d63a70" stroke-width=".8"/><text x="80" y="90.5" font-size="5.5" font-weight="800" fill="#d63a70" text-anchor="middle">BINGO</text>' +
+      '<rect x="54" y="52" width="12" height="12" fill="#f3cdb4"/>' +
+      '<ellipse cx="60" cy="38" rx="21" ry="23" fill="url(#sfS)"/>' +
+      '<path d="M38 36C37 14 50 8 60 8C70 8 83 14 82 36C77 26 68 21 60 23C52 21 43 26 38 36Z" fill="#7a4428"/><ellipse cx="39" cy="46" rx="4" ry="12" fill="#6a3a22"/><ellipse cx="81" cy="46" rx="4" ry="12" fill="#6a3a22"/>' +
+      '<ellipse cx="51.5" cy="41" rx="4.6" ry="5.6" fill="#fff"/><ellipse cx="68.5" cy="41" rx="4.6" ry="5.6" fill="#fff"/><circle cx="51.8" cy="41.6" r="3.5" fill="#4a2a1c"/><circle cx="68.2" cy="41.6" r="3.5" fill="#4a2a1c"/><circle cx="50.6" cy="39.8" r="1.4" fill="#fff"/><circle cx="67" cy="39.8" r="1.4" fill="#fff"/><circle cx="53" cy="43" r=".7" fill="#fff"/><circle cx="69.4" cy="43" r=".7" fill="#fff"/>' +
+      '<path d="M46 36Q51 33 56.4 36M63.6 36Q69 33 74 36" stroke="#4a2a1c" stroke-width="1.4" fill="none" stroke-linecap="round"/>' +
+      '<ellipse cx="45" cy="49" rx="5" ry="3" fill="#ff8a9a" opacity=".5"/><ellipse cx="75" cy="49" rx="5" ry="3" fill="#ff8a9a" opacity=".5"/>' +
+      '<path d="M53 51Q60 59 67 51Q60 54 53 51Z" fill="#e0556a" stroke="#a03048" stroke-width=".6"/><path d="M56 53.4Q60 56.4 64 53.4" stroke="#fff" stroke-width=".8" fill="none"/>' +
+      '<path d="M78 14l3-5 3 5-3 4z" fill="#ffd24a" stroke="#c98a10" stroke-width=".6"/><circle cx="82" cy="15" r="2.4" fill="#ff3b5c"/>' +
+      '<g class="arm"><path d="M86 70L102 58" stroke="#e0457a" stroke-width="10" stroke-linecap="round" fill="none"/><circle cx="106" cy="55" r="4.6" fill="#f6cdb4"/><circle cx="110" cy="45" r="8.5" fill="url(#sfB)" stroke="#a8700a" stroke-width=".8"/><text x="110" y="48.6" font-size="9" font-weight="900" fill="#6a3a00" text-anchor="middle">B</text></g></svg></div>';
+  }
+  function biMachine(go) {
+    var cols = ['#d6342c', '#2b63c4', '#2e9b4b', '#e8b923', '#9a4ad6', '#ff8a2a'], pts = [[32, 30], [48, 24], [58, 38], [38, 48], [52, 52], [28, 44], [60, 26], [44, 38]], b = '';
+    pts.forEach(function (p, i) { b += '<circle cx="' + p[0] + '" cy="' + p[1] + '" r="6.2" fill="' + cols[i % 6] + '" stroke="#fff" stroke-width=".8"/><circle cx="' + (p[0] - 1.8) + '" cy="' + (p[1] - 2) + '" r="1.5" fill="#fff" opacity=".7"/>'; });
+    return '<div class="bgMc' + (go ? ' mcgo' : '') + '"><svg viewBox="0 0 96 104"><defs><radialGradient id="mcG" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#ffffff55"/><stop offset="1" stop-color="#9ad8ff22"/></radialGradient><linearGradient id="mcB" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a6410"/><stop offset=".5" stop-color="#ffe27a"/><stop offset="1" stop-color="#8a6410"/></linearGradient></defs><ellipse cx="46" cy="100" rx="34" ry="4" fill="#0007"/><path d="M26 74H66L72 96H20Z" fill="#7a1f33" stroke="url(#mcB)" stroke-width="2.4"/><circle cx="46" cy="40" r="34" fill="url(#mcG)" stroke="url(#mcB)" stroke-width="3.4"/><g class="mcB">' + b + '</g><path d="M26 22Q32 10 46 8" stroke="#fff" stroke-width="2.4" fill="none" opacity=".55" stroke-linecap="round"/><path d="M66 62L84 84L76 90L60 70Z" fill="#d4a73a" stroke="#8a6410" stroke-width="1.4"/><circle cx="80" cy="86" r="6" fill="#0a0a10" stroke="url(#mcB)" stroke-width="1.6"/><g class="mcK"><rect x="76" y="34" width="14" height="5" rx="2.5" fill="url(#mcB)"/><circle cx="90" cy="36.5" r="4" fill="#ff3b5c" stroke="#fff" stroke-width=".8"/></g></svg></div>';
+  }
   function tgOppH(T, me, infoFn) {
     var now = Date.now();
     return '<div class="tgO">' + T.seats.map(function (s, i) {
@@ -5916,7 +5966,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function tgMsgText() {
     var T = TG && TG.T; if (!T) return ''; var me = TG.me, mineS = me >= 0 ? T.seats[me] : null, G = TGG[T.k];
     if (mineS && mineS.stack < G.ante && T.st !== 'play' && T.st !== 'end') return '参加費（' + G.ante + 'コイン）が足りないから観戦中だよ。席を立って、コイン受け取り機でもらってね';
-    if (T.st === 'lobby') return '次のラウンドまで ' + Math.max(0, Math.ceil((T.nt - Date.now()) / 1000)) + '秒　参加費 ' + G.ante + 'コイン（勝つと全員分がもらえるよ）';
+    if (T.st === 'lobby') return (G.join ? '「参加する」を押してね　' : '次のラウンドまで ') + 'あと ' + Math.max(0, Math.ceil((T.nt - Date.now()) / 1000)) + '秒　参加費 ' + G.ante + 'コイン';
     return G.msg(T, mineS, me);
   }
   function tgMsgUpd() { if (TG && $('tgMsg')) $('tgMsg').textContent = tgMsgText(); }
@@ -5950,28 +6000,36 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     return false;
   }
   function biRender(T, mineS, me) {
-    var g = T.g, dr = g.drawn || [], last = dr.length ? dr[dr.length - 1] : 0, h = '<div class="tgW"><div class="tgHd">' + tgDealerH() + tgOppH(T, me, function (s) { return T.st === 'play' && s.in ? ('穴 ' + (s.mk.length - 1) + (biReach(s) ? ' <b class="rc">リーチ!</b>' : '')) : (s.in ? '&nbsp;' : '観戦'); }) + '</div>';
+    var g = T.g, dr = g.drawn || [], last = dr.length ? dr[dr.length - 1] : 0, lob = T.st === 'lobby';
+    var h = '<div class="tgW"><div class="tgHd">' + tgStaffH() + tgOppH(T, me, function (s) { if (lob) return (s.npc || s.join) ? '<b class="jn">✅ 参加</b>' : '…まだ'; return T.st === 'play' && s.in ? ('穴 ' + (s.mk.length - 1) + (biReach(s) ? ' <b class="rc">リーチ!</b>' : '')) : (s.in ? '&nbsp;' : '観戦'); }) + '</div>';
     var pop = last && TG.ballSeen !== T.rd + ':' + last; TG.ballSeen = T.rd + ':' + last;
-    h += '<div class="bgTop"><div class="bgB' + (last ? '' : ' off') + (pop ? ' pop' : '') + '">' + (last ? '<small>' + BIL[Math.floor((last - 1) / 15)] + '</small>' + last : '—') + '</div><div class="bgH"><div>' + dr.slice(-9, -1).reverse().map(function (n) { return '<span>' + n + '</span>'; }).join('') + '</div><div class="bgPot">🪙 ポット ' + T.pot.toLocaleString() + '　のこり ' + (g.pool ? g.pool.length : 75) + '個</div></div></div>';
+    h += '<div class="bgTop">' + biMachine(pop) + '<div class="bgBw"><div class="bgB' + (last ? '' : ' off') + (pop ? ' pop' : '') + '">' + (last ? '<small>' + BIL[Math.floor((last - 1) / 15)] + '</small>' + last : '—') + '</div></div><div class="bgH"><div>' + dr.slice(-9, -1).reverse().map(function (n) { return '<span>' + n + '</span>'; }).join('') + '</div><div class="bgPot">🪙 ポット ' + T.pot.toLocaleString() + '<br>のこり ' + (g.pool ? g.pool.length : 75) + '個</div></div></div>';
     if (mineS && mineS.in && mineS.card) {
       if (!TG.sh || TG.shR !== T.rd) { TG.sh = {}; TG.shR = T.rd; }
       h += (biReach(mineS) && T.st === 'play' ? '<div class="bgRc">🔥 リーチ！</div>' : '') + '<div class="bgC">' + BIL.map(function (l) { return '<div class="bgL">' + l + '</div>'; }).join('') + mineS.card.map(function (n, k) { var hit = mineS.mk.indexOf(k) >= 0, can = !hit && n && dr.indexOf(n) >= 0, nw = hit && n && !TG.sh[k]; if (hit) TG.sh[k] = 1; return '<button type="button" class="bgc' + (hit ? ' hit' : '') + (nw ? ' new' : '') + (can ? ' can' : '') + (!n ? ' fr' : '') + '" data-k="' + k + '">' + (n || '★') + '</button>'; }).join('') + '</div>';
-    } else h += '<div class="tvW" style="padding:24px 0">' + (T.st === 'lobby' ? 'つぎのラウンドをまってね' : (mineS ? '参加費が足りないので観戦中だよ' : '観戦中だよ')) + '</div>';
+    } else if (lob) {
+      var jn = T.seats.filter(function (q) { return q && (q.npc || q.join); }).length;
+      h += '<div class="bgLb"><div class="t1">🎱 ビンゴ大会 参加者募集中！</div><div class="t2">下の「参加する」ボタンを押してね<br>参加費 <b>' + TGG.bi.ante + '</b> コイン ／ 1位が全員分をゲット！</div><div class="t3">いま <b>' + jn + '</b> 人が参加</div></div>';
+    } else h += '<div class="tvW" style="padding:24px 0">' + (mineS ? (mineS.join ? 'ラウンドが終わるまで観戦してね' : '参加ボタンを押さなかったので観戦中だよ') : '観戦中だよ') + '</div>';
     return h + tgOverH(T) + '</div>';
   }
-  function biMsg(T, mineS) { return T.st === 'lobby' ? 'つぎのラウンドまで少し待ってね（参加費 ' + TGG.bi.ante + 'コイン）' : (T.st === 'end' ? T.log : (mineS && mineS.in ? '光った数字をタップして穴をあけよう。1列そろったら「ビンゴ！」' : '見学中')); }
+  function biMsg(T, mineS) { return T.st === 'end' ? T.log : (mineS && mineS.in ? '金色に光った数字をタップして穴をあけよう。1列そろったら「ビンゴ！」' : '観戦中'); }
   function biCtl(T, mineS, me, cb) {
-    var play = T.st === 'play' && mineS && mineS.in, ln = play && biLine(mineS), key = [T.st, T.rd, ln ? 1 : 0, play ? 1 : 0].join('|');
+    var play = T.st === 'play' && mineS && mineS.in, ln = play && biLine(mineS), poor = mineS && mineS.stack < TGG.bi.ante, key = [T.st, T.rd, ln ? 1 : 0, play ? 1 : 0, mineS && mineS.join ? 1 : 0, poor ? 1 : 0, me].join('|');
     if (cb.dataset.k === key) return; cb.dataset.k = key;
-    if (T.st === 'lobby') { cb.innerHTML = '<div class="tvB"><button type="button" class="b ra" id="tgGo">いますぐ始める</button></div>'; $('tgGo').onclick = tgGoNow; }
-    else { cb.innerHTML = '<div class="tvB"><button type="button" class="b ' + (ln ? 'ra' : 'fo') + '" id="tgBg"' + (ln ? '' : ' disabled') + '>🎉 ビンゴ！</button></div>'; if (ln) $('tgBg').onclick = function () { tgDo('B'); }; }
+    if (T.st === 'lobby') {
+      if (!mineS) { cb.innerHTML = ''; return; }
+      if (poor) { cb.innerHTML = '<div class="tvB"><button type="button" class="b fo" disabled>参加費が足りません（観戦）</button></div>'; return; }
+      cb.innerHTML = '<div class="tvB"><button type="button" class="b ' + (mineS.join ? 'ca' : 'ra bgJoin') + '" id="tgJn">' + (mineS.join ? '✅ 参加ずみ（押すと取り消し）' : '🎱 参加する（' + TGG.bi.ante + 'コイン）') + '</button></div>'; $('tgJn').onclick = function () { tgJoin(mineS.join ? 0 : 1); };
+    } else if (T.st === 'play' && mineS && mineS.in) { cb.innerHTML = '<div class="tvB"><button type="button" class="b ' + (ln ? 'ra' : 'fo') + '" id="tgBg"' + (ln ? '' : ' disabled') + '>🎉 ビンゴ！</button></div>'; if (ln) $('tgBg').onclick = function () { tgDo('B'); }; }
+    else cb.innerHTML = '';
   }
   function biVoice(T, la) {
-    if (la.k === 'draw') { TG.dt = Date.now(); sndFlip(0); arSay(BIY[Math.floor((la.n - 1) / 15)] + '、' + la.n); }
-    else if (la.k === 'start') { TG.dt = Date.now(); sndDing(); tgBanner('🎱 スタート！'); }
-    else if (la.k === 'win') { var s = T.seats[la.i]; if (s && s.id === myMid) sndWin(); else sndLose(); arSay((s ? s.nm : 'だれか') + '、ビンゴです'); if (s) tcFloat(s.id, '🎉'); }
+    if (la.k === 'draw') { TG.dt = Date.now(); sndFlip(0); arSayF(BIY[Math.floor((la.n - 1) / 15)] + '、' + la.n + '番'); var ms = TG.me >= 0 ? T.seats[TG.me] : null; if (ms && ms.in && biReach(ms) && !TG.rcSaid) { TG.rcSaid = 1; setTimeout(function () { arSayF('リーチです！'); tgBanner('🔥 リーチ！'); }, 1500); } }
+    else if (la.k === 'start') { TG.dt = Date.now(); TG.rcSaid = 0; sndDing(); tgBanner('🎱 スタート！'); arSayF('ビンゴ、スタートです！'); }
+    else if (la.k === 'lobby') { TG.dt = Date.now(); arSayF('ビンゴ大会の参加者を募集します。参加ボタンを押してくださいね'); }
+    else if (la.k === 'win') { var s = T.seats[la.i]; if (s && s.id === myMid) sndWin(); else sndLose(); arSayF((s ? s.nm : 'だれか') + 'さん、ビンゴです！おめでとうございます'); if (s) tcFloat(s.id, '🎉'); }
   }
-
   /* UNO */
   var UNC = ['r', 'y', 'g', 'b'], UNL = { S: '⊘', R: '⇄', D: '+2', W: '★', F: '+4' }, UNN = { r: '赤', y: '黄', g: '緑', b: '青' };
   function unDeck() { var d = [], k; UNC.forEach(function (c) { d.push(c + '0'); for (var n = 1; n <= 9; n++) d.push(c + n, c + n); ['S', 'R', 'D'].forEach(function (v) { d.push(c + v, c + v); }); }); for (k = 0; k < 4; k++) d.push('wW', 'wF'); return tgShuf(d); }
@@ -6052,7 +6110,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     else if (la.k === 'start') { TG.dt = Date.now(); sndDing(); tgBanner('🃏 スタート！'); }
     else if (la.k === 'win') { if (s && s.id === myMid) sndWin(); else sndLose(); arSay((s ? s.nm : 'だれか') + '、あがりです'); if (s) tcFloat(s.id, '🎉'); }
   }
-  TGG = { bi: { nm: 'ビンゴ', ic: '🎱', ante: 500, start: biStart, tick: biTick, act: biAct, render: biRender, ctl: biCtl, voice: biVoice, msg: biMsg }, un: { nm: 'UNO', ic: '🃏', ante: 500, start: unStart, tick: unTick, act: unAct, render: unRender, ctl: unCtl, voice: unVoice, msg: unMsg } };
+  TGG = { bi: { nm: 'ビンゴ', ic: '🎱', join: 1, ante: 500, start: biStart, tick: biTick, act: biAct, render: biRender, ctl: biCtl, voice: biVoice, msg: biMsg }, un: { nm: 'UNO', ic: '🃏', ante: 500, start: unStart, tick: unTick, act: unAct, render: unRender, ctl: unCtl, voice: unVoice, msg: unMsg } };
 
   function tgRender() {
     arSeatSync(TG, TG && TG.k);
