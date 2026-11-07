@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:121-->
+<!--GV:122-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -3943,7 +3943,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 121;
+  var GV = 122;
   (function () {
     var last = Date.now();
     function chk() {
@@ -4528,7 +4528,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function minePin(m) {
     var n = MINES.indexOf(m) + 1, st = !isOpen(m) ? 'lock' : (hasSeen('done:' + m.id) ? 'done' : (minesDug(m) === 0 && n > 1 ? 'new' : ''));
-    return '<button type="button" class="pin ls-' + m.ls + ' ' + st + '" data-m="' + m.id + '" data-x="' + (px(m.lon) + (m.nx || 0)) + '" data-y="' + (py(m.lat) + (m.ny || 0)) + '"><span class="dot">' + (st === 'lock' ? '🔒' : (m.bs ? m.bl : n)) + '</span><span class="lb">' + m.nm + (st === 'lock' ? ' Lv' + m.lv : '') + '</span></button>';
+    return '<button type="button" class="pin ls-' + m.ls + ' ' + st + '" data-m="' + m.id + '" data-x="' + (px(m.lon) + (m.nx || 0)) + '" data-y="' + (py(m.lat) + (m.ny || 0)) + '"><span class="dot">' + (st === 'lock' ? '🔒' : (m.bs ? m.bl : n)) + '</span><span class="lb">' + m.nm + (m.bs ? '' : ' Lv' + m.lv) + '</span></button>';
   }
   function renderPins() {
     var h = '';
