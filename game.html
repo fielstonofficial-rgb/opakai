@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:147-->
+<!--GV:148-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -4560,7 +4560,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 147;
+  var GV = 148;
   (function () {
     var last = Date.now();
     function chk() {
@@ -4813,7 +4813,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var LRN = ['ノーマル', 'レア', '超レア', '激レア', '伝説'], LRC = ['#9db0b8', '#58a6ff', '#b583ff', '#ffd36a', '#ff7ad9'];
   function libRar(i) { return i.lg ? 4 : (i.tier || 0); }
   function libHow(i) {
-    if (i.lg) return '最上位のボス（Lv250で3%、Lv300で5%）だけが、ごくまれに落とす。お店では売っていません。';
+    if (i.lg) return '最上位のボス（ボスの強さ250で3%、300で5%）だけが、ごくまれに落とす。お店では売っていません。';
     var t = i.tier || 0;
     if (t === 0 && !i.drop) return 'ショップで買える（' + (i.price || 0).toLocaleString() + ' コイン）。';
     return ['ふつうの敵が、まれに落とす。', 'ふつうの敵が、まれに落とす（レア）。', '強い敵（大きい敵）が、ごくまれに落とす。', 'ボスだけが落とす。'][t] + 'お店では売っていません。';
@@ -4849,7 +4849,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     });
     BOSSES.forEach(function (b) {
       var st = (b.sig || []).map(function (s) { return BY[s] ? BY[s].nm : s; }).join('、');
-      a.push({ id: 'boss_' + b.bl, ic: '<span style="font-size:32px">👑</span>', nm: b.bn, r: -1, cat: 'ボス', sub: '推奨 Lv' + b.bl + ' ／ ' + b.pn + '人〜 ／ ' + b.zone, det: { ic: '<span style="font-size:60px">👑</span>', nm: b.bn, r: -1, rows: [['ステージ', b.zone], ['推奨レベル', 'Lv' + b.bl + ' 以上'], ['パーティー', b.pn + ' 人（以上）'], ['ここで出る石', st], ['倒すと', 'コインと経験値が、パーティー全員に満額で入る。装備も、まれに落とす（激レアが出やすい）。' + (b.bl >= 250 ? '伝説の装備のチャンスもある（Lv' + b.bl + ' のボスで ' + (b.bl >= 300 ? '5' : '3') + '%）。' : '')]], how: '', sell: 0 } });
+      a.push({ id: 'boss_' + b.bl, ic: '<span style="font-size:32px">👑</span>', nm: b.bn, r: -1, cat: 'ボス', sub: 'ボスの強さ ' + b.bl + ' ／ ' + b.pn + '人〜 ／ ' + b.zone, det: { ic: '<span style="font-size:60px">👑</span>', nm: b.bn, r: -1, rows: [['ステージ', b.zone], ['ボスの強さ', b.bl + '（数字が大きいほど強い。仲間と力を合わせて挑む）'], ['パーティー', b.pn + ' 人（以上）'], ['ここで出る石', st], ['倒すと', 'コインと経験値が、パーティー全員に満額で入る。装備も、まれに落とす（激レアが出やすい）。' + (b.bl >= 250 ? '伝説の装備のチャンスもある（強さ' + b.bl + ' のボスで ' + (b.bl >= 300 ? '5' : '3') + '%）。' : '')]], how: '', sell: 0 } });
     });
     return a;
   }
@@ -4866,7 +4866,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function libMineEntries() {
     return MINES.map(function (m) {
       var st = (m.sig || []).map(function (s) { return BY[s] ? BY[s].nm : s; }).join('、');
-      return { id: 'mi_' + m.id, ic: '<span style="font-size:30px">⛏</span>', nm: m.nm, r: -1, cat: (m.ct.split('・')[0]), sub: m.ct.split('・').pop() + ' ／ Lv' + (m.need ? m.need : '0') + '〜', ord: m.need || 0, det: { ic: '<span style="font-size:56px">⛏</span>', nm: m.nm, r: -1, rows: [['場所', m.ct], ['開くレベル', m.need ? 'Lv' + m.need : 'はじめから行ける'], ['おもに掘れる石', st], ['ひとこと', m.about]], how: '', sell: 0 } };
+      return { id: 'mi_' + m.id, ic: '<span style="font-size:30px">⛏</span>', nm: m.nm, r: -1, cat: (m.ct.split('・')[0]), sub: m.ct.split('・').pop() + ' ／ ' + (m.bs ? m.pn + '人〜のパーティー専用' : (m.lv > 1 ? 'Lv' + m.lv + '〜' : 'はじめから')), ord: m.bs ? 1000 + (m.bl || 0) : (m.lv || 1), det: { ic: '<span style="font-size:56px">⛏</span>', nm: m.nm, r: -1, rows: [['場所', m.ct], ['開くレベル', m.bs ? 'レベル制限なし（' + m.pn + '人以上のパーティーで入る）' : (m.lv > 1 ? 'Lv' + m.lv + ' から' : 'はじめから行ける')], ['おもに掘れる石', st], ['ひとこと', m.about]], how: '', sell: 0 } };
     }).sort(function (a, b) { return a.ord - b.ord; });
   }
   function libKnow(arr, extra) {
