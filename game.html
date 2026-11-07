@@ -4958,7 +4958,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 158;
+  var GV = 159;
   (function () {
     var last = Date.now();
     function chk() {
@@ -6804,7 +6804,7 @@ var TB = {
     arcShow('<div class="tvh"><b>🔨 OPAL モグラたたき</b><span id="mlInfo" class="chipb"></span><button type="button" class="arcx" id="mlX">とじる</button></div>' +
       '<div class="tvA mlA" id="mlA"><div class="mlMq"><div class="fcs">' + moleSVG() + '</div><div>SCORE<b id="mlS">0</b></div><div>TIME<b id="mlT">30</b></div><div><small>モグラ＝1点<br>サングラス＝3点<br>アシカ＝10点</small></div><div class="fcs">' + sealSVG() + '</div></div>' +
       '<div class="mlG" id="mlG">' + cs + '<div class="mlCb" id="mlCb"></div></div><div class="mlFl" id="mlFl"></div>' +
-      '<div class="mlOv" id="mlOv"><h2>🔨 OPAL モグラたたき</h2><p>30秒で、顔を出したモグラをたたけ！<br>サングラスのモグラは <b style="color:#ffe27a">3点</b>、<br>「アシカ！」が出たら <b style="color:#ffe27a">10点</b>！<br>つづけてたたくと、コンボでボーナス。<br>70点で賭けたコインがもどる（最大5倍）</p></div></div>' +
+      '<div class="mlOv" id="mlOv"><h2>🔨 OPAL モグラたたき</h2><p>30秒で、顔を出したモグラをたたけ！<br>サングラスのモグラは <b style="color:#ffe27a">3点</b>、<br>「アシカ！」が出たら <b style="color:#ffe27a">10点</b>！<br>つづけてたたくと、コンボでボーナス。<br>45点で賭けたコインがもどる（最大6倍）</p></div></div>' +
       '<div class="tvM" id="mlMsg"></div><div class="tvC"><div class="tvB">' + [10, 50, 100, 500].map(function (b) { return '<button type="button" class="b bt' + (b === bet ? ' on' : '') + '" data-b="' + b + '">' + b + '</button>'; }).join('') + '<button type="button" class="b ra" id="mlGo">START</button></div></div>', 'tv');
     function info() { var e = $('mlInfo'); if (e) e.textContent = '🪙 ' + chipsGet().toLocaleString(); }
     info(); $('mlX').onclick = arcClose;
@@ -6854,7 +6854,7 @@ var TB = {
     }
     function end() {
       run = false; clearInterval(tk); clearInterval(bg); cells.forEach(hide);
-      var pay = Math.min(bet * 5, Math.round(bet * score / 70)); chipsSet(chipsGet() + pay); info(); sndFan();
+      var pay = Math.min(bet * 6, Math.round(bet * score / 45)); chipsSet(chipsGet() + pay); info(); sndFan();
       var ov = $('mlOv'); ov.style.display = 'flex';
       ov.innerHTML = '<h2>TIME UP！</h2><div class="sc">' + score + ' 点</div><p>モグラ ' + hitM + ' 匹 ／ <b style="color:#ffe27a">アシカ ' + hitS + ' 匹</b> ／ 最大コンボ ' + bestC + '</p><p style="font-size:18px;color:#ffe27a">🪙 ' + (pay >= bet ? '+' + (pay - bet) : '-' + (bet - pay)) + '　（もどり ' + pay + '）</p><button type="button" class="b ra" id="mlAg">もう1回</button>';
       $('mlAg').onclick = function () { ov.style.display = 'none'; $('mlMsg').textContent = ''; }; $('mlGo').disabled = false; $('mlMsg').textContent = pay >= bet ? '🎉 ナイス！' : 'おしい！もう1回？';
