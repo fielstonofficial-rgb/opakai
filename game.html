@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:118-->
+<!--GV:119-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -3582,16 +3582,16 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var w = $('world'), html = '', W = CAFE_W, H = CAFE_H; setWorld(W, H); w.classList.remove('cave'); w.style.background = '#1d1518'; SEATS = arcLoungeSeats();
     html += arcGround(W, H);
     var dc = function (svg, x, y, wd, ht, z) { html += '<div class="dc" style="left:' + x + 'px;top:' + y + 'px;width:' + wd + 'px;height:' + ht + 'px;z-index:' + Math.round(z == null ? y : z) + '">' + svg + '</div>'; };
-    var lb = function (t, x, y) { html += '<div class="tlbl" style="left:' + x + 'px;top:' + y + 'px">' + t + '</div>'; };
+    var lb = function (t, x, y) { html += '<div class="tlbl" style="left:' + x + 'px;top:' + y + 'px;white-space:nowrap">' + t + '</div>'; };
     dc(arcDoorSVG(), 500, 330, 220, 170, 330); lb('対戦会場入口', 500, 360); dc(arcPrizeKSVG(), 700, 352, 74, 96, 352); html += '<div class="tlbl" style="left:700px;top:392px;white-space:nowrap">🎁 景品交換所</div>'; dc(arcDispSVG(), 880, 352, 74, 96, 352); html += '<div class="tlbl" style="left:880px;top:366px;white-space:nowrap">🪙 コイン受け取り機</div>'; dc(arcRankSVG(), 800, 200, 160, 110, 200); html += '<div class="tlbl" style="left:800px;top:216px;white-space:nowrap">🏆 コインランキング掲示板</div>';
     dc(arcBarSVG(), 210, 336, 360, 84, 336); lb('🍸 バーカウンター', 210, 262); html += '<div class="cfe" style="left:70px;top:296px;font-size:26px;z-index:337">🍸</div><div class="cfe" style="left:150px;top:296px;font-size:26px;z-index:337">🥃</div><div class="cfe" style="left:290px;top:296px;font-size:26px;z-index:337">🍷</div><div class="cfe" style="left:350px;top:296px;font-size:26px;z-index:337">🥂</div>';
     LGT.forEach(function (t) { dc(arcLoungeTableSVG(), t[0], t[1] + 36, 130, 74, t[1] + 36); });
     SEATS.forEach(function (sa) { if (sa.stool) dc(arcStoolSVG(), sa.x, sa.y + 8, 40, 52, sa.y - 1); else { dc(arcChairSVG(), sa.x, sa.y - 2, 31, 28, sa.y - 1); dc(arcSeatSVG(), sa.x, sa.y + 5, 34, 17, sa.y + 1); } });
     lb("🛋️ ラウンジ", 200, 668);
 
-    dc(arcTableSVG('ph'), 186, 616, 265, 133, 545); lb('♠ テキサスホールデム', 186, 436);
-    dc(arcTableSVG('bi'), 828, 607, 234, 117, 545); lb('🎱 ビンゴ', 828, 462);
-    dc(arcTableSVG('un'), 828, 797, 234, 117, 735); lb('🃏 UNO', 828, 652);
+    dc(arcTableSVG('ph'), 186, 616, 265, 133, 545); lb('♠ テキサスオパールホールデム', 186, 436);
+    dc(arcTableSVG('bi'), 828, 607, 234, 117, 545); lb('🎱 オパールビンゴ', 828, 462);
+    dc(arcTableSVG('un'), 828, 797, 234, 117, 735); lb('🃏 オパールUNO', 828, 652);
     html += '<div class="tlbl" style="left:500px;top:766px">🚪 出口</div>';
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
@@ -3934,7 +3934,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 118;
+  var GV = 119;
   (function () {
     var last = Date.now();
     function chk() {
@@ -6074,7 +6074,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       h += (T.st === 'play' && mineS.op && !mineS.ow ? '<button type="button" class="bgOp' + (TG.pickK === 'op' ? ' on' : '') + '">💎 オパールカード：' + (TG.pickK === 'op' ? '穴をあけるマスをタップ' : '好きなマスに1回使える') + '</button>' : (mineS.op && mineS.ow ? '<div class="bgOpU">💎 オパールカード使用ずみ</div>' : '')) + (biReach(mineS) && T.st === 'play' ? '<div class="bgRc">🔥 リーチ！</div>' : '') + '<div class="bgC">' + BIL.map(function (l) { return '<div class="bgL">' + l + '</div>'; }).join('') + mineS.card.map(function (n, k) { var hit = mineS.mk.indexOf(k) >= 0, can = !hit && n && dr.indexOf(n) >= 0, nw = hit && n && !TG.sh[k]; if (hit) TG.sh[k] = 1; return '<button type="button" class="bgc' + (hit ? ' hit' : '') + (nw ? ' new' : '') + (can ? ' can' : '') + (!n ? ' fr' : '') + (TG.pickK === 'op' && !hit && n ? ' opt' : '') + '" data-k="' + k + '">' + (n || '★') + '</button>'; }).join('') + '</div>';
     } else if (lob) {
       var jn = T.seats.filter(function (q) { return q && (q.npc || q.join === 1); }).length;
-      h += '<div class="bgLb"><div class="t1">🎱 ビンゴ大会 参加者募集中！</div><div class="t2">下の「参加する」ボタンを押してね<br>参加費 <b>' + TGG.bi.ante + '</b> コイン ／ 1位が全員分をゲット！</div><div class="t3">いま <b>' + jn + '</b> 人が参加</div></div>';
+      h += '<div class="bgLb"><div class="t1">🎱 オパールビンゴ 参加者募集中！</div><div class="t2">下の「参加する」ボタンを押してね<br>参加費 <b>' + TGG.bi.ante + '</b> コイン ／ 1位が全員分をゲット！</div><div class="t3">いま <b>' + jn + '</b> 人が参加</div></div>';
     } else h += '<div class="tvW" style="padding:24px 0">' + (mineS ? (mineS.join === 1 ? 'ラウンドが終わるまで観戦してね' : mineS.join === 2 ? '観戦を選んだよ。次のラウンドで参加できるよ' : '参加ボタンを押さなかったので観戦中だよ') : '観戦中だよ') + '</div>';
     return h + tgOverH(T) + '</div>';
   }
@@ -6218,7 +6218,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       h += '<div class="unC"><div class="unDk"><span class="uc udk">' + unCardSvg('xx', 1) + '</span><small>のこり ' + g.deck.length + '</small></div><div class="unDk"><span class="uc big u' + g.top.charAt(0) + (pop ? ' pop' : '') + '">' + unCardSvg(g.top) + '</span><small class="unCl"><span class="unCol" style="background:' + UNCC[g.col] + '"></span>' + UNN[g.col] + '</small></div></div>';
     } else if (T.st === 'lobby') {
       var jn = T.seats.filter(function (q) { return q && (q.npc || q.join === 1); }).length;
-      h += '<div class="unLb"><div class="t1">🃏 UNO 参加者募集中！</div><div class="t2">参加費 <b>' + TGG.un.ante + '</b> コイン ／ 1位が全員分をゲット</div><div class="t3">いま <b>' + jn + '</b> 人が参加</div></div>';
+      h += '<div class="unLb"><div class="t1">🃏 オパールUNO 参加者募集中！</div><div class="t2">参加費 <b>' + TGG.un.ante + '</b> コイン ／ 1位が全員分をゲット</div><div class="t3">いま <b>' + jn + '</b> 人が参加</div></div>';
     }
     T.seats.forEach(function (q, i) { if (i === me) return; h += unSeatH(T, i, UNP[(i - base + 5) % 5], me); });
     if (mineS) h += unSeatH(T, me, UNP[0], me);
@@ -6259,7 +6259,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     else if (la.k === 'lobby') { setTimeout(function () { unSay(-1, 'lob', '☕'); }, 1500); }
     else if (la.k === 'win') { if (s && s.id === myMid) sndWin(); else sndLose(); arSay((s ? s.nm : 'だれか') + '、あがりです'); if (s) tcFloat(s.id, '🎉'); if (s && s.npc) unSay(la.i, 'won', '🎉'); else unSay(-1, 'win', '👏'); }
   }
-  TGG = { bi: { nm: 'ビンゴ', ic: '🎱', join: 1, rules: '<ul><li>参加費は <b>500コイン</b>。ロビーで「参加する」か「観戦する」を選んでね（押さなければ観戦になるよ）</li><li>スタッフが玉を読み上げるよ。自分のカードにその数字があれば <b>金色に光る</b>から、タップして穴をあけよう</li><li>タテ・ヨコ・ナナメのどれか <b>1列</b>そろったら下の「🎉 ビンゴ！」ボタンを押そう</li><li>あと1つで1列なら「リーチ！」。最初に「ビンゴ！」を押した人が <b>みんなの参加費（ポット）を総取り</b></li><li>真ん中のマスは最初から穴あき（フリー）</li><li><b>💎 オパールボール</b>：たまに玉の中にまぎれて出てくるよ。出たラウンドは、勝った人の賞金が <b>5倍</b>（増えた分はお店もち）！</li><li>玉が全部出ても誰もビンゴしなかったら、参加費は返ってくるよ</li><li>光ってる数字を放っておくと、他の人に先を越されちゃうかも！</li><li><b>💎 オパールカード</b>：たまに（5ゲームに1回ほど）だれか1人に配られるよ。持ってる人は好きなマスに1回だけ穴をあけられて、リーチが4本そろうと即勝ち。だれが持ってるかはヒミツ</li></ul>', ante: 500, start: biStart, tick: biTick, act: biAct, render: biRender, ctl: biCtl, voice: biVoice, msg: biMsg }, un: { nm: 'UNO', ic: '🃏', join: 1, rules: '<ul><li>参加費は <b>500コイン</b>。ロビーで「参加する」か「観戦する」を選んでね（押さなければ観戦になるよ）</li><li>最初に <b>7枚</b>ずつ配るよ。<b>手札を最初になくした人</b>が勝ち、みんなの参加費（ポット）を総取り</li><li>自分の番には、場の一番上のカードと <b>同じ色</b> か <b>同じ数字・記号</b> のカードを出せるよ（出せるカードは光る）</li><li>出せるカードがなければ「🃏 ひく」で1枚ひいて、次の人の番になるよ</li><li><b>⊘ スキップ</b>：次の人を1回とばす</li><li><b>⇄ リバース</b>：回る向きが逆になる（2人のときはスキップと同じ）</li><li><b>+2</b>：次の人が2枚ひいて、その人の番をとばす</li><li><b>ワイルド</b>（4色のカード）：いつでも出せて、次の色を好きに決められる</li><li><b>ワイルド +4</b>：いつでも出せて、色を決めて、次の人が4枚ひく</li><li>残り1枚になると自動で「UNO!」と宣言されるよ</li><li>25秒以内に出さないと、自動で1枚ひくよ</li><li><b>💎 オパールカード</b>：たまに（5ゲームに1回ほど）だれか1人の手札に入るよ。いつでも出せて、出すと <b>相手全員が7枚ひく</b>！ だれが持ってるかはヒミツ</li></ul>', ante: 500, start: unStart, tick: unTick, act: unAct, render: unRender, ctl: unCtl, voice: unVoice, msg: unMsg } };
+  TGG = { bi: { nm: 'オパールビンゴ', ic: '🎱', join: 1, rules: '<ul><li>参加費は <b>500コイン</b>。ロビーで「参加する」か「観戦する」を選んでね（押さなければ観戦になるよ）</li><li>スタッフが玉を読み上げるよ。自分のカードにその数字があれば <b>金色に光る</b>から、タップして穴をあけよう</li><li>タテ・ヨコ・ナナメのどれか <b>1列</b>そろったら下の「🎉 ビンゴ！」ボタンを押そう</li><li>あと1つで1列なら「リーチ！」。最初に「ビンゴ！」を押した人が <b>みんなの参加費（ポット）を総取り</b></li><li>真ん中のマスは最初から穴あき（フリー）</li><li><b>💎 オパールボール</b>：たまに玉の中にまぎれて出てくるよ。出たラウンドは、勝った人の賞金が <b>5倍</b>（増えた分はお店もち）！</li><li>玉が全部出ても誰もビンゴしなかったら、参加費は返ってくるよ</li><li>光ってる数字を放っておくと、他の人に先を越されちゃうかも！</li><li><b>💎 オパールカード</b>：たまに（5ゲームに1回ほど）だれか1人に配られるよ。持ってる人は好きなマスに1回だけ穴をあけられて、リーチが4本そろうと即勝ち。だれが持ってるかはヒミツ</li></ul>', ante: 500, start: biStart, tick: biTick, act: biAct, render: biRender, ctl: biCtl, voice: biVoice, msg: biMsg }, un: { nm: 'オパールUNO', ic: '🃏', join: 1, rules: '<ul><li>参加費は <b>500コイン</b>。ロビーで「参加する」か「観戦する」を選んでね（押さなければ観戦になるよ）</li><li>最初に <b>7枚</b>ずつ配るよ。<b>手札を最初になくした人</b>が勝ち、みんなの参加費（ポット）を総取り</li><li>自分の番には、場の一番上のカードと <b>同じ色</b> か <b>同じ数字・記号</b> のカードを出せるよ（出せるカードは光る）</li><li>出せるカードがなければ「🃏 ひく」で1枚ひいて、次の人の番になるよ</li><li><b>⊘ スキップ</b>：次の人を1回とばす</li><li><b>⇄ リバース</b>：回る向きが逆になる（2人のときはスキップと同じ）</li><li><b>+2</b>：次の人が2枚ひいて、その人の番をとばす</li><li><b>ワイルド</b>（4色のカード）：いつでも出せて、次の色を好きに決められる</li><li><b>ワイルド +4</b>：いつでも出せて、色を決めて、次の人が4枚ひく</li><li>残り1枚になると自動で「UNO!」と宣言されるよ</li><li>25秒以内に出さないと、自動で1枚ひくよ</li><li><b>💎 オパールカード</b>：たまに（5ゲームに1回ほど）だれか1人の手札に入るよ。いつでも出せて、出すと <b>相手全員が7枚ひく</b>！ だれが持ってるかはヒミツ</li></ul>', ante: 500, start: unStart, tick: unTick, act: unAct, render: unRender, ctl: unCtl, voice: unVoice, msg: unMsg } };
 
   function tgRender() {
     arSeatSync(TG, TG && TG.k);
@@ -6561,7 +6561,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function openHoldem() {
     tvQuiet(true);
     try { var pend = parseInt(localStorage.getItem('opa_pk_pend') || '0', 10); if (pend > 0) { chipsSet(chipsGet() + pend); localStorage.removeItem('opa_pk_pend'); } } catch (e) {}
-    chipFree(); var buy = chipsGet(); if (buy < 20) { arcShow('<h2>♠ テキサスホールデム</h2><p>コインが足りません</p><button type="button" class="arcx" id="pkX0">とじる</button>'); $('pkX0').onclick = arcClose; return; }
+    chipFree(); var buy = chipsGet(); if (buy < 20) { arcShow('<h2>♠ テキサスオパールホールデム</h2><p>コインが足りません</p><button type="button" class="arcx" id="pkX0">とじる</button>'); $('pkX0').onclick = arcClose; return; }
     chipsSet(chipsGet() - buy); if (!(player && player.gm)) { try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {} }
     arcShow('<div class="tvh"><b style="white-space:nowrap;font-size:10.5px;letter-spacing:-.02em">♠ テキサスオパールホールデム</b><span id="pkInfo" class="chipb" style="white-space:nowrap;font-size:12px;padding:3px 8px"></span><button type="button" class="arcx" id="pkH" style="margin-right:4px">役</button><button type="button" class="arcx" id="pkM" style="margin-right:4px">☰</button><button type="button" class="arcx" id="pkX" style="white-space:nowrap">席を立つ</button></div><div class="tvAw"><div id="pkTbl" class="tvA tvAi"></div><div id="pkFl" class="tvFl"></div><button type="button" id="pkRest" class="pkRest">☕ 休憩</button><div id="pkHelp" style="display:none;position:absolute;left:6%;right:6%;top:8%;z-index:30;background:#101820ee;border:2px solid #ffd36a;border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.55;color:#fff"><b style="color:#ffd36a">役の強さ（上ほど強い）</b><br>① ストレートフラッシュ：同じマークの連番5枚<br>② フォーカード：同じ数字4枚<br>③ フルハウス：3枚＋2枚の組み合わせ<br>④ フラッシュ：同じマーク5枚（♠♥♦♣）<br>⑤ ストレート：連番5枚（マークはバラバラでOK）<br>⑥ スリーカード：同じ数字3枚<br>⑦ ツーペア：ペアが2組<br>⑧ ワンペア：同じ数字2枚<br>⑨ ハイカード：役なし（いちばん大きい数字）<br><span style="color:#9fd0ff">手札2枚＋場の5枚から、いちばん強い5枚で勝負。自分の役は「現在：○○」で出るよ。（タップで閉じる）</span></div></div><div id="pkMsg" class="tvM"></div><div id="pkCtl" class="tvC"></div>' + tcHTML('pk'), 'tv');
     PK = { T: null, me: -1, last: Date.now(), hb: 0, seen: {}, iv: 0, buy: buy, bub: {}, pos: {}, cl: [] }; tcInit('pk', PK, 'pk'); PK.iv = setInterval(pkTick, 250);
