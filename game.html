@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:98-->
+<!--GV:99-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -184,9 +184,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #pf{position:absolute;inset:0;z-index:48;display:none;align-items:center;justify-content:center;background:rgba(0,0,0,.55);padding:18px}
 #pf.on{display:flex}
 #arc{position:absolute;inset:0;z-index:62;display:none;background:#05060d}
-#cgauge{position:fixed;right:3px;top:50%;transform:translateY(-50%);width:26px;height:190px;border:2px solid #ffe27a;border-radius:13px;background:#000a;overflow:hidden;z-index:99990;pointer-events:none;display:none}
-#cgauge i{position:absolute;left:0;right:0;bottom:0;background:linear-gradient(0deg,#c98a00,#ffe27a);opacity:.85;transition:height .5s}
-#cgauge span{position:absolute;inset:0;writing-mode:vertical-rl;display:flex;align-items:center;justify-content:center;font-size:11.5px;font-weight:800;color:#fff;text-shadow:0 0 3px #000,0 0 3px #000;white-space:nowrap;letter-spacing:1px}
+#cgauge{flex:0 0 auto;display:none;flex-direction:column;align-items:center;justify-content:center;min-width:78px;height:44px;margin-right:6px;padding:0 8px;border:2px solid #ffe27a;border-radius:12px;color:#fff;font-weight:800;line-height:1.15;text-shadow:0 0 3px #000,0 0 3px #000;pointer-events:none}
+#cgauge b{font-size:11px}#cgauge span{font-size:13px}
 #arc.on{display:block}
 #arc .arcc{position:absolute;inset:0;overflow:auto;padding:18px;color:#fff;text-align:center;background:radial-gradient(ellipse at 50% 0,#2b1060 0,#0a0820 60%,#05060d 100%)}
 #arc h2{margin:6px 0 4px;font-size:24px;letter-spacing:2px;color:#ffe27a;text-shadow:0 0 12px #ff6bd6,0 0 24px #7a5cff}
@@ -3779,7 +3778,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 98;
+  var GV = 99;
   (function () {
     var last = Date.now();
     function chk() {
@@ -5230,10 +5229,11 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function chipBar() { return '<div class="chipb">🪙 <b id="chipN">' + chipsGet().toLocaleString() + '</b> コイン</div>'; }
   function coinTotal() { var t = chipsGet(); try { if (PK && PK.T) { var a = PK.T.seats[pkMine()]; if (a) t += a.stack; } else if (BJ && BJ.T) { var b = BJ.T.seats[bjMine()]; if (b) t += b.stack; } } catch (e) {} return t; }
   function coinGauge() {
-    var g = $('cgauge'); if (!player || !inArcRoom || PK || BJ) { if (g) g.style.display = 'none'; return; }
-    if (!g) { g = document.createElement('div'); g.id = 'cgauge'; g.innerHTML = '<i></i><span></span>'; document.body.appendChild(g); }
+    var g = $('cgauge'), bb = $('bagBtn'); if (!player || !inArcRoom || PK || BJ || !bb) { if (g) g.style.display = 'none'; return; }
+    if (!g) { g = document.createElement('div'); g.id = 'cgauge'; g.innerHTML = '<b>🪙 コイン</b><span></span>'; }
+    if (g.parentNode !== bb.parentNode || g.nextSibling !== bb) bb.parentNode.insertBefore(g, bb);
     var t = coinTotal(), pk = 1000; try { pk = Math.max(1000, parseInt(localStorage.getItem('opa_cpeak') || '1000', 10) || 1000); if (t > pk) { pk = t; localStorage.setItem('opa_cpeak', String(t)); } } catch (e) {}
-    g.style.display = 'block'; g.firstChild.style.height = Math.max(3, Math.min(100, t / pk * 100)) + '%'; g.lastChild.textContent = '🪙 コイン ' + t.toLocaleString() + '枚';
+    var pc = Math.max(4, Math.min(100, t / pk * 100)); g.style.display = 'flex'; g.style.background = 'linear-gradient(90deg,#c98a00 0,#ffe27a ' + pc + '%,#2a2418 ' + pc + '%)'; g.lastChild.textContent = t.toLocaleString() + '枚';
   }
   setInterval(coinGauge, 800);
   function chipUpd() { var e = $('chipN'); if (e) e.textContent = chipsGet().toLocaleString(); }
@@ -5565,7 +5565,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function tcAdd(n, x, me, sys) { if (!TC) return; TC.P.cl.push({ n: n, x: x, me: me, sys: sys }); if (TC.P.cl.length > 80) TC.P.cl.shift(); tcRedraw(); }
   function tcBubble(id, x) { if (!TC) return; var P = TC.P; P.bub[id] = { x: x, exp: Date.now() + 3600 }; if (TC.g === 'pk') pkRender(); else bjRender(); setTimeout(function () { if (TC && TC.P === P) { if (TC.g === 'pk') pkRender(); else bjRender(); } }, 3700); }
   function tcFloat(id, emoji) {
-    if (!TC) return; var L = $(TC.p + 'fl'); if (!L) return; var ps = TC.P.pos[id] || [50, 80];
+    if (!TC) return; var L = $(TC.p + 'Fl'); if (!L) return; var ps = TC.P.pos[id] || [50, 80];
     for (var i = 0; i < 5; i++) (function (i) { setTimeout(function () { var f = document.createElement('span'); f.className = 'tvF'; f.textContent = emoji; f.style.left = (ps[0] + (Math.random() * 8 - 4)) + '%'; f.style.top = ps[1] + '%'; f.style.fontSize = (22 + Math.random() * 14) + 'px'; f.style.setProperty('--dx', Math.round(Math.random() * 80 - 40) + 'px'); L.appendChild(f); setTimeout(function () { f.remove(); }, 2300); }, i * 80); })(i);
   }
   function tcSend(k, x) {
@@ -5779,8 +5779,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function pkForb(T) { var o = []; T.seats.forEach(function (s, i) { if (s && !s.npc && !s.gone) { var k = (i + 4) % 8; if (o.indexOf(k) < 0) o.push(k); } }); return o; }
   function pkStart(T) {
     T.seats.forEach(function (s, i) { if (s && s.gone) T.seats[i] = null; });
-    T.npcBuy = Math.max(1000, T.seats.reduce(function (m, q) { return q && !q.npc && !q.gone ? Math.max(m, q.stack) : m; }, 0));
-    T.seats.forEach(function (q) { if (q && q.npc && q.stack < T.npcBuy * .2 && q.stack >= PKBB) q.stack = T.npcBuy; });
+    T.npcBuy = 2000; /* NPCは最初も入れ替わりも、持ちコイン2000固定 */
     (function () { var fb = pkForb(T); T.seats.forEach(function (s, i) { if (s && s.npc && fb.indexOf(i) >= 0) { var to = -1, q; for (q = 0; q < 8; q++) if (!T.seats[q] && fb.indexOf(q) < 0) { to = q; break; } if (to >= 0) { T.seats[to] = s; T.seats[i] = null; } } }); })();
     T.seats.forEach(function (s, i) { if (s && s.npc && s.stack < PKBB) { var old = s.nm; T.lastNpc = old; T.seats[i] = null; var j = tvAddNpc(T, 8, pkSeat, i, pkForb(T)); if (j >= 0) tvNote(T, '「' + old + '」が飛ばされた！ 新しい対戦相手「' + T.seats[j].nm + '」が着席したよ'); } });
     if (!T.seats.some(function (s) { return s && s.npc; })) { var j2 = tvAddNpc(T, 8, pkSeat, -1, pkForb(T)); if (j2 >= 0) tvNote(T, '新しい対戦相手「' + T.seats[j2].nm + '」が着席したよ'); }
@@ -5978,7 +5977,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     $('pkM').onclick = pkMenu; $('pkX').onclick = pkLeave; $('pkH').onclick = function () { var h = $('pkHelp'); h.style.display = h.style.display === 'none' ? 'block' : 'none'; }; $('pkHelp').onclick = function () { this.style.display = 'none'; }; pkRender(); pkSend({ k: 'who' });
     var nm = (player && player.avatar && player.avatar.name) || 'あなた';
     setTimeout(function () {
-      if (!PK) return; if (!PK.T) { PK.T = pkNewTable(); PK.T.seats[0].stack = Math.max(1000, buy); PK.T.seats[1] = pkSeat(myMid, String(nm).slice(0, 8), buy, 0); PK.me = 1; pkPush(PK.T); }
+      if (!PK) return; if (!PK.T) { PK.T = pkNewTable(); PK.T.seats[0].stack = 2000; PK.T.seats[1] = pkSeat(myMid, String(nm).slice(0, 8), buy, 0); PK.me = 1; pkPush(PK.T); }
       else { PK.me = pkMine(); if (PK.me < 0) pkSend({ k: 'sit', n: nm, b: buy }); }
     }, 1300);
     PK.sitCheck = setInterval(function () { if (!PK || !PK.T) return; PK.me = pkMine(); if (PK.me < 0 && !PK.T.seats.every(function (s) { return s; })) pkSend({ k: 'sit', n: nm, b: buy }); if (PK.me < 0 && PK.T.seats.every(function (s) { return s; })) { clearInterval(PK.sitCheck); $('pkCtl').innerHTML = '<div class="pkMsg">満席です</div>'; } }, 1500);
