@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:116-->
+<!--GV:117-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -395,6 +395,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #arc .bgOpU{text-align:center;font-size:11px;color:#9ff}
 #arc .bgc.opt{outline:3px dashed #7af0ff;outline-offset:-3px}
 #arc .unS .av.cat{overflow:visible;background:#fff6e8}#arc .unS .av.cat svg{border-radius:0;overflow:visible}
+#arc .pkRest{position:absolute;left:6px;bottom:6px;z-index:25;padding:7px 13px;border-radius:14px;border:2px solid #9ff0c0;background:rgba(6,30,20,.9);color:#c9ffe0;font-weight:800;font-size:12.5px;box-shadow:0 2px 8px #0008}
+#arc .pkRest.on{background:linear-gradient(#ffe27a,#f0a81c);color:#3a2400;border-color:#fff3b0;box-shadow:0 0 12px #ffc83a}
 #arc .tgTm{flex:0 0 auto;height:5px;border-radius:3px;background:#fff2;overflow:hidden;margin:0 10px}
 #arc .tgTm i{display:block;height:100%;background:linear-gradient(90deg,#ff5a5a,#ffe27a,#4cd964);transform-origin:left;animation-name:tgTm;animation-timing-function:linear;animation-fill-mode:forwards}
 @keyframes tgTm{from{transform:scaleX(1)}to{transform:scaleX(0)}}
@@ -3928,7 +3930,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 116;
+  var GV = 117;
   (function () {
     var last = Date.now();
     function chk() {
@@ -6353,7 +6355,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function pkSeat(id, nm, stack, npc) { return { id: id, nm: nm, stack: stack, hole: [], bet: 0, tot: 0, f: 0, a: 0, act: 0, npc: npc ? 1 : 0, out: 0, gone: 0 }; }
   function pkNewTable() { var T = { v: 0, hid: myMid, hand: 0, seats: [null, null, null, null, null, null, null, null], btn: -1, st: 'wait', board: [], deck: [], pot: 0, cur: 0, minR: PKBB, turn: -1, tt: 0, nt: Date.now() + 1500, run: 0, res: null, npcAt: 0, log: '' }; T.seats[0] = pkSeat('npc', 'ジョー', PKBUY, 1); return T; }
   function pkNext(T, i, any) { for (var k = 1; k <= 8; k++) { var j = (i + k) % 8, s = T.seats[j]; if (s && !s.f && (any || !s.a)) return j; } return -1; }
-  function pkElig(T) { var o = []; T.seats.forEach(function (s, i) { if (s && !s.gone && !s.out && s.stack > 0) o.push(i); }); return o; }
+  function pkElig(T) { var o = []; T.seats.forEach(function (s, i) { if (s && !s.gone && !s.out && !s.so && s.stack > 0) o.push(i); }); return o; }
   /* ディーラーは各プレイヤーから見て真向かいに立つ → その席（自分の席+4）にはNPCを座らせない */
   function pkForb(T) { var o = []; T.seats.forEach(function (s, i) { if (s && !s.npc && !s.gone) { var k = (i + 4) % 8; if (o.indexOf(k) < 0) o.push(k); } }); return o; }
   function pkStart(T) {
@@ -6455,7 +6457,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       var s = T.seats[T.turn];
       if (!s || s.f || s.a) { pkAfter(T, T.turn); ch = true; }
       else if (s.npc) { if (!T.npcAt) T.npcAt = now + 800 + Math.random() * 1400; else if (now >= T.npcAt) { var d = pkNpcAct(T, T.turn); pkApply(T, T.turn, d[0], d[1]); ch = true; } }
-      else if (s.gone) { pkApply(T, T.turn, 'f', 0); ch = true; }
+      else if (s.gone || s.so) { pkApply(T, T.turn, 'f', 0); ch = true; }
       else if (now > T.tt) { pkApply(T, T.turn, s.bet === T.cur ? 'c' : 'f', 0); ch = true; }
     }
     if (ch) pkPush(T); else if (now - PK.hb > 2000) pkPush(T);
@@ -6467,10 +6469,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (m.k === 'st') { if (!T || m.T.v > T.v || (m.T.v === T.v && m.T.hid < T.hid)) { PK.T = m.T; PK.last = Date.now(); PK.me = pkMine(); pkRender(); } return; }
     if (!T || T.hid !== myMid) return;
     if (m.k === 'who') { pkPush(T); return; }
+    if (m.k === 'rest') { var ri = T.seats.findIndex(function (s) { return s && s.id === m.f; }); if (ri >= 0) { T.seats[ri].so = m.v ? 1 : 0; pkPush(T); } return; }
     if (m.k === 'sit') { if (T.seats.some(function (s) { return s && s.id === m.f; })) { pkPush(T); return; } var fi = -1, q; for (q = 0; q < 8; q++) if (!T.seats[q] && !(T.seats[(q + 4) % 8] && T.seats[(q + 4) % 8].npc)) { fi = q; break; } if (fi < 0) fi = T.seats.findIndex(function (s) { return !s; }); if (fi < 0) return; T.seats[fi] = pkSeat(m.f, String(m.n || 'だれか').slice(0, 8), Math.max(20, Math.min(1e9, Math.floor(m.b) || PKBUY)), 0); if (T.st === 'wait') T.nt = Math.min(T.nt, Date.now() + 1200); pkPush(T); return; }
     if (m.k === 'act') { var i = T.seats.findIndex(function (s) { return s && s.id === m.f; }); if (i >= 0 && i === T.turn && m.h === T.hand && !T.run) { pkApply(T, i, m.a, m.amt); pkPush(T); } return; }
     if (m.k === 'leave') { var j = T.seats.findIndex(function (s) { return s && s.id === m.f; }); if (j >= 0) { var s2 = T.seats[j]; if (T.st === 'wait' || T.st === 'show') T.seats[j] = null; else { s2.gone = 1; if (j === T.turn) pkApply(T, j, 'f', 0); else s2.f = 1; if (pkInHand(T).length === 1 && T.st !== 'show') pkAward(T, null); } pkPush(T); } }
   }
+  function pkRest() { var T = PK && PK.T; if (!T || PK.me < 0) return; var s = T.seats[PK.me]; if (!s) return; var v = s.so ? 0 : 1; sndChip(); if (T.hid === myMid) { s.so = v; pkPush(T); } else pkSend({ k: 'rest', v: v }); }
   function pkMine() { var T = PK.T; if (!T) return -1; return T.seats.findIndex(function (s) { return s && s.id === myMid && !s.gone; }); }
   function pkAct(a, amt) { var T = PK.T; if (!T || PK.me !== T.turn || T.run) return; if (T.hid === myMid) { if (pkApply(T, PK.me, a, amt)) pkPush(T); } else pkSend({ k: 'act', a: a, amt: amt, h: T.hand }); }
   function pkCards(cs, hid, sm) { return cs.map(function (c) { return hid ? '<span class="pc back' + (sm ? ' s' : '') + '"></span>' : '<span class="pc' + (c.s === 1 || c.s === 2 ? ' red' : '') + (sm ? ' s' : '') + '">' + PKRK[c.r] + CSU[c.s] + '</span>'; }).join(''); }
@@ -6494,7 +6498,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       var r = (i - rel + 8) % 8, p = PKPOS[r]; if (!s) { h += '<div class="pkSeat empty" style="left:' + p[0] + '%;top:' + p[1] + '%">空席</div>'; return; }
       PK.pos[s.id] = p; var mine = i === me, sh = T.res && T.res.shown.indexOf(i) >= 0, face = mine || sh, inH = T.hand > 0 && T.st !== 'wait' && s.hole.length === 2 && !(s.f && T.st !== 'show'), dx = (50 - p[0]) / 100 * W, dy = (10 - p[1]) / 100 * H, bb = PK.bub[s.id];
       h += '<div class="pkSeat' + (mine ? ' me' : '') + (i === T.turn ? ' turn' : '') + (s.f ? ' fold' : '') + (T.res && T.res.won[i] ? ' win' : '') + '" style="left:' + p[0] + '%;top:' + p[1] + '%">' + (bb && bb.exp > now ? '<div class="tvBub">' + esc(bb.x) + '</div>' : '') + '<div class="pkCs">' +
-        (inH ? s.hole.map(function (c, k) { return tvCard(cdTxt(PKRK[c.r], c), c.s === 1 || c.s === 2, !face, 'sm', 'h' + T.hand + '_' + i + '_' + k, X, dx, dy); }).join('') : '') + '</div><div class="pkNm">' + (i === T.btn ? '<i class="pkD">D</i>' : '') + esc(s.nm) + (s.npc ? ' 🤖' : '') + '</div><div class="pkSt">🪙 ' + s.stack.toLocaleString() + '</div>' +
+        (inH ? s.hole.map(function (c, k) { return tvCard(cdTxt(PKRK[c.r], c), c.s === 1 || c.s === 2, !face, 'sm', 'h' + T.hand + '_' + i + '_' + k, X, dx, dy); }).join('') : '') + '</div><div class="pkNm">' + (i === T.btn ? '<i class="pkD">D</i>' : '') + esc(s.nm) + (s.npc ? ' 🤖' : '') + (s.so ? ' ☕' : '') + '</div><div class="pkSt">🪙 ' + s.stack.toLocaleString() + '</div>' +
         (T.res && T.res.won[i] ? '<div class="pkW">+' + T.res.won[i].toLocaleString() + (T.res.desc[i] ? ' ' + T.res.desc[i] : '') + '</div>' : (mine && rk && T.st !== 'show' ? '<div class="pkRk' + (PK.rkUp && now - PK.rkUp < 1500 ? ' up' : '') + '">現在：' + rk.t + '</div>' : '')) + '</div>';
       if (s.bet > 0) h += '<div class="pkBet" style="left:' + (p[0] + (50 - p[0]) * .34) + '%;top:' + (p[1] + (57 - p[1]) * .34) + '%">🪙' + s.bet.toLocaleString() + '</div>';
     });
@@ -6514,6 +6518,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (T.nb) { if (PK.nbSeen === undefined) PK.nbSeen = T.nb.e; else if (T.nb.e > PK.nbSeen) { PK.nbSeen = T.nb.e; var ns = T.seats.filter(function (q) { return q && q.id === T.nb.id; })[0]; if (ns) { tcAdd(ns.nm, T.nb.x); PK.bub[ns.id] = { x: T.nb.x, exp: now + 3600 }; setTimeout(pkRender, 3700); } } }
     /* メッセージと操作 */
     var msg = T.st === 'show' ? T.log : (me >= 0 && mineS && mineS.stack <= 0 && (T.st === 'wait' || mineS.f) ? 'コインがなくなったよ。「席を立つ」で戻って、もう一回すわってね' : (T.st === 'wait' ? '次のハンドを準備中…' : (T.turn >= 0 && T.seats[T.turn] ? (T.turn === me ? 'あなたの番だよ' : T.seats[T.turn].nm + ' さんの番') : '')));
+    if (mineS && mineS.so) msg = '☕ 休憩中（席はそのまま）。「▶ ゲームに戻る」で次のハンドから参加するよ';
+    var rbt = $('pkRest'); if (rbt) { rbt.style.display = mineS ? 'block' : 'none'; rbt.textContent = mineS && mineS.so ? '▶ ゲームに戻る' : '☕ 休憩'; rbt.classList.toggle('on', !!(mineS && mineS.so)); }
     var htx = ''; if (PKS.hint && me >= 0 && mineS && !mineS.f && T.hand > 0 && T.st !== 'wait' && T.st !== 'show' && mineS.hole.length === 2) { var hk = T.hand + ':' + T.board.length + ':' + T.cur + ':' + pkInHand(T).length; if (PK.hk !== hk) { PK.hk = hk; PK.hv = pkEquity(mineS.hole, T.board, Math.max(1, Math.min(5, pkInHand(T).length - 1)), 260); } var nd = T.cur - mineS.bet, po = nd > 0 ? nd / (T.pot + nd) : 0; htx = '💡 勝率 ' + Math.round(PK.hv * 100) + '%' + (nd > 0 ? '／必要 ' + Math.round(po * 100) + '% → ' + (PK.hv > po + .05 ? 'コール有利' : (PK.hv > po - .05 ? 'ギリギリ' : 'フォールド寄り')) : '／チェック可'); }
     if ($('pkMsg')) { $('pkMsg').textContent = msg; if (htx) { var hs = document.createElement('div'); hs.className = 'pkHt'; hs.textContent = htx; $('pkMsg').appendChild(hs); } }
     var myTurn = !!(mineS && T.turn === me && !T.run && T.st !== 'show' && T.st !== 'wait'), key = [T.hand, T.st, T.turn, T.cur, me, mineS ? mineS.stack : 0, myTurn ? 1 : 0].join('|'), cb = $('pkCtl');
@@ -6553,9 +6559,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     try { var pend = parseInt(localStorage.getItem('opa_pk_pend') || '0', 10); if (pend > 0) { chipsSet(chipsGet() + pend); localStorage.removeItem('opa_pk_pend'); } } catch (e) {}
     chipFree(); var buy = chipsGet(); if (buy < 20) { arcShow('<h2>♠ テキサスホールデム</h2><p>コインが足りません</p><button type="button" class="arcx" id="pkX0">とじる</button>'); $('pkX0').onclick = arcClose; return; }
     chipsSet(chipsGet() - buy); if (!(player && player.gm)) { try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {} }
-    arcShow('<div class="tvh"><b style="white-space:nowrap">♠ ホールデム</b><span id="pkInfo" class="chipb" style="white-space:nowrap;font-size:12px;padding:3px 8px"></span><button type="button" class="arcx" id="pkH" style="margin-right:4px">役</button><button type="button" class="arcx" id="pkM" style="margin-right:4px">☰</button><button type="button" class="arcx" id="pkX" style="white-space:nowrap">席を立つ</button></div><div class="tvAw"><div id="pkTbl" class="tvA tvAi"></div><div id="pkFl" class="tvFl"></div><div id="pkHelp" style="display:none;position:absolute;left:6%;right:6%;top:8%;z-index:30;background:#101820ee;border:2px solid #ffd36a;border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.55;color:#fff"><b style="color:#ffd36a">役の強さ（上ほど強い）</b><br>① ストレートフラッシュ：同じマークの連番5枚<br>② フォーカード：同じ数字4枚<br>③ フルハウス：3枚＋2枚の組み合わせ<br>④ フラッシュ：同じマーク5枚（♠♥♦♣）<br>⑤ ストレート：連番5枚（マークはバラバラでOK）<br>⑥ スリーカード：同じ数字3枚<br>⑦ ツーペア：ペアが2組<br>⑧ ワンペア：同じ数字2枚<br>⑨ ハイカード：役なし（いちばん大きい数字）<br><span style="color:#9fd0ff">手札2枚＋場の5枚から、いちばん強い5枚で勝負。自分の役は「現在：○○」で出るよ。（タップで閉じる）</span></div></div><div id="pkMsg" class="tvM"></div><div id="pkCtl" class="tvC"></div>' + tcHTML('pk'), 'tv');
+    arcShow('<div class="tvh"><b style="white-space:nowrap">♠ ホールデム</b><span id="pkInfo" class="chipb" style="white-space:nowrap;font-size:12px;padding:3px 8px"></span><button type="button" class="arcx" id="pkH" style="margin-right:4px">役</button><button type="button" class="arcx" id="pkM" style="margin-right:4px">☰</button><button type="button" class="arcx" id="pkX" style="white-space:nowrap">席を立つ</button></div><div class="tvAw"><div id="pkTbl" class="tvA tvAi"></div><div id="pkFl" class="tvFl"></div><button type="button" id="pkRest" class="pkRest">☕ 休憩</button><div id="pkHelp" style="display:none;position:absolute;left:6%;right:6%;top:8%;z-index:30;background:#101820ee;border:2px solid #ffd36a;border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.55;color:#fff"><b style="color:#ffd36a">役の強さ（上ほど強い）</b><br>① ストレートフラッシュ：同じマークの連番5枚<br>② フォーカード：同じ数字4枚<br>③ フルハウス：3枚＋2枚の組み合わせ<br>④ フラッシュ：同じマーク5枚（♠♥♦♣）<br>⑤ ストレート：連番5枚（マークはバラバラでOK）<br>⑥ スリーカード：同じ数字3枚<br>⑦ ツーペア：ペアが2組<br>⑧ ワンペア：同じ数字2枚<br>⑨ ハイカード：役なし（いちばん大きい数字）<br><span style="color:#9fd0ff">手札2枚＋場の5枚から、いちばん強い5枚で勝負。自分の役は「現在：○○」で出るよ。（タップで閉じる）</span></div></div><div id="pkMsg" class="tvM"></div><div id="pkCtl" class="tvC"></div>' + tcHTML('pk'), 'tv');
     PK = { T: null, me: -1, last: Date.now(), hb: 0, seen: {}, iv: 0, buy: buy, bub: {}, pos: {}, cl: [] }; tcInit('pk', PK, 'pk'); PK.iv = setInterval(pkTick, 250);
-    $('pkM').onclick = pkMenu; $('pkX').onclick = pkLeave; $('pkH').onclick = function () { var h = $('pkHelp'); h.style.display = h.style.display === 'none' ? 'block' : 'none'; }; $('pkHelp').onclick = function () { this.style.display = 'none'; }; pkRender(); pkSend({ k: 'who' });
+    $('pkM').onclick = pkMenu; $('pkRest').onclick = pkRest; $('pkX').onclick = pkLeave; $('pkH').onclick = function () { var h = $('pkHelp'); h.style.display = h.style.display === 'none' ? 'block' : 'none'; }; $('pkHelp').onclick = function () { this.style.display = 'none'; }; pkRender(); pkSend({ k: 'who' });
     var nm = (player && player.avatar && player.avatar.name) || 'あなた';
     setTimeout(function () {
       if (!PK) return; if (!PK.T) { PK.T = pkNewTable(); PK.T.seats[0].stack = 2000; PK.T.seats[1] = pkSeat(myMid, String(nm).slice(0, 8), buy, 0); PK.me = 1; pkPush(PK.T); }
