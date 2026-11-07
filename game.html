@@ -4958,7 +4958,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 159;
+  var GV = 160;
   (function () {
     var last = Date.now();
     function chk() {
@@ -7349,7 +7349,7 @@ var TB = {
   function tgShuf(a) { for (var i = a.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
   function tgRange(a, b) { var r = []; for (var i = a; i <= b; i++) r.push(i); return r; }
   function tgSeat(id, nm, stack, npc) { return { id: id, nm: nm, stack: stack, npc: npc ? 1 : 0, gone: 0, in: 0, pay: 0, res: '', join: 0 }; }
-  function tgNew(k) { var T0 = { v: 0, hid: myMid, k: k, rd: 0, seats: [null, null, null, null, null], st: 'lobby', nt: Date.now() + (TGG[k].join ? 20000 : 8000), pot: 0, log: '', ev: 0, la: null, npcBuy: 2000, g: {}, winner: -1 }; if (k === 'un') { T0.seats[0] = tgCat('f'); T0.seats[4] = tgCat('a'); } else T0.seats[0] = tgSeat('npc', 'ケン', 2000, 1); return T0; }
+  function tgNew(k) { var T0 = { v: 0, hid: myMid, k: k, rd: 0, seats: [null, null, null, null, null], st: 'lobby', nt: Date.now() + (TGG[k].join ? 20000 : 8000), pot: 0, log: '', ev: 0, la: null, npcBuy: 2000, g: {}, winner: -1 }; if (k === 'un') { T0.seats = [null, null, null, null, null, null, null]; } else T0.seats[0] = tgSeat('npc', 'ケン', 2000, 1); return T0; }
   function tgCat(w) { var q = tgSeat('npc' + w, w === 'f' ? 'フラン' : 'アロン', 2000, 1); q.cat = w; return q; }
   function tgMine() { var T = TG && TG.T; if (!T) return -1; return T.seats.findIndex(function (s) { return s && s.id === myMid && !s.gone; }); }
   function tgSend(m) { m.t = 'tg'; m.gk = TG ? TG.k : ''; m.f = myMid; try { if (rtOn) RT.send(m); } catch (e) {} }
@@ -7379,7 +7379,7 @@ var TB = {
       if (now - TG.last > 5000 && al.length && al[0] === myMid && TG.me >= 0) { T.hid = myMid; T.v++; T.seats.forEach(function (s) { if (s && !s.npc && s.id !== myMid && now - (TG.seen[s.id] || 0) > 5000) s.gone = 1; }); ch = true; } else return;
     }
     if (T.st === 'lobby') {
-      if (T.k === 'un') { ['f', 'a'].forEach(function (w) { if (!T.seats.some(function (q) { return q && q.cat === w; })) { var fi = T.seats.findIndex(function (q) { return !q; }); if (fi >= 0) { T.seats[fi] = tgCat(w); ch = true; } } }); }
+      if (T.k === 'un') { var hum = T.seats.filter(function (q) { return q && !q.npc && !q.gone; }).length, wantC = T.cats === undefined ? hum < 2 : !!T.cats; ['f', 'a'].forEach(function (w) { var ex = T.seats.findIndex(function (q) { return q && q.cat === w; }); if (wantC && ex < 0) { var fi = -1; T.seats.forEach(function (q, qi) { if (!q) fi = qi; }); if (fi >= 0) { T.seats[fi] = tgCat(w); ch = true; } } else if (!wantC && ex >= 0) { T.seats[ex] = null; ch = true; } }); }
       else if (!T.seats.some(function (q) { return q && q.npc; })) { var j0 = tvAddNpc(T, 5, tgSeat, -1); if (j0 >= 0) { tvNote(T, '対戦相手「' + T.seats[j0].nm + '」が着席したよ'); ch = true; } }
       if (G.join) { var hu = T.seats.filter(function (q) { return q && !q.npc && !q.gone && q.stack >= G.ante; }); if (hu.length && hu.every(function (q) { return q.join !== 0; }) && T.nt - now > 3500) { T.nt = now + 3500; ch = true; } }
       if (now >= T.nt) { tgStart(T); ch = true; }
@@ -7405,6 +7405,7 @@ var TB = {
     if (m.k === 'act') { var i = T.seats.findIndex(function (s) { return s && s.id === m.f; }); if (i >= 0 && m.r === T.rd && T.st === 'play' && TGG[T.k].act(T, i, String(m.a))) tgPush(T); return; }
     if (m.k === 'join') { var ji = T.seats.findIndex(function (s) { return s && s.id === m.f; }); if (ji >= 0 && T.st === 'lobby' && T.seats[ji].stack >= TGG[T.k].ante) { T.seats[ji].join = m.v === 1 ? 1 : m.v === 2 ? 2 : 0; tgPush(T); } return; }
     if (m.k === 'go') { if (T.st === 'lobby') { T.nt = Date.now(); tgPush(T); } return; }
+    if (m.k === 'cats') { if (T.st === 'lobby' && T.k === 'un') { T.cats = m.v ? 1 : 0; tgPush(T); } return; }
     if (m.k === 'leave') { var j = T.seats.findIndex(function (s) { return s && s.id === m.f; }); if (j >= 0) { tgDrop(T, j); tgPush(T); } return; }
   }
   function tgDrop(T, j) { var s = T.seats[j]; if (!s) return; if (T.st !== 'play' || !s.in) T.seats[j] = null; else s.gone = 1; }
@@ -7416,6 +7417,10 @@ var TB = {
     var j = mineS.join;
     cb.innerHTML = '<div class="tvB"><button type="button" class="b ' + (j === 1 ? 'ca' : 'ra bgJoin') + '" id="tgJn">' + (j === 1 ? '✅ 参加する（決定）' : G.ic + ' 参加する（' + G.ante + '）') + '</button><button type="button" class="b ' + (j === 2 ? 'ca' : '') + '" id="tgSp">' + (j === 2 ? '✅ 観戦する（決定）' : '👀 観戦する') + '</button></div>';
     $('tgJn').onclick = function () { tgJoin(1); }; $('tgSp').onclick = function () { tgJoin(2); };
+  }
+  function tgCats() {
+    var T = TG && TG.T; if (!T || T.st !== 'lobby' || T.k !== 'un') return; var on = T.seats.some(function (q) { return q && q.cat; }), v = on ? 0 : 1;
+    if (T.hid === myMid) { T.cats = v; tgPush(T); } else tgSend({ k: 'cats', v: v }); sndChip();
   }
   function tgGoNow() { var T = TG && TG.T; if (!T || T.st !== 'lobby') return; if (T.hid === myMid) { T.nt = Date.now(); tgPush(T); } else tgSend({ k: 'go' }); }
 
@@ -7618,7 +7623,7 @@ var TB = {
     return x + '</svg>';
   }
   var UNBT = (function () { var o = '<svg class="bt" viewBox="0 0 280 18" preserveAspectRatio="none"><path d="M0 2Q140 14 280 2" stroke="#fff8" fill="none" stroke-width="1"/>', k, t, x, y, cs = ['#d72b2b', '#f0b800', '#2f9e44', '#1f5fbf']; for (k = 0; k < 14; k++) { t = (k + .5) / 14; x = 280 * t; y = 2 * (1 - t) * (1 - t) + 24 * t * (1 - t) + 2 * t * t; o += '<polygon points="' + (x - 7) + ',' + (y - .5).toFixed(1) + ' ' + (x + 7) + ',' + (y - .5).toFixed(1) + ' ' + x + ',' + (y + 10).toFixed(1) + '" fill="' + cs[k % 4] + '"/>'; } return o + '</svg>'; })();
-  var UNP = [[50, 88], [12, 54], [28, 19], [72, 19], [88, 54]];
+  var UNP = [[50, 88], [13, 72], [10, 44], [27, 16], [73, 16], [90, 44], [87, 72]];
   var UNCH = { play: ['よしっ！', 'ふふふ♪', 'これでどうや〜', 'うーん…', 'いけるかな？'], hit: ['ひど〜い😂', 'きゃー！', 'やられた〜', 'まじか〜'], skip: ['え〜スキップ！？', 'とばされた〜', '次こそ！'], draw: ['引いちゃった〜', 'ない〜', 'あかんなぁ'], win: ['おめでとう🎉', 'すごーい👏', 'やられたわ〜'], won: ['やった〜！', '勝ったで〜🎉', 'ふふ、ありがと♪'], lob: ['よろしくね〜', 'お茶どうぞ☕', 'おやつあるで🍪', '今日は勝つで〜'], amb: ['このお菓子おいしい🍪', '盛り上がってきたね〜', 'ふふっ😊', '次は私の番かな？', 'あと何枚〜？'], go: ['よろしくね〜', 'がんばるで〜', 'ふふっ、負けへんよ'], op: ['わっ、きれい💎', 'なにそれ〜！'], opa: ['きゃー、7枚！？', 'うそでしょ〜！'] };
   var UNCT = {
     f: { play: ['当然ですわ', '…べつに、勝ちたいわけではありませんけれど', 'これで終わりにして差し上げますわ'], hit: ['ひどいですわ…覚えていらっしゃい', 'な、何をなさるの', '…っ、後悔させてあげますわ'], skip: ['わたくしの番が飛ばされるなんて…', 'むう…', 'あとで覚えておきなさい'], draw: ['…ついていませんわ', 'ふん、まだこれからですわ', '別に悔しくなどありませんわ'], win: ['…お、おめでとう。べつに、うれしくなんてありませんわ', 'ふん、今回は譲って差し上げましたわ'], won: ['当然の結果ですわ', 'べ、別にうれしくなんてありませんもの'], lob: ['べつに楽しみにしていたわけではありませんわ', 'お茶が入りましたわ、どうぞ', 'さあ、始めますわよ'], amb: ['このお菓子、悪くありませんわね', '…パパ、見ていらっしゃる？', 'ちゃんと考えていらっしゃる？'], go: ['手加減はしませんわよ', '…お手並み拝見ですわ'], op: ['まあ…何ですの、それは', '…きれいな石ですこと'], opa: ['な、7枚ですって…！？', 'こ、こんなの納得できませんわ'] },
@@ -7655,7 +7660,7 @@ var TB = {
       var jn = T.seats.filter(function (q) { return q && (q.npc || q.join === 1); }).length;
       h += '<div class="unLb"><div class="t1">🃏 オパールUNO 参加者募集中！</div><div class="t2">参加費 <b>' + TGG.un.ante + '</b> コイン ／ 1位が全員分をゲット</div><div class="t3">いま <b>' + jn + '</b> 人が参加</div></div>';
     }
-    T.seats.forEach(function (q, i) { if (i === me) return; h += unSeatH(T, i, UNP[(i - base + 5) % 5], me); });
+    T.seats.forEach(function (q, i) { if (i === me) return; h += unSeatH(T, i, UNP[(i - base + T.seats.length) % T.seats.length], me); });
     if (mineS) h += unSeatH(T, me, UNP[0], me);
     h += '</div>';
     if (g.top && T.st === 'play' && g.turn >= 0 && T.seats[g.turn] && !T.seats[g.turn].npc) h += '<div class="tgTm"><i style="animation-duration:25s;animation-delay:-' + Math.max(0, 25000 - Math.max(0, g.tt - now)) + 'ms"></i></div>';
@@ -7668,9 +7673,15 @@ var TB = {
     var s = T.seats[T.g.turn]; if (!mineS || !mineS.in) return '見学中'; return T.g.turn === me ? 'あなたの番だよ。出せるカード（光ってるの）をタップ。なければ「ひく」' : (s ? s.nm + ' さんの番' : '');
   }
   function unCtl(T, mineS, me, cb) {
-    var my = T.st === 'play' && mineS && mineS.in && T.g.turn === me, key = [T.st, T.rd, my ? 1 : 0, TG.pickK, T.g.turn, mineS && mineS.h ? mineS.h.length : 0, mineS ? mineS.join : 9].join('|');
+    var my = T.st === 'play' && mineS && mineS.in && T.g.turn === me, key = [T.st, T.rd, my ? 1 : 0, TG.pickK, T.g.turn, mineS && mineS.h ? mineS.h.length : 0, mineS ? mineS.join : 9, T.seats.some(function (q) { return q && q.cat; }) ? 1 : 0].join('|');
     if (cb.dataset.k === key) return; cb.dataset.k = key;
-    if (T.st === 'lobby') { tgJoinCtl(T, mineS, TGG.un, cb); return; }
+    cb.style.flexDirection = T.st === 'lobby' ? 'column' : ''; cb.style.height = T.st === 'lobby' ? '104px' : ''; cb.style.gap = T.st === 'lobby' ? '4px' : '';
+    if (T.st === 'lobby') {
+      tgJoinCtl(T, mineS, TGG.un, cb);
+      if (mineS) { var cOn = T.seats.some(function (q) { return q && q.cat; }); cb.insertAdjacentHTML('beforeend', '<div class="tvB"><button type="button" class="b' + (cOn ? '' : ' ra') + '" id="tgCt">' + (cOn ? '🐱 フラン・アロンを外す（人だけで対戦）' : '🐱 フラン・アロンと対戦する') + '</button></div>'); $('tgCt').onclick = tgCats; }
+      Array.prototype.forEach.call(cb.querySelectorAll('.tvB'), function (e) { e.style.width = '100%'; });
+      return;
+    }
     if (my && TG.pickK != null) {
       cb.innerHTML = '<div class="tvB">' + UNC.map(function (c) { return '<button type="button" class="b uk u' + c + '" data-c="' + c + '">' + UNN[c] + '</button>'; }).join('') + '<button type="button" class="b" id="tgCx">やめる</button></div>';
       Array.prototype.forEach.call(cb.querySelectorAll('.uk'), function (b) { b.onclick = function () { var k = TG.pickK; TG.pickK = null; tgDo('p' + k + ':' + b.dataset.c); }; });
