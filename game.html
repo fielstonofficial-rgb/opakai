@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:133-->
+<!--GV:134-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -144,6 +144,17 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 /* 重ねる画面 */
 .sheet{position:absolute;inset:0;z-index:30;display:none;flex-direction:column;background:rgba(6,12,15,.97)}
 .sheet.on{display:flex}
+#mailBadge{position:absolute;right:-4px;top:-4px;min-width:19px;height:19px;padding:0 4px;border-radius:10px;background:#e5483f;color:#fff;font-size:11px;font-weight:800;display:none;align-items:center;justify-content:center;border:1.5px solid #fff;box-sizing:border-box;line-height:1}
+.mlk,#mwKinds{display:flex;gap:6px;flex-wrap:wrap;margin:8px 0 12px}
+.mlk button,#mwKinds button{padding:8px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(255,255,255,.06);color:#fff;font-size:14px;font-weight:700}
+.mlk button.on,#mwKinds button.on{border-color:#ff8a80;background:rgba(229,72,63,.3);color:#fff}
+.mlc{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px}
+.mlc.new{border-color:#ffd36a;box-shadow:0 0 0 1px rgba(255,211,106,.35)}
+.mlh{display:flex;align-items:center;gap:8px;font-size:14px}.mlt{font-weight:800}.mln{background:#ffd36a;color:#3a2a00;border-radius:6px;padding:1px 6px;font-size:11px;font-weight:800}.mlw{margin-left:auto;opacity:.6;font-size:12px}
+.mlf{font-size:13px;opacity:.75;margin:4px 0 6px}.mlb{white-space:pre-wrap;word-break:break-word;font-size:16px;line-height:1.6}
+.mla{text-align:right;margin-top:6px}.mla button{background:none;border:0;color:#ff9a90;font-size:13px;padding:4px 2px}
+#mwTxt{width:100%;min-height:170px;box-sizing:border-box;background:rgba(255,255,255,.08);color:#fff;border:1px solid var(--line);border-radius:12px;padding:12px;font-size:16px;line-height:1.6;resize:vertical;font-family:inherit}
+#mwCnt{text-align:right;font-size:12px;opacity:.6;margin:4px 2px 12px}
 .sheet .body{flex:1;overflow:auto;padding:4px 16px 24px}
 .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:10px}
 .card{border:1px solid var(--line);border-radius:16px;padding:12px 8px;text-align:center;background:rgba(255,255,255,.04);font-size:13px}
@@ -1110,7 +1121,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   </section>
   <div id="cfm"><div class="gc"><h3>ゲームをとじる？</h3><p class="tiny">とじても、ここまでの記録は残るよ。</p><div class="rw" style="display:flex;gap:8px;margin-top:12px"><button id="cfmNo" type="button" class="gbtn" style="flex:1">つづける</button><button id="cfmYes" type="button" class="gbtn dim" style="flex:1;margin-top:0">とじる</button></div></div></div>
   <section class="scr" id="field">
-    <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="装備・もちもの">🎒<small>装備・持物</small></button><button class="ib" id="fBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
+    <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="装備・もちもの">🎒<small>装備・持物</small></button><button class="ib" id="fBook" type="button" aria-label="郵便受け" style="display:none;position:relative">📮<b id="mailBadge"></b></button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
     <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span id="phLv" style="color:#ffe08a">Lv 1</span><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="plDown"><span>やられた…（このままチャットもできるよ）</span><button type="button" class="gbtn" id="plDownGo">🏥 病院へ向かう</button></div><div id="fTools"><button id="goMine" type="button">🗺 マップ</button><button id="plChat" type="button">💬 チャット</button><button id="spBtn" type="button">✨ 0%</button><button id="sk0" class="skb" type="button"></button><button id="sk1" class="skb" type="button"></button><button id="sk2" class="skb" type="button"></button><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">⚡ ひとこと</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしまった…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
         <div id="gld"><div class="gc"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="tiny">ギルドの部屋</span><button id="gClose" type="button" class="gbtn" style="padding:6px 12px">とじる</button></div><div id="gBody"></div></div></div>
         <div id="npc"><div class="nc"><div class="nh"><b id="npcN"></b><button type="button" class="gbtn" id="npcX" style="padding:6px 12px">とじる</button></div><div id="npcSay"></div><div id="npcQs"></div><div class="nin"><input id="npcIn" maxlength="30" placeholder="聞きたいこと（例：HP、闘技場、売る）" autocomplete="off"><button type="button" class="gbtn" id="npcGo">きく</button></div><div id="npcAct"></div></div></div><div id="arInv"><b id="arInvT"></b><div><button type="button" class="abtn" id="arInvY">受ける</button><button type="button" class="gbtn" id="arInvN">ことわる</button></div></div><div id="updBar" role="button">🔄 新しい版があるよ。ここをタップして更新</div>
@@ -1143,6 +1154,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     <div class="sheet" id="book">
       <div class="bar"><span style="width:42px"></span><h1 id="bookTtl">図鑑</h1><button class="ib" data-close="book" type="button" aria-label="とじる">✕</button></div>
       <div class="body"><div class="grid" id="bookGrid"></div></div>
+    </div>
+    <div class="sheet" id="mailBox">
+      <div class="bar"><span style="width:42px"></span><h1>📮 郵便受け</h1><button class="ib" data-close="mailBox" type="button" aria-label="とじる">✕</button></div>
+      <div class="body"><div id="mailList"></div></div>
+    </div>
+    <div class="sheet" id="mailWrite">
+      <div class="bar"><span style="width:42px"></span><h1>✉️ 運営への手紙</h1><button class="ib" data-close="mailWrite" type="button" aria-label="とじる">✕</button></div>
+      <div class="body"><p class="tiny" style="font-size:14px;line-height:1.7">要望・不具合・質問・困りごとを、運営に届けます。（返事の手紙は出せません）</p><div id="mwKinds"></div><textarea id="mwTxt" maxlength="600" placeholder="ここに手紙を書いてね"></textarea><div id="mwCnt">0 / 600</div><button type="button" class="abtn" id="mwSend" style="width:100%">📮 投函する</button></div>
     </div>
     <div class="sheet" id="lobby">
       <div class="bar"><span style="width:42px"></span><h1 id="lbTtl">待合室</h1><button class="ib" id="lbClose" type="button" aria-label="とじる">✕</button></div>
@@ -3261,6 +3280,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         '<rect x="104" y="78" width="32" height="30" rx="2" fill="#bfe9ff" stroke="#7a5230" stroke-width="3"/><path d="M120 78V108M104 93H136" stroke="#7a5230" stroke-width="2"/><rect x="98" y="78" width="7" height="30" fill="' + P[2] + '"/><rect x="135" y="78" width="7" height="30" fill="' + P[2] + '"/>' +
         '<path d="M64 152V116a16 16 0 0 1 32 0V152Z" fill="#8a5a30" stroke="#5a3519" stroke-width="2.4"/><path d="M80 100V152" stroke="rgba(0,0,0,.25)"/><circle cx="90" cy="134" r="2.6" fill="#ffd36a"/><rect x="58" y="152" width="44" height="5" rx="2" fill="#bfb090"/></svg>';
     }
+    if (k === 'post') return postSVG();
     if (k === 'tree') return '<svg viewBox="0 0 90 120"><defs><radialGradient id="trF" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#9be08a"/><stop offset=".6" stop-color="#4fa85a"/><stop offset="1" stop-color="#2f7d45"/></radialGradient><linearGradient id="trT" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a5f38"/><stop offset="1" stop-color="#5e3e22"/></linearGradient></defs>' + SH(45, 115, 26, 5) + '<path d="M40 112L42 64H50L52 112Z" fill="url(#trT)"/><circle cx="26" cy="56" r="22" fill="url(#trF)"/><circle cx="64" cy="56" r="22" fill="url(#trF)"/><circle cx="45" cy="36" r="30" fill="url(#trF)"/><circle cx="45" cy="60" r="24" fill="url(#trF)"/><circle cx="34" cy="26" r="9" fill="rgba(255,255,255,.22)"/><circle cx="58" cy="44" r="4" fill="rgba(255,255,255,.14)"/></svg>';
     if (k === 'tree2') return '<svg viewBox="0 0 80 130"><defs><linearGradient id="pnF" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6cc27a"/><stop offset="1" stop-color="#2d7a48"/></linearGradient></defs>' + SH(40, 125, 22, 4.5) + '<rect x="36" y="104" width="8" height="20" fill="#6b4a2c"/><path d="M40 6L66 48H14Z" fill="url(#pnF)"/><path d="M40 28L72 76H8Z" fill="url(#pnF)"/><path d="M40 52L76 108H4Z" fill="url(#pnF)"/><path d="M40 6L48 20L40 14Z" fill="rgba(255,255,255,.25)"/></svg>';
     if (k === 'bush') return '<svg viewBox="0 0 80 50"><defs><radialGradient id="bhF" cx=".4" cy=".3" r=".9"><stop offset="0" stop-color="#8fdc86"/><stop offset="1" stop-color="#3f9650"/></radialGradient></defs>' + SH(40, 46, 34, 4) + '<circle cx="22" cy="30" r="16" fill="url(#bhF)"/><circle cx="58" cy="30" r="16" fill="url(#bhF)"/><circle cx="40" cy="24" r="20" fill="url(#bhF)"/><circle cx="34" cy="18" r="5" fill="rgba(255,255,255,.25)"/><circle cx="52" cy="14" r="2.6" fill="#ff9ab8"/><circle cx="26" cy="28" r="2.6" fill="#ffd36a"/><circle cx="60" cy="32" r="2.6" fill="#fff"/></svg>';
@@ -3309,16 +3329,16 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     put('hall', 750, 470, 280, 226); lbl('ギルド', 750, 196);
     put('hosp', 1170, 470, 190, 190); lbl('🏥 病院', 1170, 236); put('house1', 120, 640, 150, 150); put('exch', 1380, 760, 180, 180); lbl('取引所', 1380, 560);
     put('fount', 750, 1010, 260, 195); put('arena', 150, 1000, 230, 196); lbl('⚔ 闘技場', 150, 765);
-    DOORS = [{ k: 'shop', x: 330, y: 470, w: 200, h: 180 }, { k: 'guild', x: 750, y: 470, w: 270, h: 210 }, { k: 'hospital', x: 1170, y: 470, w: 190, h: 180 }, { k: 'exch', x: 1380, y: 760, w: 180, h: 170 }, { k: 'arena', x: 150, y: 1000, w: 220, h: 190 }, { k: 'cafe', x: 1760, y: 470, w: 190, h: 180 }, { k: 'skill', x: 1560, y: 470, w: 190, h: 180 }, { k: 'arcade', x: 1375, y: 470, w: 180, h: 170 }];
-    put('arcade', 1375, 470, 190, 190); lbl('🎰 ゲームセンター', 1375, 236); put('stall', 480, 905, 150, 120); put('stall', 1020, 905, 150, 120);
+    DOORS = [{ k: 'shop', x: 330, y: 470, w: 200, h: 180 }, { k: 'guild', x: 750, y: 470, w: 270, h: 210 }, { k: 'hospital', x: 1170, y: 470, w: 190, h: 180 }, { k: 'exch', x: 1380, y: 760, w: 180, h: 170 }, { k: 'arena', x: 150, y: 1000, w: 220, h: 190 }, { k: 'cafe', x: 1760, y: 470, w: 190, h: 180 }, { k: 'post', x: 1030, y: 1420, w: 200, h: 190 }, { k: 'skill', x: 1560, y: 470, w: 190, h: 180 }, { k: 'arcade', x: 1375, y: 470, w: 180, h: 170 }];
+    put('post', 1030, 1420, 220, 200); lbl('📮 郵便局', 1030, 1170); put('arcade', 1375, 470, 190, 190); lbl('🎰 ゲームセンター', 1375, 236); put('stall', 480, 905, 150, 120); put('stall', 1020, 905, 150, 120);
     put('cafe', 1760, 470, 190, 190); lbl('☕ カフェ', 1760, 236); put('skill', 1560, 470, 190, 190); lbl('🔮 スキルの館', 1560, 236); put('fount', 1700, 1170, 260, 195); put('stall', 1470, 1100, 150, 120); put('stall', 1930, 1100, 150, 120);
     [[500, 350, 'tree2', 62, 100], [1000, 350, 'tree2', 62, 100], [1300, 360, 'tree', 78, 104], [40, 380, 'tree', 78, 104], [60, 430, 'tree', 80, 106], [560, 520, 'tree', 78, 104],
       [1960, 360, 'tree2', 62, 100], [2050, 440, 'tree', 80, 106], [2040, 600, 'tree', 78, 104], [1990, 560, 'tree2', 62, 100], [1540, 900, 'tree', 80, 106], [1880, 900, 'tree', 78, 104], [2040, 930, 'tree2', 62, 100], [1560, 1330, 'tree', 80, 106], [1880, 1310, 'tree2', 62, 100], [2040, 1380, 'tree', 78, 104], [1990, 1230, 'tree', 80, 106], [1420, 1450, 'tree', 78, 104], [250, 1420, 'tree', 80, 106], [520, 1400, 'tree2', 62, 100], [980, 1420, 'tree', 78, 104], [1250, 1400, 'tree2', 62, 100], [150, 1330, 'tree2', 62, 100],
       [300, 1680, 'tree', 80, 106], [560, 1700, 'tree2', 62, 100], [960, 1710, 'tree', 78, 104], [1250, 1700, 'tree2', 62, 100], [150, 1760, 'tree', 80, 106], [420, 1770, 'tree2', 62, 100], [1100, 1770, 'tree', 80, 106], [1420, 1730, 'tree', 78, 104], [1700, 1700, 'tree2', 62, 100], [1850, 1770, 'tree', 80, 106], [2040, 1730, 'tree2', 62, 100], [950, 520, 'tree', 78, 104],
-      [1440, 910, 'tree', 80, 106], [330, 880, 'tree', 78, 104], [1170, 880, 'tree', 78, 104], [200, 1180, 'tree', 80, 106], [1300, 1180, 'tree2', 62, 100], [420, 1250, 'tree', 80, 106], [1080, 1250, 'tree', 80, 106], [90, 1260, 'tree2', 62, 100], [1420, 1260, 'tree', 78, 104]].forEach(function (q) { put(q[2], q[0], q[1], q[3], q[4]); });
+      [1440, 910, 'tree', 80, 106], [330, 880, 'tree', 78, 104], [1170, 880, 'tree', 78, 104], [200, 1180, 'tree', 80, 106], [1300, 1180, 'tree2', 62, 100], [420, 1250, 'tree', 80, 106], [90, 1260, 'tree2', 62, 100], [1420, 1260, 'tree', 78, 104]].forEach(function (q) { put(q[2], q[0], q[1], q[3], q[4]); });
     [[240, 712], [560, 712], [940, 712], [1260, 712], [640, 870], [860, 870], [500, 1080], [1000, 1080], [1560, 712], [1900, 712], [2060, 712], [1636, 900], [1764, 900], [1636, 1350], [1764, 1350], [300, 1498], [900, 1498], [1300, 1498], [1540, 1498], [1900, 1498], [1500, 1180], [1900, 1180]].forEach(function (q) { put('lamp', q[0], q[1], 28, 86); });
     [[250, 498], [420, 498], [640, 498], [860, 498], [1090, 498], [1260, 498], [60, 690], [190, 690], [1300, 690], [1460, 690], [1580, 690], [1700, 690], [1890, 690], [2030, 690], [1650, 498], [1870, 498], [1560, 480], [1990, 480]].forEach(function (q) { put('bush', q[0], q[1], 64, 40); });
-    [[270, 590], [390, 590], [620, 600], [880, 600], [1110, 590], [1230, 600], [250, 790], [1250, 790], [330, 1000], [1170, 1000], [750, 1230], [1700, 590], [1820, 590], [1640, 590], [1920, 880], [1990, 880], [1950, 940], [2020, 940], [1900, 1010], [1990, 1010], [2040, 1090], [200, 1400], [620, 1400], [900, 1330], [1180, 1350], [300, 1670], [800, 1690], [1300, 1680], [1620, 1420], [1800, 1420], [1950, 1420], [2000, 1660]].forEach(function (q) { put('flower', q[0], q[1], 92, 38); });
+    [[270, 590], [390, 590], [620, 600], [880, 600], [1110, 590], [1230, 600], [250, 790], [1250, 790], [330, 1000], [1170, 1000], [750, 1230], [1700, 590], [1820, 590], [1640, 590], [1920, 880], [1990, 880], [1950, 940], [2020, 940], [1900, 1010], [1990, 1010], [2040, 1090], [200, 1400], [620, 1400], [1180, 1350], [300, 1670], [800, 1690], [1300, 1680], [1620, 1420], [1800, 1420], [1950, 1420], [2000, 1660]].forEach(function (q) { put('flower', q[0], q[1], 92, 38); });
     [[580, 1150], [920, 1150], [250, 780], [1250, 780], [1510, 1170], [1890, 1170], [1620, 1340], [1790, 1340], [450, 1480], [1050, 1480], [1560, 780], [1850, 780]].forEach(function (q) { put('bench', q[0], q[1], 90, 50); });
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
@@ -3336,6 +3356,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     else if (k === 'skill') { sfx(2); openSkillShop(); }
     else if (k === 'arcade') { sfx(2); openArcRoom(); }
     else if (k === 'arcout') { sfx(2); leaveCafe(); }
+    else if (k === 'post') { sfx(2); openPostRoom(); }
+    else if (k === 'postout') { sfx(2); leaveCafe(); }
     else if (k === 'arc:slot') { sfx(2); openSlot(); }
     else if (k === 'arc:mole') { sfx(2); openMole(); }
     else if (k === 'arc:bj') { sfx(2); openBJ(); }
@@ -3572,9 +3594,135 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     RT.join('cafe', me, { onMsg: rtMsg, onPeers: rtPeers }, function (ok) { if (ok) { rtOn = true; rtLast = 0; rtSend(posMsg()); } else toast('つながりませんでした。カフェには一人だけですよ'); });
   }
   function leaveCafe() {
-    var wasArc = inArcRoom; inArcRoom = false; arcClose();
-    standUp(); setCup(''); hero.order = null; inCafe = false; cafeBusy = false; rtStop(); openTown(); hero.x = wasArc ? 1375 : 1760; hero.y = wasArc ? 540 : 530; hero.dir = 1; ftarget = null; updHero(); camX = hero.x - 300; camY = hero.y - 400;
+    var wasArc = inArcRoom, wasPost = inPost; inArcRoom = false; inPost = false; arcClose();
+    standUp(); setCup(''); hero.order = null; inCafe = false; cafeBusy = false; rtStop(); openTown(); hero.x = wasPost ? 1030 : (wasArc ? 1375 : 1760); hero.y = wasPost ? 1480 : (wasArc ? 540 : 530); hero.dir = 1; ftarget = null; updHero(); camX = hero.x - 300; camY = hero.y - 400;
   }
+  /* ---------- 📮 郵便局（〒マークの赤い建物／中は受付カウンター） ---------- */
+  function postMark(cx, cy, s, c) {
+    var u = s / 10;
+    return '<g fill="' + c + '"><rect x="' + (cx - 5 * u) + '" y="' + (cy - 4.6 * u) + '" width="' + (10 * u) + '" height="' + (1.7 * u) + '" rx="' + (.4 * u) + '"/><rect x="' + (cx - 4 * u) + '" y="' + (cy - 1.7 * u) + '" width="' + (8 * u) + '" height="' + (1.7 * u) + '" rx="' + (.4 * u) + '"/><rect x="' + (cx - .85 * u) + '" y="' + (cy - 4.6 * u) + '" width="' + (1.7 * u) + '" height="' + (9.2 * u) + '" rx="' + (.4 * u) + '"/></g>';
+  }
+  function postBox(x, y, k) {
+    return '<g transform="translate(' + x + ' ' + y + ') scale(' + k + ')"><ellipse cx="0" cy="0" rx="17" ry="4" fill="rgba(0,0,0,.22)"/><rect x="-11" y="-52" width="22" height="48" rx="3" fill="#d6342c" stroke="#8c1e19" stroke-width="2"/><path d="M-11 -52Q0 -66 11 -52Z" fill="#e5483f" stroke="#8c1e19" stroke-width="2"/><rect x="-8" y="-44" width="16" height="3.6" rx="1.6" fill="#3a0d0b"/><rect x="-8" y="-37" width="16" height="3.6" rx="1.6" fill="#3a0d0b"/><rect x="-7" y="-27" width="14" height="10" rx="1.5" fill="#fff6e0"/><rect x="-6" y="-10" width="12" height="4" fill="#8c1e19"/><rect x="-13" y="-6" width="26" height="4" rx="1.5" fill="#6d1713"/>' + postMark(0, -22, 7, '#d6342c') + '<path d="M-9 -49V-8" stroke="rgba(255,255,255,.28)" stroke-width="2.2"/></g>';
+  }
+  function postSVG() {
+    var o = '<svg viewBox="0 0 220 200"><defs><linearGradient id="poW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbf3e2"/><stop offset="1" stop-color="#eadcbf"/></linearGradient><linearGradient id="poR" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#e5483f"/><stop offset="1" stop-color="#b8261f"/></linearGradient><linearGradient id="poG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#d7f1fb"/><stop offset="1" stop-color="#8cc4de"/></linearGradient></defs>';
+    o += '<ellipse cx="110" cy="190" rx="100" ry="9" fill="rgba(30,55,30,.28)"/>';
+    o += '<rect x="22" y="84" width="176" height="104" fill="url(#poW)" stroke="#a89572" stroke-width="2.5"/>';
+    o += '<rect x="16" y="182" width="188" height="9" rx="2" fill="#c8bba0" stroke="#8d7f63" stroke-width="2"/>';
+    o += '<path d="M10 90L36 28H184L210 90Z" fill="url(#poR)" stroke="#7d1914" stroke-width="3" stroke-linejoin="round"/>';
+    for (var i = 0; i < 4; i++) { var yy = 40 + i * 12; o += '<path d="M' + (31 - i * 5.5) + ' ' + yy + 'H' + (189 + i * 5.5) + '" stroke="rgba(120,20,16,.5)" stroke-width="1.6"/>'; }
+    for (var j = 0; j < 12; j++) { var xx = 40 + j * 12.5; o += '<path d="M' + xx + ' 30V86" stroke="rgba(255,255,255,.12)" stroke-width="1.4"/>'; }
+    o += '<rect x="14" y="86" width="192" height="8" rx="2" fill="#8c1e19"/><rect x="14" y="86" width="192" height="3" fill="rgba(255,255,255,.3)"/>';
+    o += '<circle cx="110" cy="56" r="22" fill="#fff6e0" stroke="#8c1e19" stroke-width="3.5"/><circle cx="110" cy="56" r="17" fill="#d6342c"/>' + postMark(110, 56, 22, '#fff6e0');
+    o += '<rect x="34" y="106" width="46" height="46" rx="3" fill="#7a5a35" stroke="#5a3f22" stroke-width="2.5"/><rect x="38" y="110" width="38" height="38" fill="url(#poG)"/><path d="M57 110V148M38 129H76" stroke="#7a5a35" stroke-width="2.5"/><path d="M42 144L66 112" stroke="rgba(255,255,255,.6)" stroke-width="3" stroke-linecap="round"/>';
+    o += '<rect x="140" y="106" width="46" height="46" rx="3" fill="#7a5a35" stroke="#5a3f22" stroke-width="2.5"/><rect x="144" y="110" width="38" height="38" fill="url(#poG)"/><path d="M163 110V148M144 129H182" stroke="#7a5a35" stroke-width="2.5"/><path d="M148 144L172 112" stroke="rgba(255,255,255,.6)" stroke-width="3" stroke-linecap="round"/>';
+    o += '<rect x="34" y="152" width="46" height="5" fill="#a89572"/><rect x="140" y="152" width="46" height="5" fill="#a89572"/>';
+    o += '<path d="M84 104H136L142 118H78Z" fill="#fff6e0" stroke="#8c1e19" stroke-width="2"/>';
+    for (var s = 0; s < 6; s++) o += '<path d="M' + (84 - (s < 0 ? 0 : 0) + s * 8.67 - s * 1) + ' 104h8.2l1.1 14h-8.2z" fill="' + (s % 2 ? '#fff6e0' : '#d6342c') + '"/>';
+    o += '<rect x="86" y="118" width="48" height="70" rx="3" fill="#5a3f22" stroke="#3a2812" stroke-width="2.5"/><rect x="90" y="121" width="19" height="64" fill="url(#poG)"/><rect x="111" y="121" width="19" height="64" fill="url(#poG)"/><path d="M110.5 121V185" stroke="#3a2812" stroke-width="2"/><circle cx="106" cy="158" r="2.2" fill="#ffd36a"/><circle cx="115" cy="158" r="2.2" fill="#ffd36a"/><path d="M93 180L104 126" stroke="rgba(255,255,255,.5)" stroke-width="3" stroke-linecap="round"/>';
+    o += postBox(196, 192, 1.05);
+    return o + '</svg>';
+  }
+  function postCounterSVG() {
+    return '<svg viewBox="0 0 500 90"><rect x="0" y="22" width="500" height="64" rx="4" fill="#b98350" stroke="#6f4524" stroke-width="3"/><rect x="0" y="14" width="500" height="14" rx="4" fill="#f4ead2" stroke="#8d7f63" stroke-width="2.6"/><path d="M40 32V82M125 32V82M210 32V82M295 32V82M380 32V82M460 32V82" stroke="#6f4524" stroke-width="2.4" opacity=".7"/><rect x="0" y="84" width="500" height="6" fill="#6d1713"/><rect x="210" y="0" width="80" height="16" rx="3" fill="#d6342c" stroke="#8c1e19" stroke-width="2"/>' + postMark(250, 8, 9, '#fff6e0') + '<rect x="18" y="4" width="46" height="12" rx="2" fill="#fff" stroke="#bbb"/><rect x="430" y="2" width="30" height="14" rx="2" fill="#c9a36a" stroke="#6f4524"/></svg>';
+  }
+  function postShelfSVG() {
+    var o = '<svg viewBox="0 0 300 150"><rect x="0" y="0" width="300" height="150" rx="4" fill="#8a5a30" stroke="#5a3519" stroke-width="3"/>', cs = ['#fff6e0', '#f2d9a8', '#e6c88a', '#fff', '#f7b2a8', '#bfe0f0'];
+    for (var r = 0; r < 3; r++) { var y = 8 + r * 46; o += '<rect x="6" y="' + y + '" width="288" height="38" fill="#4a2e17"/>'; for (var c = 0; c < 8; c++) { var w = 26 + ((c * 7 + r * 3) % 8), x = 10 + c * 35; o += '<rect x="' + x + '" y="' + (y + 38 - 20 - (c + r) % 3 * 5) + '" width="' + w + '" height="' + (20 + (c + r) % 3 * 5) + '" rx="2" fill="' + cs[(c + r * 2) % 6] + '" stroke="#8d6a3a"/><path d="M' + (x + w / 2) + ' ' + (y + 38 - 20 - (c + r) % 3 * 5) + 'v' + (20 + (c + r) % 3 * 5) + '" stroke="#c9a36a" stroke-width="2"/>'; } o += '<rect x="6" y="' + (y + 38) + '" width="288" height="6" fill="#a9703f"/>'; }
+    return o + '</svg>';
+  }
+  function postGround(W, H) {
+    var o = '<svg class="tground" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" style="position:absolute;left:0;top:0;pointer-events:none;z-index:0"><defs><pattern id="ptF" width="80" height="80" patternUnits="userSpaceOnUse"><rect width="80" height="80" fill="#f1e6cc"/><rect width="40" height="40" fill="#e3d4b0"/><rect x="40" y="40" width="40" height="40" fill="#e3d4b0"/><path d="M0 0H80V80H0Z" fill="none" stroke="#cdbb92" stroke-width="1.5"/></pattern><linearGradient id="ptW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbf3e2"/><stop offset="1" stop-color="#eadcbf"/></linearGradient></defs>';
+    o += '<rect width="' + W + '" height="' + H + '" fill="url(#ptF)"/><rect width="' + W + '" height="250" fill="url(#ptW)"/><rect y="214" width="' + W + '" height="36" fill="#a9703f"/><rect y="210" width="' + W + '" height="6" fill="#6f4524"/><rect y="0" width="' + W + '" height="16" fill="#d6342c"/><rect y="16" width="' + W + '" height="4" fill="#8c1e19"/>';
+    o += '<circle cx="500" cy="106" r="62" fill="#fff6e0" stroke="#8c1e19" stroke-width="6"/><circle cx="500" cy="106" r="50" fill="#d6342c"/>' + postMark(500, 106, 62, '#fff6e0');
+    o += '<g transform="translate(680 120)"><circle r="40" fill="#fff" stroke="#6f4524" stroke-width="5"/><circle r="34" fill="#fffdf4"/><path d="M0 0V-24M0 0L16 8" stroke="#2a2a2a" stroke-width="4" stroke-linecap="round"/><circle r="3.4" fill="#d6342c"/></g>';
+    o += '<rect x="780" y="64" width="150" height="112" rx="5" fill="#b98350" stroke="#6f4524" stroke-width="4"/><rect x="788" y="72" width="134" height="96" fill="#d9c28c"/><rect x="798" y="84" width="46" height="34" fill="#fffdf4" stroke="#bbb"/><rect x="852" y="84" width="60" height="22" fill="#ffe9a8" stroke="#bbb"/><rect x="798" y="126" width="62" height="32" fill="#f7b2a8" stroke="#bbb"/><rect x="868" y="116" width="44" height="44" fill="#bfe0f0" stroke="#bbb"/>';
+    o += '<ellipse cx="500" cy="590" rx="330" ry="150" fill="#d6342c" opacity=".14"/><ellipse cx="500" cy="590" rx="330" ry="150" fill="none" stroke="#b8261f" stroke-width="5" opacity=".5"/><ellipse cx="500" cy="590" rx="290" ry="124" fill="none" stroke="#fff" stroke-width="3" opacity=".6"/>';
+    o += '<rect x="410" y="800" width="180" height="46" rx="8" fill="#b85a4a" stroke="#7d3326" stroke-width="4"/>';
+    return o + '</svg>';
+  }
+  function postBoxSVG() { return '<svg viewBox="-24 -70 48 76">' + postBox(0, 0, 1) + '</svg>'; }
+  var inPost = false;
+  function buildPostRoom() {
+    var w = $('world'), html = '', W = CAFE_W, H = CAFE_H; setWorld(W, H); w.classList.remove('cave'); w.style.background = '#f1e6cc'; SEATS = [];
+    html += postGround(W, H);
+    var dc = function (svg, x, y, wd, ht, z) { html += '<div class="dc" style="left:' + x + 'px;top:' + y + 'px;width:' + wd + 'px;height:' + ht + 'px;z-index:' + Math.round(z == null ? y : z) + '">' + svg + '</div>'; };
+    var em = function (t, x, y, fs, z) { html += '<div class="cfe" style="left:' + x + 'px;top:' + y + 'px;font-size:' + fs + 'px;z-index:' + Math.round(z == null ? y : z) + '">' + t + '</div>'; };
+    var lb = function (t, x, y) { html += '<div class="tlbl" style="left:' + x + 'px;top:' + y + 'px;white-space:nowrap">' + t + '</div>'; };
+    dc(postShelfSVG(), 270, 214, 300, 150, 214);
+    dc(postCounterSVG(), 500, 300, 500, 90, 290);
+    em('📦', 330, 246, 28, 291); em('✉️', 410, 246, 24, 291); em('📮', 640, 246, 26, 291); em('🧾', 690, 246, 22, 291);
+    lb('✉️ 手紙の受付', 500, 322);
+    dc(postBoxSVG(), 900, 640, 64, 100, 640);
+    dc(postBoxSVG(), 100, 640, 64, 100, 640);
+    dc(townSVG('bench'), 240, 760, 100, 56, 760); dc(townSVG('bench'), 760, 760, 100, 56, 760);
+    em('🪴', 70, 800, 46, 800); em('🪴', 930, 800, 46, 800);
+    html += '<div class="tlbl" style="left:500px;top:766px">🚪 出口</div>';
+    html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
+    w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
+    DOORS = [{ k: 'postout', x: 500, y: 800, w: 120, h: 70 }];
+    hero.x = 500; hero.y = 760; hero.dir = 1; hero.sit = null; ftarget = null; fz = zoomT;
+    $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi(); addNpcs('post');
+  }
+  function openPostRoom() {
+    inTown = true; inCafe = true; inPost = true; inArcRoom = false; shared = false; curMine = null; hero.cup = ''; hero.cupS = -1; hero.lastSeat = null; hero.order = null; cafeBusy = false;
+    rtStop(); $('field').classList.remove('chat'); $('field').classList.add('town'); $('fTtl').textContent = '郵便局'; fz = zoomT = .8;
+    buildPostRoom(); show('field'); closeSheets(); digUI(false); BGM.set('town'); gearUi();
+    $('fhud').innerHTML = ''; $('tlog').innerHTML = '';
+    var by = document.querySelector('.gh.npc[data-npc="hana"]'); if (by) setTimeout(function () { bubble(by, 'いらっしゃいませ〜！'); }, 500);
+    var me = { id: myMid, n: (player.avatar && player.avatar.name) || '', av: player.avatar };
+    RT.join('post', me, { onMsg: rtMsg, onPeers: rtPeers }, function (ok) { if (ok) { rtOn = true; rtLast = 0; rtSend(posMsg()); } });
+  }
+  /* ----- 📮 手紙（だれでも送れる／見られるのはマスターとマキタだけ） ----- */
+  var MKIND = { wish: ['💡', '要望・アイデア'], bug: ['🐞', '不具合'], ask: ['❓', '質問'], other: ['💬', 'その他'] };
+  var MAIL_ADMIN = [GM_ID, '50f1aafd-48bd-44c2-818a-82511c993514'];
+  function mailAdmin() { return !!myMid && MAIL_ADMIN.indexOf(myMid) >= 0; }
+  function mailApi(body) { body.token = token; return fetch(API.replace(/opa-game$/, 'opa-mail'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }).then(function (r) { return r.json().then(function (j) { j._s = r.status; return j; }); }).catch(function () { return { _s: 0 }; }); }
+  function mailBadgeSet(n) { var b = $('mailBadge'); if (!b) return; b.textContent = n > 99 ? '99+' : String(n); b.style.display = n > 0 ? 'flex' : 'none'; }
+  var mailShown = false;
+  function mailBtnUi() { var b = $('fBook'); if (!b) return; var on = mailAdmin(); b.style.display = on ? '' : 'none'; if (on && !mailShown) { mailShown = true; mailPoll(); } }
+  function mailPoll() { if (!mailAdmin() || !token) return; mailApi({ action: 'mail_unread' }).then(function (j) { if (j && typeof j.unread === 'number') mailBadgeSet(j.unread); }); }
+  setInterval(function () { try { mailBtnUi(); if (mailShown && !document.hidden) mailPoll(); } catch (e) {} }, 30000);
+  var mailAll = [], mailFil = 'all';
+  function mailRender() {
+    var l = mailAll.filter(function (m) { return mailFil === 'all' || m.kind === mailFil; });
+    var f = '<div class="mlk">' + [['all', '📮 すべて']].concat(Object.keys(MKIND).map(function (k) { return [k, MKIND[k][0] + ' ' + MKIND[k][1]]; })).map(function (a) { return '<button type="button" data-f="' + a[0] + '" class="' + (mailFil === a[0] ? 'on' : '') + '">' + a[1] + '</button>'; }).join('') + '</div>';
+    if (!l.length) { $('mailList').innerHTML = f + '<p class="tiny" style="text-align:center;margin-top:30px;font-size:15px">' + (mailAll.length ? 'この種類の手紙はないよ' : 'まだ手紙は届いてないよ') + '</p>'; return; }
+    $('mailList').innerHTML = f + l.map(function (m) {
+      var k = MKIND[m.kind] || MKIND.other, d = new Date(m.created_at), ts = isNaN(d) ? '' : (d.getMonth() + 1) + '/' + d.getDate() + ' ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2);
+      return '<div class="mlc' + (m._new ? ' new' : '') + '"><div class="mlh"><span class="mlt">' + k[0] + ' ' + k[1] + '</span>' + (m._new ? '<span class="mln">NEW</span>' : '') + '<span class="mlw">' + ts + '</span></div><div class="mlf">' + esc(m.from_name || 'ななし') + ' さん</div><div class="mlb">' + esc(m.body) + '</div><div class="mla"><button type="button" data-del="' + m.id + '">🗑 消す</button></div></div>';
+    }).join('');
+  }
+  function openMailBox() {
+    if (!mailAdmin()) return; sfx(2); $('mailBox').classList.add('on'); $('mailList').innerHTML = '<p class="tiny" style="text-align:center;margin-top:30px">読み込み中…</p>'; mailFil = 'all';
+    mailApi({ action: 'mail_list' }).then(function (j) {
+      if (!j || !j.mails) { $('mailList').innerHTML = '<p class="tiny" style="text-align:center;margin-top:30px">読めなかったよ。もう一回開いてね</p>'; return; }
+      mailAll = j.mails; var ids = []; mailAll.forEach(function (m) { m._new = !m.is_read; if (!m.is_read) ids.push(m.id); });
+      mailRender(); mailBadgeSet(0); if (ids.length) mailApi({ action: 'mail_read', ids: ids });
+    });
+  }
+  $('fBook').addEventListener('click', openMailBox);
+  $('mailList').addEventListener('click', function (e) {
+    var fb = e.target.closest && e.target.closest('button[data-f]'); if (fb) { mailFil = fb.dataset.f; mailRender(); return; }
+    var db = e.target.closest && e.target.closest('button[data-del]'); if (db) { if (db.dataset.sure !== '1') { db.dataset.sure = '1'; db.textContent = '⚠ もう一回押すと消える'; setTimeout(function () { try { db.dataset.sure = ''; db.textContent = '🗑 消す'; } catch (x) {} }, 3000); return; } var id = +db.dataset.del; mailAll = mailAll.filter(function (m) { return m.id !== id; }); mailRender(); mailApi({ action: 'mail_del', id: id }); }
+  });
+  var mwKind = 'wish', mwBusy = false;
+  function mwPills() { $('mwKinds').innerHTML = Object.keys(MKIND).map(function (k) { return '<button type="button" data-k="' + k + '" class="' + (mwKind === k ? 'on' : '') + '">' + MKIND[k][0] + ' ' + MKIND[k][1] + '</button>'; }).join(''); }
+  function openMailWrite() { sfx(2); mwKind = 'wish'; mwPills(); $('mwTxt').value = ''; $('mwCnt').textContent = '0 / 600'; $('mailWrite').classList.add('on'); }
+  $('mwKinds').addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('button[data-k]'); if (b) { mwKind = b.dataset.k; mwPills(); } });
+  $('mwTxt').addEventListener('input', function () { $('mwCnt').textContent = this.value.length + ' / 600'; });
+  $('mwSend').addEventListener('click', function () {
+    if (mwBusy) return; var t = String($('mwTxt').value || '').trim(); if (t.length < 2) { toast('手紙の中身を書いてね'); return; }
+    mwBusy = true; $('mwSend').disabled = true;
+    mailApi({ action: 'mail_send', kind: mwKind, body: t.slice(0, 600) }).then(function (j) {
+      mwBusy = false; $('mwSend').disabled = false;
+      if (j && j.ok) { $('mailWrite').classList.remove('on'); sfx(2); toast('📮 投函したよ！運営に届きました'); var by = document.querySelector('.gh.npc[data-npc="hana"]'); if (by) bubble(by, 'お預かりしました！確かに届けますね〜'); }
+      else if (j && j._s === 429) toast('きょうは、手紙を10通まで送れるよ。また明日ね');
+      else if (j && j._s === 401) toast('ログインし直してから、もう一回送ってね');
+      else toast('送れなかったよ。もう一回やってみてね');
+    });
+  });
   /* ---------- 🎮 ゲームセンター室内（カフェと同じ、自由に歩ける） ---------- */
   function arcGround(W, H) {
     var o = '<svg class="tground" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" style="position:absolute;left:0;top:0;pointer-events:none;z-index:0"><defs>' +
@@ -3695,7 +3843,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     arcSyncGet();
   }
 
-  function leaveTown() { inCafe = false; inTown = false; zoomT = ZW; fz = ZW; $('field').classList.remove('town'); rtStop(); setWorld(760, 1000); }
+  function leaveTown() { inCafe = false; inPost = false; inTown = false; zoomT = ZW; fz = ZW; $('field').classList.remove('town'); rtStop(); setWorld(760, 1000); }
   function sendChat() {
     var inp = $('tin'), t = String(inp.value || '').replace(/\s+/g, ' ').trim().slice(0, 40); if (!t) return;
     var now = Date.now(); if (now - tChatAt < 1800) { toast('ちょっと待ってください'); return; } tChatAt = now;
@@ -4020,7 +4168,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 133;
+  var GV = 134;
   (function () {
     var last = Date.now();
     function chk() {
@@ -4095,6 +4243,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         { q: '闘技場内のルール', k: ['闘技場内', 'ルール', '攻撃', '無差別'], a: '闘技場内にいる人は、だれでも攻撃できて、だれからでも攻撃される。相手をタップするだけで攻撃です。やられたら、「病院へ向かう」ボタンが出るよ。押さなかったら、倒れたままチャットもできる。' },
         { q: '1対1の決闘', k: ['決闘', '1対1', '挑む', '承認', '申し込'], a: '観客席で相手をタップして「戦いを挑む」を押してください。相手が「受ける」を押したら、決闘場で1対1です。制限時間は90秒で、HPが多く残った方の勝ちになる。' },
         { q: '持ち物は減る？', k: ['減る', '失う', '負け', '罰', '報酬', 'ごほうび'], a: '減りません！ 勝っても負けても、ゲームコインや装備は変わりません。今のところ、ごほうびもないから、気楽に腕試ししてください。' }
+      ] },
+    hana: { nm: '郵便局の受付 ハナ', where: 'post', x: 500, y: 250, post: true, av: { name: 'ハナ', gender: 1, skin: 1, face: 2, hair: 2, hairColor: 1, outfit: 2, outfitColor: 0, pattern: 0, patColor: 6, bottom: 1, bottomColor: 9, acc: 0 },
+      hi: 'いらっしゃいませ〜！ 郵便局の受付のハナです。ゲームへの要望、不具合、わからないこと、困ったことを、手紙にして運営にお届けします。下の「手紙を書く」を押してね。',
+      faq: [
+        { q: 'どんな手紙を送れる？', k: ['手紙', '送', '何', 'どんな', 'できる'], a: '「こうしてほしい」という要望、「おかしい」という不具合、わからないことの質問、困りごと、なんでもどうぞ。1通600文字まで、1日10通まで送れるよ。' },
+        { q: '誰に届くの？', k: ['誰', 'だれ', '届', '運営', 'マスター'], a: '運営（このゲームを作ってる人）にだけ届くよ。ほかのプレイヤーには見えません。あなたのニックネームは、一緒に届きます。' },
+        { q: '返事はもらえる？', k: ['返事', '返信', '返', '答え'], a: 'ごめんね、この郵便局からお返事の手紙は出せないの。でも、届いた手紙は運営がちゃんと読んで、ゲームを良くする参考にします。' },
+        { q: '不具合を送るコツは？', k: ['不具合', 'バグ', 'コツ', '書き方', 'おかしい'], a: '「どこで」「何をしたら」「どうなったか」を書いてくれると、とても助かるよ。たとえば「鉱山で、〇〇をタップしたら、画面が止まった」みたいにね。' }
       ] }
   };
   function addNpcs(where) {
@@ -4105,14 +4261,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       placeEl(e, n.x, n.y); $('world').appendChild(e);
     });
   }
-  function npcAt(wx, wy) { var r = null, bd = 62; var wh = inPlaza ? 'plaza' : (inCafe ? 'cafe' : 'town'); Object.keys(NPCS).forEach(function (k) { var n = NPCS[k]; if ((n.where || 'town') !== wh) return; var d = Math.hypot(wx - n.x, wy - (n.y - 32)); if (d < bd) { bd = d; r = k; } }); return r; }
+  function npcAt(wx, wy) { var r = null, bd = 62; var wh = inPlaza ? 'plaza' : (inPost ? 'post' : (inCafe ? 'cafe' : 'town')); Object.keys(NPCS).forEach(function (k) { var n = NPCS[k]; if ((n.where || 'town') !== wh) return; var d = Math.hypot(wx - n.x, wy - (n.y - 32)); if (d < bd) { bd = d; r = k; } }); return r; }
   var npcCur = null;
   function npcSay(t) { $('npcSay').textContent = t; }
   function openNpc(k) {
     var n = NPCS[k]; if (!n) return; npcCur = k; sfx(2);
     $('npcN').textContent = n.nm; npcSay(n.hi); $('npcIn').value = '';
     $('npcQs').innerHTML = n.faq.map(function (f, i) { return '<button type="button" data-i="' + i + '">' + esc(f.q) + '</button>'; }).join('');
-    $('npcAct').innerHTML = n.enter ? '<button type="button" class="abtn" id="npcEnter" style="width:100%;margin-top:10px">⚔ 闘技場に入る</button>' : (n.spar ? sparUI() : (n.drinks ? drinkUI() : ''));
+    $('npcAct').innerHTML = n.enter ? '<button type="button" class="abtn" id="npcEnter" style="width:100%;margin-top:10px">⚔ 闘技場に入る</button>' : (n.post ? '<button type="button" class="abtn" id="npcMail" style="width:100%;margin-top:10px">✉️ 手紙を書く</button>' : n.spar ? sparUI() : (n.drinks ? drinkUI() : ''));
     if (n.spar) sparInfo();
     $('npc').classList.add('on');
   }
@@ -4197,6 +4353,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('npcQs').addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('button[data-i]'); if (!b) return; var f = NPCS[npcCur].faq[+b.dataset.i]; if (f) { sfx(0); npcSay(f.a); } });
   $('npcGo').addEventListener('click', function () { npcAsk($('npcIn').value); });
   $('npcIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); npcAsk($('npcIn').value); } });
+  $('npc').addEventListener('click', function (e) { if (e.target.closest && e.target.closest('#npcMail')) { $('npc').classList.remove('on'); openMailWrite(); } });
   $('npcX').addEventListener('click', function () { $('npc').classList.remove('on'); });
   $('npc').addEventListener('click', function (e) {
     if (e.target === this) this.classList.remove('on'); var b = e.target.closest && e.target.closest('#npcEnter'); if (b) { $('npc').classList.remove('on'); openArena(); }
@@ -5116,6 +5273,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   $('gmTog').addEventListener('pointerdown', function (e) { e.stopPropagation(); });
   function gearUi() {
+    try { mailBtnUi(); } catch (e) {}
     lookSync(); var g = $('guardBtn'); if (!g) return; var has = !!eqItem('shield');
     g.style.display = (has && fieldOn && !inTown) ? 'block' : 'none'; g.classList.toggle('on', guard); g.textContent = guard ? '🛡 ガード中' : '🛡 ガード';
     var hh = $('hero2'); if (hh) hh.classList.toggle('guard', guard);
@@ -7329,7 +7487,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     spots.forEach(function (s) { if (s.used || (s.by && s.by !== myMid)) return; var d = Math.hypot(wx - s.x, wy - (s.y - 12)); if (d < best) { best = d; hit = s; } });
     var pg = document.createElement('i'); pg.className = 'ping'; pg.style.left = wx + 'px'; pg.style.top = wy + 'px'; $('world').appendChild(pg); setTimeout(function () { pg.remove(); }, 520);
     if (hit) ftarget = { x: hit.x - 58, y: hit.y + 26, spot: hit };
-    else ftarget = { x: clamp(wx, 30, WW - 30), y: clamp(wy, inCafe ? 276 : (inTown ? 260 : topY()), WH - 40), spot: null };
+    else ftarget = { x: clamp(wx, 30, WW - 30), y: clamp(wy, inCafe ? (inPost ? 296 : 276) : (inTown ? 260 : topY()), WH - 40), spot: null };
     $('ftip').style.opacity = 0;
   });
   function digUI(on) {
@@ -7374,7 +7532,6 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('goMine').addEventListener('click', function () { if (busy) return; if (curSpot) cancelDig(); leaveTown(); openMap(null); });
   ['goMine'].forEach(function (id) { $(id).addEventListener('pointerdown', function (e) { e.stopPropagation(); }); });
   $('fBack').addEventListener('click', function () { if (inCafe) { leaveCafe(); return; } if (inArena) { arGiveUp(); return; } if (inPlaza) { leaveArena(); return; } if (curSpot) cancelDig(); var wasTown = inTown; leaveTown(); openMap(wasTown ? null : curMine); });
-  $('fBook').addEventListener('click', function () { renderBook(); $('book').classList.add('on'); });
   $('fSet').addEventListener('click', function () { $('setName').textContent = player.avatar.name + ' さん'; $('set').classList.add('on'); });
 
   function backToField() { if ($('hb')) $('hb').innerHTML = heroHTML(); show('field'); }
