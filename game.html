@@ -4952,7 +4952,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 156;
+  var GV = 157;
   (function () {
     var last = Date.now();
     function chk() {
@@ -6779,8 +6779,8 @@ var TB = {
   function sealSVG() {
     /* 調べたこと：アシカ＝犬のような頭・おでこが盛り上がる・小さな耳たぶが外に出る・太い首・長いヒゲ・光る大きな黒い鼻。日本のイラストや水族館のイメージは、ねずみ色（グレー）のなめらかな毛。腕（前ヒレ）やボールは付けない。 */
     return '<svg viewBox="0 0 100 120"><defs><linearGradient id="slB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b4bcc6"/><stop offset=".5" stop-color="#8b94a0"/><stop offset="1" stop-color="#5d6672"/></linearGradient><linearGradient id="slL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#eef1f4"/><stop offset="1" stop-color="#c3cad2"/></linearGradient></defs>' +
-      '<path d="M14 120C14 98 24 84 32 70L68 70C76 84 86 98 86 120Z" fill="url(#slB)" stroke="#4a525c" stroke-width="1.8" stroke-linejoin="round"/>' +
-      '<ellipse cx="50" cy="106" rx="19" ry="20" fill="url(#slL)" opacity=".95"/>' +
+      '<path d="M22 56C20 72 9 84 9 120L91 120C91 84 80 72 78 56Z" fill="url(#slB)" stroke="#4a525c" stroke-width="1.8" stroke-linejoin="round"/>' +
+      '<path d="M38 64C38 86 30 94 32 106C40 112 60 112 68 106C70 94 62 86 62 64Z" fill="url(#slL)" opacity=".92"/>' +
       '<ellipse cx="18" cy="52" rx="6.4" ry="9" fill="#6b7480" stroke="#4a525c" stroke-width="1.4" transform="rotate(-14 18 52)"/><ellipse cx="18.6" cy="53" rx="2.6" ry="5" fill="#3d444d" transform="rotate(-14 18.6 53)"/>' +
       '<ellipse cx="82" cy="52" rx="6.4" ry="9" fill="#6b7480" stroke="#4a525c" stroke-width="1.4" transform="rotate(14 82 52)"/><ellipse cx="81.4" cy="53" rx="2.6" ry="5" fill="#3d444d" transform="rotate(14 81.4 53)"/>' +
       '<path d="M20 48C18 24 34 9 50 9C66 9 82 24 80 48C80 62 71 74 50 76C29 74 20 62 20 48Z" fill="url(#slB)" stroke="#4a525c" stroke-width="1.8"/>' +
@@ -6798,7 +6798,7 @@ var TB = {
     arcShow('<div class="tvh"><b>🔨 OPAL モグラたたき</b><span id="mlInfo" class="chipb"></span><button type="button" class="arcx" id="mlX">とじる</button></div>' +
       '<div class="tvA mlA" id="mlA"><div class="mlMq"><div class="fcs">' + moleSVG() + '</div><div>SCORE<b id="mlS">0</b></div><div>TIME<b id="mlT">30</b></div><div><small>モグラ＝1点<br>サングラス＝3点<br>アシカ＝10点</small></div><div class="fcs">' + sealSVG() + '</div></div>' +
       '<div class="mlG" id="mlG">' + cs + '<div class="mlCb" id="mlCb"></div></div><div class="mlFl" id="mlFl"></div>' +
-      '<div class="mlOv" id="mlOv"><h2>🔨 OPAL モグラたたき</h2><p>30秒で、顔を出したモグラをたたけ！<br>サングラスのモグラは <b style="color:#ffe27a">3点</b>、<br>「アシカ！」が出たら <b style="color:#ffe27a">10点</b>！<br>つづけてたたくと、コンボでボーナス。<br>40点で賭けたコインがもどる（最大6倍）</p></div></div>' +
+      '<div class="mlOv" id="mlOv"><h2>🔨 OPAL モグラたたき</h2><p>30秒で、顔を出したモグラをたたけ！<br>サングラスのモグラは <b style="color:#ffe27a">3点</b>、<br>「アシカ！」が出たら <b style="color:#ffe27a">10点</b>！<br>つづけてたたくと、コンボでボーナス。<br>70点で賭けたコインがもどる（最大5倍）</p></div></div>' +
       '<div class="tvM" id="mlMsg"></div><div class="tvC"><div class="tvB">' + [10, 50, 100, 500].map(function (b) { return '<button type="button" class="b bt' + (b === bet ? ' on' : '') + '" data-b="' + b + '">' + b + '</button>'; }).join('') + '<button type="button" class="b ra" id="mlGo">START</button></div></div>', 'tv');
     function info() { var e = $('mlInfo'); if (e) e.textContent = '🪙 ' + chipsGet().toLocaleString(); }
     info(); $('mlX').onclick = arcClose;
@@ -6835,12 +6835,12 @@ var TB = {
     function spawn(now) {
       var free = cells.filter(function (c) { return c.st === 0; }); if (!free.length) return; var c = free[Math.floor(Math.random() * free.length)], el = (now - t0) / 1000, p = Math.min(1, el / T);
       var k = 0; if (now >= sealAt) { k = 1; sealAt = now + 5000 + Math.random() * 4000; } else if (Math.random() < .14) k = 2;
-      show(c, k, k === 1 ? 1100 - 350 * p : 1250 - 650 * p);
+      show(c, k, k === 1 ? 700 - 300 * p : 700 - 300 * p);
     }
     function loop() {
       if (!run) return; var now = performance.now(), el = (now - t0) / 1000; left = Math.max(0, Math.ceil(T - el)); $('mlT').textContent = left;
       cells.forEach(function (c) { if (c.st === 1 && now >= c.until) { if (!c.hit) { combo = 0; setCb(); } hide(c); } });
-      var p = Math.min(1, el / T), gap = 720 - 400 * p, ups = cells.filter(function (c) { return c.st === 1; }).length, maxUp = 1 + (p > .3 ? 1 : 0) + (p > .65 ? 1 : 0);
+      var p = Math.min(1, el / T), gap = 650 - 250 * p, ups = cells.filter(function (c) { return c.st === 1; }).length, maxUp = 1 + (p > .3 ? 1 : 0) + (p > .65 ? 1 : 0);
       if (now >= nextSp && ups < maxUp) { spawn(now); nextSp = now + gap * (.7 + Math.random() * .6); }
       if (left <= 5 && left !== loop.l) { loop.l = left; mT(1760, 1760, .06, 'square', .05); }
       if (el > T - 10 && !loop.f) { loop.f = 1; setBgm(105); }
@@ -6848,7 +6848,7 @@ var TB = {
     }
     function end() {
       run = false; clearInterval(tk); clearInterval(bg); cells.forEach(hide);
-      var pay = Math.min(bet * 6, Math.round(bet * score / 40)); chipsSet(chipsGet() + pay); info(); sndFan();
+      var pay = Math.min(bet * 5, Math.round(bet * score / 70)); chipsSet(chipsGet() + pay); info(); sndFan();
       var ov = $('mlOv'); ov.style.display = 'flex';
       ov.innerHTML = '<h2>TIME UP！</h2><div class="sc">' + score + ' 点</div><p>モグラ ' + hitM + ' 匹 ／ <b style="color:#ffe27a">アシカ ' + hitS + ' 匹</b> ／ 最大コンボ ' + bestC + '</p><p style="font-size:18px;color:#ffe27a">🪙 ' + (pay >= bet ? '+' + (pay - bet) : '-' + (bet - pay)) + '　（もどり ' + pay + '）</p><button type="button" class="b ra" id="mlAg">もう1回</button>';
       $('mlAg').onclick = function () { ov.style.display = 'none'; $('mlMsg').textContent = ''; }; $('mlGo').disabled = false; $('mlMsg').textContent = pay >= bet ? '🎉 ナイス！' : 'おしい！もう1回？';
