@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:134-->
+<!--GV:135-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1124,7 +1124,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     <div class="bar"><button class="ib" id="fBack" type="button" aria-label="地図へ">←</button><h1 id="fTtl">鉱山</h1><button class="ib" id="fBag" type="button" aria-label="装備・もちもの">🎒<small>装備・持物</small></button><button class="ib" id="fBook" type="button" aria-label="郵便受け" style="display:none;position:relative">📮<b id="mailBadge"></b></button><button class="ib" id="fSet" type="button" aria-label="せってい">⚙️</button></div>
     <div id="fview"><div id="world"></div><div id="ftip"></div><div id="phud"><span id="phLv" style="color:#ffe08a">Lv 1</span><span style="color:#ff6a8a">♥</span><div class="hbar"><i id="phI"></i></div><span id="phTx"></span></div><div id="plDown"><span>やられた…（このままチャットもできるよ）</span><button type="button" class="gbtn" id="plDownGo">🏥 病院へ向かう</button></div><div id="fTools"><button id="goMine" type="button">🗺 マップ</button><button id="plChat" type="button">💬 チャット</button><button id="spBtn" type="button">✨ 0%</button><button id="sk0" class="skb" type="button"></button><button id="sk1" class="skb" type="button"></button><button id="sk2" class="skb" type="button"></button><button id="swBtn" type="button">🔁 武器</button><button id="guardBtn" type="button">🛡 ガード</button><button id="qcBtn" type="button">⚡ ひとこと</button></div><div id="qcPanel"></div><div id="downov"><b>たおれてしまった…</b><p id="dnTx"></p><button id="dnGo" type="button" class="gbtn" style="width:100%">🏥 町の病院へもどる</button></div><p class="hint" id="hint"></p><div id="fDigBar"><button class="big" id="dig" type="button">⛏️ 掘る！</button><button id="atkBtn" type="button">⚔ こうげき</button><button id="fCancel" type="button">やめる</button></div></div>
         <div id="gld"><div class="gc"><div style="display:flex;justify-content:space-between;align-items:center;margin-bottom:6px"><span class="tiny">ギルドの部屋</span><button id="gClose" type="button" class="gbtn" style="padding:6px 12px">とじる</button></div><div id="gBody"></div></div></div>
-        <div id="npc"><div class="nc"><div class="nh"><b id="npcN"></b><button type="button" class="gbtn" id="npcX" style="padding:6px 12px">とじる</button></div><div id="npcSay"></div><div id="npcQs"></div><div class="nin"><input id="npcIn" maxlength="30" placeholder="聞きたいこと（例：HP、闘技場、売る）" autocomplete="off"><button type="button" class="gbtn" id="npcGo">きく</button></div><div id="npcAct"></div></div></div><div id="arInv"><b id="arInvT"></b><div><button type="button" class="abtn" id="arInvY">受ける</button><button type="button" class="gbtn" id="arInvN">ことわる</button></div></div><div id="updBar" role="button">🔄 新しい版があるよ。ここをタップして更新</div>
+        <div id="npc"><div class="nc"><div class="nh"><b id="npcN"></b><button type="button" class="gbtn" id="npcX" style="padding:6px 12px">とじる</button></div><div id="npcSay"></div><div id="npcQs"></div><div class="nin" style="display:none"><input id="npcIn" maxlength="30" placeholder="聞きたいこと（例：HP、闘技場、売る）" autocomplete="off"><button type="button" class="gbtn" id="npcGo">きく</button></div><div id="npcAct"></div></div></div><div id="arInv"><b id="arInvT"></b><div><button type="button" class="abtn" id="arInvY">受ける</button><button type="button" class="gbtn" id="arInvN">ことわる</button></div></div><div id="updBar" role="button">🔄 新しい版があるよ。ここをタップして更新</div>
         <div id="arBig"></div>
         <div id="arRes"><div class="arrc"><h2 id="arResT"></h2><p class="tiny" id="arResP"></p><button id="arResB" type="button" class="gbtn" style="width:100%;margin-top:12px">部屋にもどる</button></div></div>
     <div id="tchat"><div id="tlog"></div><div id="trow"><input id="tin" type="text" maxlength="40" placeholder="ひとこと話す（40字まで）" autocomplete="off"><button id="tsend" type="button">送る</button></div></div>
@@ -4168,7 +4168,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 134;
+  var GV = 135;
   (function () {
     var last = Date.now();
     function chk() {
@@ -4208,9 +4208,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         { q: '超レアな武器は？', k: ['レア', '超レア', 'ボス', '必殺技つき', '新武器', '手に入'], a: '必殺技つきの超レア武器は、強い敵からごくまれに落ちる。ボス限定の武器は、2人以上のパーティーでボスを倒したときのごほうびで出ることがあるよ。店では売っていません。ちなみに、もう持ってる武器が落ちたら、ゲームコインに換わるのです。' }
       ] },
     garo: { nm: '練習相手の手配師 ガロ', where: 'plaza', wk: 'gun', x: 690, y: 140, spar: true, av: { name: 'ガロ', gender: 0, skin: 2, face: 3, hair: 2, hairColor: 8, outfit: 4, outfitColor: 7, pattern: 1, patColor: 3, bottom: 2, bottomColor: 4, acc: 1 },
-      hi: 'おう、手配師のガロです。闘技場の中で戦ってくれる練習相手を、派遣するよ。レベルは10〜40で、好きに決めてください。高いほど強いだけではなくて、ガードやダッシュ、必殺技も上手くなる。倒してもごほうびは出ません、練習用ですよ。',
+      hi: 'おう、手配師のガロです。闘技場の中で戦ってくれる練習相手を、派遣するよ。レベルは10〜50で、好きに決めてください。高いほど強いだけではなくて、ガードやダッシュ、必殺技も上手くなる。倒してもごほうびは出ません、練習用ですよ。',
       faq: [
-        { q: 'レベルでどう違う？', k: ['レベル', '違い', '強さ', 'ちがい'], a: '練習相手は、剣・短剣・弓・銃のどれかを持って来る（毎回ランダム）。剣は2マス、短剣は1マス、弓は3マス、銃は4マスまでしか届きません。\nLv10〜19：ただ近づいて斬ってくる。動きは遅めです。\nLv20〜29：横に回り込んだり、ガードしたり、ダッシュで距離を詰めてくる。\nLv30〜40：さらに、攻撃をダッシュでかわす。剣と短剣は必殺技も使ってくる（光る輪が出てから、輪の中だけに当たるから、ダッシュで避けられるよ）。\nレベルが上がるほど、HP・攻撃・動きも速くなる。' },
+        { q: 'レベルでどう違う？', k: ['レベル', '違い', '強さ', 'ちがい'], a: '練習相手は、剣・短剣・弓・銃のどれかを持って来る（毎回ランダム）。剣は2マス、短剣は1マス、弓は3マス、銃は4マスまでしか届きません。\nLv10〜19：ただ近づいて斬ってくる。動きは遅めです。\nLv20〜29：横に回り込んだり、ガードしたり、ダッシュで距離を詰めてくる。\nLv30〜50：さらに、攻撃をダッシュでかわす。剣と短剣は必殺技も使ってくる（光る輪が出てから、輪の中だけに当たるから、ダッシュで避けられるよ）。\nレベルが上がるほど、HP・攻撃・動きも速くなる。' },
         { q: 'ごほうびは？', k: ['ほうび', '報酬', '経験値', 'お金', 'コイン'], a: '練習用ですから、ごほうびは出ません。経験値もお金もないよ。そのかわり、何回でも、タダで遊べる。' },
         { q: '自分だけに見える？', k: ['みえ', '見え', 'ほかの', '他', '一人'], a: '練習相手は、呼んだあなたの画面だけに出るのです。ほかの人の邪魔になりません。倒れたら、自動でいなくなる。' },
         { q: '練習のコツは？', k: ['コツ', '練習', '勝てない', '勝て'], a: 'まず Lv10 で、ダッシュと必殺技のゲージ溜めに慣れるといい。次に Lv25 で、ガードされる感じを覚える。Lv35 以上は、必殺技の光る輪が出たら、ダッシュで避けるのです。避けたらジャスト回避でゲージも溜まるよ。' }
@@ -4273,10 +4273,10 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     $('npc').classList.add('on');
   }
   function botStats(lv) { return { lv: lv, max: 100 + 12 * lv, atk: Math.round(6 + 1.4 * lv), spd: 120 + lv * 2.8, cd: 1500 - lv * 20, wind: Math.max(160, 430 - lv * 6), guardP: lv >= 20 ? Math.min(.35, (lv - 15) * .012) : 0, dashOk: lv >= 20, evadeP: lv >= 30 ? (lv - 25) * .015 : 0, spOk: lv >= 30 }; }
-  function sparLv() { var v = parseInt(LSget('opa_spar_lv'), 10); return v >= 10 && v <= 40 ? v : 20; }
+  function sparLv() { var v = parseInt(LSget('opa_spar_lv'), 10); return v >= 10 && v <= 50 ? v : 20; }
   function sparUI() {
     var lv = sparLv();
-    return '<div style="margin-top:10px"><div style="font-size:14px">練習相手のレベル：<b id="sparLv" style="color:#ffd36a;font-size:18px">' + lv + '</b></div><input type="range" id="sparRg" min="10" max="40" step="1" value="' + lv + '" style="width:100%;margin:8px 0"><div id="sparInfo" style="font-size:12px;line-height:1.6;color:#cfd8e3;margin-bottom:10px"></div><button type="button" class="abtn" id="npcSend" style="width:100%">⚔ 派遣してもらう</button>' + (bot ? '<button type="button" class="gbtn" id="npcBack" style="width:100%;margin-top:8px">帰ってもらう</button>' : '') + '</div>';
+    return '<div style="margin-top:10px"><div style="font-size:14px">練習相手のレベル：<b id="sparLv" style="color:#ffd36a;font-size:18px">' + lv + '</b></div><input type="range" id="sparRg" min="10" max="50" step="1" value="' + lv + '" style="width:100%;margin:8px 0"><div id="sparInfo" style="font-size:12px;line-height:1.6;color:#cfd8e3;margin-bottom:10px"></div><button type="button" class="abtn" id="npcSend" style="width:100%">⚔ 派遣してもらう</button>' + (bot ? '<button type="button" class="gbtn" id="npcBack" style="width:100%;margin-top:8px">帰ってもらう</button>' : '') + '</div>';
   }
   function sparInfo() {
     var r = $('sparRg'); if (!r) return; var lv = +r.value, st = botStats(lv); $('sparLv').textContent = lv;
@@ -4348,7 +4348,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function npcAsk(txt) {
     var n = NPCS[npcCur]; if (!n) return; var q = String(txt || '').toLowerCase().replace(/\s+/g, ''); if (!q) return;
     var best = null, bs = 0; n.faq.forEach(function (f) { var sc = 0; f.k.forEach(function (w) { if (q.indexOf(w.toLowerCase()) >= 0) sc += w.length; }); if (sc > bs) { bs = sc; best = f; } });
-    npcSay(best ? best.a : 'ごめんなさい、それは私にはわかりません。下の質問から近いのを選んでみてください。それでもわからなければ、オープンチャットで運営のマイケルさんに聞いてみてください。');
+    npcSay(best ? best.a : 'ごめんなさい、それは私にはわかりません。下の質問から近いのを選んでみてください。それでもわからなければ、オープンチャットで運営に聞いてみてください。');
   }
   $('npcQs').addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('button[data-i]'); if (!b) return; var f = NPCS[npcCur].faq[+b.dataset.i]; if (f) { sfx(0); npcSay(f.a); } });
   $('npcGo').addEventListener('click', function () { npcAsk($('npcIn').value); });
@@ -5791,7 +5791,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     return { line: best, sc: sc, wd: wd, s7: sev };
   }
   /* ---- もぐらたたき（ゲームセンター）：モグラ＝1点／サングラスのモグラ＝3点／アシカ＝10点 ---- */
-  /* 調べたこと：本物のモグラ＝黒っぽいビロードの毛・とがったピンクの鼻・ごく小さい目・耳なし・大きなピンクの手（出っ歯は、ネズミの特徴なので描かない）／アシカ＝耳たぶがある・前ヒレが長い・ボールを鼻にのせる芸 */
+  /* 調べたこと：本物のモグラ＝黒っぽいビロードの毛・とがったピンクの鼻・ごく小さい目・耳なし・大きなピンクの手（出っ歯は、ネズミの特徴なので描かない）／アシカ＝茶色いなめらかな毛・長い鼻先・おでこの盛り上がり・小さな耳たぶ・長いヒゲ（腕は穴の中。ボールは付けない） */
   function moleSVG(sun) {
     var eyes = sun ? '<g><rect x="25" y="44" width="23" height="14" rx="6" fill="#0c0c10" stroke="#ffd84a" stroke-width="1.6"/><rect x="52" y="44" width="23" height="14" rx="6" fill="#0c0c10" stroke="#ffd84a" stroke-width="1.6"/><path d="M48 50h4" stroke="#ffd84a" stroke-width="2"/><path d="M29 47l7 0M56 47l7 0" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".8"/><path d="M25 50L18 47M75 50L82 47" stroke="#ffd84a" stroke-width="1.6"/></g>' :
       '<circle cx="36" cy="51" r="6" fill="#f6f1e2" stroke="#1c1c24" stroke-width="1.2"/><circle cx="64" cy="51" r="6" fill="#f6f1e2" stroke="#1c1c24" stroke-width="1.2"/><circle cx="37.4" cy="52" r="3.2" fill="#06060a"/><circle cx="65.4" cy="52" r="3.2" fill="#06060a"/><circle cx="38.4" cy="50.6" r="1.1" fill="#fff"/><circle cx="66.4" cy="50.6" r="1.1" fill="#fff"/>';
@@ -5804,17 +5804,19 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       '<g><ellipse cx="83" cy="94" rx="15" ry="12" fill="url(#mgH)" stroke="#a8505c" stroke-width="1.4"/><path d="M94 86l3-7M87 83l1-8M79 83l-1-8M72 87l-4-6" stroke="#fffbea" stroke-width="3.4" stroke-linecap="round"/></g></svg>';
   }
   function sealSVG() {
-    return '<svg viewBox="0 0 100 120"><defs><radialGradient id="slB" cx=".4" cy=".25" r=".95"><stop offset="0" stop-color="#c4dae9"/><stop offset=".6" stop-color="#86a9c1"/><stop offset="1" stop-color="#5a7a92"/></radialGradient><clipPath id="slC"><circle cx="50" cy="15" r="13"/></clipPath></defs>' +
-      '<path d="M20 120Q14 84 30 70L70 70Q86 84 80 120Z" fill="url(#slB)"/><ellipse cx="50" cy="100" rx="22" ry="20" fill="#e6f0f7" opacity=".9"/>' +
-      '<path d="M26 92Q6 84 8 56Q16 58 20 66Q22 80 32 86Z" fill="url(#slB)" stroke="#4a6a82" stroke-width="1.4"/><path d="M74 92Q94 84 92 56Q84 58 80 66Q78 80 68 86Z" fill="url(#slB)" stroke="#4a6a82" stroke-width="1.4"/>' +
-      '<ellipse cx="22" cy="54" rx="5.4" ry="8" fill="#6a8aa2" stroke="#4a6a82" stroke-width="1.2" transform="rotate(-18 22 54)"/><ellipse cx="78" cy="54" rx="5.4" ry="8" fill="#6a8aa2" stroke="#4a6a82" stroke-width="1.2" transform="rotate(18 78 54)"/>' +
-      '<circle cx="50" cy="54" r="31" fill="url(#slB)" stroke="#4a6a82" stroke-width="1.4"/><ellipse cx="38" cy="38" rx="11" ry="6" fill="#fff" opacity=".35" transform="rotate(-25 38 38)"/>' +
-      '<ellipse cx="50" cy="66" rx="19" ry="13" fill="#eef5fa" stroke="#9ab6c8" stroke-width="1"/>' +
-      '<circle cx="36" cy="52" r="7.4" fill="#0a0e14"/><circle cx="64" cy="52" r="7.4" fill="#0a0e14"/><circle cx="33.8" cy="49.4" r="2.6" fill="#fff"/><circle cx="61.8" cy="49.4" r="2.6" fill="#fff"/><circle cx="38" cy="55" r="1.2" fill="#fff" opacity=".8"/><circle cx="66" cy="55" r="1.2" fill="#fff" opacity=".8"/>' +
-      '<ellipse cx="26" cy="64" rx="6" ry="3.6" fill="#ff9aa8" opacity=".7"/><ellipse cx="74" cy="64" rx="6" ry="3.6" fill="#ff9aa8" opacity=".7"/>' +
-      '<ellipse cx="50" cy="60" rx="5.4" ry="3.6" fill="#1a1e28"/><ellipse cx="48.6" cy="59" rx="1.6" ry="1" fill="#fff" opacity=".7"/><path d="M50 63.6V67M42 69Q50 76 58 69" stroke="#3a2a30" stroke-width="1.8" fill="none" stroke-linecap="round"/>' +
-      '<g fill="#5a6a7a"><circle cx="41" cy="65" r="1"/><circle cx="43" cy="68" r="1"/><circle cx="59" cy="65" r="1"/><circle cx="57" cy="68" r="1"/></g><g stroke="#fff" stroke-width="1.1" stroke-linecap="round" opacity=".95"><path d="M38 66L22 62M38 69L22 71M62 66L78 62M62 69L78 71"/></g>' +
-      '<circle cx="50" cy="15" r="13" fill="#fff" stroke="#8a8aa0" stroke-width="1"/><g clip-path="url(#slC)"><path d="M50 15L50 0L68 4Z" fill="#ff4a5a"/><path d="M50 15L68 4L80 20Z" fill="#ffd84a"/><path d="M50 15L80 20L62 34Z" fill="#3a9af0"/><path d="M50 15L62 34L40 32Z" fill="#ff4a5a"/><path d="M50 15L40 32L22 20Z" fill="#ffd84a"/><path d="M50 15L22 20L32 4Z" fill="#3a9af0"/></g><circle cx="50" cy="15" r="2.4" fill="#fff" stroke="#8a8aa0" stroke-width=".6"/><ellipse cx="45" cy="9" rx="4" ry="2.4" fill="#fff" opacity=".7"/></svg>';
+    /* 本物のアシカ：茶色いなめらかな毛／犬のように長い鼻先／おでこの盛り上がり／小さな耳たぶ／太くて長い首／長いヒゲ。前ヒレ（腕）は穴の中。 */
+    return '<svg viewBox="0 0 100 120"><defs><linearGradient id="slB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#b08a62"/><stop offset=".5" stop-color="#7d5b3c"/><stop offset="1" stop-color="#4b3422"/></linearGradient><linearGradient id="slL" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#d8b88c"/><stop offset="1" stop-color="#a98056"/></linearGradient></defs>' +
+      '<path d="M22 120C24 102 29 90 31 76C28 62 25 50 29 38C33 22 48 12 62 20C66 23 68 28 72 31L85 31C91 32 93 38 88 42L75 46C73 51 68 55 62 57C66 65 70 73 74 82C78 94 79 108 78 120Z" fill="url(#slB)" stroke="#3a2818" stroke-width="1.8" stroke-linejoin="round"/>' +
+      '<path d="M62 57C66 65 70 73 74 82C78 94 79 108 78 120H52C54 100 56 80 54 64Z" fill="url(#slL)" opacity=".85"/>' +
+      '<path d="M37 28C42 21 52 19 60 23" stroke="#d9bd96" stroke-width="3" fill="none" stroke-linecap="round" opacity=".5"/>' +
+      '<g stroke="#5a4028" stroke-width="1.2" stroke-linecap="round" opacity=".5" fill="none"><path d="M36 70Q40 78 38 90M44 66Q47 76 45 88M34 52Q38 56 38 62"/></g>' +
+      '<path d="M37 38C32 34 33 28 38 29C41 30 41 35 40 38Z" fill="#3a2818" stroke="#2a1c10" stroke-width="1"/><path d="M38 31C37 33 38 35 39 36" stroke="#8a6a48" stroke-width="1" fill="none"/>' +
+      '<circle cx="58" cy="35" r="5.6" fill="#0c0806"/><circle cx="56.2" cy="32.8" r="2.1" fill="#fff"/><circle cx="59.8" cy="37.4" r="1" fill="#fff" opacity=".7"/><path d="M52 29Q58 26 64 30" stroke="#3a2818" stroke-width="1.6" fill="none" stroke-linecap="round"/>' +
+      '<ellipse cx="87" cy="35.5" rx="5" ry="4" fill="#120c08"/><ellipse cx="85.4" cy="34" rx="1.7" ry="1.1" fill="#fff" opacity=".7"/>' +
+      '<path d="M86 43Q76 48 66 48" stroke="#2a1c10" stroke-width="1.8" fill="none" stroke-linecap="round"/><path d="M67 48Q64 47 63 45" stroke="#2a1c10" stroke-width="1.6" fill="none" stroke-linecap="round"/>' +
+      '<g fill="#2a1c10" opacity=".7"><circle cx="78" cy="38" r=".9"/><circle cx="81" cy="40" r=".9"/><circle cx="76" cy="41" r=".9"/><circle cx="80" cy="43" r=".9"/></g>' +
+      '<g stroke="#fff" stroke-width="1.2" stroke-linecap="round" fill="none" opacity=".95"><path d="M78 40Q88 33 99 30"/><path d="M78 41Q90 39 99 40"/><path d="M77 42Q88 46 98 51"/><path d="M76 43Q84 52 92 59"/></g>' +
+      '<ellipse cx="68" cy="26" rx="9" ry="3.6" fill="#fff" opacity=".28" transform="rotate(14 68 26)"/></svg>';
   }
   function openMole() {
     var bet = 50, run = false, score = 0, combo = 0, bestC = 0, hitM = 0, hitS = 0, T = 30, left = 30, tk = 0, bg = 0, bgStep = 0, cells = [], nextSp = 0, sealAt = 0, over = false, t0 = 0;
@@ -6844,7 +6846,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function pkApply0(T, i, a, amt) {
     var s = T.seats[i]; if (!s || s.f || s.a) return false; var need = T.cur - s.bet;
-    if (a === 'f') { if (need <= 0) a = 'c'; else { s.f = 1; } }
+    if (a === 'f') { s.f = 1; }
     if (a === 'c') { var p = Math.min(need, s.stack); s.stack -= p; s.bet += p; s.tot += p; T.pot += p; if (s.stack === 0) s.a = 1; }
     else if (a === 'r') {
       var to = Math.min(Math.floor(amt), s.bet + s.stack); if (to <= T.cur) return pkApply0(T, i, 'c', 0);
@@ -6970,7 +6972,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       if (!X.first && me >= 0 && mineS && mineS.tot > 0) { var wn = T.res.won[me] || 0, nt = wn - mineS.tot; PKS.h++; if (wn > 0) PKS.w++; PKS.net += nt; if (wn > PKS.big) PKS.big = wn; PKS.hist.unshift({ n: T.hand, r: wn > 0 ? '勝' : (mineS.f ? '降' : '負'), d: (T.res.desc[me] || (rk ? rk.t : '')), v: nt }); PKS.hist = PKS.hist.slice(0, 15); pkSave(); }
       if (!X.first) { if (me >= 0 && T.res.won[me]) { sndWin(); arSay('おめでとうございます。' + (T.res.desc[me] || '')); } else { if (ws[0]) arSay(ws[0].nm + '、' + (T.res.desc[wi[0]] ? T.res.desc[wi[0]] + 'で' : '') + '勝ち'); if (me >= 0 && T.seats[me] && !T.seats[me].f) sndLose(); } }
     }
-    if (T.op !== undefined && T.op >= 0) { if (PK.opH === undefined) PK.opH = T.hand; else if (PK.opH !== T.hand) { PK.opH = T.hand; tcAdd('', '💎 オパールカード登場！ だれかの手札にオールマイティが入ったよ' + (me === T.op ? '（あなたやで！）' : ''), 0, 1); sndDing(); arSay('オパールカードが登場しました'); } } else if (PK.opH === undefined) PK.opH = T.hand;
+    if (T.op !== undefined && T.op >= 0) { if (PK.opH === undefined) PK.opH = T.hand; else if (PK.opH !== T.hand) { PK.opH = T.hand; if (me === T.op) { tcAdd('', '💎 あなたの手札に、オパールカードが入ったよ！（ほかの人には内緒）', 0, 1); sndDing(); arSay('あなたの手札に、オパールカードが入りました'); } } } else if (PK.opH === undefined) PK.opH = T.hand;
     if (T.note) { if (PK.noteSeen === undefined) PK.noteSeen = T.note.e; else if (T.note.e > PK.noteSeen) { PK.noteSeen = T.note.e; tcAdd('', T.note.x, 0, 1); arSay('新しい対戦相手が着席しました'); } }
     if (T.nb) { if (PK.nbSeen === undefined) PK.nbSeen = T.nb.e; else if (T.nb.e > PK.nbSeen) { PK.nbSeen = T.nb.e; var ns = T.seats.filter(function (q) { return q && q.id === T.nb.id; })[0]; if (ns) { tcAdd(ns.nm, T.nb.x); PK.bub[ns.id] = { x: T.nb.x, exp: now + 3600 }; setTimeout(pkRender, 3700); } } }
     /* メッセージと操作 */
