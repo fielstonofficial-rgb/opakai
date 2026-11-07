@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:125-->
+<!--GV:126-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -3960,7 +3960,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 125;
+  var GV = 126;
   (function () {
     var last = Date.now();
     function chk() {
@@ -5156,6 +5156,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function killFoe(f, delay) {
     f.mode = 'dead'; if (f.bs) { bsT = 22; clearTls(f); } if (!f.noDrop && !f.boss) dropRoll(Math.min(2, ((f.d && f.d.tier) || 0) + (f.big ? 1 : 0)), f.x, f.y); var g = fgen; if (f.tel) { f.tel.remove(); f.tel = null; }
+    if (!netFoes() && f.boss && f.bs) claimBoss();
     if (amFoeHost() && netFoes()) { if (f.boss) { rtSend({ t: 'bk' }); claimBoss(); } else { kills++; if (kills >= 6 && !bsDef() && Object.keys(peers).length >= 1 && !foes.some(function (x) { return x.boss && x.mode !== 'dead'; })) { kills = 0; setTimeout(spawnBoss, 3000); } } }
     setTimeout(function () { if (f.el) f.el.remove(); var i = foes.indexOf(f); if (i >= 0) foes.splice(i, 1); }, 620);
     f.el.classList.add('flee');
@@ -5261,7 +5262,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function bsDef() { return (curMine && BSBY[curMine]) || null; }
   function bsStat(d, n) { var L = d.rl, dps = ((6 + 1.5 * L + 3 + .8 * L) * 1.15) / .8; return { hp: Math.round(dps * 300 * .55 * d.pn * (.55 + .45 * n / d.pn)), atk: Math.round(.5 * (80 + 13 * L)) }; }
   function bsWatch(dt) {
-    if (!bsDef() || !fieldOn || inTown || !netFoes() || !amHost()) return;
+    if (!bsDef() || !fieldOn || inTown || (netFoes() && !amHost())) return;
     if (foes.some(function (x) { return x.boss && x.mode !== 'dead'; })) return;
     bsT -= dt; if (bsT <= 0) { bsT = 999; spawnBsBoss(); }
   }
