@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:108-->
+<!--GV:109-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -3500,7 +3500,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     html += arcGround(W, H);
     var dc = function (svg, x, y, wd, ht, z) { html += '<div class="dc" style="left:' + x + 'px;top:' + y + 'px;width:' + wd + 'px;height:' + ht + 'px;z-index:' + Math.round(z == null ? y : z) + '">' + svg + '</div>'; };
     var lb = function (t, x, y) { html += '<div class="tlbl" style="left:' + x + 'px;top:' + y + 'px">' + t + '</div>'; };
-    dc(arcDoorSVG(), 500, 330, 220, 170, 330); lb('対戦会場入口', 500, 360); dc(arcDispSVG(), 690, 352, 74, 96, 352); lb('🪙 コイン受け取り機', 690, 366); dc(arcRankSVG(), 690, 245, 160, 110, 245); lb('🏆 コインランキング掲示板', 690, 222);
+    dc(arcDoorSVG(), 500, 330, 220, 170, 330); lb('対戦会場入口', 500, 360); dc(arcDispSVG(), 880, 352, 74, 96, 352); html += '<div class="tlbl" style="left:880px;top:366px;white-space:nowrap">🪙 コイン受け取り機</div>'; dc(arcRankSVG(), 690, 200, 160, 110, 200); lb('🏆 コインランキング掲示板', 690, 218);
     dc(arcBarSVG(), 210, 336, 360, 84, 336); lb('🍸 バーカウンター', 210, 262); html += '<div class="cfe" style="left:70px;top:296px;font-size:26px;z-index:337">🍸</div><div class="cfe" style="left:150px;top:296px;font-size:26px;z-index:337">🥃</div><div class="cfe" style="left:290px;top:296px;font-size:26px;z-index:337">🍷</div><div class="cfe" style="left:350px;top:296px;font-size:26px;z-index:337">🥂</div>';
     LGT.forEach(function (t) { dc(arcLoungeTableSVG(), t[0], t[1] + 36, 130, 74, t[1] + 36); });
     SEATS.forEach(function (sa) { if (sa.stool) dc(arcStoolSVG(), sa.x, sa.y + 8, 40, 52, sa.y - 1); else { dc(arcChairSVG(), sa.x, sa.y - 2, 31, 28, sa.y - 1); dc(arcSeatSVG(), sa.x, sa.y + 5, 34, 17, sa.y + 1); } });
@@ -3512,7 +3512,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     html += '<div class="tlbl" style="left:500px;top:766px">🚪 出口</div>';
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
-    DOORS = [{ k: 'arc:fps', x: 500, y: 330, w: 200, h: 160 }, { k: 'arc:holdem', x: 186, y: 616, w: 250, h: 105 }, { k: 'arc:bi', x: 828, y: 607, w: 210, h: 92 }, { k: 'arc:un', x: 828, y: 797, w: 210, h: 92 }, { k: 'arcout', x: 500, y: 800, w: 120, h: 70 }, { k: 'arc:rank', x: 690, y: 245, w: 160, h: 110 }, { k: 'arc:dis', x: 690, y: 352, w: 74, h: 80 }, { k: 'arc:prize', x: 880, y: 250, w: 220, h: 110 }];
+    DOORS = [{ k: 'arc:fps', x: 500, y: 330, w: 200, h: 160 }, { k: 'arc:holdem', x: 186, y: 616, w: 250, h: 105 }, { k: 'arc:bi', x: 828, y: 607, w: 210, h: 92 }, { k: 'arc:un', x: 828, y: 797, w: 210, h: 92 }, { k: 'arcout', x: 500, y: 800, w: 120, h: 70 }, { k: 'arc:rank', x: 690, y: 215, w: 160, h: 110 }, { k: 'arc:dis', x: 880, y: 352, w: 74, h: 80 }, { k: 'arc:prize', x: 880, y: 250, w: 220, h: 110 }];
     hero.x = 500; hero.y = 760; hero.dir = 1; hero.sit = null; ftarget = null; fz = zoomT;
     $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi(); addNpcs('arcade');
   }
@@ -3851,7 +3851,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 108;
+  var GV = 109;
   (function () {
     var last = Date.now();
     function chk() {
