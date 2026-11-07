@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:97-->
+<!--GV:98-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -243,7 +243,15 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #arc .tvG{flex:0 0 50px;display:flex;flex-direction:column;align-items:center;justify-content:center;font-size:10px;color:#ffe27a;height:72px;font-weight:800}
 #arc input.vr{writing-mode:vertical-lr;direction:rtl;width:24px;height:50px;margin:0;accent-color:#ffe27a}
 #arc .tvW{padding:80px 0;color:#9fb4c4}
-#arc #pkCtl.tvC{flex-direction:column;height:auto;min-height:118px;gap:4px;padding-bottom:2px}
+#arc #pkCtl.tvC{flex-direction:row;height:112px;gap:8px;align-items:stretch;padding:0}
+#arc .pkL.tvB{flex:0 0 36%;flex-direction:column;gap:4px}
+#arc .pkL.tvB .b{flex:1;height:auto;font-size:12px;border-radius:8px;border-width:2px}
+#arc .pkMd{flex:1;min-width:0;display:flex;flex-direction:column;gap:3px}
+#arc .pkMd .pv{height:20px;text-align:center;font-size:14px;font-weight:800;color:#ffe27a}
+#arc .pkMd .pkR3{flex:1;display:grid;grid-template-columns:repeat(3,1fr);gap:3px}
+#arc .pkMd .pkR3 button{height:auto;font-size:10px;padding:0;border-radius:6px}
+#arc .pkV{flex:0 0 30px;display:flex;align-items:center;justify-content:center}
+#arc .pkV input.vr{writing-mode:vertical-lr;direction:rtl;width:26px;height:108px;margin:0;accent-color:#ffe27a}
 #arc .pkR2{display:flex;gap:6px;align-items:center;width:100%}
 #arc .pkR2 .pm{flex:0 0 34px;height:30px;border-radius:8px;border:2px solid #ffe27a;background:#3a3010;color:#ffe27a;font-size:18px;font-weight:800;padding:0;line-height:1}
 #arc .pkR2 input[type=range]{flex:1;min-width:0;height:30px;margin:0;accent-color:#ffe27a}
@@ -351,7 +359,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #arc .pkRk.up{animation:slbn .3s 4 alternate;box-shadow:0 0 12px #ffb300}
 #arc .tcW{flex:0 0 auto;position:relative;width:100%;max-width:460px;margin:2px auto 0}
 #arc .tcL{overflow-y:auto;text-align:left;font-size:12px;line-height:1.5;background:#0006;border-radius:8px;padding:3px 8px;color:#e6e6ee}
-#arc .tcL.tcz0{display:none}#arc .tcL.tcz1{height:58px}#arc .tcL.tcz2{height:150px}
+#arc .tcL.tcz0{display:none}#arc .tcL.tcz1{height:96px}#arc .tcL.tcz2{height:190px}
+#arc .tcW{border:2px solid #7af0ff88;border-radius:12px;padding:4px 6px 6px;background:#0a1220}
+#arc .tcL{border:1px solid #3a4a66}#arc .tcL:empty::before{content:'まだ発言がないよ。ひとことどうぞ！';color:#789}
+#arc .tcT{display:flex;align-items:center;gap:6px;font-size:12px;font-weight:800;color:#7af0ff;margin-bottom:3px}
+#arc .tcT span{font-size:10px;font-weight:400;color:#9fb4c4;flex:1;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+#arc .tcZ{flex:0 0 auto;height:24px;padding:0 8px;border-radius:12px;border:1px solid #7af0ff;background:#12304a;color:#fff;font-size:11px;font-weight:700}
 #arc .tcM b{color:#7af0ff;margin-right:4px}#arc .tcM.me b{color:#ffe27a}#arc .tcM.sys{color:#ffe27a;font-size:11px}
 #arc .tcR{display:flex;gap:4px;align-items:center;margin-top:3px}
 #arc .tcR input{flex:1;min-width:0;height:34px;border-radius:10px;border:1px solid #556;background:#10131f;color:#fff;padding:0 8px;font-size:14px}
@@ -3766,7 +3779,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 97;
+  var GV = 98;
   (function () {
     var last = Date.now();
     function chk() {
@@ -5217,14 +5230,16 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function chipBar() { return '<div class="chipb">🪙 <b id="chipN">' + chipsGet().toLocaleString() + '</b> コイン</div>'; }
   function coinTotal() { var t = chipsGet(); try { if (PK && PK.T) { var a = PK.T.seats[pkMine()]; if (a) t += a.stack; } else if (BJ && BJ.T) { var b = BJ.T.seats[bjMine()]; if (b) t += b.stack; } } catch (e) {} return t; }
   function coinGauge() {
-    var g = $('cgauge'); if (!player) { if (g) g.style.display = 'none'; return; }
+    var g = $('cgauge'); if (!player || !inArcRoom || PK || BJ) { if (g) g.style.display = 'none'; return; }
     if (!g) { g = document.createElement('div'); g.id = 'cgauge'; g.innerHTML = '<i></i><span></span>'; document.body.appendChild(g); }
     var t = coinTotal(), pk = 1000; try { pk = Math.max(1000, parseInt(localStorage.getItem('opa_cpeak') || '1000', 10) || 1000); if (t > pk) { pk = t; localStorage.setItem('opa_cpeak', String(t)); } } catch (e) {}
     g.style.display = 'block'; g.firstChild.style.height = Math.max(3, Math.min(100, t / pk * 100)) + '%'; g.lastChild.textContent = '🪙 コイン ' + t.toLocaleString() + '枚';
   }
   setInterval(coinGauge, 800);
   function chipUpd() { var e = $('chipN'); if (e) e.textContent = chipsGet().toLocaleString(); }
-  function chipFree() { if (player && player.gm) return; if (chipsGet() < 10) { if (ARC.on) { if (!ARC.rfOk) return; ARC.rfOk = false; ARC.rf = true; } chipsSet(chipsGet() + 500); chipUpd(); } }
+  function rescueN() { try { return Math.max(0, parseInt(localStorage.getItem('opa_rescue_n') || '0', 10) || 0); } catch (e) { return 0; } }
+  function rescueAdd() { try { localStorage.setItem('opa_rescue_n', String(rescueN() + 1)); } catch (e) {} }
+  function chipFree() { if (player && player.gm) return; if (chipsGet() < 10) { if (rescueN() >= 10) return; if (ARC.on) { if (!ARC.rfOk) return; ARC.rfOk = false; ARC.rf = true; } rescueAdd(); chipsSet(chipsGet() + 500); chipUpd(); } }
   function betRow(sel, cb) {
     return '<div class="bets">' + [10, 50, 100, 500].map(function (b) { return '<button type="button" data-b="' + b + '"' + (b === sel ? ' class="on"' : '') + '>' + b + '</button>'; }).join('') + '</div>';
   }
@@ -5297,9 +5312,10 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     function climb(n, base, type, vol) { for (var k = 0; k < n; k++) arTone(base * Math.pow(1.1, k), .15, type || 'sawtooth', vol || .05, k * .13); }
     function chipsEnough() {
       chipFree(); var c = chipsGet();
+      if (c < 10 && rescueN() >= 10) { $('slRes').textContent = 'コインがなくなりました（救済は10回までです）'; return false; }
       if (c < 10) { /* 救済：1日分をもう使っていても、20分ごとに100コイン */
         var last = 0; try { last = +localStorage.getItem('opa_rescue') || 0; } catch (e) { }
-        if (Date.now() - last > 20 * 60 * 1000) { try { localStorage.setItem('opa_rescue', String(Date.now())); } catch (e) { } chipsSet(c + 100); chipUpd2(); $('slRes').textContent = '🆘 コインがなくなったので、特別に100コイン出したよ'; c += 100; }
+        if (Date.now() - last > 20 * 60 * 1000) { try { localStorage.setItem('opa_rescue', String(Date.now())); } catch (e) { } rescueAdd(); chipsSet(c + 100); chipUpd2(); $('slRes').textContent = '🆘 コインがなくなったので、特別に100コイン出したよ'; c += 100; }
         else { var w = Math.ceil((20 * 60 * 1000 - (Date.now() - last)) / 60000); $('slRes').textContent = 'コインが足りません。あと約' + w + '分で、100コイン出るよ'; return false; }
       }
       if (c < bet) { var nb = 10; [10, 50, 100, 500].forEach(function (b) { if (b <= c) nb = b; }); setBet(nb); }
@@ -5398,7 +5414,6 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function openRank() {
     arcFlush(); arcShow('<div class="tvh"><b>🏆 コインランキング</b><button type="button" class="arcx" id="rkX">とじる</button></div><div class="rkL" id="rkL">読み込み中…</div><div class="tvM" id="rkM"></div>', 'tv'); $('rkX').onclick = arcClose;
-    if (!ARC.on) { $('rkL').textContent = 'ランキングはサーバーにつながっている時だけ見られます'; return; }
     setTimeout(function () {
       arcApi({ action: 'arc_rank' }).then(function (j) {
         if (!$('rkL')) return; if (j._s !== 200) { $('rkL').textContent = 'つながりませんでした。もう一回ためしてね'; return; }
@@ -5525,12 +5540,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var TCST = ['🔥', '😎', '😆', '😭', '👏', '💎', '🎉', '🍀'], TCPH = ['👍 ナイス！', '🤝 よろしく！', '🔥 勝負！', '😭 くやしい〜', '😮 まじか！', '🙏 おねがい', '🎉 おめでとう', '😎 よゆう', '💎 いただき！', '🍀 ついてる！', '😆 あはは', '🥱 まだ〜？'], TCRE = ['❤️', '😆', '😭', '✨', '👏', '😮', '💎'];
   function tcSzGet() { try { var v = parseInt(localStorage.getItem('opa_tc_sz'), 10); return v >= 0 && v <= 2 ? v : 1; } catch (e) { return 1; } }
   function tcHTML(p) {
-    return '<div class="tcW"><div class="tcL tcz' + tcSzGet() + '" id="' + p + 'cl"></div><div class="tcR"><button type="button" class="tcB" id="' + p + 'cb" title="チャットを大きく">⤢</button><button type="button" class="tcB" id="' + p + 'cs" title="チャットを小さく">⤡</button><input id="' + p + 'ci" maxlength="40" placeholder="メッセージ" autocomplete="off"><button type="button" class="tcB tcSend" id="' + p + 'cg">送信</button><button type="button" class="tcB" id="' + p + 'cm" title="スタンプ">🙂</button><button type="button" class="tcB tcH" id="' + p + 'ch" title="押すとリアクション。長押しで絵文字を変えられるよ">' + TCCUR + '</button></div><div class="tcP" id="' + p + 'cp"></div><div class="tcE" id="' + p + 'ce"></div></div>';
+    return '<div class="tcW"><div class="tcT">💬 チャット<span>（みんなと話せるよ・下の欄に書いて送信）</span><button type="button" class="tcZ" id="' + p + 'cb">' + (tcSzGet() >= 2 ? '▼ ちいさく' : '▲ おおきく') + '</button></div><div class="tcL tcz' + tcSzGet() + '" id="' + p + 'cl"></div><div class="tcR"><input id="' + p + 'ci" maxlength="40" placeholder="メッセージ" autocomplete="off"><button type="button" class="tcB tcSend" id="' + p + 'cg">送信</button><button type="button" class="tcB" id="' + p + 'cm" title="スタンプ">🙂</button><button type="button" class="tcB tcH" id="' + p + 'ch" title="押すとリアクション。長押しで絵文字を変えられるよ">' + TCCUR + '</button></div><div class="tcP" id="' + p + 'cp"></div><div class="tcE" id="' + p + 'ce"></div></div>';
   }
   function tcInit(g, P, p) {
     TC = { g: g, P: P, p: p }; P.cl = P.cl || []; P.bub = P.bub || {}; P.pos = P.pos || {};
     var setSz = function (d) { var v = Math.max(0, Math.min(2, tcSzGet() + d)); try { localStorage.setItem('opa_tc_sz', String(v)); } catch (e) {} $(p + 'cl').className = 'tcL tcz' + v; $(p + 'cl').scrollTop = 1e6; };
-    $(p + 'cb').onclick = function () { setSz(1); }; $(p + 'cs').onclick = function () { setSz(-1); };
+    $(p + 'cb').onclick = function () { var v = tcSzGet() >= 2 ? 1 : 2; setSz(v - tcSzGet()); this.textContent = v >= 2 ? '▼ ちいさく' : '▲ おおきく'; };
     $(p + 'cg').onclick = function () { var i = $(p + 'ci'), t = String(i.value || '').replace(/\s+/g, ' ').trim().slice(0, 40); if (t) { tcSend('m', t); i.value = ''; } };
     $(p + 'ci').onkeydown = function (e) { e.stopPropagation(); if (e.key === 'Enter' && !e.isComposing) { e.preventDefault(); $(p + 'cg').onclick(); } };
     $(p + 'ci').onkeyup = function (e) { e.stopPropagation(); };
@@ -5649,7 +5664,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function bjRender() {
     arSeatSync(BJ, 'bj');
     if (!BJ || !$('bjTbl')) return; var T = BJ.T, me = BJ.me, A = $('bjTbl');
-    if ($('bjInfo')) $('bjInfo').textContent = '🪙 コイン ' + coinTotal().toLocaleString();
+    if ($('bjInfo')) $('bjInfo').textContent = '🪙 ' + coinTotal().toLocaleString();
     if (!T) { A.innerHTML = '<div class="tvW">テーブルにつないでいます…</div>'; return; }
     var X = tvCtx(BJ, A), W = X.W, H = X.H, mineS = me >= 0 ? T.seats[me] : null, now = Date.now(), h = tvDealer(X) + '<div class="tvO bj"></div>';
     h += '<div class="bjD">' + T.d.map(function (c, k) { return tvCard(cdTxt(CRK[c.r], c), c.s === 1 || c.s === 2, T.hide && k === 1 && T.st !== 'show', 'sm', 'd' + T.rd + '_' + k, X, 0, -H * .22); }).join('') + (T.d.length ? '<span class="bjT">' + (T.hide && T.st !== 'show' ? bjVal([T.d[0]]) : bjVal(T.d)) + '</span>' : '<span class="bjL">DEALER</span>') + '</div>';
@@ -5892,7 +5907,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function pkRender() {
     arSeatSync(PK, 'pk');
     if (!PK || !$('pkTbl')) return; var T = PK.T, me = PK.me, A = $('pkTbl');
-    if ($('pkInfo')) $('pkInfo').textContent = '🪙 コイン ' + coinTotal().toLocaleString();
+    if ($('pkInfo')) $('pkInfo').textContent = '🪙 ' + coinTotal().toLocaleString();
     if (!T) { A.innerHTML = '<div class="tvW">テーブルにつないでいます…</div>'; return; }
     var X = tvCtx(PK, A), W = X.W, H = X.H, rel = me < 0 ? 0 : me, h = tvDealer(X) + '<div class="tvO"></div>', mineS = me >= 0 ? T.seats[me] : null, now = Date.now(), rk = pkRankInfo(T, mineS);
     h += '<div class="tvBd">' + T.board.map(function (c, k) { return tvCard(cdTxt(PKRK[c.r], c), c.s === 1 || c.s === 2, 0, 0, 'b' + T.hand + '_' + k, X, 0, -H * .3, 1); }).join('') + '</div><div class="tvPot">ポット ' + T.pot.toLocaleString() + '</div>';
@@ -5924,17 +5939,16 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var myTurn = !!(mineS && T.turn === me && !T.run && T.st !== 'show' && T.st !== 'wait'), key = [T.hand, T.st, T.turn, T.cur, me, mineS ? mineS.stack : 0, myTurn ? 1 : 0].join('|'), cb = $('pkCtl');
     if (cb.dataset.k !== key) {
       cb.dataset.k = key; var s = mineS || { bet: 0, stack: 0 }, need = T.cur - s.bet, maxTo = s.bet + s.stack, minTo = Math.min(maxTo, T.cur + T.minR), canR = myTurn && maxTo > T.cur, dis = myTurn ? '' : ' disabled';
-      cb.innerHTML = '<div class="tvB" style="width:100%"><button type="button" class="b fo" id="pkF"' + dis + '>フォールド</button><button type="button" class="b ca" id="pkC"' + dis + '>' + (myTurn && need > 0 ? 'コール ' + Math.min(need, s.stack).toLocaleString() : 'チェック') + '</button><button type="button" class="b ra" id="pkRb"' + (canR ? '' : ' disabled') + '>レイズ</button></div>' +
-        '<div class="pkR2"><button type="button" class="pm" id="pkMi"' + (canR ? '' : ' disabled') + '>−</button><input type="range" id="pkRs" min="' + minTo + '" max="' + Math.max(minTo, maxTo) + '" step="10" value="' + minTo + '"' + (canR ? '' : ' disabled') + '><button type="button" class="pm" id="pkPl"' + (canR ? '' : ' disabled') + '>＋</button><span class="pv" id="pkRv">' + (canR ? '' : '－') + '</span></div>' +
-        '<div class="pkR3">' + [['½', 'h'], ['ポット', 'p'], ['+100', 100], ['+200', 200], ['+400', 400], ['+800', 800], ['ALL IN', 'a']].map(function (q) { return '<button type="button" data-q="' + q[1] + '"' + (canR ? '' : ' disabled') + '>' + q[0] + '</button>'; }).join('') + '</div>';
+      cb.innerHTML = '<div class="tvB pkL"><button type="button" class="b fo" id="pkF"' + dis + '>フォールド</button><button type="button" class="b ca" id="pkC"' + dis + '>' + (myTurn && need > 0 ? 'コール ' + Math.min(need, s.stack).toLocaleString() : 'チェック') + '</button><button type="button" class="b ra" id="pkRb"' + (canR ? '' : ' disabled') + '>レイズ</button></div>' +
+        '<div class="pkMd"><div class="pv" id="pkRv">' + (canR ? '' : '－') + '</div><div class="pkR3">' + [['½', 'h'], ['ポット', 'p'], ['ALL', 'a'], ['+100', 100], ['+200', 200], ['+400', 400], ['+800', 800], ['−', 'm'], ['＋', 'n']].map(function (q) { return '<button type="button" data-q="' + q[1] + '"' + (canR ? '' : ' disabled') + '>' + q[0] + '</button>'; }).join('') + '</div></div>' +
+        '<div class="pkV"><input type="range" class="vr" id="pkRs" min="' + minTo + '" max="' + Math.max(minTo, maxTo) + '" step="10" value="' + minTo + '"' + (canR ? '' : ' disabled') + '></div>';
       if (myTurn) { $('pkF').onclick = function () { pkAct('f', 0); }; $('pkC').onclick = function () { pkAct('c', 0); }; }
       if (canR) {
         var sl = $('pkRs'), clampA = function (v) { v = Math.round(v / 10) * 10; return Math.max(Math.min(minTo, maxTo), Math.min(maxTo, v)); };
-        var upd = function () { var amt = Math.min(maxTo, +sl.value); if (amt >= maxTo) amt = maxTo; $('pkRv').textContent = amt >= maxTo ? 'ALL IN' : amt.toLocaleString(); $('pkRb').textContent = amt >= maxTo ? 'オールイン' : 'レイズ ' + amt.toLocaleString(); return amt; };
+        var upd = function () { var amt = Math.min(maxTo, +sl.value); $('pkRv').textContent = amt >= maxTo ? 'ALL IN' : amt.toLocaleString(); $('pkRb').textContent = amt >= maxTo ? 'オールイン' : 'レイズ ' + amt.toLocaleString(); return amt; };
         var setA = function (v) { sl.value = clampA(v); upd(); };
         sl.oninput = upd; upd();
-        $('pkMi').onclick = function () { setA(+sl.value - 20); }; $('pkPl').onclick = function () { setA(+sl.value + 20); };
-        cb.querySelectorAll('.pkR3 button').forEach(function (bt) { bt.onclick = function () { var q = bt.getAttribute('data-q'), v; if (q === 'a') v = maxTo; else if (q === 'h') v = T.cur + (T.pot + need) / 2; else if (q === 'p') v = T.cur + T.pot + need; else v = T.cur + (+q); setA(v); }; });
+        cb.querySelectorAll('.pkR3 button').forEach(function (bt) { bt.onclick = function () { var q = bt.getAttribute('data-q'), v; if (q === 'a') v = maxTo; else if (q === 'h') v = T.cur + (T.pot + need) / 2; else if (q === 'p') v = T.cur + T.pot + need; else if (q === 'm') v = +sl.value - 20; else if (q === 'n') v = +sl.value + 20; else v = T.cur + (+q); setA(v); }; });
         $('pkRb').onclick = function () { pkAct('r', upd()); };
       }
     }
@@ -5959,7 +5973,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     try { var pend = parseInt(localStorage.getItem('opa_pk_pend') || '0', 10); if (pend > 0) { chipsSet(chipsGet() + pend); localStorage.removeItem('opa_pk_pend'); } } catch (e) {}
     chipFree(); var buy = chipsGet(); if (buy < 20) { arcShow('<h2>♠ テキサスホールデム</h2><p>コインが足りません</p><button type="button" class="arcx" id="pkX0">とじる</button>'); $('pkX0').onclick = arcClose; return; }
     chipsSet(chipsGet() - buy); if (!(player && player.gm)) { try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {} }
-    arcShow('<div class="tvh"><b>♠ テキサスホールデム</b><span id="pkInfo" class="chipb"></span><button type="button" class="arcx" id="pkH" style="margin-right:4px">役</button><button type="button" class="arcx" id="pkM" style="margin-right:4px">☰</button><button type="button" class="arcx" id="pkX">席を立つ</button></div><div class="tvAw"><div id="pkTbl" class="tvA tvAi"></div><div id="pkFl" class="tvFl"></div><div id="pkHelp" style="display:none;position:absolute;left:6%;right:6%;top:8%;z-index:30;background:#101820ee;border:2px solid #ffd36a;border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.55;color:#fff"><b style="color:#ffd36a">役の強さ（上ほど強い）</b><br>① ストレートフラッシュ：同じマークの連番5枚<br>② フォーカード：同じ数字4枚<br>③ フルハウス：3枚＋2枚の組み合わせ<br>④ フラッシュ：同じマーク5枚（♠♥♦♣）<br>⑤ ストレート：連番5枚（マークはバラバラでOK）<br>⑥ スリーカード：同じ数字3枚<br>⑦ ツーペア：ペアが2組<br>⑧ ワンペア：同じ数字2枚<br>⑨ ハイカード：役なし（いちばん大きい数字）<br><span style="color:#9fd0ff">手札2枚＋場の5枚から、いちばん強い5枚で勝負。自分の役は「現在：○○」で出るよ。（タップで閉じる）</span></div></div><div id="pkMsg" class="tvM"></div><div id="pkCtl" class="tvC"></div>' + tcHTML('pk'), 'tv');
+    arcShow('<div class="tvh"><b style="white-space:nowrap">♠ ホールデム</b><span id="pkInfo" class="chipb" style="white-space:nowrap;font-size:12px;padding:3px 8px"></span><button type="button" class="arcx" id="pkH" style="margin-right:4px">役</button><button type="button" class="arcx" id="pkM" style="margin-right:4px">☰</button><button type="button" class="arcx" id="pkX" style="white-space:nowrap">席を立つ</button></div><div class="tvAw"><div id="pkTbl" class="tvA tvAi"></div><div id="pkFl" class="tvFl"></div><div id="pkHelp" style="display:none;position:absolute;left:6%;right:6%;top:8%;z-index:30;background:#101820ee;border:2px solid #ffd36a;border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.55;color:#fff"><b style="color:#ffd36a">役の強さ（上ほど強い）</b><br>① ストレートフラッシュ：同じマークの連番5枚<br>② フォーカード：同じ数字4枚<br>③ フルハウス：3枚＋2枚の組み合わせ<br>④ フラッシュ：同じマーク5枚（♠♥♦♣）<br>⑤ ストレート：連番5枚（マークはバラバラでOK）<br>⑥ スリーカード：同じ数字3枚<br>⑦ ツーペア：ペアが2組<br>⑧ ワンペア：同じ数字2枚<br>⑨ ハイカード：役なし（いちばん大きい数字）<br><span style="color:#9fd0ff">手札2枚＋場の5枚から、いちばん強い5枚で勝負。自分の役は「現在：○○」で出るよ。（タップで閉じる）</span></div></div><div id="pkMsg" class="tvM"></div><div id="pkCtl" class="tvC"></div>' + tcHTML('pk'), 'tv');
     PK = { T: null, me: -1, last: Date.now(), hb: 0, seen: {}, iv: 0, buy: buy, bub: {}, pos: {}, cl: [] }; tcInit('pk', PK, 'pk'); PK.iv = setInterval(pkTick, 250);
     $('pkM').onclick = pkMenu; $('pkX').onclick = pkLeave; $('pkH').onclick = function () { var h = $('pkHelp'); h.style.display = h.style.display === 'none' ? 'block' : 'none'; }; $('pkHelp').onclick = function () { this.style.display = 'none'; }; pkRender(); pkSend({ k: 'who' });
     var nm = (player && player.avatar && player.avatar.name) || 'あなた';
