@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:150-->
+<!--GV:151-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -4947,7 +4947,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 150;
+  var GV = 151;
   (function () {
     var last = Date.now();
     function chk() {
@@ -8515,7 +8515,7 @@ var TB = {
 
   /* ---------- 起動 ---------- */
   /* ---------- 🎓 はじめてのチュートリアル（新しい人だけ。町からスタート。終わるとLv7） ---------- */
-  var TUT = { test: 0, ld: [], on: false, tm: 0, busy: 0, dlg: 0, cur: -1, killed: 0, doors: {}, min: 0, quit: 0, n0: 0, e0: 0, d0: 0, key: '' };
+  var TUT = { pend: '', retryAt: 0, test: 0, ld: [], on: false, tm: 0, busy: 0, dlg: 0, cur: -1, killed: 0, doors: {}, min: 0, quit: 0, n0: 0, e0: 0, d0: 0, key: '' };
   (function () {
     var st = document.createElement('style');
     st.textContent = '#tutB{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(8px + env(safe-area-inset-bottom));width:min(94vw,430px);z-index:250;display:none;pointer-events:none;font-family:inherit}' +
@@ -8547,7 +8547,7 @@ var TB = {
     { k: 'lib', t: '📚 図書館をのぞいてみよう', s: '矢印の「図書館」に入ろう。装備もモンスターもオパールのことも、全部ここで調べられるよ。', door: 'lib', test: function () { return inLib; } },
     { k: 'map', t: '🗺 マップを開こう', s: '図書館を出て、画面の上の「🚪 マップへ」をタップ。世界の鉱山が見えるよ。', test: function () { return $('map').classList.contains('on'); } },
     { k: 'mine', t: '⛏ 最初の鉱山に入ろう', s: '光っているピンをタップ → 「掘りに行く」。最初はレベルの低い鉱山でOK。', test: function () { return $('field').classList.contains('on') && !inTown && !!curMine; } },
-    { k: 'dig', t: '💎 石を掘ってみよう', s: '地面の光ってる鉱脈をタップして近づき、出てくる「掘る！」を連打。ゲージがたまったら石が出るよ。', test: function () { return (player.digs || 0) > TUT.d0; }, snap: function () { TUT.d0 = player.digs || 0; } },
+    { k: 'dig', t: '💎 石を掘ってみよう', s: '地面の光ってる鉱脈をタップして近づき、出てくる「掘る！」を連打。ゲージがたまったら石が出るよ。\n掘ってる最中、超まれに「スペシャルチケット」が出ることもあるよ。', test: function () { return (player.digs || 0) > TUT.d0; }, snap: function () { TUT.d0 = player.digs || 0; } },
     { k: 'kill', t: '👹 敵を1体たおそう', s: '敵が出たらタップで攻撃。買った武器で戦うよ。やられても町の病院で復活するから安心してな。敵が見つからんときは「とばす」でOK。', test: function () { return !!TUT.killed; }, snap: function () { TUT.killed = 0; } },
     { k: 'done', t: '🏘 町に戻って、ミミに報告しよう', s: '鉱山を出て、マップの「🏘️ オパ会の町へ」を押してな。矢印のミミに話しかけたら完了！', npc: 'guide', test: function () { return inTown && !!TUT.doors['npc:guide']; }, noSkip: 1 }
   ];
@@ -8575,24 +8575,27 @@ var TB = {
   }
   function tutDone(k) {
     if (TUT.busy) return;
-    if (TUT.test) { TUT.ld.push(k); TUT.key = ''; sfx(1); if (k === 'done') { tutStop(); tutDlg(['テストおわり！ ここまでが、はじめてのチュートリアルです。\n本番では、最後にちょうどLv7になって、500コインももらえるよ。'], null); } else tutFlash('✅ クリア！（テスト）'); return; }
+    if (TUT.test) { TUT.pend = ''; TUT.ld.push(k); TUT.key = ''; sfx(1); if (k === 'done') { tutStop(); tutDlg(['テストおわり！ ここまでが、はじめてのチュートリアルです。\n本番では、最後にちょうどLv7になって、500コインももらえるよ。'], null); } else tutFlash('✅ クリア！（テスト）'); return; }
     TUT.busy = 1;
     api({ action: 'game_tut', step: k }).then(function (j) {
       TUT.busy = 0;
       if (j && j.ok && j.player) {
+        TUT.pend = '';
         var cp = (typeof CD !== 'undefined') ? (CD.pend || 0) + (CD.fly || 0) : 0;
         player = j.player; player.coins = (player.coins || 0) + cp;
         try { stats(); } catch (e) {} try { gearUi(); hpUi(); } catch (e) {}
         sfx(1); vib([30, 20, 40]);
-        if (k === 'done') { tutStop(); tutDlg(['おめでとう！ チュートリアルは全部クリア。いまのキミは Lv' + (player.lv || 7) + ' やで！\nごほうびに500コインもプレゼント。', '最初のうちは、低いレベルの鉱山で掘って、お金をためて、装備を強くしていこう。レベルが上がると、新しい鉱山やお店の品物が増えていくよ。', '仲間とパーティーを組むと、経験値が3倍になるよ。わからんことは、図書館の司書さんか、ワタシ（町のミミ）にいつでも聞いてな。\nそれじゃ、いってらっしゃい！ 💎'], function () { tutFlash('🎉 Lv' + (player.lv || 7) + ' になったよ！'); }); }
+        if (k === 'done') { tutStop(); tutDlg(['おめでとう！ チュートリアルは全部クリア。いまのキミは Lv' + (player.lv || 7) + ' やで！\nごほうびに500コインもプレゼント。', '最初のうちは、低いレベルの鉱山で掘って、お金をためて、装備を強くしていこう。レベルが上がると、新しい鉱山やお店の品物が増えていくよ。', '石を掘っていると、超まれに「スペシャルチケット」が出ることがあります。\n・レア：オパールを買うときの 5%OFF券\n・超レア：研磨を優先してもらえる優先リカット券\n・激レア：オパールを買うときの 10%OFF券\nもちものの画面で見られるよ。ほんまに運がいいと出る、おまけやね。','仲間とパーティーを組むと、経験値が3倍になるよ。わからんことは、図書館の司書さんか、ワタシ（町のミミ）にいつでも聞いてな。\nそれじゃ、いってらっしゃい！ 💎'], function () { tutFlash('🎉 Lv' + (player.lv || 7) + ' になったよ！'); }); }
         else tutFlash('✅ クリア！' + (j.xp ? ' ✨+' + j.xp + ' XP' : '') + (j.coins ? ' 🪙+' + j.coins : ''));
         TUT.key = '';
       } else if (j && (j.error === 'bad_step' || j.error === 'no_tut')) {
+        TUT.pend = '';
         api({ action: 'game_load' }).then(function (r) { if (r && r.player) { player = r.player; if (!player.tut || player.tut.fin) tutStop(); TUT.key = ''; } });
       }
-    }).catch(function () { TUT.busy = 0; });
+      else { TUT.retryAt = Date.now() + 2000; }
+    }).catch(function () { TUT.busy = 0; TUT.retryAt = Date.now() + 2000; });
   }
-  function tutStop() { TUT.on = false; clearInterval(TUT.tm); $('tutB').classList.remove('on'); var a = $('tutArrow'); if (a) a.remove(); var dr = $('tutDir'); if (dr) dr.remove(); }
+  function tutStop() { TUT.on = false; TUT.pend = ''; clearInterval(TUT.tm); $('tutB').classList.remove('on'); var a = $('tutArrow'); if (a) a.remove(); var dr = $('tutDir'); if (dr) dr.remove(); }
   function tutQuit() {
     if (TUT.test) { tutStop(); return; }
     api({ action: 'game_tut_skip' }).then(function (j) { if (j && j.player) player = j.player; tutStop(); toast('チュートリアルをやめたよ。わからんことは町のミミに聞いてな'); });
@@ -8614,7 +8617,8 @@ var TB = {
     dr.style.display = 'block'; dr.style.left = (window.innerWidth / 2 + Math.cos(ang) * R) + 'px'; dr.style.top = (window.innerHeight * .46 + Math.sin(ang) * R) + 'px';
     dr.innerHTML = '<i style="transform:rotate(' + ang + 'rad)">➤</i><small>' + nm + '</small>';
   }
-  function tutTick() {
+  function tutTick() { try { tutTick0(); } catch (e) { var b = $('tutB'); b.classList.add('on'); b.innerHTML = '<div class="tc"><div class="tt">⚠ チュートリアルでエラー</div><div class="ts">' + esc(String((e && e.message) || e)) + '（運営に、この文を伝えてな）</div></div>'; } }
+  function tutTick0() {
     if (!TUT.on || !player || (!TUT.test && (!player.tut || player.tut.fin))) { if (TUT.on) tutStop(); return; }
     var i = tutIdx(), st = TSTEPS[i]; if (!st) { tutStop(); return; }
     if (TUT.cur !== i) { TUT.cur = i; TUT.doors = {}; TUT.quit = 0; if (st.snap) st.snap(); }
@@ -8629,13 +8633,14 @@ var TB = {
       }
     }
     tutArrow(scr || fieldOn ? st : null);
-    if (!TUT.busy && !TUT.dlg && st.test) { var ok = false; try { ok = st.test(); } catch (e) {} if (ok) tutDone(st.k); }
+    if (TUT.pend) { if (!TUT.busy && Date.now() >= TUT.retryAt) tutDone(TUT.pend); return; }
+    if (!TUT.busy && !TUT.dlg && st.test) { var ok = false; try { ok = st.test(); } catch (e) {} if (ok) { TUT.pend = st.k; tutDone(st.k); } }
   }
   $('tutB').addEventListener('click', function (e) {
     var bt = e.target.closest('button'); if (!bt) return; var a = bt.dataset.a; sfx(0);
     var i = tutIdx(), st = TSTEPS[i];
     if (a === 'min') { TUT.min = TUT.min ? 0 : 1; }
-    else if (a === 'skip') { if (st && !st.noSkip) tutDone(st.k); }
+    else if (a === 'skip') { if (st && !st.noSkip) { TUT.pend = st.k; tutDone(st.k); } }
     else if (a === 'quit') { if (!TUT.quit) { TUT.quit = 1; } else tutQuit(); }
     TUT.key = '';
   });
