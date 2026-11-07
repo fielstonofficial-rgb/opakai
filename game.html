@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:99-->
+<!--GV:102-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -3778,7 +3778,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 99;
+  var GV = 102;
   (function () {
     var last = Date.now();
     function chk() {
@@ -5408,8 +5408,13 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (!token) return Promise.resolve(); if (PK || BJ) return Promise.resolve();
     return arcApi({ action: 'arc_get' }).then(function (j) {
       if (j._s !== 200) return; ARC.on = true; ARC.rfOk = !!j.rfOk;
-      try { localStorage.setItem('opa_chips', String(j.chips + j.pend)); localStorage.removeItem('opa_pk_pend'); } catch (e) {}
-      chipUpd(); return arcFlush();
+      var seeded = false, hasL = false, loc = 0; try { seeded = localStorage.getItem('opa_arc_seed') === '1'; hasL = localStorage.getItem('opa_chips') != null; loc = chipsGet() + pendGet(); } catch (e) {}
+      var adopt = function () { try { localStorage.setItem('opa_chips', String(j.chips + j.pend)); localStorage.removeItem('opa_pk_pend'); } catch (e) {} chipUpd(); return arcFlush(); };
+      if (!seeded && !(player && player.gm)) { /* 初回だけ：いま持ってるコインをサーバーに登録（ランキング用） */
+        try { localStorage.setItem('opa_arc_seed', '1'); } catch (e) {}
+        if (hasL && loc > j.chips + j.pend) return arcApi({ action: 'arc_put', c: loc, p: 0, rf: false }).then(function (r) { if (r._s === 200 && !r.rejected) { try { localStorage.setItem('opa_chips', String(loc)); localStorage.removeItem('opa_pk_pend'); } catch (e) {} chipUpd(); return; } return adopt(); });
+      }
+      return adopt();
     });
   }
   function openRank() {
@@ -6001,7 +6006,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function fmRecv(m) {
     var now = Date.now(), o = FPR[m.f] || (FPR[m.f] = { id: m.f, x: 0, y: 0, tx: 0, ty: 0, hp: 100, nm: m.nm || 'だれか', col: FPCOL[0], k: 0, seen: 0, al: 1, fl: 0, hit: 0, wt: 0, mx: 100, got: 0 });
     o.seen = now;
-    if (m.k === 's') { o.nm = m.nm || o.nm; o.col = FPCOL.indexOf(m.c) >= 0 ? m.c : o.col; o.tx = +m.x || 0; o.ty = +m.y || 0; if (!o.got) { o.x = o.tx; o.y = o.ty; o.got = 1; } o.hp = Math.max(0, Math.min(100, +m.hp || 0)); o.al = m.al ? 1 : 0; o.k = m.kl | 0; }
+    if (m.k === 's') { o.nm = m.nm || o.nm; o.col = FPCOL.indexOf(m.c) >= 0 ? m.c : o.col; o.tx = +m.x || 0; o.ty = +m.y || 0; if (!o.got) { o.x = o.tx; o.y = o.ty; o.got = 1; } o.hp = Math.max(0, Math.min(100, +m.hp || 0)); o.al = m.al ? 1 : 0; o.k = m.kl | 0; o.flr = m.fr | 0; }
     else if (m.k === 'l') { delete FPR[m.f]; }
     else if (m.k === 'f') { o.fl = .25; if (FPH) FPH.snd(o); }
     else if (FPH) FPH.on(m, o);
@@ -6018,39 +6023,41 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     upd(); var iv = setInterval(upd, 1500); arcCl.push(function () { clearInterval(iv); });
   }
   function arcLobby() { arcClose(); }
-  var FPNM = ['タクミ', 'ユウキ', 'サクラ', 'レン', 'ハルカ', 'ソウタ', 'ミオ', 'ダイキ', 'アヤ', 'ケンジ', 'ナナ', 'リク'], FPN = 50, FPPAL = [[168, 132, 108], [120, 140, 165], [152, 152, 152], [172, 112, 100], [128, 152, 122], [164, 152, 108]], FPCOL = ['#d94a4a', '#3f7fe0', '#3fae5a', '#e0a23a'];
-  function fpGen() {
-    var rs = 20261106, rnd = function () { rs = (rs * 1664525 + 1013904223) >>> 0; return rs / 4294967296; }, G = new Uint8Array(FPN * FPN), i, j, k;
+  var FPNM = ['タクミ', 'ユウキ', 'サクラ', 'レン', 'ハルカ', 'ソウタ', 'ミオ', 'ダイキ', 'アヤ', 'ケンジ', 'ナナ', 'リク'], FPN = 50, FPPAL2 = [[84, 96, 128], [100, 108, 140], [78, 92, 118], [96, 90, 124], [70, 84, 126], [112, 116, 150]], FPPAL = [[104, 118, 134], [128, 136, 146], [92, 108, 104], [118, 108, 100], [84, 100, 122], [138, 142, 150]], FPCOL = ['#d94a4a', '#3f7fe0', '#3fae5a', '#e0a23a'];
+  var FPST = [[23, 21, 23, 22], [26, 28, 26, 27]]; /* 階段：[壁x,壁y,出てくるx,出てくるy]（1Fと2Fで同じ場所） */
+  function fpGen(fl) {
+    var rs = fl ? 20261107 : 20261106, rnd = function () { rs = (rs * 1664525 + 1013904223) >>> 0; return rs / 4294967296; }, G = new Uint8Array(FPN * FPN), i, j, k;
     var set = function (x, y, v) { if (x >= 0 && y >= 0 && x < FPN && y < FPN) G[y * FPN + x] = v; };
     for (i = 0; i < FPN; i++) { set(i, 0, 1); set(i, FPN - 1, 2); set(0, i, 3); set(FPN - 1, i, 4); }
     for (var by = 0; by < 5; by++) for (var bx = 0; bx < 5; bx++) {
-      var ox = bx * 10 + 2, oy = by * 10 + 2, r = rnd();
-      if (bx === 2 && by === 2) { [[1, 1], [4, 1], [1, 4], [4, 4]].forEach(function (c) { set(ox + c[0], oy + c[1], 12); }); [[2, 2], [3, 3]].forEach(function (c) { set(ox + c[0], oy + c[1], 8); }); continue; }
-      var st = 1 + Math.floor(rnd() * 6);
-      if (r < .40) { /* 中に入れる建物：外壁＋ドア＋家具 */
-        for (j = 0; j < 6; j++) for (i = 0; i < 6; i++) set(ox + i, oy + j, (i === 0 || j === 0 || i === 5 || j === 5) ? st : 0);
-        var side = Math.floor(rnd() * 4), d0 = 2 + Math.floor(rnd() * 2);
-        var door = function (sd, dd) { for (var q = 0; q < 2; q++) { if (sd === 0) set(ox + dd + q, oy, 0); else if (sd === 1) set(ox + dd + q, oy + 5, 0); else if (sd === 2) set(ox, oy + dd + q, 0); else set(ox + 5, oy + dd + q, 0); } };
-        door(side, d0); if (rnd() < .6) door(side ^ 1, 2 + Math.floor(rnd() * 2));
-        [[1, 1], [4, 4], [1, 4], [4, 1]].forEach(function (c) { if (rnd() < .55) set(ox + c[0], oy + c[1], rnd() < .5 ? 12 : 8); });
-        if (rnd() < .5) { set(ox + 2, oy + 2, 12); set(ox + 3, oy + 2, 12); }
-      } else if (r < .52) { /* 池と橋 */
-        var hz = rnd() < .5;
-        for (j = 0; j < 6; j++) for (i = 0; i < 6; i++) { var u = hz ? i : j, v2 = hz ? j : i; if (v2 >= 1 && v2 <= 4) { if (u === 2 || u === 3) set(ox + i, oy + j, 0); else set(ox + i, oy + j, 11); } else set(ox + i, oy + j, 0); }
-        for (k = 1; k <= 4; k++) { if (hz) { set(ox + 1, oy + k, 10); set(ox + 4, oy + k, 10); } else { set(ox + k, oy + 1, 10); set(ox + k, oy + 4, 10); } }
-        for (k = 0; k < 6; k++) { var uu = hz ? [ox + k, oy] : [ox, oy + k]; if (k === 2 || k === 3) continue; }
-      } else if (r < .72) { /* 遮蔽物の庭 */
-        var nn = 8 + Math.floor(rnd() * 5); for (k = 0; k < nn; k++) { var cx1 = ox + Math.floor(rnd() * 6), cy1 = oy + Math.floor(rnd() * 6); set(cx1, cy1, rnd() < .6 ? 12 : 10); if (rnd() < .6) set(cx1 + (rnd() < .5 ? 1 : 0), cy1 + (rnd() < .5 ? 0 : 1), 12); }
-      } else if (r < .84) { for (j = 0; j < 6; j++) for (i = 0; i < 6; i++) set(ox + i, oy + j, st); var sp = rnd(); if (sp < .5) { var a2 = 2 + Math.floor(rnd() * 2); for (k = 0; k < 6; k++) { if (sp < .25) set(ox + a2, oy + k, 0); else set(ox + k, oy + a2, 0); } } }
-      else { var n = 7 + Math.floor(rnd() * 5); for (k = 0; k < n; k++) { var cx0 = ox + Math.floor(rnd() * 6), cy0 = oy + Math.floor(rnd() * 6); set(cx0, cy0, rnd() < .5 ? 7 : 8); if (rnd() < .5) set(cx0 + 1, cy0, 7); } }
+      var ox = bx * 10 + 1, oy = by * 10 + 1, st = 1 + Math.floor(rnd() * 5), L = function (x, y, v) { set(ox + x, oy + y, v); };
+      if (bx === 2 && by === 2) { [[0, 0], [7, 0], [0, 7], [7, 7], [2, 3], [5, 4]].forEach(function (c) { L(c[0], c[1], 8); }); continue; }
+      var tp = rnd(), walls = tp < .3 || (tp >= .55 && tp < .8) || tp >= .8;
+      var room = function () { for (var q = 0; q < 8; q++) { L(q, 0, st); L(q, 7, st); L(0, q, st); L(7, q, st); } };
+      var door = function (sd) { var dd = 2 + Math.floor(rnd() * 3); for (var q = 0; q < 2; q++) { if (sd === 0) L(dd + q, 0, 0); else if (sd === 1) L(dd + q, 7, 0); else if (sd === 2) L(0, dd + q, 0); else L(7, dd + q, 0); } };
+      if (tp < .3) { /* 研究室：実験台が並ぶ */
+        room(); var sd0 = Math.floor(rnd() * 4); door(sd0); door(sd0 ^ 1);
+        [2, 3, 5, 6].forEach(function (x) { [2, 5].forEach(function (y) { if (rnd() < .85) L(x, y, 8); }); });
+      } else if (tp < .55) { /* 工場ホール：大きな機械 */
+        [[1, 1], [5, 1], [1, 5], [5, 5]].forEach(function (c) { if (rnd() < .8) { L(c[0], c[1], 8); L(c[0] + 1, c[1], 8); L(c[0], c[1] + 1, 8); L(c[0] + 1, c[1] + 1, 8); } });
+        for (k = 0; k < 4; k++) L(2 + Math.floor(rnd() * 4), 2 + Math.floor(rnd() * 4), rnd() < .5 ? 7 : 9);
+      } else if (tp < .8) { /* 倉庫：棚の列 */
+        room(); var sd1 = Math.floor(rnd() * 2) * 2; door(sd1); door(sd1 ^ 1);
+        [1, 2, 5, 6].forEach(function (x) { [2, 5].forEach(function (y) { L(x, y, 7); }); });
+      } else { /* 制御室：柱と操作盤 */
+        room(); door(Math.floor(rnd() * 4)); [[2, 2], [5, 2], [2, 5], [5, 5], [3, 3], [4, 3]].forEach(function (c) { L(c[0], c[1], 8); });
+      }
     }
-    for (k = 0; k < 90; k++) {
-      var sx = 2 + Math.floor(rnd() * 46), sy = 2 + Math.floor(rnd() * 46), mx = sx % 10, my = sy % 10;
-      if (!(mx === 8 || mx === 9 || mx === 0 || mx === 1 || my === 8 || my === 9 || my === 0 || my === 1)) continue;
-      if (Math.abs(sx - 24) + Math.abs(sy - 24) < 8) continue; if ((mx === 8 || mx === 9 || mx === 0 || mx === 1) && (my === 8 || my === 9 || my === 0 || my === 1)) { if (rnd() < .6) continue; }
-      var tp = rnd(); set(sx, sy, tp < .45 ? 12 : (tp < .7 ? 7 : 10)); if (rnd() < .5) set(sx + (rnd() < .5 ? 1 : 0), sy + (rnd() < .5 ? 0 : 1), tp < .45 ? 12 : 7);
+    for (k = 0; k < 90; k++) { /* 廊下の荷物 */
+      var sx = 2 + Math.floor(rnd() * 46), sy = 2 + Math.floor(rnd() * 46), mx = sx % 10, my = sy % 10, cx0 = mx === 9 || mx === 0, cy0 = my === 9 || my === 0;
+      if (!(cx0 !== cy0)) continue; if (Math.abs(sx - 24) + Math.abs(sy - 24) < 8) continue; if (G[sy * FPN + sx]) continue; set(sx, sy, rnd() < .5 ? 9 : 7);
     }
-    set(24, 24, 0); set(23, 24, 0); set(25, 24, 0); set(24, 23, 0); set(24, 25, 0); return G;
+    for (i = 0; i < G.length; i++) { var v = G[i]; G[i] = v === 8 ? 8 : v; }
+    set(24, 24, 0); set(23, 24, 0); set(25, 24, 0); set(24, 23, 0); set(24, 25, 0);
+    FPST.forEach(function (t) { for (var yy = -1; yy <= 1; yy++) for (var xx = -1; xx <= 1; xx++) set(t[2] + xx, t[3] + yy, 0); });
+    FPST.forEach(function (t) { set(t[0], t[1], 6); });
+    (function () { var seen = new Uint8Array(FPN * FPN), q = [24 * FPN + 24], h = 0; seen[q[0]] = 1; while (h < q.length) { var c = q[h++], x = c % FPN, y = (c - x) / FPN; [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(function (o) { var nx = x + o[0], ny = y + o[1]; if (nx < 0 || ny < 0 || nx >= FPN || ny >= FPN) return; var n = ny * FPN + nx; if (G[n] || seen[n]) return; seen[n] = 1; q.push(n); }); } for (var z = 0; z < G.length; z++) if (!G[z] && !seen[z]) G[z] = 8; })(); /* 行けない空間は機械でふさぐ */
+    return G;
   }
   function fpHuman(col, frame) {
     var c = document.createElement('canvas'); c.width = 40; c.height = 80; var g = c.getContext('2d'), sh = frame === 2 ? 0 : (frame === 0 ? 4 : -4);
@@ -6065,13 +6072,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     g.fillStyle = gr; g.strokeStyle = '#fff'; g.lineWidth = 2; g.beginPath(); g.moveTo(32, 14); g.lineTo(50, 28); g.lineTo(32, 54); g.lineTo(14, 28); g.closePath(); g.fill(); g.stroke(); return c;
   }
   function fpStart(MP) {
-    $('arcc').className = ''; $('arcc').innerHTML = '<div id="fpw"><canvas id="fpc"></canvas><button type="button" id="fpX">✕</button><div id="fpF">🔫</div><div id="fpP"><div class="t">一時停止</div><div class="s2">みんなで撃ち合いは、ゲームが続いてるよ</div><button type="button" class="cab" id="fpPC" style="margin:6px auto;width:220px;padding:10px">つづける</button><button type="button" class="arcx" id="fpPQ">ゲームセンターへ</button></div><div id="fpI"><div class="rb"><div class="rt">' + (MP ? 'みんなで撃ち合い' : 'ひとりで撃ち合い') + '</div><div class="rs">ルール説明</div><ul><li>🎯 <b>目的</b>：' + (MP ? '4発あてるとダウン！ たくさん倒して、ランキング1位をめざそう。やられても3秒で復活（復活後2秒は無敵）' : '次々と来るライバルを倒して、ダイヤ💎を集めよう。HPがなくなったら終わり') + '</li><li>📡 <b>レーダー</b>：敵が地図に映るのは、<b>5秒に1回、1秒間だけ</b>。そのタイミングで場所を覚えよう</li><li>🏢 <b>建物</b>：ドアから中に入れるよ。中は壁で守られてる</li><li>🌉 <b>橋と池</b>：池（青）は渡れない。橋を使おう</li><li>🧱 <b>低い壁・手すり</b>：歩いては通れないけど、上から見えるし、弾も通るよ</li><li>🖱 <b>PC</b>：W A S D 移動 ／ マウスで見回す ／ 左クリックで撃つ ／ <b>Esc</b>でメニュー</li><li>📱 <b>スマホ</b>：左半分ドラッグで移動 ／ 右半分ドラッグで見回す ／ 🔫ボタンで撃つ</li></ul><label class="rk"><input type="checkbox" id="fpIk"> 次からこの説明を出さない</label><button type="button" class="cab" id="fpIS" style="margin:8px auto 0;width:220px;padding:10px">はじめる！</button></div></div><div id="fpO"><div class="t">GAME OVER</div><div class="s" id="fpS"></div><div class="arcc2"><button type="button" class="cab" id="fpR" style="margin:6px auto;width:220px;padding:10px">もう一回</button><button type="button" class="arcx" id="fpQ">ゲームセンターへ</button></div></div></div>';
+    $('arcc').className = ''; $('arcc').innerHTML = '<div id="fpw"><canvas id="fpc"></canvas><button type="button" id="fpX">✕</button><div id="fpF">🔫</div><div id="fpP"><div class="t">一時停止</div><div class="s2">みんなで撃ち合いは、ゲームが続いてるよ</div><button type="button" class="cab" id="fpPC" style="margin:6px auto;width:220px;padding:10px">つづける</button><button type="button" class="arcx" id="fpPQ">ゲームセンターへ</button></div><div id="fpI"><div class="rb"><div class="rt">' + (MP ? 'みんなで撃ち合い' : 'ひとりで撃ち合い') + '</div><div class="rs">ルール説明</div><ul><li>🎯 <b>目的</b>：' + (MP ? '4発あてるとダウン！ <b>1人倒すと50コイン</b>🪙。たくさん倒して、ランキング1位をめざそう。やられても3秒で復活（復活後2秒は無敵）' : '次々と来るライバルを倒そう。<b>1人倒すと50コイン</b>🪙（ポーカーやブラックジャックで使えるよ）。HPがなくなったら終わり') + '</li><li>📡 <b>レーダー</b>：敵が地図に映るのは、<b>5秒に1回、1秒間だけ</b>。そのタイミングで場所を覚えよう</li><li>🪜 <b>階段</b>：光る緑（2Fは青）の壁に向かって歩くと、1F⇔2Fを行き来できるよ。敵もあとから追ってくる</li><li>🏭 <b>工場・研究所</b>：高い壁と機械の陰にかくれて、まわりこんで撃とう。遠くは暗くて見えにくいよ</li><li>🖱 <b>PC</b>：W A S D 移動 ／ マウスで見回す ／ 左クリックで撃つ ／ <b>Esc</b>でメニュー</li><li>📱 <b>スマホ</b>：左半分ドラッグで移動 ／ 右半分ドラッグで見回す ／ 🔫ボタンで撃つ</li></ul><label class="rk"><input type="checkbox" id="fpIk"> 次からこの説明を出さない</label><button type="button" class="cab" id="fpIS" style="margin:8px auto 0;width:220px;padding:10px">はじめる！</button></div></div><div id="fpO"><div class="t">GAME OVER</div><div class="s" id="fpS"></div><div class="arcc2"><button type="button" class="cab" id="fpR" style="margin:6px auto;width:220px;padding:10px">もう一回</button><button type="button" class="arcx" id="fpQ">ゲームセンターへ</button></div></div></div>';
     var wrap = $('fpw'), cv = $('fpc'), cx = cv.getContext('2d'), cw = wrap.clientWidth || 360, ch = wrap.clientHeight || 640;
     var H = 360, asp = Math.max(.6, Math.min(2.4, cw / ch)), W = Math.round(H * asp); cv.width = W; cv.height = H;
-    var G = fpGen(), N = FPN, S = { px: 24.5, py: 24.5, a: -Math.PI / 2, pitch: 0, hp: 100, score: 0, wave: 0, en: [], gems: [], toSpawn: 0, spT: 0, nextWave: 1.2, shotT: 0, flash: 0, hurt: 0, hold: 1, over: false, dead: 0, inv: 0, feed: [], hpT: 0, keys: {}, mv: { x: 0, y: 0 }, fire: false, t: 0, banner: 0, kills: 0 };
+    var GS = [fpGen(0), fpGen(1)], G = GS[0], N = FPN, S = { fl: 0, stT: 0, px: 24.5, py: 24.5, a: -Math.PI / 2, pitch: 0, hp: 100, score: 0, wave: 0, en: [], gems: [], toSpawn: 0, spT: 0, nextWave: 1.2, shotT: 0, flash: 0, hurt: 0, hold: 1, over: false, dead: 0, inv: 0, feed: [], hpT: 0, keys: {}, mv: { x: 0, y: 0 }, fire: false, t: 0, banner: 0, kills: 0, earn: 0 };
     var PL = .66 * asp, zb = new Float32Array(W), lowD = new Float32Array(W), lowC = new Uint8Array(W), lowX = new Float32Array(W), sd = new Float32Array(W), raf = 0, last = performance.now(), stick = null, look = null, locked = false, bfsT = 0, fld = new Int16Array(N * N), gemS = fpGem(), hs = {};
     FPCOL.forEach(function (c) { hs[c] = [fpHuman(c, 0), fpHuman(c, 1), fpHuman(c, 2)]; });
-    var mm = document.createElement('canvas'); mm.width = mm.height = N * 2; (function () { var g = mm.getContext('2d'); g.fillStyle = '#0a0f18'; g.fillRect(0, 0, N * 2, N * 2); for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) { var v = G[y * N + x]; if (v) { g.fillStyle = v === 7 ? '#a55' : (v === 8 ? '#a85' : (v === 10 ? '#d4a73a' : (v === 11 ? '#3a7fd0' : (v === 12 ? '#8a8f98' : '#7a8aa0')))); g.fillRect(x * 2, y * 2, 2, 2); } } })();
+    function mkMm(Gx) { var mm = document.createElement('canvas'); mm.width = mm.height = N * 2; var g = mm.getContext('2d'); g.fillStyle = '#0a0f18'; g.fillRect(0, 0, N * 2, N * 2); for (var y = 0; y < N; y++) for (var x = 0; x < N; x++) { var v = Gx[y * N + x]; if (v) { g.fillStyle = v === 6 ? '#3dff6a' : (v === 7 ? '#a55' : (v === 8 ? '#6a8aa8' : (v === 9 ? '#d4a73a' : '#7a8aa0'))); g.fillRect(x * 2, y * 2, 2, 2); } } return mm; }
+    var mmF = [mkMm(GS[0]), mkMm(GS[1])];
     function val(x, y) { x = Math.floor(x); y = Math.floor(y); return (x < 0 || y < 0 || x >= N || y >= N) ? 1 : G[y * N + x]; }
     function solid(x, y) { return val(x, y) > 0; }
     function bfs() { fld.fill(-1); var qx = [], qy = [], h = 0, sx = Math.floor(S.px), sy = Math.floor(S.py); fld[sy * N + sx] = 0; qx.push(sx); qy.push(sy); while (h < qx.length) { var x = qx[h], y = qy[h++], d = fld[y * N + x]; [[1, 0], [-1, 0], [0, 1], [0, -1]].forEach(function (o) { var nx = x + o[0], ny = y + o[1]; if (nx < 0 || ny < 0 || nx >= N || ny >= N || G[ny * N + nx] || fld[ny * N + nx] >= 0) return; fld[ny * N + nx] = d + 1; qx.push(nx); qy.push(ny); }); } }
@@ -6092,23 +6100,31 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     function shoot() {
       if (S.shotT > 0 || S.over || S.dead > 0) return; S.shotT = .22; S.flash = .07; snd2(520, .12, 'sawtooth', .1); vib(10);
       var wd = cast(S.a).d, best = null, bd = 1e9;
-      S.en.forEach(function (e) { if (e.al === 0) return; var p = proj(e, .62); if (!p || p.fw >= wd || p.fw >= bd) return; var w = p.size * .5 * .75; if (Math.abs(W / 2 - p.scrX) < w && H / 2 > p.top - 2 && H / 2 < p.top + p.size + 2) { bd = p.fw; best = e; } });
+      S.en.forEach(function (e) { if (e.al === 0 || e.hide > 0) return; var p = proj(e, .62); if (!p || p.fw >= wd || p.fw >= bd) return; var w = p.size * .5 * .75; if (Math.abs(W / 2 - p.scrX) < w && H / 2 > p.top - 2 && H / 2 < p.top + p.size + 2) { bd = p.fw; best = e; } });
       if (MP) { if (rtOn) rtSend({ t: 'fm', k: 'f', nm: nmMe }); if (best && best.al) { best.hit = .15; snd2(220, .09, 'square', .08); rtSend({ t: 'fm', k: 'h', to: best.id, d: 25, nm: nmMe }); best.hp = Math.max(0, best.hp - 25); } }
-      else if (best) { best.hp--; best.hit = .15; snd2(220, .09, 'square', .08); if (best.hp <= 0) { S.en.splice(S.en.indexOf(best), 1); S.score += 10; S.kills++; S.gems.push({ x: best.x, y: best.y }); snd2(900, .2, 'triangle', .09); } }
+      else if (best) { best.hp--; best.hit = .15; snd2(220, .09, 'square', .08); if (best.hp <= 0) { S.en.splice(S.en.indexOf(best), 1); S.score += 110; S.kills++; S.earn += 50; chipsSet(chipsGet() + 50); chipUpd(); S.hp = Math.min(100, S.hp + 6); feedAdd('🪙 +50 コイン'); snd2(900, .2, 'triangle', .09); } }
     }
-    function end() { S.over = true; if (document.pointerLockElement) document.exitPointerLock(); $('fpS').textContent = 'SCORE ' + S.score + '　WAVE ' + S.wave; $('fpO').classList.add('on'); snd2(180, .6, 'sawtooth', .1); }
+    function goFloor(cx2, cy2) {
+      var t = null; FPST.forEach(function (q) { if (q[0] === cx2 && q[1] === cy2) t = q; }); if (!t) return;
+      S.fl = S.fl ? 0 : 1; G = GS[S.fl]; S.px = t[2] + .5; S.py = t[3] + .5; S.a = Math.atan2(t[3] - t[1], t[2] - t[0]); S.stT = 1.2; bfsT = 0; bfs(); snd2(660, .25, 'triangle', .08);
+      if (!MP) S.en.forEach(function (e) { for (var n = 0; n < 40; n++) { var x = 20 + Math.random() * 20, y = 20 + Math.random() * 20; if (!solid(x, y) && Math.hypot(x - S.px, y - S.py) > 4) { e.x = x; e.y = y; break; } } e.hide = 1.5 + Math.random() * 3; });
+      feedAdd(S.fl ? '🪜 2Fへ上がった' : '🪜 1Fへ降りた');
+    }
+    function end() { S.over = true; if (document.pointerLockElement) document.exitPointerLock(); $('fpS').textContent = '獲得 ' + S.earn + ' コイン　WAVE ' + S.wave; $('fpO').classList.add('on'); snd2(180, .6, 'sawtooth', .1); }
     function update(dt) {
       if (S.hold) return; S.t += dt; if (S.over) return; if (MP && S.dead > 0) { S.dead -= dt; if (S.dead <= 0) respawn(); mpUpdate(dt); return; } S.shotT = Math.max(0, S.shotT - dt); S.flash = Math.max(0, S.flash - dt); S.hurt = Math.max(0, S.hurt - dt); S.banner = Math.max(0, S.banner - dt);
       var k = S.keys, turn = (k.ArrowRight || k.KeyE ? 1 : 0) - (k.ArrowLeft || k.KeyQ ? 1 : 0); S.a += turn * 2.3 * dt;
       var f = (k.KeyW || k.ArrowUp ? 1 : 0) - (k.KeyS || k.ArrowDown ? 1 : 0) - S.mv.y, sd = (k.KeyD ? 1 : 0) - (k.KeyA ? 1 : 0) + S.mv.x, L = Math.hypot(f, sd); if (L > 1) { f /= L; sd /= L; }
       var vx = (Math.cos(S.a) * f - Math.sin(S.a) * sd) * 4.2 * dt, vy = (Math.sin(S.a) * f + Math.cos(S.a) * sd) * 4.2 * dt, r = .28;
       if (!solid(S.px + vx + Math.sign(vx) * r, S.py)) S.px += vx; if (!solid(S.px, S.py + vy + Math.sign(vy) * r)) S.py += vy;
+      if (S.stT > 0) S.stT -= dt; else if (f > 0) { var pcx = S.px + Math.cos(S.a) * .55, pcy = S.py + Math.sin(S.a) * .55; if (val(pcx, pcy) === 6) goFloor(Math.floor(pcx), Math.floor(pcy)); }
       bfsT -= dt; if (bfsT <= 0) { bfsT = .4; bfs(); }
       if (S.fire || k.Space) shoot();
       if (MP) { mpUpdate(dt); return; }
       if (S.toSpawn <= 0 && !S.en.length) { S.nextWave -= dt; if (S.nextWave <= 0) { S.wave++; S.toSpawn = 3 + S.wave * 2; S.nextWave = 2; S.banner = 1.6; S.spT = 0; } }
       if (S.toSpawn > 0 && S.en.length < 8) { S.spT -= dt; if (S.spT <= 0) { spawn(); S.toSpawn--; S.spT = Math.max(.6, 2 - S.wave * .12); } }
       S.en.forEach(function (e) {
+        if (e.hide > 0) { e.hide -= dt; return; }
         e.hit = Math.max(0, e.hit - dt); e.fl = Math.max(0, e.fl - dt); e.sT -= dt; e.wt += dt; var dx = S.px - e.x, dy = S.py - e.y, d = Math.hypot(dx, dy) || 1, seen = d < 18 && los(e.x, e.y, S.px, S.py);
         if (!(seen && d < 7)) {
           var cxi = Math.floor(e.x), cyi = Math.floor(e.y), bv = fld[cyi * N + cxi] < 0 ? 9999 : fld[cyi * N + cxi], tx = e.x, ty = e.y;
@@ -6120,26 +6136,26 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       S.gems = S.gems.filter(function (g) { if (Math.hypot(g.x - S.px, g.y - S.py) < .7) { S.score += 100; S.hp = Math.min(100, S.hp + 6); snd2(1320, .18, 'sine', .1); return false; } return true; });
     }
     function draw() {
-      var hz = H * (.5 + S.pitch), sk = cx.createLinearGradient(0, 0, 0, Math.max(1, hz)); sk.addColorStop(0, '#5aa6f0'); sk.addColorStop(1, '#d6ecfa'); cx.fillStyle = sk; cx.fillRect(0, 0, W, H);
-      var gf = cx.createLinearGradient(0, hz, 0, H); gf.addColorStop(0, '#8a9098'); gf.addColorStop(1, '#3a3e44'); cx.fillStyle = gf; cx.fillRect(0, hz, W, H - hz);
+      var hz = H * (.5 + S.pitch), sk = cx.createLinearGradient(0, 0, 0, Math.max(1, hz)); sk.addColorStop(0, '#080b10'); sk.addColorStop(1, '#2c343f'); cx.fillStyle = sk; cx.fillRect(0, 0, W, H);
+      var gf = cx.createLinearGradient(0, hz, 0, H); gf.addColorStop(0, '#5c6168'); gf.addColorStop(1, '#16191d'); cx.fillStyle = gf; cx.fillRect(0, hz, W, H - hz);
       var ca = Math.cos(S.a), sa = Math.sin(S.a);
       for (var x = 0; x < W; x++) {
         var cxn = 2 * x / W - 1, ang = Math.atan2(sa + ca * PL * cxn, ca - sa * PL * cxn), rd = cast(ang), perp = rd.d * Math.cos(ang - S.a); zb[x] = perp;
-        var lh = Math.min(H * 4, H / Math.max(.05, perp)), y0 = hz - lh / 2, ft = Math.min(.82, perp / 34), sh = rd.side ? .8 : 1, R, Gc, B, c = rd.c;
-        if (c <= 6) { var p = FPPAL[c - 1]; R = p[0]; Gc = p[1]; B = p[2]; } else if (c === 7) { var q = (rd.mx * 7 + rd.my * 3) % 3; var rib = (rd.wx * 8) % 1 < .16 ? .72 : 1; R = [190, 60, 50][q] * rib; Gc = [60, 100, 140][q] * rib; B = [50, 170, 70][q] * rib; } else { var pl = (rd.wx * 5) % 1 < .1 ? .7 : 1; R = 150 * pl; Gc = 108 * pl; B = 66 * pl; }
-        R = (R * sh) * (1 - ft) + 214 * ft; Gc = (Gc * sh) * (1 - ft) + 232 * ft; B = (B * sh) * (1 - ft) + 246 * ft;
+        var c = rd.c, hm = c <= 6 ? 2.4 : 1.45, bot = hz + H / Math.max(.05, perp) / 2, lh = Math.min(H * 60, hm * H / Math.max(.05, perp)), y0 = bot - lh, ft = Math.min(.92, perp / 21), sh = rd.side ? .78 : 1, R, Gc, B;
+        if (c === 6) { var sg = Math.floor(rd.wx * 6 + (S.t * 3)) % 2 === 0; R = sg ? 40 : 14; Gc = sg ? 230 : 90; B = sg ? 110 : 40; if (S.fl) { R = sg ? 70 : 20; Gc = sg ? 170 : 60; B = sg ? 255 : 110; } } else if (c <= 6) { var p = (S.fl ? FPPAL2 : FPPAL)[c - 1]; R = p[0]; Gc = p[1]; B = p[2]; } else if (c === 7) { var q = (rd.mx * 7 + rd.my * 3) % 3; var rib = (rd.wx * 8) % 1 < .16 ? .72 : 1; R = [190, 60, 50][q] * rib; Gc = [60, 100, 140][q] * rib; B = [50, 170, 70][q] * rib; } else if (c === 9) { var pl8 = (rd.wx * 5) % 1 < .1 ? .7 : 1; R = 200 * pl8; Gc = 150 * pl8; B = 40 * pl8; } else { var pl = (rd.wx * 5) % 1 < .1 ? .7 : 1; R = 78 * pl; Gc = 98 * pl; B = 122 * pl; }
+        R = (R * sh) * (1 - ft) + 10 * ft; Gc = (Gc * sh) * (1 - ft) + 14 * ft; B = (B * sh) * (1 - ft) + 20 * ft;
         cx.fillStyle = 'rgb(' + (R | 0) + ',' + (Gc | 0) + ',' + (B | 0) + ')'; cx.fillRect(x, y0, 1, lh);
         var lr = cast(ang, true); if (lr.c >= 10 && lr.d < rd.d) { lowD[x] = lr.d * Math.cos(ang - S.a); lowC[x] = lr.c; lowX[x] = lr.wx; } else lowD[x] = 0; sd[x] = 1e9;
-        if (c <= 6 && lh > 14) { var wf = (rd.wx * 4) % 1; if (wf > .2 && wf < .8) { for (var fl = 0; fl < 3; fl++) { var lit = ((rd.mx * 31 + rd.my * 17 + fl * 7 + Math.floor(rd.wx * 4)) % 5) === 0; cx.fillStyle = lit ? 'rgba(255,226,130,' + (1 - ft) + ')' : 'rgba(' + (40 + 170 * ft | 0) + ',' + (62 + 170 * ft | 0) + ',' + (96 + 150 * ft | 0) + ',1)'; cx.fillRect(x, y0 + lh * (.12 + fl * .3), 1, lh * .16); } } }
+        if (lh > 10) { var wxs = (rd.wx * 4) % 1, fa2 = 1 - ft; if (wxs < .05) { cx.fillStyle = 'rgba(0,0,0,' + (.4 * fa2) + ')'; cx.fillRect(x, y0, 1, lh); } if (c <= 6) { if (wxs > .1 && ((rd.mx * 5 + rd.my * 3 + Math.floor(rd.wx * 2)) % 3) !== 0) { cx.fillStyle = 'rgba(190,235,255,' + (.95 * fa2) + ')'; cx.fillRect(x, y0 + lh * .13, 1, Math.max(1, lh * .03)); } } cx.fillStyle = ((Math.floor(rd.wx * 8) + rd.mx + rd.my) % 2 === 0) ? 'rgba(240,200,40,' + fa2 + ')' : 'rgba(18,18,18,' + fa2 + ')'; cx.fillRect(x, bot - lh * (c <= 6 ? .05 : .09), 1, lh * (c <= 6 ? .05 : .09)); }
       }
       var items = [];
-      S.en.forEach(function (e) { items.push({ x: e.x, y: e.y, e: e, sc: .62, a: .5 }); }); S.gems.forEach(function (g) { items.push({ x: g.x, y: g.y, g: 1, sc: .16, a: 1 }); });
+      S.en.forEach(function (e) { if (e.hide > 0) return; items.push({ x: e.x, y: e.y, e: e, sc: .62, a: .5 }); }); S.gems.forEach(function (g) { items.push({ x: g.x, y: g.y, g: 1, sc: .16, a: 1 }); });
       items.forEach(function (i) { i.d = Math.hypot(i.x - S.px, i.y - S.py); }); items.sort(function (a, b) { return b.d - a.d; });
       items.forEach(function (i) {
         var p = proj(i, i.sc); if (!p) return; var w = p.size * i.a, st = Math.floor(p.scrX - w / 2), en2 = Math.floor(p.scrX + w / 2), top = p.top - (i.g ? Math.sin(S.t * 4 + i.x) * p.size * .1 : 0), img, iw;
         if (i.g) { img = gemS; iw = 64; } else { img = hs[i.e.col][i.e.fl > 0 ? 2 : (Math.floor(i.e.wt * 5) % 2)]; iw = 40; }
-        for (var sx = Math.max(0, st); sx < Math.min(W, en2); sx++) { if (p.fw >= zb[sx]) continue; cx.drawImage(img, Math.floor((sx - st) / w * iw), 0, 1, img.height, sx, top, 1, p.size); if (p.fw < sd[sx]) sd[sx] = p.fw; }
-        if (i.e && p.scrX > 0 && p.scrX < W && p.fw < zb[Math.max(0, Math.min(W - 1, Math.floor(p.scrX)))]) { var bw = 30; cx.fillStyle = 'rgba(0,0,0,.6)'; cx.fillRect(p.scrX - bw / 2 - 1, top - 9, bw + 2, 6); cx.fillStyle = i.e.hp / i.e.mx > .5 ? '#4cd964' : '#ff5a4a'; cx.fillRect(p.scrX - bw / 2, top - 8, bw * i.e.hp / i.e.mx, 4); cx.font = 'bold 10px sans-serif'; cx.textAlign = 'center'; cx.fillStyle = '#fff'; cx.strokeStyle = '#000'; cx.lineWidth = 2.5; cx.strokeText(i.e.nm, p.scrX, top - 12); cx.fillText(i.e.nm, p.scrX, top - 12); cx.textAlign = 'left'; }
+        cx.globalAlpha = i.e ? Math.max(.3, 1 - p.fw / 24) : 1; for (var sx = Math.max(0, st); sx < Math.min(W, en2); sx++) { if (p.fw >= zb[sx]) continue; cx.drawImage(img, Math.floor((sx - st) / w * iw), 0, 1, img.height, sx, top, 1, p.size); if (p.fw < sd[sx]) sd[sx] = p.fw; }
+        cx.globalAlpha = 1; if (i.e && p.scrX > 0 && p.scrX < W && p.fw < zb[Math.max(0, Math.min(W - 1, Math.floor(p.scrX)))]) { var bw = 30; cx.fillStyle = 'rgba(0,0,0,.6)'; cx.fillRect(p.scrX - bw / 2 - 1, top - 9, bw + 2, 6); cx.fillStyle = i.e.hp / i.e.mx > .5 ? '#4cd964' : '#ff5a4a'; cx.fillRect(p.scrX - bw / 2, top - 8, bw * i.e.hp / i.e.mx, 4); cx.font = 'bold 10px sans-serif'; cx.textAlign = 'center'; cx.fillStyle = '#fff'; cx.strokeStyle = '#000'; cx.lineWidth = 2.5; cx.strokeText(i.e.nm, p.scrX, top - 12); cx.fillText(i.e.nm, p.scrX, top - 12); cx.textAlign = 'left'; }
         if (i.e && i.e.hit > 0) { cx.fillStyle = 'rgba(255,255,255,.4)'; cx.fillRect(Math.max(0, st), top, Math.min(W, en2) - Math.max(0, st), p.size); }
       });
       for (var lx = 0; lx < W; lx++) {
@@ -6154,8 +6170,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       cx.strokeStyle = '#fff'; cx.lineWidth = 1; cx.stroke();
       if (S.hurt > 0) { var vg = cx.createRadialGradient(W / 2, H / 2, H * .3, W / 2, H / 2, H * .9); vg.addColorStop(0, 'rgba(255,0,0,0)'); vg.addColorStop(1, 'rgba(255,0,0,' + Math.min(.7, S.hurt * 2.2) + ')'); cx.fillStyle = vg; cx.fillRect(0, 0, W, H); }
       cx.fillStyle = 'rgba(0,0,0,.5)'; cx.fillRect(8, 8, 104, 12); cx.fillStyle = S.hp > 30 ? '#4cd964' : '#ff4a4a'; cx.fillRect(10, 10, S.hp, 8);
-      cx.font = 'bold 14px sans-serif'; cx.textAlign = 'left'; if (!MP) { cx.fillStyle = '#ffe27a'; cx.fillText('💎 ' + S.score, 10, 38); cx.fillStyle = '#fff'; cx.fillText('W' + S.wave, 10, 56); } else mpHud();
-      var ms = 72, mxp = W - ms - 6, myp = 34; cx.globalAlpha = .85; cx.drawImage(mm, 0, 0, N * 2, N * 2, mxp, myp, ms, ms); cx.globalAlpha = 1; var sc2 = ms / N;
+      cx.font = 'bold 14px sans-serif'; cx.textAlign = 'left'; if (!MP) { cx.fillStyle = '#ffe27a'; cx.fillText('🪙 +' + S.earn + ' コイン', 10, 38); cx.fillStyle = '#fff'; cx.fillText('W' + S.wave, 10, 56); S.feed = S.feed.filter(function (f) { return f.e > S.t; }); cx.textAlign = 'center'; cx.font = 'bold 15px sans-serif'; S.feed.forEach(function (f, i) { cx.strokeStyle = '#000'; cx.lineWidth = 3; cx.strokeText(f.t, W / 2, H * .3 + i * 18); cx.fillStyle = '#ffe27a'; cx.fillText(f.t, W / 2, H * .3 + i * 18); }); cx.textAlign = 'left'; } else mpHud();
+      cx.font = 'bold 15px sans-serif'; cx.textAlign = 'left'; cx.fillStyle = '#7af0ff'; cx.strokeStyle = '#000'; cx.lineWidth = 3; cx.strokeText((S.fl + 1) + 'F', 10, H - 14); cx.fillText((S.fl + 1) + 'F', 10, H - 14);
+      var ms = 72, mxp = W - ms - 6, myp = 34; cx.globalAlpha = .85; cx.drawImage(mmF[S.fl], 0, 0, N * 2, N * 2, mxp, myp, ms, ms); cx.globalAlpha = 1; var sc2 = ms / N;
       var rp = S.t % 5, ping = rp < 1; if (ping) { S.en.forEach(function (e) { if (Math.hypot(e.x - S.px, e.y - S.py) < 24) { cx.fillStyle = '#ff3a3a'; cx.fillRect(mxp + e.x * sc2 - 2, myp + e.y * sc2 - 2, 4, 4); } }); cx.strokeStyle = 'rgba(255,80,80,' + (1 - rp) + ')'; cx.lineWidth = 2; cx.beginPath(); cx.arc(mxp + S.px * sc2, myp + S.py * sc2, 4 + rp * 60, 0, 6.283); cx.stroke(); }
       cx.font = 'bold 10px sans-serif'; cx.textAlign = 'center'; cx.fillStyle = ping ? '#ff6b6b' : '#9fb0c8'; cx.fillText(ping ? 'RADAR  ● 探知中' : 'RADAR  あと' + Math.ceil(5 - rp) + '秒', mxp + ms / 2, myp + ms + 11); cx.textAlign = 'left';
       cx.fillStyle = '#fff'; cx.save(); cx.translate(mxp + S.px * sc2, myp + S.py * sc2); cx.rotate(S.a); cx.beginPath(); cx.moveTo(4, 0); cx.lineTo(-3, 3); cx.lineTo(-3, -3); cx.closePath(); cx.fill(); cx.restore();
@@ -6165,12 +6182,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var nmMe = ((player && player.avatar && player.avatar.name) || 'あなた').slice(0, 12), colMe = FPCOL[Math.abs(String(myMid || 'x').split('').reduce(function (a, c) { return a * 31 + c.charCodeAt(0); }, 7)) % FPCOL.length], mpT = 0, mpIv = 0;
     function spawnPt() { for (var n = 0; n < 120; n++) { var x = 2 + Math.random() * 46, y = 2 + Math.random() * 46; if (!solid(x, y)) { var far = true; Object.keys(FPR).forEach(function (id) { var o = FPR[id]; if (o.al && Math.hypot(o.x - x, o.y - y) < 8) far = false; }); if (far || n > 90) return [x, y]; } } return [24.5, 24.5]; }
     function respawn() { var p = spawnPt(); S.px = p[0]; S.py = p[1]; S.hp = 100; S.dead = 0; S.inv = 2; S.hurt = 0; }
-    function mpSend() { rtSend({ t: 'fm', k: 's', nm: nmMe, c: colMe, x: +S.px.toFixed(2), y: +S.py.toFixed(2), a: +S.a.toFixed(2), hp: Math.round(S.hp), al: S.dead > 0 ? 0 : 1, kl: S.kills }); }
-    function feedAdd(t) { S.feed.push({ t: t, e: S.t + 5 }); if (S.feed.length > 4) S.feed.shift(); }
+    function mpSend() { rtSend({ t: 'fm', k: 's', nm: nmMe, c: colMe, x: +S.px.toFixed(2), y: +S.py.toFixed(2), a: +S.a.toFixed(2), hp: Math.round(S.hp), al: S.dead > 0 ? 0 : 1, kl: S.kills, fr: S.fl }); }
+    function feedAdd(t) { S.feed.push({ t: t, e: S.t + (S.mp ? 5 : 2) }); if (S.feed.length > 4) S.feed.shift(); }
     function mpUpdate(dt) {
       var now = Date.now(); S.inv = Math.max(0, S.inv - dt); mpT -= dt; if (mpT <= 0) { mpT = .1; mpSend(); }
       var list = []; Object.keys(FPR).forEach(function (id) { var o = FPR[id]; if (id === myMid) return; if (now - o.seen > 4000) { delete FPR[id]; return; } var dx = o.tx - o.x, dy = o.ty - o.y, mv = Math.hypot(dx, dy); o.x += dx * Math.min(1, dt * 10); o.y += dy * Math.min(1, dt * 10); if (mv > .05) o.wt += dt; o.hit = Math.max(0, o.hit - dt); o.fl = Math.max(0, o.fl - dt); list.push(o); });
-      S.en = list.filter(function (o) { return o.al && o.got; });
+      S.en = list.filter(function (o) { return o.al && o.got && (o.flr | 0) === S.fl; });
     }
     function mpHud() {
       var rows = [{ nm: nmMe + '（あなた）', k: S.kills }]; Object.keys(FPR).forEach(function (id) { if (id !== myMid) rows.push({ nm: FPR[id].nm, k: FPR[id].k }); }); rows.sort(function (a, b) { return b.k - a.k; });
@@ -6187,7 +6204,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         on: function (m, o) {
           if (m.k === 'h' && m.to === myMid && S.dead <= 0 && S.inv <= 0) { S.hp -= (+m.d || 25); S.hurt = .35; snd2(120, .2, 'sawtooth', .1); vib([30, 20, 30]);
             if (S.hp <= 0) { S.hp = 0; S.dead = 3; snd2(180, .5, 'sawtooth', .1); rtSend({ t: 'fm', k: 'd', by: m.f, bn: m.nm || 'だれか', nm: nmMe }); feedAdd((m.nm || 'だれか') + ' が ' + nmMe + ' を倒した'); mpSend(); } }
-          else if (m.k === 'd') { if (m.by === myMid) { S.kills++; snd2(900, .2, 'triangle', .09); } if (m.f !== myMid) feedAdd((m.bn || 'だれか') + ' が ' + (m.nm || 'だれか') + ' を倒した'); }
+          else if (m.k === 'd') { if (m.by === myMid) { S.kills++; S.earn += 50; chipsSet(chipsGet() + 50); chipUpd(); feedAdd('🪙 +50 コイン'); snd2(900, .2, 'triangle', .09); } if (m.f !== myMid) feedAdd((m.bn || 'だれか') + ' が ' + (m.nm || 'だれか') + ' を倒した'); }
         } };
       mpSend(); mpIv = setInterval(function () { if (S.dead <= 0 && !document.hidden) { /* 状態はmpUpdateが送る */ } }, 1000);
     }
