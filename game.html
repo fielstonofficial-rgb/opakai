@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:130-->
+<!--GV:131-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -229,6 +229,36 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 @keyframes slw{from{transform:scale(1)}to{transform:scale(1.09)}}
 #arc .slfs{min-height:20px;color:#7af0ff;font-weight:800;font-size:15px}
 #arc .arcc.tv{display:flex;flex-direction:column;padding:6px 8px 8px;overflow:hidden;gap:3px}
+/* もぐらたたき */
+#arc .mlA{box-sizing:border-box;position:relative;display:flex;flex-direction:column;align-items:center;gap:6px;border-radius:16px;padding:8px;background:radial-gradient(ellipse at 50% 0,#245a2c 0,#10301a 55%,#071a0e 100%);border:3px solid #d4a73a;box-shadow:0 0 22px #ffcf4a66 inset,0 0 18px #000a;overflow:hidden}
+#arc .mlA.shk{animation:mlShk .28s}@keyframes mlShk{0%,100%{transform:translate(0)}20%{transform:translate(-5px,3px)}40%{transform:translate(5px,-3px)}60%{transform:translate(-4px,-2px)}80%{transform:translate(3px,3px)}}
+#arc .mlMq{width:100%;display:flex;justify-content:space-between;align-items:center;gap:6px;padding:4px 8px;border-radius:10px;background:linear-gradient(#3a1a08,#1a0a02);border:2px solid #ffe27a;font-weight:900;color:#ffe27a;text-shadow:0 0 8px #ff9a00}
+#arc .mlMq b{font-size:20px;color:#fff}#arc .mlMq small{display:block;font-size:10px;color:#ffcf8a;font-weight:700}
+#arc .mlMq .bulb{display:flex;gap:4px}#arc .mlMq .bulb i{width:8px;height:8px;border-radius:50%;background:#ffd84a;box-shadow:0 0 8px #ffd84a;animation:mlBl .6s infinite alternate}#arc .mlMq .bulb i:nth-child(2n){animation-delay:.3s;background:#ff6a8a;box-shadow:0 0 8px #ff6a8a}
+@keyframes mlBl{from{opacity:.25}to{opacity:1}}
+#arc .mlG{flex:1 1 0;min-height:0;width:100%;display:grid;grid-template-columns:repeat(3,1fr);grid-template-rows:repeat(3,1fr);gap:4px 6px;position:relative}
+#arc .mc{position:relative;min-height:0;touch-action:manipulation;cursor:pointer;-webkit-tap-highlight-color:transparent}
+#arc .mc .mb{position:absolute;left:6%;right:6%;bottom:10%;top:6%;border-radius:50%/18% 18% 40% 40%}
+#arc .mc .mclip{position:absolute;left:8%;right:8%;top:0;bottom:22%;overflow:hidden}
+#arc .mc .hole{position:absolute;left:4%;right:4%;bottom:12%;height:30%;border-radius:50%;background:radial-gradient(ellipse at 50% 40%,#000 0,#120804 60%,#3a2210 100%);box-shadow:0 3px 0 #5a3a1c inset}
+#arc .mc .an{position:absolute;left:4%;right:4%;bottom:0;height:98%;transform:translateY(108%);transition:transform .11s cubic-bezier(.2,.9,.3,1.2);will-change:transform}
+#arc .mc.up .an{transform:translateY(4%)}#arc .mc.up.sl .an{transform:translateY(0)}
+#arc .mc.hit .an{transform:translateY(40%) rotate(-12deg) scaleY(.82);filter:brightness(1.4) saturate(.6);transition:transform .08s}
+#arc .mc .an svg{width:100%;height:100%;display:block;overflow:visible}
+#arc .mc .mf{position:absolute;left:0;right:0;bottom:8%;height:30%;pointer-events:none;border-radius:50%;background:radial-gradient(ellipse at 50% 20%,#8a5a30 0,#5a3516 55%,#2a1608 100%);clip-path:inset(46% 0 0 0);box-shadow:0 4px 6px #000a}
+#arc .mc .mf::after{content:'';position:absolute;left:6%;right:6%;top:46%;height:12%;border-radius:50%;background:#a87a48;opacity:.5}
+#arc .mc .pp{position:absolute;left:50%;top:10%;transform:translateX(-50%);font-weight:900;font-size:22px;color:#fff;text-shadow:0 0 6px #000,0 2px 0 #a02020;pointer-events:none;animation:mlPp .7s ease-out forwards;white-space:nowrap;z-index:5}
+#arc .mc .pp.big{font-size:40px;color:#ffe27a;text-shadow:0 0 14px #ff9a00,0 3px 0 #7a2a00}
+@keyframes mlPp{0%{transform:translate(-50%,10px) scale(.4);opacity:0}20%{transform:translate(-50%,-6px) scale(1.25);opacity:1}100%{transform:translate(-50%,-52px) scale(1);opacity:0}}
+#arc .mc .hm{position:absolute;left:50%;top:-6%;width:70%;transform-origin:85% 90%;font-size:46px;line-height:1;pointer-events:none;animation:mlHm .22s ease-out forwards;z-index:4;transform:translateX(-20%)}
+@keyframes mlHm{0%{transform:translateX(-30%) rotate(-70deg);opacity:1}60%{transform:translateX(-30%) rotate(20deg);opacity:1}100%{transform:translateX(-30%) rotate(20deg);opacity:0}}
+#arc .mlOv{position:absolute;inset:0;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:8px;background:rgba(3,10,6,.72);z-index:20;text-align:center;border-radius:14px;padding:12px}
+#arc .mlOv h2{margin:0;font-size:28px;color:#ffe27a;text-shadow:0 0 14px #ff9a00}
+#arc .mlOv p{margin:0;font-size:13px;color:#e3f3e6;line-height:1.45}
+#arc .mlOv .sc{font-size:44px;font-weight:900;color:#fff;text-shadow:0 0 16px #5aff9a}
+#arc .mlFl{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle,#fff8c0,#ffb300 40%,transparent 70%);opacity:0;z-index:15}
+#arc .mlFl.on{animation:mlFl .6s ease-out}@keyframes mlFl{0%{opacity:.95}100%{opacity:0}}
+#arc .mlCb{position:absolute;left:8px;bottom:6px;font-weight:900;color:#9fff9f;text-shadow:0 0 8px #000;font-size:15px;z-index:6}
 #arc .tvh{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:15px;color:#ffe27a;font-weight:800;max-width:460px;width:100%;margin:0 auto}
 #arc .tvh .chipb{margin:0;padding:3px 10px;font-size:13px}
 #arc .tvh .arcx{margin:0;padding:6px 12px;font-size:12px}
@@ -3301,6 +3331,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     else if (k === 'arcade') { sfx(2); openArcRoom(); }
     else if (k === 'arcout') { sfx(2); leaveCafe(); }
     else if (k === 'arc:slot') { sfx(2); openSlot(); }
+    else if (k === 'arc:mole') { sfx(2); openMole(); }
     else if (k === 'arc:bj') { sfx(2); openBJ(); }
     else if (k === 'arc:bi') { sfx(2); tgOpen('bi'); }
     else if (k === 'arc:un') { sfx(2); tgOpen('un'); }
@@ -3578,7 +3609,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function arcDoorSVG() {
     return '<svg viewBox="0 0 220 170"><defs><linearGradient id="dG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a6410"/><stop offset=".5" stop-color="#ffe27a"/><stop offset="1" stop-color="#8a6410"/></linearGradient></defs><rect x="14" y="12" width="192" height="156" rx="8" fill="#150c0a" stroke="url(#dG)" stroke-width="3.5"/><rect x="44" y="46" width="132" height="122" rx="64 64 3 3" fill="#2d160f" stroke="url(#dG)" stroke-width="2.6"/><path d="M110 56V168" stroke="#ffe27a" stroke-width="1.4"/><circle cx="100" cy="116" r="3.4" fill="#ffe27a"/><circle cx="120" cy="116" r="3.4" fill="#ffe27a"/><rect x="40" y="16" width="140" height="24" rx="4" fill="#0e0608" stroke="url(#dG)" stroke-width="2"/><text x="110" y="33" font-size="13" font-weight="800" fill="#ffe27a" text-anchor="middle" letter-spacing="1">FPS会場入口</text></svg>';
   }
-  var LGT = [[95, 735], [305, 735]];
+  var LGT = [[500, 500], [500, 660]];
   function arcLoungeSeats() {
     var S2 = []; [90, 170, 250, 330].forEach(function (x) { S2.push({ x: x, y: 396, d: 1, stool: 1 }); });
     LGT.forEach(function (t) { S2.push({ x: t[0], y: t[1] - 34, d: 1 }, { x: t[0], y: t[1] + 50, d: 1 }, { x: t[0] - 78, y: t[1] + 8, d: 1 }, { x: t[0] + 78, y: t[1] + 8, d: -1 }); });
@@ -3593,6 +3624,13 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function arcStoolSVG() {
     return '<svg viewBox="0 0 54 70"><ellipse cx="27" cy="64" rx="18" ry="5" fill="rgba(0,0,0,.4)"/><rect x="24" y="32" width="6" height="32" fill="#b8903a"/><ellipse cx="27" cy="60" rx="14" ry="4" fill="none" stroke="#b8903a" stroke-width="3"/><ellipse cx="27" cy="30" rx="22" ry="9" fill="#5a1626" stroke="#ffe27a" stroke-width="2.2"/><ellipse cx="27" cy="27" rx="16" ry="5" fill="#8a2a42"/></svg>';
+  }
+  function arcMoleSVG() {
+    var hole = function (x, k) { return '<ellipse cx="' + x + '" cy="132" rx="38" ry="12" fill="#120804"/><svg x="' + (x - 26) + '" y="78" width="52" height="56" viewBox="0 0 100 ' + (k ? 120 : 110) + '">' + (k ? sealSVG() : moleSVG()).replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '') + '</svg><path d="M' + (x - 42) + ' 142Q' + (x - 30) + ' 126 ' + x + ' 126Q' + (x + 30) + ' 126 ' + (x + 42) + ' 142Z" fill="#6a4220" stroke="#2a1608" stroke-width="2"/>'; };
+    var bl = ''; for (var i = 0; i < 12; i++) bl += '<circle cx="' + (22 + i * 23.3) + '" cy="30" r="3.6" fill="' + (i % 2 ? '#ff6a8a' : '#ffd84a') + '"><animate attributeName="opacity" values="1;.25;1" dur="' + (.7 + (i % 3) * .2) + 's" repeatCount="indefinite"/></circle>';
+    return '<svg viewBox="0 0 300 170"><defs><linearGradient id="mcG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a6410"/><stop offset=".5" stop-color="#ffe27a"/><stop offset="1" stop-color="#8a6410"/></linearGradient><linearGradient id="mcB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2c7a3a"/><stop offset="1" stop-color="#0c2a14"/></linearGradient></defs><ellipse cx="150" cy="162" rx="140" ry="8" fill="rgba(0,0,0,.4)"/>' +
+      '<rect x="6" y="8" width="288" height="154" rx="14" fill="url(#mcB)" stroke="url(#mcG)" stroke-width="5"/><rect x="14" y="14" width="272" height="34" rx="8" fill="#2a0e04" stroke="#ffe27a" stroke-width="2"/>' + bl +
+      '<text x="150" y="42" font-size="18" text-anchor="middle" fill="#ffe27a" font-weight="900" style="paint-order:stroke" stroke="#7a2a00" stroke-width="3">🔨 OPAL モグラたたき</text>' + hole(66, 0) + hole(150, 1) + hole(234, 0) + '</svg>';
   }
   function arcLoungeTableSVG() {
     return '<svg viewBox="0 0 130 74"><defs><linearGradient id="ltW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a3018"/><stop offset="1" stop-color="#25120a"/></linearGradient></defs><ellipse cx="65" cy="64" rx="48" ry="8" fill="rgba(0,0,0,.4)"/><rect x="58" y="38" width="14" height="26" fill="#2a160c" stroke="#b8903a" stroke-width="1.4"/><ellipse cx="65" cy="40" rx="58" ry="25" fill="#1c0e07"/><ellipse cx="65" cy="33" rx="58" ry="25" fill="url(#ltW)" stroke="#d4a73a" stroke-width="2.4"/><ellipse cx="65" cy="33" rx="46" ry="18" fill="none" stroke="#d4a73a" stroke-width="1" opacity=".5"/>' +
@@ -3615,7 +3653,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     dc(arcBarSVG(), 210, 336, 360, 84, 336); lb('🍸 バーカウンター', 210, 262); html += '<div class="cfe" style="left:70px;top:296px;font-size:26px;z-index:337">🍸</div><div class="cfe" style="left:150px;top:296px;font-size:26px;z-index:337">🥃</div><div class="cfe" style="left:290px;top:296px;font-size:26px;z-index:337">🍷</div><div class="cfe" style="left:350px;top:296px;font-size:26px;z-index:337">🥂</div>';
     LGT.forEach(function (t) { dc(arcLoungeTableSVG(), t[0], t[1] + 36, 130, 74, t[1] + 36); });
     SEATS.forEach(function (sa) { if (sa.stool) dc(arcStoolSVG(), sa.x, sa.y + 8, 40, 52, sa.y - 1); else { dc(arcChairSVG(), sa.x, sa.y - 2, 31, 28, sa.y - 1); dc(arcSeatSVG(), sa.x, sa.y + 5, 34, 17, sa.y + 1); } });
-    lb("🛋️ ラウンジ", 200, 668);
+    lb("🛋️ ラウンジ", 500, 436);
+    dc(arcMoleSVG(), 200, 812, 300, 170, 812); lb("🔨 もぐらたたき（アシカは10点！）", 200, 834);
 
     dc(arcTableSVG('ph'), 186, 616, 265, 133, 545); lb('♠ テキサスオパールホールデム', 186, 436);
     dc(arcTableSVG('bi'), 828, 607, 234, 117, 545); lb('🎱 オパールビンゴ', 828, 462);
@@ -3623,7 +3662,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     html += '<div class="tlbl" style="left:500px;top:766px">🚪 出口</div>';
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
-    DOORS = [{ k: 'arc:fps', x: 500, y: 330, w: 200, h: 160 }, { k: 'arc:holdem', x: 186, y: 616, w: 250, h: 105 }, { k: 'arc:bi', x: 828, y: 607, w: 210, h: 92 }, { k: 'arc:un', x: 828, y: 797, w: 210, h: 92 }, { k: 'arcout', x: 500, y: 800, w: 120, h: 70 }, { k: 'arc:rank', x: 800, y: 215, w: 160, h: 110 }, { k: 'arc:dis', x: 880, y: 352, w: 74, h: 80 }, { k: 'arc:prize', x: 700, y: 352, w: 74, h: 80 }];
+    DOORS = [{ k: 'arc:fps', x: 500, y: 330, w: 200, h: 160 }, { k: 'arc:holdem', x: 186, y: 616, w: 250, h: 105 }, { k: 'arc:bi', x: 828, y: 607, w: 210, h: 92 }, { k: 'arc:un', x: 828, y: 797, w: 210, h: 92 }, { k: 'arcout', x: 500, y: 800, w: 120, h: 70 }, { k: 'arc:rank', x: 800, y: 215, w: 160, h: 110 }, { k: 'arc:dis', x: 880, y: 352, w: 74, h: 80 }, { k: 'arc:prize', x: 700, y: 352, w: 74, h: 80 }, { k: 'arc:mole', x: 200, y: 812, w: 300, h: 150 }];
     hero.x = 500; hero.y = 760; hero.dir = 1; hero.sit = null; ftarget = null; fz = zoomT;
     $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi(); addNpcs('arcade');
   }
@@ -3962,7 +4001,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 130;
+  var GV = 131;
   (function () {
     var last = Date.now();
     function chk() {
@@ -5572,6 +5611,96 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       var n = 0; for (i = 0; i < cs.length; i++) { if (cs[i] === base || cs[i] === 'W') n++; else break; } if (n > best) { best = n; sev = base === '7' ? 1 : 0; }
     });
     return { line: best, sc: sc, wd: wd, s7: sev };
+  }
+  /* ---- もぐらたたき（ゲームセンター）：モグラ＝1点／アシカ＝10点 ---- */
+  function moleSVG() {
+    return '<svg viewBox="0 0 100 110"><defs><radialGradient id="mgB" cx=".4" cy=".3" r=".9"><stop offset="0" stop-color="#8a6446"/><stop offset=".6" stop-color="#523622"/><stop offset="1" stop-color="#26160c"/></radialGradient><radialGradient id="mgN" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#ffb4b8"/><stop offset="1" stop-color="#d4606c"/></radialGradient></defs>' +
+      '<ellipse cx="50" cy="86" rx="40" ry="34" fill="url(#mgB)"/><path d="M14 80q-6-14 6-22l8 10z M86 80q6-14-6-22l-8 10z" fill="url(#mgB)"/>' +
+      '<ellipse cx="50" cy="48" rx="31" ry="29" fill="url(#mgB)"/><path d="M30 30q20-16 40 0" stroke="#a07a58" stroke-width="2" fill="none" opacity=".6"/>' +
+      '<path d="M32 54Q50 84 68 54Q50 44 32 54Z" fill="#6a4a34"/><ellipse cx="50" cy="60" rx="13" ry="10" fill="#7a5640"/>' +
+      '<path d="M40 56Q50 42 60 56Q56 70 50 71Q44 70 40 56Z" fill="url(#mgN)" stroke="#8a2a38" stroke-width="1"/><ellipse cx="45" cy="55" rx="2.4" ry="1.8" fill="#4a1018"/><ellipse cx="55" cy="55" rx="2.4" ry="1.8" fill="#4a1018"/><ellipse cx="47" cy="50" rx="3" ry="1.6" fill="#fff" opacity=".6"/>' +
+      '<rect x="46" y="68" width="3.6" height="8" rx="1.4" fill="#fffbe8" stroke="#a89a70" stroke-width=".7"/><rect x="50.6" y="68" width="3.6" height="8" rx="1.4" fill="#fffbe8" stroke="#a89a70" stroke-width=".7"/>' +
+      '<circle cx="36" cy="40" r="4.4" fill="#0a0604"/><circle cx="64" cy="40" r="4.4" fill="#0a0604"/><circle cx="37.4" cy="38.6" r="1.4" fill="#fff"/><circle cx="65.4" cy="38.6" r="1.4" fill="#fff"/>' +
+      '<g><ellipse cx="22" cy="92" rx="12" ry="9" fill="#e8a0a4" stroke="#8a4a50" stroke-width="1.2"/><path d="M13 98l-3 6M19 100l-2 7M25 101l0 7" stroke="#f4ecd8" stroke-width="3" stroke-linecap="round"/></g><g><ellipse cx="78" cy="92" rx="12" ry="9" fill="#e8a0a4" stroke="#8a4a50" stroke-width="1.2"/><path d="M87 98l3 6M81 100l2 7M75 101l0 7" stroke="#f4ecd8" stroke-width="3" stroke-linecap="round"/></g></svg>';
+  }
+  function sealSVG() {
+    return '<svg viewBox="0 0 100 120"><defs><linearGradient id="slB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9a8672"/><stop offset=".5" stop-color="#5c4a3a"/><stop offset="1" stop-color="#2a2018"/></linearGradient><radialGradient id="slS" cx=".35" cy=".25" r=".6"><stop offset="0" stop-color="#fff" stop-opacity=".7"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>' +
+      '<path d="M22 120Q18 70 34 52Q36 30 52 24Q70 22 76 38Q80 54 74 64Q84 84 80 120Z" fill="url(#slB)"/><path d="M30 118Q28 80 40 62" stroke="#c4aa90" stroke-width="3" fill="none" opacity=".4"/>' +
+      '<path d="M26 92Q6 88 4 74Q14 74 24 82Z" fill="url(#slB)" stroke="#2a2018" stroke-width="1.2"/><path d="M78 96Q96 92 98 78Q88 78 78 86Z" fill="url(#slB)" stroke="#2a2018" stroke-width="1.2"/>' +
+      '<ellipse cx="54" cy="40" rx="25" ry="22" fill="url(#slB)"/><path d="M44 24Q54 12 66 22Q60 28 52 26Z" fill="#6e5a48"/><ellipse cx="56" cy="30" rx="12" ry="8" fill="url(#slS)"/>' +
+      '<path d="M50 46Q64 40 78 48Q80 58 66 60Q54 60 50 46Z" fill="#7a644e"/><ellipse cx="78" cy="49" rx="4" ry="3.4" fill="#120c08"/><ellipse cx="76.6" cy="47.8" rx="1.4" ry="1" fill="#fff" opacity=".7"/>' +
+      '<path d="M62 56Q70 60 64 62" stroke="#2a1a10" stroke-width="1.6" fill="none"/>' +
+      '<circle cx="48" cy="36" r="5.6" fill="#0a0604"/><circle cx="46.4" cy="34.2" r="1.9" fill="#fff"/><circle cx="50" cy="38" r=".9" fill="#fff" opacity=".7"/><path d="M42 29Q47 26 52 29" stroke="#2a1a10" stroke-width="1.4" fill="none"/>' +
+      '<path d="M40 22q-3 -4 -5 0q2 4 5 3z" fill="#4a3828"/>' +
+      '<g stroke="#fff" stroke-width=".9" opacity=".9" fill="none"><path d="M70 52Q86 48 96 50M70 55Q88 56 98 60M70 58Q86 64 94 70M66 50Q80 42 92 40"/></g>' +
+      '<g fill="#bfe8ff" opacity=".85"><circle cx="16" cy="60" r="2"/><circle cx="90" cy="30" r="2.2"/><circle cx="8" cy="40" r="1.6"/><circle cx="94" cy="96" r="1.8"/></g></svg>';
+  }
+  function openMole() {
+    var bet = 50, run = false, score = 0, combo = 0, bestC = 0, hitM = 0, hitS = 0, T = 30, left = 30, tk = 0, bg = 0, bgStep = 0, cells = [], nextSp = 0, sealAt = 0, over = false, t0 = 0;
+    var cs = ''; for (var i = 0; i < 9; i++) cs += '<div class="mc" data-i="' + i + '"><div class="hole"></div><div class="mclip"><div class="an"></div></div><div class="mf"></div></div>';
+    arcShow('<div class="tvh"><b>🔨 OPAL モグラたたき</b><span id="mlInfo" class="chipb"></span><button type="button" class="arcx" id="mlX">とじる</button></div>' +
+      '<div class="tvA mlA" id="mlA"><div class="mlMq"><div class="bulb"><i></i><i></i><i></i></div><div>SCORE<b id="mlS">0</b></div><div>TIME<b id="mlT">30</b></div><div><small>モグラ＝1点 / アシカ＝10点</small><span id="mlP"></span></div><div class="bulb"><i></i><i></i><i></i></div></div>' +
+      '<div class="mlG" id="mlG">' + cs + '<div class="mlCb" id="mlCb"></div></div><div class="mlFl" id="mlFl"></div>' +
+      '<div class="mlOv" id="mlOv"><h2>🔨 OPAL モグラたたき</h2><p>30秒で、顔を出したモグラをたたけ！<br>たまに出る <b>アシカ</b> は <b style="color:#ffe27a">10点</b>！<br>つづけてたたくと、コンボでボーナス。<br>40点で賭けたコインがもどる（最大6倍）</p></div></div>' +
+      '<div class="tvM" id="mlMsg"></div><div class="tvC"><div class="tvB">' + [10, 50, 100, 500].map(function (b) { return '<button type="button" class="b bt' + (b === bet ? ' on' : '') + '" data-b="' + b + '">' + b + '</button>'; }).join('') + '<button type="button" class="b ra" id="mlGo">START</button></div></div>', 'tv');
+    function info() { var e = $('mlInfo'); if (e) e.textContent = '🪙 ' + chipsGet().toLocaleString(); }
+    info(); $('mlX').onclick = arcClose;
+    Array.prototype.forEach.call($('arcc').querySelectorAll('.bt'), function (b) { b.onclick = function () { if (run) return; bet = +b.dataset.b; Array.prototype.forEach.call($('arcc').querySelectorAll('.bt'), function (x) { x.classList.toggle('on', +x.dataset.b === bet); }); sndChip(); }; });
+    function mT(f0, f1, dur, type, vol, dly) { if (!soundOn) return; var A = actx(); if (!A) return; try { var o = A.createOscillator(), g = A.createGain(), t = A.currentTime + (dly || 0); o.type = type || 'sine'; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t + dur); g.gain.setValueAtTime(vol || .1, t); g.gain.exponentialRampToValueAtTime(.001, t + dur); o.connect(g); g.connect(A.destination); o.start(t); o.stop(t + dur + .02); } catch (e) {} }
+    function sndWhack() { mT(220, 55, .14, 'sine', .22); arNoise(.07, 900, .5, 0, 1.2); mT(900, 400, .06, 'square', .05); }
+    function sndMole() { mT(520, 880, .09, 'square', .05, .03); mT(1040, 1560, .08, 'triangle', .05, .08); }
+    function sndMiss() { arNoise(.1, 600, .25, 0, .8); mT(140, 90, .1, 'triangle', .08); }
+    function sndPop(seal) { if (seal) { mT(700, 1400, .12, 'sine', .07); mT(1400, 700, .12, 'sine', .05, .1); } else mT(300, 620, .07, 'triangle', .05); }
+    function sndSeal() { mT(420, 160, .16, 'sawtooth', .13); mT(430, 150, .16, 'sawtooth', .13, .2); mT(380, 140, .2, 'sawtooth', .1, .4); [523, 659, 784, 1047, 1318, 1568].forEach(function (f, k) { mT(f, f * 1.01, .22, 'square', .05, .15 + k * .07); mT(f / 2, f / 2, .22, 'triangle', .08, .15 + k * .07); }); }
+    function sndFan() { [523, 659, 784, 1047, 784, 1047, 1318, 1568].forEach(function (f, k) { mT(f, f, .3, 'square', .05, k * .11); mT(f / 2, f / 2, .3, 'triangle', .08, k * .11); }); sndChip(.9); sndChip(1.0); }
+    var MEL = [659, 659, 784, 659, 523, 587, 659, 0, 784, 784, 880, 784, 659, 587, 523, 0, 440, 523, 587, 659, 784, 659, 587, 523, 587, 659, 784, 880, 1047, 880, 784, 0], BAS = [131, 131, 98, 98, 110, 110, 87, 98];
+    function bgm() { if (!run) return; var s = bgStep++ % 32, m = MEL[s]; if (m) mT(m, m, .16, 'square', .035); if (s % 4 === 0) mT(BAS[(s / 4) | 0], BAS[(s / 4) | 0], .3, 'triangle', .09); if (s % 2 === 1) arNoise(.025, 7500, .1, 0, 2); if (s % 8 === 4) arNoise(.06, 1800, .12, 0, 1); }
+    function setBgm(ms) { clearInterval(bg); bg = setInterval(bgm, ms); }
+    arcCl.push(function () { run = false; over = true; clearInterval(tk); clearInterval(bg); });
+    var G = $('mlG'), A = $('mlA');
+    for (i = 0; i < 9; i++) cells.push({ el: G.children[i], st: 0, k: 0, until: 0, hit: 0 });
+    function show(c, k, ms) { c.st = 1; c.k = k; c.hit = 0; c.until = performance.now() + ms; var an = c.el.querySelector('.an'); an.innerHTML = k ? sealSVG() : moleSVG(); c.el.classList.remove('hit'); c.el.classList.toggle('sl', !!k); c.el.classList.add('up'); sndPop(k); if (k) sndSeal0(); }
+    function sndSeal0() { mT(500, 320, .1, 'sawtooth', .05); }
+    function hide(c) { c.st = 0; c.el.classList.remove('up', 'hit'); }
+    function pop(c, txt, big) { var p = document.createElement('div'); p.className = 'pp' + (big ? ' big' : ''); p.textContent = txt; c.el.appendChild(p); setTimeout(function () { p.remove(); }, 760); }
+    function setCb() { var e = $('mlCb'); if (e) e.textContent = combo >= 3 ? combo + ' COMBO!' : ''; }
+    function whack(c) {
+      var hm = document.createElement('div'); hm.className = 'hm'; hm.textContent = '🔨'; c.el.appendChild(hm); setTimeout(function () { hm.remove(); }, 260);
+      if (c.st !== 1 || c.hit) { combo = 0; setCb(); sndMiss(); return; }
+      c.hit = 1; c.el.classList.add('hit'); c.until = performance.now() + 260; sndWhack(); combo++; bestC = Math.max(bestC, combo);
+      var pt = c.k ? 10 : 1, bonus = combo > 0 && combo % 5 === 0 ? 1 : 0; score += pt + bonus; if (c.k) hitS++; else hitM++;
+      if (c.k) { pop(c, '×10！！', 1); sndSeal(); A.classList.remove('shk'); void A.offsetWidth; A.classList.add('shk'); var f = $('mlFl'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on'); vib([30, 20, 60]); }
+      else { pop(c, bonus ? '+2 ✨' : '+1'); sndMole(); }
+      setCb(); $('mlS').textContent = score;
+    }
+    G.addEventListener('pointerdown', function (e) { if (!run) return; var t = e.target.closest ? e.target.closest('.mc') : null; if (!t) return; e.preventDefault(); whack(cells[+t.dataset.i]); });
+    function spawn(now) {
+      var free = cells.filter(function (c) { return c.st === 0; }); if (!free.length) return; var c = free[Math.floor(Math.random() * free.length)], el = (now - t0) / 1000, p = Math.min(1, el / T), seal = false;
+      if (now >= sealAt) { seal = true; sealAt = now + 5000 + Math.random() * 4000; }
+      show(c, seal ? 1 : 0, seal ? 1000 - 350 * p : 1250 - 650 * p);
+    }
+    function loop() {
+      if (!run) return; var now = performance.now(), el = (now - t0) / 1000; left = Math.max(0, Math.ceil(T - el)); $('mlT').textContent = left;
+      cells.forEach(function (c) { if (c.st === 1 && now >= c.until) { if (!c.hit) { combo = 0; setCb(); } hide(c); } });
+      var p = Math.min(1, el / T), gap = 720 - 400 * p, ups = cells.filter(function (c) { return c.st === 1; }).length, maxUp = 1 + (p > .3 ? 1 : 0) + (p > .65 ? 1 : 0);
+      if (now >= nextSp && ups < maxUp) { spawn(now); nextSp = now + gap * (.7 + Math.random() * .6); }
+      if (left <= 5 && left !== loop.l) { loop.l = left; mT(1760, 1760, .06, 'square', .05); }
+      if (el > T - 10 && !loop.f) { loop.f = 1; setBgm(105); }
+      if (el >= T) end();
+    }
+    function end() {
+      run = false; clearInterval(tk); clearInterval(bg); cells.forEach(hide);
+      var pay = Math.min(bet * 6, Math.round(bet * score / 40)); chipsSet(chipsGet() + pay); info(); sndFan();
+      var ov = $('mlOv'); ov.style.display = 'flex';
+      ov.innerHTML = '<h2>TIME UP！</h2><div class="sc">' + score + ' 点</div><p>モグラ ' + hitM + ' 匹 ／ <b style="color:#ffe27a">アシカ ' + hitS + ' 匹</b> ／ 最大コンボ ' + bestC + '</p><p style="font-size:18px;color:#ffe27a">🪙 ' + (pay >= bet ? '+' + (pay - bet) : '-' + (bet - pay)) + '　（もどり ' + pay + '）</p><button type="button" class="b ra" id="mlAg">もう1回</button>';
+      $('mlAg').onclick = function () { ov.style.display = 'none'; $('mlMsg').textContent = ''; }; $('mlGo').disabled = false; $('mlMsg').textContent = pay >= bet ? '🎉 ナイス！' : 'おしい！もう1回？';
+    }
+    $('mlGo').onclick = function () {
+      if (run) return; if (chipsGet() < bet) { $('mlMsg').textContent = 'コインが足りません'; return; }
+      chipsSet(chipsGet() - bet); info(); sndChip(); $('mlOv').style.display = 'none'; $('mlGo').disabled = true; $('mlMsg').textContent = '';
+      score = 0; combo = 0; bestC = 0; hitM = 0; hitS = 0; bgStep = 0; loop.f = 0; loop.l = -1; $('mlS').textContent = 0; setCb(); cells.forEach(hide);
+      run = true; t0 = performance.now(); nextSp = t0 + 500; sealAt = t0 + 6000 + Math.random() * 3000; setBgm(140); clearInterval(tk); tk = setInterval(loop, 40);
+    };
   }
   function openSlot() {
     arSit('slot');
