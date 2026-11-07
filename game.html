@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:148-->
+<!--GV:150-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -3205,7 +3205,356 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
   /* ---------- オパ会の町（みんなで歩いて、話せる。チャットは保存しない） ---------- */
   var inTown = false, tChatAt = 0, tMuted = {};
+  /* ===== 町の建物（しっかり描き込んだ版） ===== */
+var TB = {
+    pat: function (p) {
+      return '<pattern id="' + p + 'k" width="36" height="18" patternUnits="userSpaceOnUse"><path d="M0 .5H36M0 9.5H36M18 .5V9.5M0 9.5V18M36 9.5V18" stroke="rgba(70,45,20,.24)" stroke-width="1" fill="none"/><path d="M0 1.6H36M0 10.6H36" stroke="rgba(255,255,255,.38)" stroke-width="1"/></pattern>' +
+        '<pattern id="' + p + 't" width="16" height="22" patternUnits="userSpaceOnUse"><path d="M0 10.5H16M0 21.5H16M8 0V10.5M0 11V21.5M16 11V21.5" stroke="rgba(0,0,0,.30)" stroke-width="1.1" fill="none"/><path d="M0 1.5H16M0 12.5H16" stroke="rgba(255,255,255,.30)" stroke-width="1.2"/></pattern>' +
+        '<pattern id="' + p + 'b" width="22" height="9" patternUnits="userSpaceOnUse"><path d="M0 .5H22M0 9H22M11 .5V9" stroke="rgba(40,10,0,.30)" stroke-width="1"/><path d="M0 1.5H22" stroke="rgba(255,220,190,.22)"/></pattern>' +
+        '<linearGradient id="' + p + 'gl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#bfe6f5"/><stop offset=".55" stop-color="#6aa6c8"/><stop offset="1" stop-color="#2d5878"/></linearGradient>' +
+        '<linearGradient id="' + p + 'sh" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="rgba(255,255,255,.22)"/><stop offset=".6" stop-color="rgba(0,0,0,0)"/><stop offset="1" stop-color="rgba(0,0,0,.26)"/></linearGradient>' +
+        '<linearGradient id="' + p + 'vs" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(255,255,255,.10)"/><stop offset=".7" stop-color="rgba(0,0,0,0)"/><stop offset="1" stop-color="rgba(40,25,10,.30)"/></linearGradient>' +
+        '<radialGradient id="' + p + 'lg"><stop offset="0" stop-color="rgba(255,226,140,.95)"/><stop offset="1" stop-color="rgba(255,200,90,0)"/></radialGradient>';
+    },
+    gr: function (id, a, b, c) { return '<linearGradient id="' + id + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="' + a + '"/>' + (c ? '<stop offset=".5" stop-color="' + b + '"/><stop offset="1" stop-color="' + c + '"/>' : '<stop offset="1" stop-color="' + b + '"/>') + '</linearGradient>'; },
+    /* 石壁（グラデ＋ブロック目地＋左右の陰影） */
+    wall: function (p, x, y, w, h, gid) { return '<rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="url(#' + gid + ')"/><rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="url(#' + p + 'k)"/><rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="url(#' + p + 'sh)"/><rect x="' + x + '" y="' + y + '" width="' + w + '" height="' + h + '" fill="url(#' + p + 'vs)"/>'; },
+    /* 屋根（台形）：points は "x,y x,y ..." */
+    roof: function (p, pts, gid) { return '<polygon points="' + pts + '" fill="url(#' + gid + ')"/><polygon points="' + pts + '" fill="url(#' + p + 't)"/><polygon points="' + pts + '" fill="url(#' + p + 'sh)"/><polygon points="' + pts + '" fill="none" stroke="rgba(30,15,5,.55)" stroke-width="1.6" stroke-linejoin="round"/>'; },
+    shadow: function (cx, cy, rx, ry) { return '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + rx + '" ry="' + ry + '" fill="rgba(25,45,25,.38)"/><ellipse cx="' + cx + '" cy="' + cy + '" rx="' + (rx * .8) + '" ry="' + (ry * .6) + '" fill="rgba(20,35,20,.28)"/>'; },
+    /* 窓 */
+    win: function (p, x, y, w, h, o) {
+      o = o || {}; var r = o.arch ? w / 2 : 0, s = '', fr = o.fr || '#efe4cc', bd = 'rgba(50,30,10,.55)';
+      if (o.sh) { s += '<rect x="' + (x - w * .42) + '" y="' + y + '" width="' + (w * .38) + '" height="' + h + '" rx="1.5" fill="' + o.sh + '" stroke="' + bd + '"/><rect x="' + (x + w * 1.04) + '" y="' + y + '" width="' + (w * .38) + '" height="' + h + '" rx="1.5" fill="' + o.sh + '" stroke="' + bd + '"/>'; for (var i = 1; i < 5; i++) s += '<path d="M' + (x - w * .4) + ' ' + (y + h * i / 5) + 'h' + (w * .34) + 'M' + (x + w * 1.06) + ' ' + (y + h * i / 5) + 'h' + (w * .34) + '" stroke="rgba(0,0,0,.25)"/>'; }
+      var d = o.arch ? 'M' + x + ' ' + (y + h) + 'V' + (y + r) + 'A' + r + ' ' + r + ' 0 0 1 ' + (x + w) + ' ' + (y + r) + 'V' + (y + h) + 'Z' : 'M' + x + ' ' + y + 'H' + (x + w) + 'V' + (y + h) + 'H' + x + 'Z';
+      var d2 = o.arch ? 'M' + (x + 2.6) + ' ' + (y + h - 2.6) + 'V' + (y + r) + 'A' + (r - 2.6) + ' ' + (r - 2.6) + ' 0 0 1 ' + (x + w - 2.6) + ' ' + (y + r) + 'V' + (y + h - 2.6) + 'Z' : 'M' + (x + 2.6) + ' ' + (y + 2.6) + 'H' + (x + w - 2.6) + 'V' + (y + h - 2.6) + 'H' + (x + 2.6) + 'Z';
+      s += '<path d="' + d + '" fill="' + fr + '" stroke="' + bd + '" stroke-width="1.2" stroke-linejoin="round"/><path d="' + d2 + '" fill="url(#' + p + 'gl)" stroke="rgba(30,20,10,.6)" stroke-width="1"/>';
+      if (o.glow) s += '<path d="' + d2 + '" fill="url(#' + p + 'lg)" opacity=".75"/>';
+      s += '<path d="M' + (x + 4) + ' ' + (y + h - 4) + 'L' + (x + w * .55) + ' ' + (y + 4) + 'H' + (x + w * .78) + 'L' + (x + w * .3) + ' ' + (y + h - 4) + 'Z" fill="rgba(255,255,255,.28)" clip-path="none"/>';
+      s += '<path d="M' + (x + w / 2) + ' ' + (y + (o.arch ? 2 : 2.6)) + 'V' + (y + h - 2.6) + 'M' + (x + 2.6) + ' ' + (y + h * (o.arch ? .62 : .5)) + 'H' + (x + w - 2.6) + '" stroke="' + fr + '" stroke-width="2.2"/><path d="M' + (x + w / 2) + ' ' + (y + 2) + 'V' + (y + h - 2.6) + 'M' + (x + 2.6) + ' ' + (y + h * (o.arch ? .62 : .5)) + 'H' + (x + w - 2.6) + '" stroke="rgba(60,40,15,.45)" stroke-width=".7"/>';
+      if (o.key) s += '<path d="M' + (x - 3) + ' ' + (y - 2) + 'q' + (w / 2 + 3) + ' -' + (w * .5) + ' ' + (w + 6) + ' 0" stroke="rgba(60,40,20,.6)" stroke-width="1" fill="#d6c6a0"/>';
+      s += '<rect x="' + (x - 3) + '" y="' + (y + h) + '" width="' + (w + 6) + '" height="5" rx="1" fill="#d8c9a6" stroke="' + bd + '"/><rect x="' + (x - 3) + '" y="' + (y + h + 4.5) + '" width="' + (w + 6) + '" height="2.5" fill="rgba(0,0,0,.18)"/>';
+      if (o.box) { s += '<rect x="' + (x - 2) + '" y="' + (y + h + 4) + '" width="' + (w + 4) + '" height="8" rx="1.5" fill="#7a4a28" stroke="rgba(30,15,5,.6)"/>'; var fc = ['#ff6f8e', '#ffd34a', '#ff9a4a', '#e57bff', '#fff']; for (var j = 0; j < 6; j++) s += '<circle cx="' + (x + 1 + j * (w + 2) / 5.5) + '" cy="' + (y + h + 3 + (j % 2) * 1.5) + '" r="3" fill="' + fc[j % 5] + '"/><circle cx="' + (x + 1 + j * (w + 2) / 5.5) + '" cy="' + (y + h + 3 + (j % 2) * 1.5) + '" r="1" fill="#fff6c0"/>'; s += '<path d="M' + (x - 1) + ' ' + (y + h + 3) + 'h' + (w + 2) + '" stroke="#3f8f3f" stroke-width="3" opacity=".8"/>'; }
+      return s;
+    },
+    /* 扉（アーチ・二枚扉） */
+    door: function (p, x, y, w, h, col, o) {
+      o = o || {}; var r = w / 2, d = 'M' + x + ' ' + (y + h) + 'V' + (y + r) + 'A' + r + ' ' + r + ' 0 0 1 ' + (x + w) + ' ' + (y + r) + 'V' + (y + h) + 'Z';
+      var s = '<path d="M' + (x - 5) + ' ' + (y + h) + 'V' + (y + r) + 'A' + (r + 5) + ' ' + (r + 5) + ' 0 0 1 ' + (x + w + 5) + ' ' + (y + r) + 'V' + (y + h) + 'Z" fill="' + (o.fr || '#e8dcc2') + '" stroke="rgba(50,30,10,.6)" stroke-width="1.2"/>';
+      s += '<path d="' + d + '" fill="' + col + '" stroke="rgba(30,15,5,.75)" stroke-width="1.3"/><path d="' + d + '" fill="url(#' + p + 'sh)"/>';
+      s += '<path d="M' + (x + w / 2) + ' ' + (y + 1) + 'V' + (y + h) + '" stroke="rgba(25,10,0,.7)" stroke-width="1.6"/>';
+      var q = [[x + 4, y + r + 4, w / 2 - 6, h * .3], [x + w / 2 + 2, y + r + 4, w / 2 - 6, h * .3], [x + 4, y + r + h * .36, w / 2 - 6, h * .26], [x + w / 2 + 2, y + r + h * .36, w / 2 - 6, h * .26]];
+      q.forEach(function (a) { s += '<rect x="' + a[0] + '" y="' + a[1] + '" width="' + a[2] + '" height="' + a[3] + '" rx="1.5" fill="rgba(0,0,0,.16)" stroke="rgba(255,225,170,.32)"/>'; });
+      if (o.glass) s += '<path d="M' + (x + 3.5) + ' ' + (y + r) + 'A' + (r - 3.5) + ' ' + (r - 3.5) + ' 0 0 1 ' + (x + w - 3.5) + ' ' + (y + r) + 'Z" fill="url(#' + p + 'gl)" stroke="rgba(30,15,5,.6)"/>';
+      s += '<circle cx="' + (x + w / 2 - 5) + '" cy="' + (y + h * .62) + '" r="2.2" fill="#f2cf6a" stroke="#7a5a10" stroke-width=".6"/><circle cx="' + (x + w / 2 + 5) + '" cy="' + (y + h * .62) + '" r="2.2" fill="#f2cf6a" stroke="#7a5a10" stroke-width=".6"/>';
+      return s;
+    },
+    steps: function (x, y, w, n) { var s = ''; for (var i = 0; i < n; i++) { var ww = w + (n - 1 - i) * 0 + (i) * 8, yy = y + i * 5; s += '<rect x="' + (x - ww / 2) + '" y="' + yy + '" width="' + ww + '" height="5.5" fill="' + (i % 2 ? '#d9ccb0' : '#e6dbc2') + '" stroke="rgba(60,40,20,.4)" stroke-width=".8"/>'; } return s; },
+    lantern: function (p, x, y) { return '<circle cx="' + x + '" cy="' + (y + 6) + '" r="15" fill="url(#' + p + 'lg)"/><path d="M' + x + ' ' + (y - 6) + 'V' + y + '" stroke="#2a1a0a" stroke-width="1.5"/><path d="M' + (x - 4) + ' ' + y + 'h8l2 4v8l-2 3h-8l-2-3v-8z" fill="#ffe08a" stroke="#3a2610" stroke-width="1.2"/><path d="M' + (x - 5) + ' ' + y + 'h10" stroke="#2a1a0a" stroke-width="2"/>'; },
+    pot: function (x, y, s) { s = s || 1; return '<g transform="translate(' + x + ' ' + y + ') scale(' + s + ')"><path d="M-7 0l2 -10h10l2 10z" fill="#b5653a" stroke="rgba(40,15,0,.6)" stroke-width="1"/><circle cx="0" cy="-15" r="8" fill="#4aa04a"/><circle cx="-5" cy="-18" r="4" fill="#6cc05a"/><circle cx="4" cy="-20" r="2.5" fill="#ff6f8e"/><circle cx="-2" cy="-12" r="2" fill="#ffd34a"/></g>'; }
+  };
+  TB.shop = function () {
+    var p = 'sp', s = '<svg viewBox="0 0 260 232"><defs>' + TB.pat(p) + TB.gr(p + 'w', '#e9dcc0', '#cdb98f', '#b8a276') + TB.gr(p + 'r', '#d9693f', '#b8482a', '#8a301c') + TB.gr(p + 'p', '#fbf1dd', '#efe0c2') + TB.gr(p + 'tm', '#6a4426', '#43280f') + '</defs>';
+    s += TB.shadow(130, 226, 128, 9);
+    // 煙突
+    s += '<rect x="184" y="6" width="24" height="50" fill="url(#' + p + 'w)" stroke="rgba(50,30,10,.6)"/><rect x="184" y="6" width="24" height="50" fill="url(#' + p + 'k)"/><rect x="181" y="2" width="30" height="7" fill="#c7b48c" stroke="rgba(50,30,10,.6)"/><rect x="190" y="0" width="12" height="4" fill="#2a1a10"/>';
+    // 二階（しっくい＋木組み）
+    s += '<rect x="26" y="76" width="208" height="58" fill="url(#' + p + 'p)" stroke="rgba(50,30,10,.55)"/><rect x="26" y="76" width="208" height="58" fill="url(#' + p + 'sh)"/>';
+    [26, 88, 172, 228].forEach(function (x) { s += '<rect x="' + x + '" y="76" width="7" height="58" fill="url(#' + p + 'tm)"/>'; });
+    s += '<rect x="26" y="76" width="208" height="6" fill="url(#' + p + 'tm)"/><rect x="26" y="128" width="208" height="7" fill="url(#' + p + 'tm)"/><path d="M33 128L88 82M172 82L228 128M33 82L60 128M200 128L228 82" stroke="#5a3a1c" stroke-width="4" opacity=".85"/>';
+    // 一階（石）
+    s += TB.wall(p, 20, 134, 220, 88, p + 'w') + '<rect x="14" y="134" width="232" height="8" fill="#cdbb94" stroke="rgba(50,30,10,.6)"/><rect x="14" y="216" width="232" height="8" fill="#b7a47c" stroke="rgba(50,30,10,.6)"/>';
+    // 屋根
+    s += TB.roof(p, '8,80 252,80 220,26 40,26', p + 'r') + '<rect x="34" y="21" width="192" height="8" rx="3" fill="#8e3320" stroke="rgba(30,10,0,.6)"/><path d="M8 80H252" stroke="rgba(0,0,0,.35)" stroke-width="6" opacity=".4" transform="translate(0 3)"/>';
+    // ドーマー
+    s += '<polygon points="104,60 156,60 150,34 110,34" fill="#9c3a22" stroke="rgba(30,10,0,.6)"/><polygon points="110,34 130,16 150,34" fill="url(#' + p + 'r)" stroke="rgba(30,10,0,.6)"/>' + TB.win(p, 117, 38, 26, 22, { arch: false, glow: true });
+    // ダイヤの看板
+    // 二階の窓
+    s += TB.win(p, 52, 88, 26, 34, { box: true, sh: '#3f7a8a' }) + TB.win(p, 182, 88, 26, 34, { box: true, sh: '#3f7a8a' });
+    // ディスプレイ窓
+    s += '<rect x="30" y="152" width="96" height="62" fill="#e3d3ae" stroke="rgba(50,30,10,.65)" stroke-width="1.5"/><rect x="36" y="158" width="84" height="48" fill="url(#' + p + 'gl)" stroke="rgba(30,20,10,.7)"/><rect x="36" y="158" width="84" height="48" fill="url(#' + p + 'lg)" opacity=".5"/>';
+    s += '<rect x="40" y="184" width="76" height="3.5" fill="#6a4426"/><rect x="40" y="170" width="76" height="3.5" fill="#6a4426"/>';
+    [[48, 168, '#ff5f8f'], [62, 168, '#5fd0ff'], [76, 168, '#ffd34a'], [92, 168, '#c68bff'], [106, 168, '#6dffb0'], [52, 182, '#c68bff'], [70, 182, '#ff9a4a'], [88, 182, '#5fd0ff'], [104, 182, '#ff5f8f']].forEach(function (g) { s += '<circle cx="' + g[0] + '" cy="' + g[1] + '" r="5" fill="' + g[2] + '" stroke="rgba(0,0,0,.4)" stroke-width=".8"/><circle cx="' + (g[0] - 1.5) + '" cy="' + (g[1] - 1.8) + '" r="1.6" fill="rgba(255,255,255,.9)"/>'; });
+    s += '<path d="M40 204h76" stroke="#3a2410" stroke-width="2"/><path d="M42 160L70 202M60 160L82 192" stroke="rgba(255,255,255,.28)" stroke-width="5"/>';
+    // 日よけ
+    s += '<path d="M24 150H132L138 128H18Z" fill="#fff" stroke="rgba(60,20,10,.6)"/>';
+    for (var i = 0; i < 6; i++) s += '<path d="M' + (18 + i * 20) + ' 128h10l' + (i % 1 ? 0 : 0) + ' 0 ' + '' + 'l-1 22h-10z" fill="none"/>';
+    for (var j = 0; j < 7; j++) s += '<path d="M' + (18 + j * 17.14) + ' 128h' + 17.14 + 'l-1.1 22h-' + 14.9 + 'z" fill="' + (j % 2 ? '#fbf3e4' : '#d33a3a') + '"/>';
+    s += '<path d="M18 128H138" stroke="rgba(0,0,0,.5)" stroke-width="1.5"/>';
+    for (var k = 0; k < 7; k++) s += '<path d="M' + (19 + k * 17.14) + ' 150q8.5 9 16.5 0" fill="' + (k % 2 ? '#fbf3e4' : '#d33a3a') + '" stroke="rgba(60,20,10,.55)" stroke-width="1"/>';
+    // 扉
+    s += TB.door(p, 148, 152, 36, 70, '#6a3a1c', { glass: true }) + TB.steps(166, 222, 44, 1);
+    // 右の小窓＋ランタン
+    s += TB.win(p, 200, 160, 24, 40, { arch: true, box: true }) + TB.lantern(p, 193, 138) + TB.lantern(p, 236, 138);
+    // ぶら下げ看板
+    s += '<path d="M240 100h14" stroke="#2a1a0a" stroke-width="3"/><path d="M246 102v8" stroke="#2a1a0a"/><rect x="236" y="110" width="22" height="22" rx="3" fill="#7a4a28" stroke="#2a1a0a" stroke-width="1.5"/><path d="M247 114L255 122L247 130L239 122Z" fill="#9ae8ff" stroke="#1a4a6a"/>';
+    s += TB.pot(22, 224, 1) + TB.pot(238, 224, 1);
+    return s + '</svg>';
+  };
+  TB.hall = function () {
+    var p = 'hl', s = '<svg viewBox="0 0 340 292"><defs>' + TB.pat(p) + TB.gr(p + 'w', '#ece1ca', '#d3c3a0', '#b9a67e') + TB.gr(p + 'r', '#5f7fd6', '#3f58a8', '#27346c') + TB.gr(p + 'r2', '#6a86d8', '#46609f', '#2b3a72') + TB.gr(p + 'g', '#ffe9a0', '#e8b84a', '#a87a1a') + '</defs>';
+    s += TB.shadow(170, 286, 168, 10);
+    var flag = function (x, y, c) { return '<path d="M' + x + ' ' + y + 'v-24" stroke="#3a2a1a" stroke-width="2.4"/><path d="M' + x + ' ' + (y - 24) + 'l26 7l-26 7z" fill="' + c + '" stroke="rgba(30,10,10,.6)"/><circle cx="' + x + '" cy="' + (y - 25) + '" r="2.6" fill="#f2cf6a"/>'; };
+    // 左右の塔
+    [[16, 1], [262, 0]].forEach(function (t) {
+      var x = t[0];
+      s += TB.wall(p, x, 78, 62, 202, p + 'w') + '<rect x="' + (x - 4) + '" y="74" width="70" height="9" fill="#cdbb94" stroke="rgba(50,30,10,.6)"/><rect x="' + (x - 4) + '" y="270" width="70" height="10" fill="#b7a47c" stroke="rgba(50,30,10,.6)"/><rect x="' + (x - 3) + '" y="158" width="68" height="5" fill="#cdbb94" stroke="rgba(50,30,10,.5)"/>';
+      s += TB.roof(p, (x - 8) + ',80 ' + (x + 70) + ',80 ' + (x + 31) + ',30', p + 'r') + flag(x + 31, 30, '#d33a4a');
+      s += TB.win(p, x + 20, 98, 22, 46, { arch: true }) + TB.win(p, x + 20, 176, 22, 46, { arch: true, glow: true }) + '<circle cx="' + (x + 31) + '" cy="248" r="0" />';
+      s += '<path d="M' + x + ' 270v-8" />';
+    });
+    // 左右の翼
+    s += TB.wall(p, 76, 150, 188, 130, p + 'w');
+    s += TB.roof(p, '70,156 270,156 252,122 88,122', p + 'r2');
+    [86, 232].forEach(function (wx) { s += TB.win(p, wx, 176, 22, 42, { arch: true }); });
+    // 中央棟
+    s += TB.wall(p, 112, 96, 116, 184, p + 'w') + '<rect x="106" y="92" width="128" height="9" fill="#cdbb94" stroke="rgba(50,30,10,.6)"/>';
+    s += TB.roof(p, '100,98 240,98 170,34', p + 'r') + flag(170, 36, '#f2cf6a');
+    // 紋章（オパールのメダル）
+    s += '<circle cx="170" cy="72" r="19" fill="url(#' + p + 'g)" stroke="#6a4a0a" stroke-width="2"/><circle cx="170" cy="72" r="14" fill="#1b2a5a" stroke="#f6e08a" stroke-width="1.4"/><path d="M170 60l9 12l-9 12l-9 -12z" fill="#aef0ff"/><path d="M161 72h18M170 60l-4 12l4 12l4 -12z" stroke="rgba(255,255,255,.9)" stroke-width="1" fill="none"/><circle cx="170" cy="72" r="19" fill="none" stroke="rgba(255,255,255,.4)"/>';
+    // 中央の窓
+    s += TB.win(p, 126, 118, 22, 40, { arch: true, glow: true }) + TB.win(p, 192, 118, 22, 40, { arch: true, glow: true });
+    s += '<path d="M154 150h32" stroke="#6a4a0a" stroke-width="3"/>';
+    // 大扉と階段
+    s += TB.door(p, 144, 192, 52, 88, '#5a3216', { fr: '#f1e6cc' }) + TB.steps(170, 280, 70, 1) + '<rect x="130" y="281" width="80" height="6" fill="#d9ccb0" stroke="rgba(60,40,20,.4)"/>';
+    // バナー
+    [[118, 0], [208, 0]].forEach(function (b) { s += '<path d="M' + b[0] + ' 180h14v52l-7-8l-7 8z" fill="#b3283a" stroke="rgba(30,5,5,.7)"/><path d="M' + (b[0] + 7) + ' 192l4 6l-4 6l-4-6z" fill="#f6e08a"/>'; });
+    s += TB.lantern(p, 104, 196) + TB.lantern(p, 236, 196) + TB.pot(96, 284, 1.1) + TB.pot(244, 284, 1.1);
+    return s + '</svg>';
+  };
+  TB.hosp = function () {
+    var p = 'hs', s = '<svg viewBox="0 0 280 236"><defs>' + TB.pat(p) + TB.gr(p + 'w', '#ffffff', '#eef3f6', '#cdd9e0') + TB.gr(p + 'c', '#5fd0b4', '#2f9d86', '#1d6b5c') + TB.gr(p + 'f', '#f4f8fa', '#dfe9ee') + '</defs>';
+    s += TB.shadow(140, 230, 136, 9);
+    // 両翼
+    s += '<rect x="14" y="118" width="252" height="104" fill="url(#' + p + 'w)" stroke="rgba(40,60,70,.5)"/><rect x="14" y="118" width="252" height="104" fill="url(#' + p + 'sh)"/><rect x="14" y="118" width="252" height="104" fill="url(#' + p + 'vs)"/>';
+    for (var y = 124; y < 220; y += 9) s += '<path d="M14 ' + y + 'H266" stroke="rgba(100,130,150,.22)"/>';
+    s += TB.roof(p, '6,124 274,124 252,90 28,90', p + 'c') + '<rect x="24" y="84" width="232" height="8" rx="3" fill="#287a68" stroke="rgba(0,30,25,.6)"/>';
+    // 中央ブロック
+    s += '<rect x="88" y="52" width="104" height="170" fill="url(#' + p + 'w)" stroke="rgba(40,60,70,.55)"/><rect x="88" y="52" width="104" height="170" fill="url(#' + p + 'sh)"/><rect x="88" y="52" width="104" height="170" fill="url(#' + p + 'vs)"/>';
+    for (var y2 = 58; y2 < 220; y2 += 9) s += '<path d="M88 ' + y2 + 'H192" stroke="rgba(100,130,150,.22)"/>';
+    s += TB.roof(p, '80,56 200,56 140,10', p + 'c') + '<path d="M140 10V0" stroke="#2a3a40" stroke-width="2"/>';
+    // 赤十字
+    s += '<circle cx="140" cy="36" r="13" fill="#fff" stroke="#2f9d86" stroke-width="2"/><path d="M136 28h8v6h6v8h-6v6h-8v-6h-6v-8h6z" transform="translate(0 -2)" fill="#e53a4a" stroke="#8a1a24" stroke-width=".8"/>';
+    s += TB.win(p, 112, 72, 22, 36, { arch: true }) + TB.win(p, 146, 72, 22, 36, { arch: true });
+    s += '<rect x="102" y="114" width="76" height="9" fill="#2f9d86" stroke="rgba(0,30,25,.5)"/><text x="140" y="121.5" font-size="8" font-weight="900" fill="#fff" text-anchor="middle" font-family="sans-serif" letter-spacing="2">HOSPITAL</text>';
+    // 入口
+    s += TB.door(p, 122, 150, 36, 72, '#e6f2f0', { fr: '#fff', glass: true }) + TB.steps(140, 222, 48, 1);
+    s += '<path d="M118 146h44l-3-8h-38z" fill="#2f9d86" stroke="rgba(0,30,25,.55)"/>';
+    // 翼の窓
+    [[28, 0], [66, 0], [196, 0], [234, 0]].forEach(function (w) { s += TB.win(p, w[0], 142, 20, 44, { arch: false, box: false, sh: null }); });
+    [[28, 0], [66, 0], [196, 0], [234, 0]].forEach(function (w) { s += '<rect x="' + (w[0] - 2) + '" y="108" width="24" height="3" fill="none"/>'; });
+    s += TB.pot(104, 224, .9) + TB.pot(176, 224, .9);
+    s += '<path d="M10 224h260" stroke="#c4d0d6" stroke-width="6"/>';
+    return s + '</svg>';
+  };
+  TB.exch = function () {
+    var p = 'ex', s = '<svg viewBox="0 0 300 240"><defs>' + TB.pat(p) + TB.gr(p + 'w', '#f6f0e2', '#e3d8bf', '#c9b995') + TB.gr(p + 'c', '#fbf6ea', '#e6dcc4', '#b9a888') + TB.gr(p + 'g', '#fff0a8', '#f0c23a', '#a8761a') + TB.gr(p + 'gr', '#5fc79a', '#2f9a78', '#1f6a52') + '</defs>';
+    s += TB.shadow(150, 234, 146, 9);
+    // 土台・階段
+    s += '<rect x="10" y="212" width="280" height="14" fill="#d5c8a8" stroke="rgba(60,40,20,.5)"/><rect x="22" y="204" width="256" height="9" fill="#e4d8bc" stroke="rgba(60,40,20,.5)"/>';
+    // 背面の壁（左右の翼）
+    s += TB.wall(p, 24, 100, 252, 104, p + 'w');
+    s += '<rect x="16" y="92" width="268" height="12" fill="#e9dfc6" stroke="rgba(50,30,10,.6)"/><rect x="16" y="98" width="268" height="4" fill="rgba(0,0,0,.15)"/>';
+    for (var b = 0; b < 21; b++) s += '<rect x="' + (18 + b * 12.8) + '" y="80" width="5" height="12" rx="1.5" fill="#e3d8bf" stroke="rgba(60,40,20,.45)" stroke-width=".8"/>';
+    s += '<rect x="16" y="90" width="268" height="3" fill="#cdbf9c"/>';
+    [34, 66, 214, 246].forEach(function (x) { s += TB.win(p, x, 118, 20, 54, { arch: true }); });
+    // 中央ポーチ：6本の円柱とペディメント
+    s += '<rect x="74" y="98" width="152" height="108" fill="#d9ccae" stroke="rgba(60,40,20,.5)"/><rect x="74" y="98" width="152" height="108" fill="url(#' + p + 'vs)"/>';
+    s += '<polygon points="62,60 238,60 150,12" fill="url(#' + p + 'w)" stroke="rgba(50,30,10,.65)" stroke-width="1.6"/><polygon points="76,57 224,57 150,20" fill="#e7dcc2" stroke="rgba(60,40,20,.45)"/><polygon points="76,57 224,57 150,20" fill="url(#' + p + 'sh)"/>';
+    s += '<rect x="62" y="60" width="176" height="14" fill="url(#' + p + 'c)" stroke="rgba(50,30,10,.6)"/><text x="150" y="71" font-size="9" font-weight="900" fill="#7a5a14" text-anchor="middle" font-family="sans-serif" letter-spacing="3">EXCHANGE</text>';
+    s += '<circle cx="150" cy="42" r="12" fill="url(#' + p + 'g)" stroke="#6a4a0a" stroke-width="1.6"/><circle cx="150" cy="42" r="8.5" fill="none" stroke="#8a5a0a" stroke-width="1"/><text x="150" y="46.5" font-size="12" font-weight="900" fill="#7a4a0a" text-anchor="middle" font-family="sans-serif">¥</text>';
+    s += '<path d="M60 74H240" stroke="rgba(0,0,0,.2)" stroke-width="3"/>';
+    for (var c = 0; c < 6; c++) {
+      var cx = 82 + c * 27.2;
+      s += '<rect x="' + (cx - 7) + '" y="76" width="14" height="124" fill="url(#' + p + 'c)" stroke="rgba(60,40,20,.5)" stroke-width="1"/><path d="M' + (cx - 3) + ' 78V198M' + (cx + 2) + ' 78V198" stroke="rgba(0,0,0,.14)" stroke-width="1.2"/><path d="M' + (cx - 5) + ' 78V198" stroke="rgba(255,255,255,.7)" stroke-width="1.6"/>';
+      s += '<rect x="' + (cx - 10) + '" y="74" width="20" height="6" rx="1.5" fill="#efe5cd" stroke="rgba(60,40,20,.5)"/><rect x="' + (cx - 10) + '" y="198" width="20" height="7" rx="1.5" fill="#d8cba9" stroke="rgba(60,40,20,.5)"/>';
+    }
+    s += TB.door(p, 132, 138, 36, 68, '#2f6a52', { fr: '#f1e8d0', glass: true }) + '<path d="M128 136h44" stroke="#c9a23a" stroke-width="2.5"/>';
+    // 緑の屋根の縁
+    s += '<rect x="14" y="76" width="272" height="5" fill="url(#' + p + 'gr)" stroke="rgba(0,40,25,.5)"/>';
+    // 階段
+    for (var i = 0; i < 3; i++) s += '<rect x="' + (70 - i * 6) + '" y="' + (206 + i * 5) + '" width="' + (160 + i * 12) + '" height="5.5" fill="' + (i % 2 ? '#d9ccb0' : '#ece2c8') + '" stroke="rgba(60,40,20,.4)" stroke-width=".8"/>';
+    s += TB.lantern(p, 70, 124) + TB.lantern(p, 230, 124) + TB.pot(46, 226, 1) + TB.pot(254, 226, 1);
+    return s + '</svg>';
+  };
+  TB.arena = function () {
+    var p = 'ar', s = '<svg viewBox="0 0 340 240"><defs>' + TB.pat(p) + TB.gr(p + 'w', '#e7d3ac', '#cfb384', '#a98d5e') + TB.gr(p + 'd', '#2a1c14', '#120a06') + TB.gr(p + 'r', '#c8552e', '#8a2f1c') + '</defs>';
+    s += TB.shadow(170, 234, 166, 9);
+    var flag = function (x, y, c, dir) { return '<path d="M' + x + ' ' + y + 'v-38" stroke="#3a2a1a" stroke-width="2.6"/><path d="M' + x + ' ' + (y - 38) + 'l' + (28 * dir) + ' 8l' + (-28 * dir) + ' 8z" fill="' + c + '" stroke="rgba(20,10,10,.6)"/>'; };
+    // 本体
+    s += '<path d="M8 220V92Q8 56 44 50H296Q332 56 332 92V220Z" fill="url(#' + p + 'w)" stroke="rgba(60,40,15,.7)" stroke-width="1.6"/>';
+    s += '<path d="M8 220V92Q8 56 44 50H296Q332 56 332 92V220Z" fill="url(#' + p + 'k)"/><path d="M8 220V92Q8 56 44 50H296Q332 56 332 92V220Z" fill="url(#' + p + 'sh)"/><path d="M8 220V92Q8 56 44 50H296Q332 56 332 92V220Z" fill="url(#' + p + 'vs)"/>';
+    // 最上段（屋上のひさし）
+    s += '<path d="M2 58Q2 40 40 40H300Q338 40 338 58V66H2Z" fill="#c9ad7c" stroke="rgba(60,40,15,.7)" stroke-width="1.6"/><path d="M2 66H338" stroke="rgba(0,0,0,.25)" stroke-width="3"/>';
+    for (var t = 0; t < 22; t++) s += '<rect x="' + (10 + t * 14.5) + '" y="32" width="8" height="10" rx="2" fill="#d6bd8d" stroke="rgba(60,40,15,.55)" stroke-width=".9"/>';
+    // 上段アーチ
+    for (var a = 0; a < 11; a++) { var ax = 22 + a * 27.5; s += '<path d="M' + ax + ' 112V92A10.5 10.5 0 0 1 ' + (ax + 21) + ' 92V112Z" fill="url(#' + p + 'd)" stroke="rgba(60,40,15,.8)" stroke-width="1.2"/><path d="M' + (ax - 2) + ' 112V92A12.5 12.5 0 0 1 ' + (ax + 23) + ' 92V112" fill="none" stroke="#f0e2c2" stroke-width="2.6"/><circle cx="' + (ax + 10.5) + '" cy="102" r="2" fill="#ffb84a" opacity=".6"/>'; }
+    s += '<rect x="8" y="112" width="324" height="8" fill="#c9ad7c" stroke="rgba(60,40,15,.6)"/>';
+    // 下段アーチ（中央の大扉のぶんあける）
+    for (var b = 0; b < 11; b++) { if (b === 5) continue; var bx = 22 + b * 27.5; s += '<path d="M' + bx + ' 212V160A10.5 10.5 0 0 1 ' + (bx + 21) + ' 160V212Z" fill="url(#' + p + 'd)" stroke="rgba(60,40,15,.8)" stroke-width="1.2"/><path d="M' + (bx - 2) + ' 212V160A12.5 12.5 0 0 1 ' + (bx + 23) + ' 160V212" fill="none" stroke="#f0e2c2" stroke-width="2.6"/><path d="M' + (bx + 3) + ' 170V212M' + (bx + 10.5) + ' 168V212M' + (bx + 18) + ' 170V212" stroke="rgba(200,170,110,.4)" stroke-width="1.3"/>'; }
+    for (var e = 0; e < 12; e++) s += '<rect x="' + (14 + e * 27.5 - 4) + '" y="124" width="7" height="88" fill="rgba(255,248,225,.35)" stroke="rgba(60,40,15,.35)" stroke-width=".8"/>';
+    // 中央の大門
+    s += '<path d="M140 218V150A30 30 0 0 1 200 150V218Z" fill="#efe0bd" stroke="rgba(60,40,15,.8)" stroke-width="1.6"/><path d="M148 218V152A22 22 0 0 1 192 152V218Z" fill="url(#' + p + 'd)"/>';
+    for (var g = 0; g < 7; g++) s += '<path d="M' + (152 + g * 6) + ' 134V218" stroke="#7a7068" stroke-width="2.4"/>'; for (var h = 0; h < 5; h++) s += '<path d="M150 ' + (150 + h * 16) + 'H190" stroke="#6a625a" stroke-width="2"/>';
+    s += '<path d="M150 218V152A20 20 0 0 1 190 152" fill="none" stroke="rgba(255,190,90,.45)" stroke-width="3"/>';
+    // 看板
+    s += '<rect x="112" y="68" width="116" height="30" rx="5" fill="url(#' + p + 'r)" stroke="#3a1608" stroke-width="2"/><rect x="116" y="72" width="108" height="22" rx="3" fill="none" stroke="#f2cf6a" stroke-width="1.2"/><text x="170" y="89" font-size="15" font-weight="900" fill="#fff2c0" text-anchor="middle" font-family="sans-serif" letter-spacing="4">ARENA</text>';
+    // 旗と松明
+    s += flag(38, 44, '#d33a3a', 1) + flag(302, 44, '#2f8aca', -1);
+    [[128, 168], [212, 168]].forEach(function (q) { s += '<circle cx="' + q[0] + '" cy="' + (q[1] - 4) + '" r="16" fill="url(#' + p + 'lg)"/><rect x="' + (q[0] - 1.5) + '" y="' + q[1] + '" width="3" height="16" fill="#3a2a1a"/><path d="M' + q[0] + ' ' + (q[1] - 12) + 'q7 7 0 13q-7 -6 0 -13z" fill="#ff9a2a" stroke="#c0501a" stroke-width=".8"/><path d="M' + q[0] + ' ' + (q[1] - 6) + 'q3 3 0 6q-3 -3 0 -6z" fill="#ffe27a"/>'; });
+    s += '<rect x="2" y="216" width="336" height="12" fill="#bda070" stroke="rgba(60,40,15,.6)"/>';
+    return s + '</svg>';
+  };
+  TB.cafe = function () {
+    var p = 'cf', s = '<svg viewBox="0 -34 270 270"><defs>' + TB.pat(p) + TB.gr(p + 'w', '#d9835a', '#b8603a', '#8e4528') + TB.gr(p + 'p', '#fff4e0', '#f1dfbf') + TB.gr(p + 'r', '#4a8f86', '#2f6d66', '#1d4a46') + TB.gr(p + 'tm', '#6a4426', '#43280f') + '</defs>';
+    s += TB.shadow(135, 230, 130, 9);
+    // 煙突＋煙
+    s += '<rect x="190" y="8" width="22" height="46" fill="url(#' + p + 'w)" stroke="rgba(40,15,5,.6)"/><rect x="190" y="8" width="22" height="46" fill="url(#' + p + 'b)"/><rect x="187" y="4" width="28" height="7" fill="#7a3a22" stroke="rgba(40,15,5,.6)"/>';
+    s += '<path d="M201 2q-9 -8 0 -16q9 -8 0 -16" fill="none" stroke="rgba(255,255,255,.65)" stroke-width="5" stroke-linecap="round"/>';
+    // 二階
+    s += '<rect x="24" y="80" width="222" height="54" fill="url(#' + p + 'p)" stroke="rgba(50,30,10,.55)"/><rect x="24" y="80" width="222" height="54" fill="url(#' + p + 'sh)"/>';
+    [24, 100, 170, 239].forEach(function (x) { s += '<rect x="' + x + '" y="80" width="7" height="54" fill="url(#' + p + 'tm)"/>'; });
+    s += '<rect x="24" y="80" width="222" height="6" fill="url(#' + p + 'tm)"/><rect x="24" y="128" width="222" height="7" fill="url(#' + p + 'tm)"/>';
+    // 一階（レンガ）
+    s += '<rect x="18" y="134" width="234" height="88" fill="url(#' + p + 'w)"/><rect x="18" y="134" width="234" height="88" fill="url(#' + p + 'b)"/><rect x="18" y="134" width="234" height="88" fill="url(#' + p + 'sh)"/><rect x="18" y="134" width="234" height="88" fill="url(#' + p + 'vs)"/><rect x="12" y="216" width="246" height="8" fill="#6a4a38" stroke="rgba(30,10,0,.6)"/>';
+    // 屋根
+    s += TB.roof(p, '10,84 260,84 228,30 42,30', p + 'r') + '<rect x="36" y="25" width="198" height="8" rx="3" fill="#25544f" stroke="rgba(0,25,20,.6)"/>';
+    s += '<polygon points="98,62 172,62 166,38 104,38" fill="#2a5a55" stroke="rgba(0,25,20,.6)"/>' + TB.win(p, 118, 42, 34, 18, { glow: true }) ;
+    // 二階の窓
+    s += TB.win(p, 48, 90, 28, 34, { box: true, sh: '#c8553a' }) + TB.win(p, 194, 90, 28, 34, { box: true, sh: '#c8553a' }) + TB.win(p, 120, 90, 30, 34, { box: true });
+    // 大アーチ窓×2 と扉
+    s += '<path d="M30 214V170A20 20 0 0 1 70 170V214Z" fill="#f3e6c8" stroke="rgba(40,20,5,.7)" stroke-width="1.4"/><path d="M35 210V172A15 15 0 0 1 65 172V210Z" fill="url(#' + p + 'gl)"/><path d="M35 210V172A15 15 0 0 1 65 172V210Z" fill="url(#' + p + 'lg)" opacity=".7"/><path d="M50 158V210M35 190H65" stroke="#f3e6c8" stroke-width="2.4"/>';
+    s += '<path d="M200 214V170A20 20 0 0 1 240 170V214Z" fill="#f3e6c8" stroke="rgba(40,20,5,.7)" stroke-width="1.4"/><path d="M205 210V172A15 15 0 0 1 235 172V210Z" fill="url(#' + p + 'gl)"/><path d="M205 210V172A15 15 0 0 1 235 172V210Z" fill="url(#' + p + 'lg)" opacity=".7"/><path d="M220 158V210M205 190H235" stroke="#f3e6c8" stroke-width="2.4"/>';
+    s += TB.door(p, 108, 160, 54, 58, '#3a2a1c', { fr: '#f3e6c8', glass: true });
+    // ひさし（ティール×クリーム）
+    for (var j = 0; j < 13; j++) s += '<path d="M' + (8 + j * 19.4) + ' 134h19.4l-1.2 12h-17z" fill="' + (j % 2 ? '#fff3dc' : '#2f8d84') + '"/>';
+    for (var k = 0; k < 13; k++) s += '<path d="M' + (9 + k * 19.4) + ' 146q8.7 8 17.4 0" fill="' + (k % 2 ? '#fff3dc' : '#2f8d84') + '" stroke="rgba(0,40,35,.5)" stroke-width="1"/>';
+    s += '<path d="M8 134H262" stroke="rgba(0,0,0,.4)" stroke-width="1.6"/>';
+    // CAFE看板
+    s += '<rect x="92" y="108" width="86" height="20" rx="4" fill="#3a2410" stroke="#e8c46a" stroke-width="1.5"/><text x="135" y="123" font-size="14" font-weight="900" fill="#ffe9a8" text-anchor="middle" font-family="sans-serif" letter-spacing="4">CAFE</text>';
+    s += '<path d="M104 128v6M166 128v6" stroke="#2a1a0a" stroke-width="2"/>';
+    // テラス（テーブル＋パラソル）
+    s += '<ellipse cx="62" cy="228" rx="26" ry="5" fill="rgba(20,35,20,.25)"/><path d="M62 228V206" stroke="#3a2a1a" stroke-width="3"/><ellipse cx="62" cy="204" rx="19" ry="5" fill="#fff" stroke="#6a4426" stroke-width="1.5"/><path d="M62 192V204" stroke="#6a4426" stroke-width="2"/><path d="M40 192Q62 170 84 192Z" fill="#e0503a" stroke="rgba(60,10,0,.6)"/><path d="M62 192L52 192Q56 178 62 174ZM62 192L72 192Q68 178 62 174Z" fill="#fff3dc" opacity=".9"/>';
+    s += '<ellipse cx="208" cy="228" rx="26" ry="5" fill="rgba(20,35,20,.25)"/><path d="M208 228V206" stroke="#3a2a1a" stroke-width="3"/><ellipse cx="208" cy="204" rx="19" ry="5" fill="#fff" stroke="#6a4426" stroke-width="1.5"/><path d="M208 192V204" stroke="#6a4426" stroke-width="2"/><path d="M186 192Q208 170 230 192Z" fill="#2f8d84" stroke="rgba(0,30,25,.6)"/><path d="M208 192L198 192Q202 178 208 174ZM208 192L218 192Q214 178 208 174Z" fill="#fff3dc" opacity=".9"/>';
+    // 黒板
+    s += '<g transform="translate(166 236)"><path d="M0 0l-6 -24h30l-6 24z" fill="#3a3a3a" stroke="#6a4426" stroke-width="2"/><path d="M-1 -18h20M0 -12h14" stroke="#fff" stroke-width="1.3" opacity=".8"/></g>';
+    s += TB.lantern(p, 20, 142) + TB.lantern(p, 250, 142);
+    return s + '</svg>';
+  };
+  TB.post = function () {
+    var p = 'ps', s = '<svg viewBox="0 -22 270 266"><defs>' + TB.pat(p) + TB.gr(p + 'w', '#c8553a', '#a23f28', '#7a2c1a') + TB.gr(p + 'q', '#f7efdc', '#e0d4b6') + TB.gr(p + 'r', '#4a5a78', '#2f3c58', '#1d273f') + TB.gr(p + 'g', '#fff0a8', '#f0c23a', '#a8761a') + '</defs>';
+    s += TB.shadow(135, 238, 130, 9);
+    // 時計塔
+    s += '<rect x="106" y="22" width="58" height="96" fill="url(#' + p + 'w)" stroke="rgba(40,10,5,.6)"/><rect x="106" y="22" width="58" height="96" fill="url(#' + p + 'b)"/><rect x="106" y="22" width="58" height="96" fill="url(#' + p + 'sh)"/>';
+    s += TB.roof(p, '98,26 172,26 135,-6', p + 'r') + '<path d="M135 -6v-8" stroke="#3a2a1a" stroke-width="2"/><circle cx="135" cy="-15" r="3" fill="#f2cf6a"/>';
+    s += '<circle cx="135" cy="58" r="21" fill="#fff8e6" stroke="#5a3a1a" stroke-width="3"/><circle cx="135" cy="58" r="17" fill="none" stroke="rgba(0,0,0,.25)"/>';
+    for (var h = 0; h < 12; h++) { var a = h * Math.PI / 6; s += '<path d="M' + (135 + Math.sin(a) * 14).toFixed(1) + ' ' + (58 - Math.cos(a) * 14).toFixed(1) + 'L' + (135 + Math.sin(a) * 16.4).toFixed(1) + ' ' + (58 - Math.cos(a) * 16.4).toFixed(1) + '" stroke="#3a2410" stroke-width="1.6"/>'; }
+    s += '<path d="M135 58V46M135 58L144 62" stroke="#2a1a0a" stroke-width="2.4" stroke-linecap="round"/><circle cx="135" cy="58" r="2" fill="#2a1a0a"/>';
+    s += TB.win(p, 124, 90, 22, 22, { fr: '#f7efdc' });
+    // 本体（赤レンガ＋白い隅石）
+    s += '<rect x="20" y="118" width="230" height="106" fill="url(#' + p + 'w)"/><rect x="20" y="118" width="230" height="106" fill="url(#' + p + 'b)"/><rect x="20" y="118" width="230" height="106" fill="url(#' + p + 'sh)"/><rect x="20" y="118" width="230" height="106" fill="url(#' + p + 'vs)"/>';
+    for (var q = 0; q < 9; q++) { s += '<rect x="20" y="' + (122 + q * 11.5) + '" width="' + (q % 2 ? 14 : 22) + '" height="9" fill="url(#' + p + 'q)" stroke="rgba(60,40,20,.4)" stroke-width=".8"/><rect x="' + (250 - (q % 2 ? 14 : 22)) + '" y="' + (122 + q * 11.5) + '" width="' + (q % 2 ? 14 : 22) + '" height="9" fill="url(#' + p + 'q)" stroke="rgba(60,40,20,.4)" stroke-width=".8"/>'; }
+    s += '<rect x="14" y="112" width="242" height="9" fill="url(#' + p + 'q)" stroke="rgba(60,40,20,.6)"/><rect x="14" y="220" width="242" height="9" fill="#d9ccb0" stroke="rgba(60,40,20,.6)"/>';
+    s += TB.roof(p, '6,114 264,114 240,80 30,80', p + 'r') + '<rect x="28" y="75" width="214" height="8" rx="3" fill="#212c48" stroke="rgba(0,0,20,.6)"/>';
+    // 屋根の小窓
+    [52, 196].forEach(function (x) { s += '<polygon points="' + x + ',108 ' + (x + 34) + ',108 ' + (x + 30) + ',88 ' + (x + 4) + ',88" fill="#2a3552" stroke="rgba(0,0,20,.6)"/>' + TB.win(p, x + 7, 90, 20, 16, { glow: true }); });
+    // 窓
+    [38, 76, 176, 214].forEach(function (x) { s += TB.win(p, x, 142, 22, 50, { arch: true, fr: '#f7efdc' }); });
+    // 入口
+    s += TB.door(p, 118, 152, 34, 70, '#2f6a8a', { fr: '#f7efdc', glass: true }) + TB.steps(135, 222, 46, 1);
+    s += '<circle cx="135" cy="138" r="13" fill="#e0382f" stroke="#fff" stroke-width="2.4"/><text x="135" y="144" font-size="17" font-weight="900" fill="#fff" text-anchor="middle" font-family="sans-serif">〒</text>';
+    s += '<rect x="90" y="124" width="90" height="0" />';
+    // ポスト
+    s += '<g transform="translate(246 236)"><rect x="-9" y="-44" width="18" height="44" rx="8" fill="#d6332a" stroke="#6a0f0a" stroke-width="1.4"/><path d="M-9 -34h18" stroke="rgba(0,0,0,.35)" stroke-width="2"/><rect x="-5" y="-30" width="10" height="3" fill="#1a0a0a"/><path d="M-5 -44q5 -6 10 0" fill="#e8453a" stroke="#6a0f0a"/><circle cx="0" cy="-14" r="3" fill="#f6e08a"/></g>';
+    s += TB.lantern(p, 100, 150) + TB.lantern(p, 170, 150) + TB.pot(30, 228, .9) + TB.pot(210, 228, .9);
+    return s + '</svg>';
+  };
+  TB.arcade = function () {
+    var p = 'ac', s = '<svg viewBox="0 -10 280 250"><defs>' + TB.pat(p) + TB.gr(p + 'w', '#2a2236', '#171222', '#0b0812') + TB.gr(p + 'g', '#fff0a8', '#f0c23a', '#a8761a') + TB.gr(p + 'gd', '#f6dc86', '#c9972a', '#7a5410') +
+      '<radialGradient id="' + p + 'ng"><stop offset="0" stop-color="rgba(255,80,200,.55)"/><stop offset="1" stop-color="rgba(255,80,200,0)"/></radialGradient><radialGradient id="' + p + 'nb"><stop offset="0" stop-color="rgba(80,220,255,.5)"/><stop offset="1" stop-color="rgba(80,220,255,0)"/></radialGradient></defs>';
+    s += TB.shadow(140, 234, 134, 9);
+    // 階段状のアールデコ外観
+    s += '<path d="M20 226V76H62V50H98V28H182V50H218V76H260V226Z" fill="url(#' + p + 'w)" stroke="#e8c46a" stroke-width="2.2"/><path d="M20 226V76H62V50H98V28H182V50H218V76H260V226Z" fill="url(#' + p + 'vs)"/>';
+    // 縦のゴールドライン
+    [30, 52, 228, 250].forEach(function (x) { s += '<path d="M' + x + ' 82V222" stroke="url(#' + p + 'gd)" stroke-width="3"/>'; });
+    [70, 90, 190, 210].forEach(function (x) { s += '<path d="M' + x + ' 56V222" stroke="rgba(232,196,106,.55)" stroke-width="1.6"/>'; });
+    s += '<path d="M62 50H98V28H182V50H218" fill="none" stroke="#ffd36a" stroke-width="1.6"/>';
+    // 看板（ネオン）
+    s += '<rect x="64" y="64" width="152" height="46" rx="6" fill="#0a0612" stroke="url(#' + p + 'gd)" stroke-width="3"/><ellipse cx="140" cy="88" rx="96" ry="34" fill="url(#' + p + 'ng)"/><text x="140" y="85" font-size="22" font-weight="900" fill="#ff7be0" text-anchor="middle" font-family="sans-serif" letter-spacing="3" style="filter:drop-shadow(0 0 5px #ff40c8)">OPAL</text><text x="140" y="103" font-size="12" font-weight="800" fill="#7ee8ff" text-anchor="middle" font-family="sans-serif" letter-spacing="7" style="filter:drop-shadow(0 0 4px #30c8ff)">SALON</text>';
+    // 電球の縁
+    for (var i = 0; i < 17; i++) { var bx = 70 + i * 8.7; s += '<circle cx="' + bx + '" cy="67" r="2.2" fill="#fff2b0"/><circle cx="' + bx + '" cy="107" r="2.2" fill="#fff2b0"/>'; }
+    for (var j = 0; j < 4; j++) s += '<circle cx="67" cy="' + (74 + j * 10) + '" r="2.2" fill="#fff2b0"/><circle cx="213" cy="' + (74 + j * 10) + '" r="2.2" fill="#fff2b0"/>';
+    // 上のオパールのエンブレム
+    s += '<path d="M140 8l14 14l-14 14l-14-14z" fill="#aef0ff" stroke="#e8c46a" stroke-width="2"/><path d="M126 22h28M140 8l-5 14l5 14l5-14z" stroke="rgba(255,255,255,.9)" fill="none"/><circle cx="140" cy="22" r="22" fill="url(#' + p + 'nb)"/>';
+    // ショーウィンドウ（ゲーム機）
+    [[34, 0], [188, 0]].forEach(function (w) { var x = w[0]; s += '<rect x="' + x + '" y="124" width="58" height="82" rx="3" fill="#1a1428" stroke="url(#' + p + 'gd)" stroke-width="2.4"/><rect x="' + (x + 4) + '" y="128" width="50" height="74" fill="url(#' + p + 'gl)" opacity=".85"/><rect x="' + (x + 4) + '" y="128" width="50" height="74" fill="url(#' + p + 'lg)" opacity=".7"/>';
+      s += '<rect x="' + (x + 11) + '" y="150" width="14" height="26" rx="1.5" fill="#2a2a4a" stroke="#0a0a1a"/><rect x="' + (x + 13) + '" y="153" width="10" height="9" fill="#5fffd0"/><rect x="' + (x + 33) + '" y="150" width="14" height="26" rx="1.5" fill="#4a2a4a" stroke="#0a0a1a"/><rect x="' + (x + 35) + '" y="153" width="10" height="9" fill="#ff7be0"/><circle cx="' + (x + 18) + '" cy="168" r="2" fill="#ff4a4a"/><circle cx="' + (x + 40) + '" cy="168" r="2" fill="#ffd34a"/>';
+      s += '<path d="M' + (x + 8) + ' 198h42" stroke="#e8c46a" stroke-width="2"/><path d="M' + (x + 6) + ' 130L' + (x + 30) + ' 196" stroke="rgba(255,255,255,.22)" stroke-width="5"/>'; });
+    // 入口（ガラス扉・暖かい光）
+    s += '<path d="M104 226V140A36 36 0 0 1 176 140V226Z" fill="#150f22" stroke="url(#' + p + 'gd)" stroke-width="3.4"/><path d="M112 226V142A28 28 0 0 1 168 142V226Z" fill="#ffcf6a" opacity=".92"/><path d="M112 226V142A28 28 0 0 1 168 142V226Z" fill="url(#' + p + 'lg)"/>';
+    s += '<path d="M140 116V226M112 170H168M112 198H168" stroke="#7a5a10" stroke-width="2.4"/><path d="M118 214L134 150" stroke="rgba(255,255,255,.5)" stroke-width="5"/><circle cx="133" cy="190" r="2" fill="#f2cf6a"/><circle cx="147" cy="190" r="2" fill="#f2cf6a"/>';
+    // 床の赤い絨毯
+    s += '<path d="M112 226h56l12 12h-80z" fill="#a8202a" stroke="#4a0a10"/>';
+    // ネオン縁
+    s += '<path d="M104 226V140A36 36 0 0 1 176 140V226" fill="none" stroke="#ff7be0" stroke-width="1.6" opacity=".9" style="filter:drop-shadow(0 0 3px #ff40c8)"/>';
+    s += '<path d="M20 226H260" stroke="#e8c46a" stroke-width="3"/>';
+    return s + '</svg>';
+  };
+  TB.skill = function () {
+    var p = 'sk', s = '<svg viewBox="0 -30 250 316"><defs>' + TB.pat(p) + TB.gr(p + 'w', '#8f7ac0', '#6a559e', '#463a78') + TB.gr(p + 'r', '#7a5ad0', '#4f3a9a', '#2e2260') + TB.gr(p + 'wd', '#7a5ec0', '#5a4296', '#3a2a66') +
+      '<radialGradient id="' + p + 'or" cx=".35" cy=".3"><stop offset="0" stop-color="#ffffff"/><stop offset=".35" stop-color="#b8f0ff"/><stop offset=".7" stop-color="#8a6aff"/><stop offset="1" stop-color="#3a1a8a"/></radialGradient><radialGradient id="' + p + 'ag"><stop offset="0" stop-color="rgba(190,160,255,.85)"/><stop offset="1" stop-color="rgba(190,160,255,0)"/></radialGradient></defs>';
+    s += TB.shadow(125, 280, 120, 9);
+    // 左右の低い棟
+    [[10, 1], [176, 0]].forEach(function (t) { var x = t[0]; s += TB.wall(p, x, 168, 64, 108, p + 'w'); s += TB.roof(p, (x - 6) + ',172 ' + (x + 70) + ',172 ' + (x + 58) + ',140 ' + (x + 6) + ',140', p + 'r'); s += TB.win(p, x + 20, 190, 24, 44, { arch: true, glow: true }); });
+    // 中央の丸い塔
+    s += '<path d="M70 276V86H180V276Z" fill="url(#' + p + 'w)" stroke="rgba(30,15,60,.7)" stroke-width="1.4"/><path d="M70 276V86H180V276Z" fill="url(#' + p + 'k)"/><path d="M70 276V86H180V276Z" fill="url(#' + p + 'sh)"/><path d="M70 276V86H180V276Z" fill="url(#' + p + 'vs)"/>';
+    s += '<path d="M70 150Q125 164 180 150" fill="none" stroke="rgba(255,255,255,.18)" stroke-width="2"/><rect x="62" y="82" width="126" height="10" rx="3" fill="#a592d6" stroke="rgba(30,15,60,.7)"/><rect x="62" y="268" width="126" height="10" fill="#6a589a" stroke="rgba(30,15,60,.7)"/>';
+    // 尖塔屋根
+    s += TB.roof(p, '58,86 192,86 125,-6', p + 'r') + '<path d="M125 -6V-26" stroke="#d9c8ff" stroke-width="2.4"/><path d="M125 -28l3 6h7l-5.6 4.4l2.2 7l-6.6 -4.4l-6.6 4.4l2.2 -7l-5.6 -4.4h7z" fill="#ffe27a" stroke="#a87a1a" stroke-width=".8"/>';
+    // 水晶玉
+    s += '<circle cx="125" cy="54" r="30" fill="url(#' + p + 'ag)"/><circle cx="125" cy="54" r="17" fill="url(#' + p + 'or)" stroke="#e8d8ff" stroke-width="2"/><path d="M112 48q8 -12 22 -8" stroke="rgba(255,255,255,.85)" stroke-width="2.2" fill="none"/><path d="M104 68h42l-4 8h-34z" fill="#e8c46a" stroke="#6a4a0a" stroke-width="1.2"/>';
+    // 塔の窓と看板
+    s += TB.win(p, 108, 104, 34, 40, { arch: true, glow: true }) + '<rect x="84" y="152" width="82" height="20" rx="4" fill="#2a1a5a" stroke="#e8c46a" stroke-width="1.6"/><text x="125" y="166.5" font-size="12" font-weight="900" fill="#ffe9a8" text-anchor="middle" font-family="sans-serif" letter-spacing="3">SKILL</text>';
+    s += TB.win(p, 82, 190, 20, 40, { arch: true }) + TB.win(p, 148, 190, 20, 40, { arch: true });
+    // 扉と魔法陣
+    s += TB.door(p, 108, 208, 34, 68, '#3a2a66', { fr: '#c8b8f0' }) + '<ellipse cx="125" cy="282" rx="34" ry="7" fill="none" stroke="#c8a8ff" stroke-width="1.6" opacity=".9"/><ellipse cx="125" cy="282" rx="22" ry="4.5" fill="none" stroke="#9ae0ff" stroke-width="1.2" opacity=".9"/>';
+    // 浮かぶ水晶
+    [[34, 110, '#7ee8ff'], [214, 100, '#ff9ae0'], [24, 60, '#ffe27a'], [226, 56, '#9affc0']].forEach(function (c) { s += '<g transform="translate(' + c[0] + ' ' + c[1] + ')"><circle r="12" fill="' + c[2] + '" opacity=".25"/><path d="M0 -9l6 9l-6 9l-6 -9z" fill="' + c[2] + '" stroke="rgba(255,255,255,.8)" stroke-width="1"/></g>'; });
+    s += TB.lantern(p, 100, 196) + TB.lantern(p, 150, 196);
+    return s + '</svg>';
+  };
+  TB.fount = function () {
+    var p = 'ft', s = '<svg viewBox="0 -40 400 340"><defs>' + TB.pat(p) + TB.gr(p + 'st', '#f3ead6', '#d8cba9', '#b8a67e') + TB.gr(p + 'wt', '#8fe0ff', '#3fa8e0', '#1d78b8') + TB.gr(p + 'wt2', '#aef0ff', '#5cc0f0') +
+      '<radialGradient id="' + p + 'gm" cx=".35" cy=".3"><stop offset="0" stop-color="#fff"/><stop offset=".3" stop-color="#b8f0ff"/><stop offset=".65" stop-color="#9a7aff"/><stop offset="1" stop-color="#4a2a9a"/></radialGradient>' +
+      '<radialGradient id="' + p + 'sp"><stop offset="0" stop-color="rgba(255,255,255,.95)"/><stop offset="1" stop-color="rgba(255,255,255,0)"/></radialGradient></defs>';
+    s += '<ellipse cx="200" cy="268" rx="196" ry="30" fill="rgba(25,45,25,.36)"/>';
+    // 外側の大きな水盤
+    s += '<path d="M8 214V240Q8 276 200 280T392 240V214Z" fill="url(#' + p + 'st)" stroke="rgba(50,30,10,.6)" stroke-width="1.6"/><path d="M8 214V240Q8 276 200 280T392 240V214Z" fill="url(#' + p + 'k)"/><path d="M8 214V240Q8 276 200 280T392 240V214Z" fill="url(#' + p + 'sh)"/>';
+    s += '<ellipse cx="200" cy="214" rx="192" ry="58" fill="#efe5cd" stroke="rgba(50,30,10,.65)" stroke-width="1.6"/><ellipse cx="200" cy="216" rx="176" ry="49" fill="url(#' + p + 'wt)" stroke="rgba(30,60,90,.6)" stroke-width="1.4"/>';
+    for (var i = 0; i < 6; i++) s += '<ellipse cx="200" cy="218" rx="' + (40 + i * 25) + '" ry="' + (10 + i * 6.5) + '" fill="none" stroke="rgba(255,255,255,' + (.5 - i * .06) + ')" stroke-width="1.4"><animate attributeName="rx" values="' + (40 + i * 25) + ';' + (46 + i * 25) + ';' + (40 + i * 25) + '" dur="' + (3 + i * .4) + 's" repeatCount="indefinite"/></ellipse>';
+    s += '<path d="M40 232Q70 246 110 248M300 248Q340 244 366 230" stroke="rgba(255,255,255,.45)" stroke-width="3" fill="none" stroke-linecap="round"/>';
+    // コイン／宝石のきらめき
+    [[70, 226, '#ffd34a'], [330, 226, '#5fd0ff'], [110, 242, '#ff7be0'], [292, 244, '#ffd34a'], [150, 250, '#b8ff9a']].forEach(function (c) { s += '<circle cx="' + c[0] + '" cy="' + c[1] + '" r="3.4" fill="' + c[2] + '" stroke="rgba(0,0,0,.35)" stroke-width=".7"/>'; });
+    // 中の柱と第二水盤
+    s += '<path d="M176 214V150H224V214Z" fill="url(#' + p + 'st)" stroke="rgba(50,30,10,.6)"/><path d="M176 214V150H224V214Z" fill="url(#' + p + 'sh)"/><path d="M176 190q24 8 48 0M176 170q24 8 48 0" stroke="rgba(60,40,20,.35)" fill="none"/>';
+    s += '<path d="M96 150V158Q96 182 200 184T304 158V150Z" fill="url(#' + p + 'st)" stroke="rgba(50,30,10,.6)" stroke-width="1.4"/><path d="M96 150V158Q96 182 200 184T304 158V150Z" fill="url(#' + p + 'k)"/><ellipse cx="200" cy="150" rx="104" ry="30" fill="#efe5cd" stroke="rgba(50,30,10,.65)" stroke-width="1.4"/><ellipse cx="200" cy="152" rx="92" ry="24" fill="url(#' + p + 'wt2)" stroke="rgba(30,60,90,.55)"/><ellipse cx="200" cy="154" rx="52" ry="12" fill="none" stroke="rgba(255,255,255,.5)"/>';
+    // 上の柱と小水盤
+    s += '<path d="M188 150V96H212V150Z" fill="url(#' + p + 'st)" stroke="rgba(50,30,10,.6)"/><path d="M146 96V102Q146 118 200 120T254 102V96Z" fill="url(#' + p + 'st)" stroke="rgba(50,30,10,.6)"/><ellipse cx="200" cy="96" rx="56" ry="16" fill="#efe5cd" stroke="rgba(50,30,10,.65)" stroke-width="1.3"/><ellipse cx="200" cy="97" rx="47" ry="12" fill="url(#' + p + 'wt2)" stroke="rgba(30,60,90,.5)"/>';
+    // 頂上のオパール
+    s += '<path d="M194 96V64H206V96Z" fill="url(#' + p + 'st)" stroke="rgba(50,30,10,.6)"/><circle cx="200" cy="38" r="40" fill="url(#' + p + 'sp)" opacity=".55"/><circle cx="200" cy="44" r="22" fill="url(#' + p + 'gm)" stroke="#e8d8ff" stroke-width="2"/><path d="M186 38q8 -14 24 -10" stroke="rgba(255,255,255,.9)" stroke-width="3" fill="none"/><path d="M204 60q8 -2 14 -10" stroke="rgba(255,255,255,.4)" stroke-width="2" fill="none"/>';
+    s += '<path d="M192 66h16l3 6h-22z" fill="#e8c46a" stroke="#6a4a0a" stroke-width="1"/>';
+    // 水しぶき（アーチ状の噴水）
+    var jets = [[200, 62, 140, 150, -1], [200, 62, 260, 150, 1], [200, 62, 106, 214, -1], [200, 62, 294, 214, 1]];
+    [[200, 62, 150, 96], [200, 62, 250, 96], [200, 56, 118, 150], [200, 56, 282, 150], [200, 56, 86, 212], [200, 56, 314, 212]].forEach(function (j, n) {
+      var cx = (j[0] + j[2]) / 2, cy = j[1] - 40 - (n > 1 ? n * 5 : 0);
+      s += '<path d="M' + j[0] + ' ' + j[1] + 'Q' + cx + ' ' + cy + ' ' + j[2] + ' ' + j[3] + '" fill="none" stroke="rgba(190,240,255,.85)" stroke-width="3.2" stroke-linecap="round" stroke-dasharray="7 5"><animate attributeName="stroke-dashoffset" from="24" to="0" dur="' + (1.1 + n * .12) + 's" repeatCount="indefinite"/></path><path d="M' + j[0] + ' ' + j[1] + 'Q' + cx + ' ' + cy + ' ' + j[2] + ' ' + j[3] + '" fill="none" stroke="rgba(255,255,255,.55)" stroke-width="1.2"/>';
+      s += '<ellipse cx="' + j[2] + '" cy="' + (j[3] + 2) + '" rx="12" ry="3.4" fill="rgba(255,255,255,.65)"/>';
+    });
+    return s + '</svg>';
+  };
+
   function townSVG(k) {
+    if (/^(shop|hall|hosp|exch|arena|cafe|post|arcade|skill|fount)$/.test(k)) return TB[k]();
     var SH = function (cx, cy, rx, ry) { return '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + rx + '" ry="' + ry + '" fill="rgba(30,55,30,.30)"/>'; };
     var roofLines = function (x0, x1, y0, y1, step, op) { var o = ''; for (var y = y0; y < y1; y += step) o += '<path d="M' + x0 + ' ' + y + 'H' + x1 + '" stroke="rgba(0,0,0,' + (op || .13) + ')" stroke-width="1.4"/>'; return o; };
     if (k === 'arena') {
@@ -3327,48 +3676,86 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     return '';
   }
   var DOORS = [];
-  function townGround(TW, TH, rr) {
-    var o = '<svg class="tground" width="' + TW + '" height="' + TH + '" viewBox="0 0 ' + TW + ' ' + TH + '" style="position:absolute;left:0;top:0;pointer-events:none;z-index:0"><defs>' +
-      '<linearGradient id="tgG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#c3e8a4"/><stop offset="1" stop-color="#97cc80"/></linearGradient>' +
-      '<pattern id="tgC" width="48" height="32" patternUnits="userSpaceOnUse"><rect width="48" height="32" fill="#d3c19b"/><rect x="1.5" y="1.5" width="21" height="13" rx="4" fill="#f4e8d0"/><rect x="25.5" y="1.5" width="21" height="13" rx="4" fill="#ecdcbc"/><rect x="13.5" y="17.5" width="21" height="13" rx="4" fill="#efe2c6"/><rect x="-10.5" y="17.5" width="21" height="13" rx="4" fill="#e9d9b7"/><rect x="37.5" y="17.5" width="21" height="13" rx="4" fill="#e9d9b7"/></pattern>' +
-      '<radialGradient id="tgS" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="rgba(255,255,255,.35)"/><stop offset="1" stop-color="rgba(255,255,255,0)"/></radialGradient></defs>';
-    o += '<g fill="#fff" opacity=".85"><ellipse cx="260" cy="70" rx="90" ry="22"/><ellipse cx="320" cy="58" rx="60" ry="22"/><ellipse cx="1100" cy="96" rx="110" ry="24"/><ellipse cx="1170" cy="80" rx="64" ry="22"/><ellipse cx="720" cy="46" rx="70" ry="16"/><ellipse cx="1640" cy="64" rx="100" ry="22"/><ellipse cx="1720" cy="50" rx="60" ry="20"/><ellipse cx="1960" cy="104" rx="90" ry="22"/><ellipse cx="1400" cy="46" rx="60" ry="14"/></g>';
-    o += '<path d="M0 215Q150 120 320 190T640 168T980 186T1320 148T1500 190T1800 160T2100 196V300H0Z" fill="#a8d6b6"/><path d="M0 245Q200 185 420 232T820 216T1180 234T1500 212T1800 226T2100 208V300H0Z" fill="#8ccb92"/>';
+  /* ---------- 町の配置：中央の噴水のまわりを、建物がぐるっと囲む ---------- */
+  var TOWN = { W: 2400, H: 2340, cx: 1200, cy: 1170, rx: 860, ry: 540 };
+  var TD = {};
+  var TSLOTS = [
+    { k: 'guild', s: 'hall', a: 270, w: 330, nm: 'ギルド' },
+    { k: 'shop', s: 'shop', a: 238, w: 250, nm: 'ショップ' },
+    { k: 'exch', s: 'exch', a: 302, w: 290, nm: '取引所' },
+    { k: 'skill', s: 'skill', a: 206, w: 240, nm: '🔮 スキルの館' },
+    { k: 'arcade', s: 'arcade', a: 334, w: 270, nm: '🎰 ゲームセンター' },
+    { k: 'arena', s: 'arena', a: 174, w: 330, nm: '⚔ 闘技場' },
+    { k: 'post', s: 'post', a: 6, w: 260, nm: '📮 郵便局' },
+    { k: 'hospital', s: 'hosp', a: 142, w: 270, nm: '🏥 病院' },
+    { k: 'cafe', s: 'cafe', a: 38, w: 260, nm: '☕ カフェ' }
+  ];
+  function tAt(a, f) { var r = a * Math.PI / 180; return { x: TOWN.cx + TOWN.rx * (f || 1) * Math.cos(r), y: TOWN.cy + TOWN.ry * (f || 1) * Math.sin(r) }; }
+  function tEll(cx, cy, rx, ry) { return 'M' + (cx - rx) + ' ' + cy + 'a' + rx + ' ' + ry + ' 0 1 0 ' + (2 * rx) + ' 0a' + rx + ' ' + ry + ' 0 1 0 ' + (-2 * rx) + ' 0Z'; }
+  function townGround2(TW, TH, rr) {
+    var C = TOWN, o = '<svg class="tground" width="' + TW + '" height="' + TH + '" viewBox="0 0 ' + TW + ' ' + TH + '" style="position:absolute;left:0;top:0;pointer-events:none;z-index:0"><defs>' +
+      '<linearGradient id="tgG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#bfe6a0"/><stop offset="1" stop-color="#8fc47a"/></linearGradient>' +
+      '<radialGradient id="tgL" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#c9ec9e"/><stop offset="1" stop-color="rgba(201,236,158,0)"/></radialGradient>' +
+      '<pattern id="tgC" width="48" height="32" patternUnits="userSpaceOnUse"><rect width="48" height="32" fill="#d3c19b"/><rect x="1.5" y="1.5" width="21" height="13" rx="4" fill="#f4e8d0"/><rect x="25.5" y="1.5" width="21" height="13" rx="4" fill="#ecdcbc"/><rect x="13.5" y="17.5" width="21" height="13" rx="4" fill="#efe2c6"/><rect x="-10.5" y="17.5" width="21" height="13" rx="4" fill="#ecdcbc"/><rect x="37.5" y="17.5" width="21" height="13" rx="4" fill="#ecdcbc"/></pattern>' +
+      '<pattern id="tgD" width="36" height="36" patternUnits="userSpaceOnUse"><rect width="36" height="36" fill="#e4d4b0"/><path d="M18 2L34 18L18 34L2 18Z" fill="#efe3c6" stroke="#c9b68c" stroke-width="1.4"/><circle cx="18" cy="18" r="3" fill="#d9c79c"/></pattern>' +
+      '<radialGradient id="tgS" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="rgba(255,255,255,.4)"/><stop offset="1" stop-color="rgba(255,255,255,0)"/></radialGradient></defs>';
+    o += '<g fill="#fff" opacity=".85"><ellipse cx="300" cy="70" rx="90" ry="22"/><ellipse cx="360" cy="58" rx="60" ry="22"/><ellipse cx="1000" cy="96" rx="110" ry="24"/><ellipse cx="1070" cy="80" rx="64" ry="22"/><ellipse cx="1640" cy="46" rx="70" ry="16"/><ellipse cx="2000" cy="64" rx="100" ry="22"/><ellipse cx="2080" cy="50" rx="62" ry="20"/></g>';
+    o += '<path d="M0 215Q150 120 320 190T640 168T980 186T1320 148T1500 190T1800 160T2100 196T2400 150V300H0Z" fill="#a8d6b6"/><path d="M0 245Q200 185 420 232T820 216T1180 234T1500 212T1800 226T2100 208T2400 226V300H0Z" fill="#8ccb92"/>';
     o += '<rect x="0" y="236" width="' + TW + '" height="' + (TH - 236) + '" fill="url(#tgG)"/>';
+    o += '<ellipse cx="' + C.cx + '" cy="' + C.cy + '" rx="1040" ry="700" fill="url(#tgL)" opacity=".7"/>';
     var i, x, y, cs = ['#fff', '#ffe27a', '#ffb3c8', '#d4b8ff'];
-    for (i = 0; i < 520; i++) { x = Math.round(rr() * TW); y = 250 + Math.round(rr() * (TH - 260)); o += '<path d="M' + x + ' ' + y + 'q-3-8-6-9M' + x + ' ' + y + 'q0-9 1-11M' + x + ' ' + y + 'q3-8 6-8" stroke="#6fb35f" stroke-width="1.6" fill="none" opacity=".55" stroke-linecap="round"/>'; }
-    for (i = 0; i < 210; i++) { x = Math.round(rr() * TW); y = 260 + Math.round(rr() * (TH - 270)); o += '<circle cx="' + x + '" cy="' + y + '" r="2.6" fill="' + cs[i % 4] + '" opacity=".9"/>'; }
-    var P = function (d) { return '<path d="' + d + '" fill="#c9b68c" stroke="#c9b68c" stroke-width="16" stroke-linejoin="round"/><path d="' + d + '" fill="url(#tgC)"/>'; };
-    o += P('M-30 700H2130V792H-30Z') + P('M655 780H845V1800H655Z') + P('M-30 1500H2130V1590H-30Z') + P('M1655 780H1745V1500H1655Z') + P('M1500 1170a200 140 0 1 0 400 0a200 140 0 1 0 -400 0Z') + P('M1736 470H1784V705H1736Z') + P('M1976 470H2024V705H1976Z') + P('M390 990a360 250 0 1 0 720 0a360 250 0 1 0 -720 0Z') +
-      P('M298 470H362V705H298Z') + P('M706 470H794V705H706Z') + P('M1146 470H1194V705H1146Z') + P('M96 640H144V705H96Z') + P('M1356 650H1404V705H1356Z') + P('M1536 470H1584V705H1536Z');
-    o += '<ellipse cx="750" cy="985" rx="150" ry="62" fill="#ead8b4" stroke="#c0aa7c" stroke-width="5"/><ellipse cx="750" cy="990" rx="400" ry="280" fill="url(#tgS)"/><ellipse cx="1700" cy="1145" rx="150" ry="62" fill="#ead8b4" stroke="#c0aa7c" stroke-width="5"/><ellipse cx="1700" cy="1150" rx="400" ry="280" fill="url(#tgS)"/>';
+    for (i = 0; i < 760; i++) { x = Math.round(rr() * TW); y = 250 + Math.round(rr() * (TH - 260)); o += '<path d="M' + x + ' ' + y + 'q-3-8-6-9M' + x + ' ' + y + 'q0-9 1-11M' + x + ' ' + y + 'q3-8 6-8" stroke="#6fb35f" stroke-width="1.6" fill="none" opacity=".5" stroke-linecap="round"/>'; }
+    for (i = 0; i < 300; i++) { x = Math.round(rr() * TW); y = 260 + Math.round(rr() * (TH - 270)); o += '<circle cx="' + x + '" cy="' + y + '" r="2.6" fill="' + cs[i % 4] + '" opacity=".9"/>'; }
+    var P = function (d, ev) { return '<path d="' + d + '" fill="#c9b68c" stroke="#c9b68c" stroke-width="14" stroke-linejoin="round"' + (ev ? ' fill-rule="evenodd"' : '') + '/><path d="' + d + '" fill="url(#tgC)"' + (ev ? ' fill-rule="evenodd"' : '') + '/>'; };
+    // 外周の大通り（建物の足元）
+    o += P(tEll(C.cx, C.cy, C.rx + 28, C.ry + 20) + tEll(C.cx, C.cy, C.rx - 110, C.ry - 90), 1);
+    o += '<path d="' + tEll(C.cx, C.cy, C.rx - 110, C.ry - 90) + '" fill="none" stroke="#b9a478" stroke-width="3"/><path d="' + tEll(C.cx, C.cy, C.rx + 28, C.ry + 20) + '" fill="none" stroke="#b9a478" stroke-width="3"/>';
+    // 内側の庭（芝）にも明るい縁取り
+    o += '<path d="' + tEll(C.cx, C.cy, C.rx - 126, C.ry - 106) + '" fill="none" stroke="#7fbf6a" stroke-width="10" opacity=".5"/>';
+    // 建物へのスポーク道
+    TSLOTS.forEach(function (sl) { var a = sl.a * Math.PI / 180, p0 = tAt(sl.a, .62), p1 = tAt(sl.a, 1.0), nx = -Math.sin(a), ny = Math.cos(a), wd = 44; o += P('M' + (p0.x + nx * wd) + ' ' + (p0.y + ny * wd) + 'L' + (p1.x + nx * wd) + ' ' + (p1.y + ny * wd) + 'L' + (p1.x - nx * wd) + ' ' + (p1.y - ny * wd) + 'L' + (p0.x - nx * wd) + ' ' + (p0.y - ny * wd) + 'Z'); });
+    // 南の大通り（入口）と図書館への道
+    o += P('M1110 1380H1290V' + TH + 'H1110Z') + P('M300 1840H1110V1930H300Z');
+    // 中央広場
+    o += P(tEll(C.cx, C.cy, 520, 330)) + '<path d="' + tEll(C.cx, C.cy, 520, 330) + '" fill="url(#tgD)" opacity=".55"/>';
+    [.94, .8, .66, .52].forEach(function (f, n) { o += '<path d="' + tEll(C.cx, C.cy, 520 * f, 330 * f) + '" fill="none" stroke="' + (n % 2 ? '#c9b68c' : '#b99e64') + '" stroke-width="' + (n % 2 ? 3 : 5) + '"/>'; });
+    for (i = 0; i < 24; i++) { var aa = i * Math.PI / 12; o += '<path d="M' + (C.cx + Math.cos(aa) * 270) + ' ' + (C.cy + Math.sin(aa) * 172) + 'L' + (C.cx + Math.cos(aa) * 486) + ' ' + (C.cy + Math.sin(aa) * 308) + '" stroke="rgba(185,158,100,.55)" stroke-width="2.4"/>'; }
+    var gc = ['#7ee8ff', '#ff9ae0', '#ffe27a', '#9affc0', '#c69aff'];
+    for (i = 0; i < 24; i++) { var ab = (i + .5) * Math.PI / 12, gx = C.cx + Math.cos(ab) * 520 * .87, gy = C.cy + Math.sin(ab) * 330 * .87; o += '<path d="M' + gx + ' ' + (gy - 9) + 'l7 9l-7 9l-7 -9z" fill="' + gc[i % 5] + '" stroke="rgba(80,60,20,.55)" stroke-width="1.2"/><path d="M' + (gx - 3) + ' ' + (gy - 3) + 'l3 -4" stroke="rgba(255,255,255,.85)" stroke-width="1.6"/>'; }
+    o += '<ellipse cx="' + C.cx + '" cy="' + C.cy + '" rx="780" ry="500" fill="url(#tgS)"/>';
     return o + '</svg>';
   }
   function buildTown() {
-    var w = $('world'), rr = rng(4242), html = '', TW = 2100, TH = 1800;
+    var w = $('world'), rr = rng(4242), html = '', C = TOWN, TW = C.W, TH = C.H;
     setWorld(TW, TH); w.classList.remove('cave');
     w.style.background = 'linear-gradient(180deg,#7ec3e6 0,#d4eef8 230px,#97cc80 231px)';
-    html += townGround(TW, TH, rr);
-    var put = function (k, x, y, wd, ht) { html += '<div class="dc" style="left:' + x + 'px;top:' + y + 'px;width:' + wd + 'px;height:' + ht + 'px;z-index:' + Math.round(y) + '">' + townSVG(k) + '</div>'; };
-    var lbl = function (t, x, y) { html += '<div class="tlbl" style="left:' + x + 'px;top:' + y + 'px;white-space:nowrap">' + t + '</div>'; };
-    put('shop', 330, 470, 210, 189); lbl('ショップ', 330, 240);
-    put('hall', 750, 470, 280, 226); lbl('ギルド', 750, 196);
-    put('hosp', 1170, 470, 190, 190); lbl('🏥 病院', 1170, 236); put('house1', 120, 640, 150, 150); put('exch', 1380, 760, 180, 180); lbl('取引所', 1380, 560);
-    put('fount', 750, 1010, 260, 195); put('arena', 150, 1000, 230, 196); lbl('⚔ 闘技場', 150, 765);
-    DOORS = [{ k: 'shop', x: 330, y: 470, w: 200, h: 180 }, { k: 'guild', x: 750, y: 470, w: 270, h: 210 }, { k: 'hospital', x: 1170, y: 470, w: 190, h: 180 }, { k: 'exch', x: 1380, y: 760, w: 180, h: 170 }, { k: 'arena', x: 150, y: 1000, w: 220, h: 190 }, { k: 'cafe', x: 1760, y: 470, w: 190, h: 180 }, { k: 'post', x: 2000, y: 470, w: 180, h: 170 }, { k: 'lib', x: 220, y: 1420, w: 280, h: 230 }, { k: 'skill', x: 1560, y: 470, w: 190, h: 180 }, { k: 'arcade', x: 1375, y: 470, w: 180, h: 170 }];
-    put('post', 2000, 470, 190, 190); lbl('📮 郵便局', 2000, 236); put('lib', 220, 1420, 300, 290); lbl('📚 図書館', 220, 1085); put('arcade', 1375, 470, 190, 190); lbl('🎰 ゲームセンター', 1375, 236); put('stall', 480, 905, 150, 120); put('stall', 1020, 905, 150, 120);
-    put('cafe', 1760, 470, 190, 190); lbl('☕ カフェ', 1760, 236); put('skill', 1560, 470, 190, 190); lbl('🔮 スキルの館', 1560, 236); put('fount', 1700, 1170, 260, 195); put('stall', 1470, 1100, 150, 120); put('stall', 1930, 1100, 150, 120);
-    [[500, 350, 'tree2', 62, 100], [1000, 350, 'tree2', 62, 100], [1300, 360, 'tree', 78, 104], [40, 380, 'tree', 78, 104], [60, 430, 'tree', 80, 106], [560, 520, 'tree', 78, 104],
-      [1540, 900, 'tree', 80, 106], [1880, 900, 'tree', 78, 104], [2040, 930, 'tree2', 62, 100], [1560, 1330, 'tree', 80, 106], [1880, 1310, 'tree2', 62, 100], [2040, 1380, 'tree', 78, 104], [1990, 1230, 'tree', 80, 106], [1420, 1450, 'tree', 78, 104], [520, 1400, 'tree2', 62, 100], [980, 1420, 'tree', 78, 104], [1250, 1400, 'tree2', 62, 100], 
-      [300, 1680, 'tree', 80, 106], [560, 1700, 'tree2', 62, 100], [960, 1710, 'tree', 78, 104], [1250, 1700, 'tree2', 62, 100], [150, 1760, 'tree', 80, 106], [420, 1770, 'tree2', 62, 100], [1100, 1770, 'tree', 80, 106], [1420, 1730, 'tree', 78, 104], [1700, 1700, 'tree2', 62, 100], [1850, 1770, 'tree', 80, 106], [2040, 1730, 'tree2', 62, 100], [950, 520, 'tree', 78, 104],
-      [1440, 910, 'tree', 80, 106], [330, 880, 'tree', 78, 104], [1170, 880, 'tree', 78, 104], [1300, 1180, 'tree2', 62, 100], [420, 1250, 'tree', 80, 106], [1420, 1260, 'tree', 78, 104]].forEach(function (q) { put(q[2], q[0], q[1], q[3], q[4]); });
-    [[240, 712], [560, 712], [940, 712], [1260, 712], [640, 870], [860, 870], [500, 1080], [1000, 1080], [1560, 712], [1900, 712], [2060, 712], [1636, 900], [1764, 900], [1636, 1350], [1764, 1350], [300, 1498], [900, 1498], [1300, 1498], [1540, 1498], [1900, 1498], [1500, 1180], [1900, 1180]].forEach(function (q) { put('lamp', q[0], q[1], 28, 86); });
-    [[250, 498], [420, 498], [640, 498], [860, 498], [1090, 498], [1260, 498], [60, 690], [190, 690], [1300, 690], [1460, 690], [1580, 690], [1700, 690], [1890, 690], [2030, 690], [1650, 498], [1870, 498], [1560, 480]].forEach(function (q) { put('bush', q[0], q[1], 64, 40); });
-    [[270, 590], [390, 590], [620, 600], [880, 600], [1110, 590], [1230, 600], [250, 790], [1250, 790], [330, 1000], [1170, 1000], [750, 1230], [1700, 590], [1820, 590], [1640, 590], [1920, 880], [1990, 880], [1950, 940], [2020, 940], [1900, 1010], [1990, 1010], [2040, 1090], [620, 1400], [1180, 1350], [300, 1670], [800, 1690], [1300, 1680], [1620, 1420], [1800, 1420], [1950, 1420], [2000, 1660]].forEach(function (q) { put('flower', q[0], q[1], 92, 38); });
-    [[580, 1150], [920, 1150], [250, 780], [1250, 780], [1510, 1170], [1890, 1170], [1620, 1340], [1790, 1340], [450, 1480], [1050, 1480], [1560, 780], [1850, 780]].forEach(function (q) { put('bench', q[0], q[1], 90, 50); });
+    html += townGround2(TW, TH, rr);
+    var put = function (k, x, y, wd, ht) { html += '<div class="dc" style="left:' + Math.round(x) + 'px;top:' + Math.round(y) + 'px;width:' + wd + 'px;height:' + ht + 'px;z-index:' + Math.round(y) + '">' + townSVG(k) + '</div>'; };
+    var lbl = function (t, x, y) { html += '<div class="tlbl" style="left:' + Math.round(x) + 'px;top:' + Math.round(y) + 'px;white-space:nowrap">' + t + '</div>'; };
+    var VB = { hall: [340, 292], shop: [260, 232], exch: [300, 240], skill: [250, 316], arcade: [280, 250], arena: [340, 240], post: [270, 266], hosp: [280, 236], cafe: [270, 270], lib: [300, 290] };
+    DOORS = []; TD = {};
+    var door = function (k, x, y, wd, ht) { TD[k] = { x: Math.round(x), y: Math.round(y) }; DOORS.push({ k: k, x: Math.round(x), y: Math.round(y), w: Math.round(wd * .62), h: Math.round(ht * .8) }); };
+    TSLOTS.forEach(function (sl) { var p = tAt(sl.a, 1), vb = VB[sl.s], ht = Math.round(sl.w * vb[1] / vb[0]); put(sl.s, p.x, p.y, sl.w, ht); lbl(sl.nm, p.x, p.y - ht - 4); door(sl.k, p.x, p.y, sl.w, ht); });
+    put('lib', 330, 1860, 300, 290); lbl('📚 図書館', 330, 1860 - 290 - 4); door('lib', 330, 1860, 300, 290);
+    // 中央の噴水
+    put('fount', C.cx, C.cy + 140, 520, 442);
+    // 広場：ベンチ・屋台・街灯
+    [20, 60, 120, 160, 200, 240, 300, 340].forEach(function (a) { var r = a * Math.PI / 180; put('bench', C.cx + 410 * Math.cos(r), C.cy + 255 * Math.sin(r) + 20, 90, 50); });
+    [[-330, -150], [330, -150], [-310, 215], [310, 215]].forEach(function (q) { put('stall', C.cx + q[0], C.cy + q[1], 150, 120); });
+    for (var a2 = 0; a2 < 360; a2 += 20) { if (a2 > 60 && a2 < 120) continue; var r2 = a2 * Math.PI / 180; put('lamp', C.cx + 500 * Math.cos(r2), C.cy + 318 * Math.sin(r2), 28, 86); }
+    for (var ly = 1470; ly < TH - 60; ly += 190) { put('lamp', 1090, ly, 28, 86); put('lamp', 1310, ly, 28, 86); }
+    // 庭：スポーク道の脇に植え込み、建物の間に花壇と木
+    TSLOTS.forEach(function (sl) { var r = sl.a * Math.PI / 180, nx = -Math.sin(r), ny = Math.cos(r), q = tAt(sl.a, .80); [-1, 1].forEach(function (sd) { put('bush', q.x + nx * 74 * sd, q.y + ny * 74 * sd * .6, 64, 40); }); });
+    [22, 62, 118, 158, 190, 222, 254, 286, 318, 350].forEach(function (a) { var q = tAt(a, .70), q2 = tAt(a, .80); put('flower', q.x - 34, q.y, 92, 38); put('flower', q.x + 40, q.y + 6, 92, 38); put(a % 2 ? 'tree' : 'tree2', q2.x, q2.y, a % 2 ? 78 : 62, a % 2 ? 104 : 100); });
+    // 外側の林
+    for (var gy = 300; gy < TH - 40; gy += 120) for (var gx = 70; gx < TW - 40; gx += 140) {
+      var x = gx + (rr() - .5) * 90, y = gy + (rr() - .5) * 70, ex = (x - C.cx) / (C.rx + 190), ey = (y - C.cy) / (C.ry + 170);
+      if (ex * ex + ey * ey < 1) continue; if (Math.abs(x - 1200) < 200 && y > 1380) continue; if (x < 640 && y > 1560 && y < 2040) continue; if (y > 1800 && y < 1960 && x < 1200) continue; if (rr() < .22) continue;
+      var big = rr() < .55; put(big ? 'tree' : 'tree2', x, y, big ? 78 : 62, big ? 104 : 100);
+    }
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
-    hero.x = 750; hero.y = 1130; hero.dir = 1; hero.sit = null; ftarget = null; fz = zoomT;
+    hero.x = C.cx; hero.y = 1500; hero.dir = 1; hero.sit = null; ftarget = null; fz = zoomT;
     $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi(); addNpcs('town');
   }
   function townDoorAt(wx, wy) { for (var i = 0; i < DOORS.length; i++) { var d = DOORS[i]; if (Math.abs(wx - d.x) < d.w / 2 + 10 && wy < d.y + 40 && wy > d.y - d.h) return d; } return null; }
@@ -3625,7 +4012,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function leaveCafe() {
     var wasArc = inArcRoom, wasPost = inPost, wasLib = inLib; inArcRoom = false; inPost = false; inLib = false; arcClose();
-    standUp(); setCup(''); hero.order = null; inCafe = false; cafeBusy = false; rtStop(); openTown(); hero.x = wasLib ? 220 : (wasPost ? 2000 : (wasArc ? 1375 : 1760)); hero.y = wasLib ? 1490 : (wasPost ? 540 : (wasArc ? 540 : 530)); hero.dir = 1; ftarget = null; updHero(); camX = hero.x - 300; camY = hero.y - 400;
+    standUp(); setCup(''); hero.order = null; inCafe = false; cafeBusy = false; rtStop(); openTown(); var tdk = TD[wasLib ? 'lib' : (wasPost ? 'post' : (wasArc ? 'arcade' : 'cafe'))] || { x: 1200, y: 1450 }; hero.x = tdk.x; hero.y = tdk.y + 70; hero.dir = 1; ftarget = null; updHero(); camX = hero.x - 300; camY = hero.y - 400;
   }
   /* ---------- 📮 郵便局（〒マークの赤い建物／中は受付カウンター） ---------- */
   function postMark(cx, cy, s, c) {
@@ -4322,7 +4709,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     $('arInv').classList.remove('on'); $('arRes').classList.remove('on'); rtStop();
     hp.down = false; hp.max = hpMaxNow(); hp.cur = Math.max(1, Math.min(hp.max, arena.hb0 || hp.max)); hp.inv = 0;
     var f = $('field'); f.classList.remove('plaza', 'safe', 'arena'); $('fCancel').textContent = 'やめる';
-    openTown(); if (toHosp) { hero.x = 1170; hero.y = 575; toast('病院の前で目が覚めた。病院に入ると、HPが全回復するよ'); } else { hero.x = 150; hero.y = 1060; } ftarget = null; updHero(); hpUi(); gearUi();
+    openTown(); if (toHosp) { hero.x = TD.hospital.x; hero.y = TD.hospital.y + 70; toast('病院の前で目が覚めた。病院に入ると、HPが全回復するよ'); } else { hero.x = TD.arena.x; hero.y = TD.arena.y + 70; } ftarget = null; updHero(); hpUi(); gearUi();
   }
   function plPeers(list) {
     arena.others = (list || []).filter(function (m) { return m && m.id && m.id !== myMid; });
@@ -4560,7 +4947,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 148;
+  var GV = 150;
   (function () {
     var last = Date.now();
     function chk() {
@@ -4607,7 +4994,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         { q: '自分だけに見える？', k: ['みえ', '見え', 'ほかの', '他', '一人'], a: '練習相手は、呼んだあなたの画面だけに出るのです。ほかの人の邪魔になりません。倒れたら、自動でいなくなる。' },
         { q: '練習のコツは？', k: ['コツ', '練習', '勝てない', '勝て'], a: 'まず Lv10 で、ダッシュと必殺技のゲージ溜めに慣れるといい。次に Lv25 で、ガードされる感じを覚える。Lv35 以上は、必殺技の光る輪が出たら、ダッシュで避けるのです。避けたらジャスト回避でゲージも溜まるよ。' }
       ] },
-    guide: { nm: '案内役 ミミ', wk: 'bow', x: 640, y: 1150, av: { name: 'ミミ', gender: 1, skin: 1, face: 2, hair: 3, hairColor: 2, outfit: 5, outfitColor: 9, pattern: 0, patColor: 6, bottom: 1, bottomColor: 2, acc: 3 },
+    guide: { nm: '案内役 ミミ', wk: 'bow', x: 1120, y: 1500, av: { name: 'ミミ', gender: 1, skin: 1, face: 2, hair: 3, hairColor: 2, outfit: 5, outfitColor: 9, pattern: 0, patColor: 6, bottom: 1, bottomColor: 2, acc: 3 },
       hi: 'こんにちは！ 私は案内役のミミです。プレイでわからないことがあったら、なんでも聞いてください。下の質問をタップか、聞きたいことを打ってください。',
       faq: [
         { q: '歩き方・掘り方', k: ['歩', '掘り方', 'あるき', 'ほり方', 'はじめ', '操作', '使い方'], a: '行きたい所をタップしたら歩くよ。光ってる鉱脈をタップしたら、そこまで歩いて掘れる状態になるから、「掘る！」を何回もタップしてください。ゲージがたまったら石が出てくるよ。' },
@@ -4627,7 +5014,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         { q: 'ひとこと（クイックチャット）', k: ['チャット', 'ひとこと', '話', '会話', '助けて', 'メッセージ'], a: '町や協力プレイでは、画面の下の「💬」ボタンで、「たすけて」「ナイス」をワンタッチで送れるよ。町では、文字を打って話すこともできる（ことばは保存されません）。' },
         { q: '音や振動を切りたい', k: ['音', 'bgm', '音楽', '振動', 'うるさ', '消'], a: '右上の⚙で、BGM、効果音、振動を、それぞれオンオフできるよ。' }
       ] },
-    rcp: { nm: '闘技場の受付 レオ', wk: 'dagger', x: 270, y: 1075, av: { name: 'レオ', gender: 0, skin: 2, face: 1, hair: 1, hairColor: 0, outfit: 7, outfitColor: 1, pattern: 1, patColor: 8, bottom: 0, bottomColor: 1, acc: 0 },
+    rcp: { nm: '闘技場の受付 レオ', wk: 'dagger', x: 300, y: 1292, av: { name: 'レオ', gender: 0, skin: 2, face: 1, hair: 1, hairColor: 0, outfit: 7, outfitColor: 1, pattern: 1, patColor: 8, bottom: 0, bottomColor: 1, acc: 0 },
       hi: 'いらっしゃい！ 闘技場の受付のレオです。観客席は安全、闘技場内は何でもありですよ。ルールを知りたいなら、下を見てください。',
       enter: true,
       faq: [
@@ -4660,7 +5047,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var n = NPCS[k]; if (!n) return; npcCur = k; sfx(2);
     $('npcN').textContent = n.nm; npcSay(n.hi); $('npcIn').value = '';
     $('npcQs').innerHTML = n.faq.map(function (f, i) { return '<button type="button" data-i="' + i + '">' + esc(f.q) + '</button>'; }).join('');
-    $('npcAct').innerHTML = n.lib ? '<button type="button" class="abtn" id="npcLib" style="width:100%;margin-top:10px">📚 本棚をひらいて しらべる</button>' : n.enter ? '<button type="button" class="abtn" id="npcEnter" style="width:100%;margin-top:10px">⚔ 闘技場に入る</button>' : (n.post ? '<button type="button" class="abtn" id="npcMail" style="width:100%;margin-top:10px">✉️ 手紙を書く</button>' : n.spar ? sparUI() : (n.drinks ? drinkUI() : ''));
+    $('npcAct').innerHTML = n.lib ? '<button type="button" class="abtn" id="npcLib" style="width:100%;margin-top:10px">📚 本棚をひらいて しらべる</button>' : n.enter ? '<button type="button" class="abtn" id="npcEnter" style="width:100%;margin-top:10px">⚔ 闘技場に入る</button>' : (n.post ? '<button type="button" class="abtn" id="npcMail" style="width:100%;margin-top:10px">✉️ 手紙を書く</button>' : n.spar ? sparUI() : (n.drinks ? drinkUI() : (k === 'guide' ? '<button type="button" class="abtn" id="npcTut" style="width:100%;margin-top:10px">🎓 チュートリアルをもう一度（ごほうびなし）</button>' : '')));
     if (n.spar) sparInfo();
     $('npc').classList.add('on');
   }
@@ -4928,7 +5315,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     if (r) { sfx(0); libS.rar = +r.dataset.lr; libTools(); libList(); }
   });
   $('libList').addEventListener('click', function (e) { var c = e.target.closest && e.target.closest('.libcard'); if (!c) return; var en = libS.all.filter(function (x) { return x.id === c.dataset.lid; })[0]; if (en) { sfx(2); libDetail(en); } });
-  $('npc').addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('#npcLib'); if (b && npcCur && NPCS[npcCur] && NPCS[npcCur].lib) { var lk = NPCS[npcCur].lib; $('npc').classList.remove('on'); openLib(lk); } });
+  $('npc').addEventListener('click', function (e) { if (e.target.closest && e.target.closest('#npcTut')) { $('npc').classList.remove('on'); if (TUT.on) tutStop(); tutBegin(1); return; } var b = e.target.closest && e.target.closest('#npcLib'); if (b && npcCur && NPCS[npcCur] && NPCS[npcCur].lib) { var lk = NPCS[npcCur].lib; $('npc').classList.remove('on'); openLib(lk); } });
   $('npcX').addEventListener('click', function () { $('npc').classList.remove('on'); });
   $('npc').addEventListener('click', function (e) {
     if (e.target === this) this.classList.remove('on'); var b = e.target.closest && e.target.closest('#npcEnter'); if (b) { $('npc').classList.remove('on'); openArena(); }
@@ -5799,7 +6186,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function respawnHospital() {
     clearTimeout(downT); hp.down = false; hp.cur = Math.max(1, Math.ceil(hp.max * .1)); hp.inv = performance.now() + 2500;
     $('downov').classList.remove('on'); rtStop(); if (curSpot) cancelDig();
-    openTown(); hero.x = 1170; hero.y = 575; ftarget = null; updHero(); hpUi();
+    openTown(); hero.x = TD.hospital.x; hero.y = TD.hospital.y + 70; ftarget = null; updHero(); hpUi();
     toast('病院の前で目が覚めた…。病院に入ると、HPが全回復するよ');
   }
   function healFull() {
@@ -8128,7 +8515,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
   /* ---------- 起動 ---------- */
   /* ---------- 🎓 はじめてのチュートリアル（新しい人だけ。町からスタート。終わるとLv7） ---------- */
-  var TUT = { on: false, tm: 0, busy: 0, dlg: 0, cur: -1, killed: 0, doors: {}, min: 0, quit: 0, n0: 0, e0: 0, d0: 0, key: '' };
+  var TUT = { test: 0, ld: [], on: false, tm: 0, busy: 0, dlg: 0, cur: -1, killed: 0, doors: {}, min: 0, quit: 0, n0: 0, e0: 0, d0: 0, key: '' };
   (function () {
     var st = document.createElement('style');
     st.textContent = '#tutB{position:fixed;left:50%;transform:translateX(-50%);bottom:calc(8px + env(safe-area-inset-bottom));width:min(94vw,430px);z-index:250;display:none;pointer-events:none;font-family:inherit}' +
@@ -8150,11 +8537,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var b = document.createElement('div'); b.id = 'tutB'; document.body.appendChild(b);
     var d = document.createElement('div'); d.id = 'tutD'; document.body.appendChild(d);
   })();
+  function tutIdx() { return TUT.test ? TUT.ld.length : (player.tut.d || []).length; }
   var TSTEPS = [
     { k: 'intro' },
     { k: 'shop', t: '🏪 ショップに入ろう', s: '光る矢印の「ショップ」をタップ。開いたら、上の「🛍️ ショップ」タブを押してみてな。', door: 'shop', test: function () { return $('bag').classList.contains('on') && bagTab === 1; }, n: '装備はここで買えるよ。' },
     { k: 'buy', t: '🛒 装備を1つ買おう', s: '「木の剣」がおすすめ（2,500コイン）。装備をタップ → もう一度タップで購入。コインは3,000あるよ。', test: function () { return (player.items || []).length > TUT.n0; }, snap: function () { TUT.n0 = (player.items || []).length; } },
-    { k: 'equip', t: '⚔ 買った装備を身につけよう', s: '「⚔️ 装備」タブで、武器のマスをタップ → 買った装備をタップ。つけると見た目と強さが変わるよ。', test: function () { var e = player.equip || {}, n = 0; for (var k in e) if (e[k]) n++; return n > TUT.e0; }, snap: function () { var e = player.equip || {}, n = 0; for (var k in e) if (e[k]) n++; TUT.e0 = n; } },
+    { k: 'equip', t: '⚔ 買った装備を身につけよう', s: '「⚔️ 装備」タブで、武器のマスをタップ → 買った装備をタップ。つけると見た目と強さが変わるよ。', test: function () { return JSON.stringify(player.equip || {}) !== TUT.e0; }, snap: function () { TUT.e0 = JSON.stringify(player.equip || {}); } },
     { k: 'mkt', t: '💱 取引所で装備を出品してみよう', s: '閉じて、矢印の「取引所」へ。「➕ 出す」タブで装備をタップ → 値段を決めて出品。プレイヤー同士で売り買いできる場所やで。（今回は出さなくてOK、画面を開けたらクリア）', door: 'exch', test: function () { return $('mkt').classList.contains('on') && mkTab === 1 && !!mkSel; } },
     { k: 'lib', t: '📚 図書館をのぞいてみよう', s: '矢印の「図書館」に入ろう。装備もモンスターもオパールのことも、全部ここで調べられるよ。', door: 'lib', test: function () { return inLib; } },
     { k: 'map', t: '🗺 マップを開こう', s: '図書館を出て、画面の上の「🚪 マップへ」をタップ。世界の鉱山が見えるよ。', test: function () { return $('map').classList.contains('on'); } },
@@ -8178,7 +8566,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       'ようこそ、オパ会の町へ！ 私は案内役のミミです。\nここは冒険の拠点。装備を買ったり、石を売ったり、仲間と会ったりする町やで。',
       'このゲームは、世界中の鉱山でオパールや宝石を掘って、レベルを上げて、装備を強くして、もっと奥の鉱山をめざす冒険です。',
       'いまからチュートリアルをやるね。画面の下に「やること」が出るから、順番にやってみて。\n光る矢印がついてたら、そこが行き先やで。\n行きたい所は、タップしたら歩いていくよ。',
-      '1つクリアするごとに経験値がもらえて、最後まで終わったらレベル7になるよ！\n最初の軍資金に、3,000コインあげる。まずはショップに行こう！'
+      '1つクリアするごとに経験値がもらえて、最後まで終わったらレベル7になるよ！\n' + (TUT.test ? '（テスト中やから、コインも経験値も増えへんよ）まずはショップに行こう！' : '最初の軍資金に、3,000コインあげる。まずはショップに行こう！')
     ], function () { tutDone('intro'); });
   }
   function tutFlash(msg) {
@@ -8186,7 +8574,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var e = document.createElement('div'); e.className = 'ok'; e.innerHTML = '<b>' + msg + '</b>'; b.appendChild(e); setTimeout(function () { if (e.parentNode) e.remove(); }, 2400);
   }
   function tutDone(k) {
-    if (TUT.busy) return; TUT.busy = 1;
+    if (TUT.busy) return;
+    if (TUT.test) { TUT.ld.push(k); TUT.key = ''; sfx(1); if (k === 'done') { tutStop(); tutDlg(['テストおわり！ ここまでが、はじめてのチュートリアルです。\n本番では、最後にちょうどLv7になって、500コインももらえるよ。'], null); } else tutFlash('✅ クリア！（テスト）'); return; }
+    TUT.busy = 1;
     api({ action: 'game_tut', step: k }).then(function (j) {
       TUT.busy = 0;
       if (j && j.ok && j.player) {
@@ -8204,12 +8594,13 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   function tutStop() { TUT.on = false; clearInterval(TUT.tm); $('tutB').classList.remove('on'); var a = $('tutArrow'); if (a) a.remove(); var dr = $('tutDir'); if (dr) dr.remove(); }
   function tutQuit() {
+    if (TUT.test) { tutStop(); return; }
     api({ action: 'game_tut_skip' }).then(function (j) { if (j && j.player) player = j.player; tutStop(); toast('チュートリアルをやめたよ。わからんことは町のミミに聞いてな'); });
   }
   function tutArrow(st) {
     var w = $('world'), a = $('tutArrow'), pos = null;
     if (st && fieldOn && w) {
-      if (st.door) { for (var i = 0; i < DOORS.length; i++) if (DOORS[i].k === st.door) pos = { x: DOORS[i].x, y: DOORS[i].y - DOORS[i].h / 2 - 30 }; }
+      if (st.door) { for (var i = 0; i < DOORS.length; i++) if (DOORS[i].k === st.door) pos = { x: DOORS[i].x, y: DOORS[i].y - DOORS[i].h - 10 }; }
       else if (st.npc && NPCS[st.npc] && inTown && !inCafe) pos = { x: NPCS[st.npc].x, y: NPCS[st.npc].y - 150 };
     }
     var dr = $('tutDir');
@@ -8224,8 +8615,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     dr.innerHTML = '<i style="transform:rotate(' + ang + 'rad)">➤</i><small>' + nm + '</small>';
   }
   function tutTick() {
-    if (!TUT.on || !player || !player.tut || player.tut.fin) { if (TUT.on) tutStop(); return; }
-    var i = (player.tut.d || []).length, st = TSTEPS[i]; if (!st) { tutStop(); return; }
+    if (!TUT.on || !player || (!TUT.test && (!player.tut || player.tut.fin))) { if (TUT.on) tutStop(); return; }
+    var i = tutIdx(), st = TSTEPS[i]; if (!st) { tutStop(); return; }
     if (TUT.cur !== i) { TUT.cur = i; TUT.doors = {}; TUT.quit = 0; if (st.snap) st.snap(); }
     var scr = ['field', 'map', 'play'].some(function (x) { return $(x).classList.contains('on'); }) && !$('story').classList.contains('on') && !TUT.dlg;
     var b = $('tutB');
@@ -8242,15 +8633,15 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   }
   $('tutB').addEventListener('click', function (e) {
     var bt = e.target.closest('button'); if (!bt) return; var a = bt.dataset.a; sfx(0);
-    var i = (player.tut.d || []).length, st = TSTEPS[i];
+    var i = tutIdx(), st = TSTEPS[i];
     if (a === 'min') { TUT.min = TUT.min ? 0 : 1; }
     else if (a === 'skip') { if (st && !st.noSkip) tutDone(st.k); }
     else if (a === 'quit') { if (!TUT.quit) { TUT.quit = 1; } else tutQuit(); }
     TUT.key = '';
   });
-  function tutBegin() {
-    TUT.on = true; TUT.cur = -1; TUT.key = ''; openTown(); clearInterval(TUT.tm); TUT.tm = setInterval(tutTick, 500);
-    if (!(player.tut.d || []).length) setTimeout(tutIntro, 800);
+  function tutBegin(test) {
+    TUT.test = test ? 1 : 0; TUT.ld = []; TUT.on = true; TUT.cur = -1; TUT.key = ''; openTown(); clearInterval(TUT.tm); TUT.tm = setInterval(tutTick, 500);
+    if (!tutIdx()) setTimeout(tutIntro, 800);
   }
   function startGame() {
     startInvPoll();
