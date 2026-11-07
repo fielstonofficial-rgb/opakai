@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:132-->
+<!--GV:133-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -259,6 +259,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #arc .mlFl{position:absolute;inset:0;pointer-events:none;background:radial-gradient(circle,#fff8c0,#ffb300 40%,transparent 70%);opacity:0;z-index:15}
 #arc .mlFl.on{animation:mlFl .6s ease-out}@keyframes mlFl{0%{opacity:.95}100%{opacity:0}}
 #arc .mlCb{position:absolute;left:8px;bottom:6px;font-weight:900;color:#9fff9f;text-shadow:0 0 8px #000;font-size:15px;z-index:6}
+#arc .mlMq .fcs{width:34px;height:34px}#arc .mlMq .fcs svg{width:100%;height:100%;overflow:visible}
+#arc .mlMq small{line-height:1.2;text-align:left}
+#arc .mc .skb{position:absolute;left:50%;top:-14%;transform:translateX(-50%);font-size:30px;font-weight:900;white-space:nowrap;color:#fff;z-index:8;pointer-events:none;letter-spacing:2px;-webkit-text-stroke:5px #b3003a;paint-order:stroke fill;text-shadow:0 0 16px #ffe27a,0 0 26px #ff4a8a;animation:mlSk .45s cubic-bezier(.2,1.6,.4,1) both,mlSk2 .5s ease-in-out .45s infinite alternate;background:linear-gradient(#fff,#ffe27a 55%,#ffb300);-webkit-background-clip:text;background-clip:text}
+#arc .mc .skb.g{font-size:20px;top:-4%;-webkit-text-stroke:4px #2a2a00;background:linear-gradient(#fff,#ffd84a);-webkit-background-clip:text;background-clip:text;text-shadow:0 0 10px #ffd84a}
+@keyframes mlSk{0%{transform:translateX(-50%) scale(.2) rotate(-12deg);opacity:0}100%{transform:translateX(-50%) scale(1) rotate(0);opacity:1}}@keyframes mlSk2{from{transform:translateX(-50%) scale(1) rotate(-2deg)}to{transform:translateX(-50%) scale(1.12) rotate(2deg)}}
+#arc .mlA::before{content:'⭐';position:absolute;left:6px;top:46px;font-size:16px;opacity:.7;animation:mlBl 1.1s infinite alternate}#arc .mlA::after{content:'💖';position:absolute;right:8px;bottom:8px;font-size:18px;opacity:.8;animation:mlBl 1.4s infinite alternate}
 #arc .tvh{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:15px;color:#ffe27a;font-weight:800;max-width:460px;width:100%;margin:0 auto}
 #arc .tvh .chipb{margin:0;padding:3px 10px;font-size:13px}
 #arc .tvh .arcx{margin:0;padding:6px 12px;font-size:12px}
@@ -3626,11 +3632,24 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     return '<svg viewBox="0 0 54 70"><ellipse cx="27" cy="64" rx="18" ry="5" fill="rgba(0,0,0,.4)"/><rect x="24" y="32" width="6" height="32" fill="#b8903a"/><ellipse cx="27" cy="60" rx="14" ry="4" fill="none" stroke="#b8903a" stroke-width="3"/><ellipse cx="27" cy="30" rx="22" ry="9" fill="#5a1626" stroke="#ffe27a" stroke-width="2.2"/><ellipse cx="27" cy="27" rx="16" ry="5" fill="#8a2a42"/></svg>';
   }
   function arcMoleSVG() {
-    var hole = function (x, k) { return '<ellipse cx="' + x + '" cy="132" rx="38" ry="12" fill="#120804"/><svg x="' + (x - 26) + '" y="78" width="52" height="56" viewBox="0 0 100 ' + (k ? 120 : 110) + '">' + (k ? sealSVG() : moleSVG()).replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '') + '</svg><path d="M' + (x - 42) + ' 142Q' + (x - 30) + ' 126 ' + x + ' 126Q' + (x + 30) + ' 126 ' + (x + 42) + ' 142Z" fill="#6a4220" stroke="#2a1608" stroke-width="2"/>'; };
-    var bl = ''; for (var i = 0; i < 12; i++) bl += '<circle cx="' + (22 + i * 23.3) + '" cy="30" r="3.6" fill="' + (i % 2 ? '#ff6a8a' : '#ffd84a') + '"><animate attributeName="opacity" values="1;.25;1" dur="' + (.7 + (i % 3) * .2) + 's" repeatCount="indefinite"/></circle>';
-    return '<svg viewBox="0 0 300 170"><defs><linearGradient id="mcG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a6410"/><stop offset=".5" stop-color="#ffe27a"/><stop offset="1" stop-color="#8a6410"/></linearGradient><linearGradient id="mcB" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#2c7a3a"/><stop offset="1" stop-color="#0c2a14"/></linearGradient></defs><ellipse cx="150" cy="162" rx="140" ry="8" fill="rgba(0,0,0,.4)"/>' +
-      '<rect x="6" y="8" width="288" height="154" rx="14" fill="url(#mcB)" stroke="url(#mcG)" stroke-width="5"/><rect x="14" y="14" width="272" height="34" rx="8" fill="#2a0e04" stroke="#ffe27a" stroke-width="2"/>' + bl +
-      '<text x="150" y="42" font-size="18" text-anchor="middle" fill="#ffe27a" font-weight="900" style="paint-order:stroke" stroke="#7a2a00" stroke-width="3">🔨 OPAL モグラたたき</text>' + hole(66, 0) + hole(150, 1) + hole(234, 0) + '</svg>';
+    var ml = moleSVG().replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, ''), sl = sealSVG().replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '');
+    var hole = function (x, y, rx, k) { return '<ellipse cx="' + x + '" cy="' + y + '" rx="' + rx + '" ry="' + (rx * .34) + '" fill="#0a0502" stroke="#7a4a20" stroke-width="2"/>' + (k === 1 ? '<svg x="' + (x - rx * .72) + '" y="' + (y - rx * 1.05) + '" width="' + (rx * 1.44) + '" height="' + (rx * 1.5) + '" viewBox="0 0 100 120">' + sl + '</svg>' : (k === 0 ? '<svg x="' + (x - rx * .68) + '" y="' + (y - rx * .95) + '" width="' + (rx * 1.36) + '" height="' + (rx * 1.36) + '" viewBox="0 0 100 110">' + ml + '</svg>' : '')) + '<path d="M' + (x - rx) + ' ' + y + 'Q' + x + ' ' + (y + rx * .62) + ' ' + (x + rx) + ' ' + y + 'Q' + x + ' ' + (y + rx * .3) + ' ' + (x - rx) + ' ' + y + 'Z" fill="#8a5a2c" stroke="#4a2a10" stroke-width="1.4"/>'; };
+    var led = function (x, t, c) { return '<rect x="' + x + '" y="56" width="38" height="16" rx="3" fill="#1a0606" stroke="#ffd84a" stroke-width="1.4"/><text x="' + (x + 19) + '" y="69" font-size="12" text-anchor="middle" font-weight="900" fill="' + c + '" font-family="monospace">' + t + '</text>'; };
+    var st = ''; [[14, 92, 5], [186, 100, 4], [12, 130, 3.4], [188, 138, 5]].forEach(function (p) { st += '<path d="M' + p[0] + ' ' + (p[1] - p[2]) + 'L' + (p[0] + p[2] * .3) + ' ' + (p[1] - p[2] * .3) + 'L' + (p[0] + p[2]) + ' ' + p[1] + 'L' + (p[0] + p[2] * .3) + ' ' + (p[1] + p[2] * .3) + 'L' + p[0] + ' ' + (p[1] + p[2]) + 'L' + (p[0] - p[2] * .3) + ' ' + (p[1] + p[2] * .3) + 'L' + (p[0] - p[2]) + ' ' + p[1] + 'L' + (p[0] - p[2] * .3) + ' ' + (p[1] - p[2] * .3) + 'Z" fill="#ffe27a"/>'; });
+    return '<svg viewBox="0 0 200 190"><defs><linearGradient id="mcR" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#a81e30"/><stop offset=".5" stop-color="#e2434f"/><stop offset="1" stop-color="#a81e30"/></linearGradient><linearGradient id="mcG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a6410"/><stop offset=".5" stop-color="#ffe27a"/><stop offset="1" stop-color="#8a6410"/></linearGradient><linearGradient id="mcF" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#46b858"/><stop offset="1" stop-color="#1e6a30"/></linearGradient></defs>' +
+      '<ellipse cx="100" cy="184" rx="92" ry="6" fill="rgba(0,0,0,.45)"/>' +
+      '<path d="M20 172L28 66L172 66L180 172Z" fill="url(#mcR)" stroke="#5a0e18" stroke-width="2.5"/><path d="M28 76L172 76L174 90L26 90Z" fill="#fff3d6" opacity=".18"/>' +
+      '<path d="M16 22Q16 4 100 4Q184 4 184 22L172 66L28 66Z" fill="url(#mcR)" stroke="url(#mcG)" stroke-width="3.5"/><rect x="34" y="14" width="132" height="30" rx="8" fill="#2a0a10" stroke="#ffe27a" stroke-width="2"/>' +
+      '<text x="100" y="35" font-size="17" text-anchor="middle" fill="#ffe27a" font-weight="900" style="paint-order:stroke" stroke="#7a2a00" stroke-width="3">モグラたたき</text>' +
+      '<svg x="2" y="6" width="34" height="34" viewBox="0 0 100 110">' + ml + '</svg><svg x="164" y="4" width="34" height="38" viewBox="0 0 100 120">' + sl + '</svg>' +
+      '<g>' + [0, 1, 2, 3, 4, 5, 6, 7].map(function (i) { return '<circle cx="' + (44 + i * 16) + '" cy="50" r="2.6" fill="' + (i % 2 ? '#ff7a9a' : '#ffd84a') + '"><animate attributeName="opacity" values="1;.3;1" dur="' + (.8 + (i % 3) * .25) + 's" repeatCount="indefinite"/></circle>'; }).join('') + '</g>' +
+      led(34, '010', '#ff4a3a') + led(80, '888', '#ffd84a') + led(128, '10x', '#5aff9a') +
+      '<path d="M26 80L174 80L168 154L32 154Z" fill="url(#mcF)" stroke="url(#mcG)" stroke-width="3"/>' +
+      hole(62, 104, 22, 2) + hole(100, 100, 22, 1) + hole(138, 104, 22, 2) + hole(76, 138, 26, 0) + hole(124, 138, 26, 2) +
+      '<path d="M30 158L170 158L172 176L28 176Z" fill="#7a1220" stroke="#ffe27a" stroke-width="2"/><circle cx="100" cy="167" r="6" fill="#ffd84a" stroke="#7a4a00" stroke-width="1.6"/><rect x="98" y="162" width="4" height="10" rx="1" fill="#3a2000"/>' +
+      '<g transform="rotate(24 186 130)"><rect x="182" y="96" width="7" height="48" rx="3" fill="#c98a3a" stroke="#6a3a10" stroke-width="1.4"/><rect x="170" y="86" width="31" height="20" rx="7" fill="#ffd84a" stroke="#a07000" stroke-width="2"/><path d="M174 92h23M174 99h23" stroke="#e0a000" stroke-width="2"/></g>' +
+      '<path d="M178 142Q168 160 150 168" stroke="#5a3a20" stroke-width="2" fill="none" stroke-dasharray="3 2"/>' + st +
+      '<path d="M8 40q-6 -10 0 -14q6 4 0 14z" fill="#ff7a9a" transform="translate(6 8)"/><path d="M8 40q-6 -10 0 -14q6 4 0 14z" fill="#ff7a9a" transform="translate(180 10)"/></svg>';
   }
   function arcLoungeTableSVG() {
     return '<svg viewBox="0 0 130 74"><defs><linearGradient id="ltW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#5a3018"/><stop offset="1" stop-color="#25120a"/></linearGradient></defs><ellipse cx="65" cy="64" rx="48" ry="8" fill="rgba(0,0,0,.4)"/><rect x="58" y="38" width="14" height="26" fill="#2a160c" stroke="#b8903a" stroke-width="1.4"/><ellipse cx="65" cy="40" rx="58" ry="25" fill="#1c0e07"/><ellipse cx="65" cy="33" rx="58" ry="25" fill="url(#ltW)" stroke="#d4a73a" stroke-width="2.4"/><ellipse cx="65" cy="33" rx="46" ry="18" fill="none" stroke="#d4a73a" stroke-width="1" opacity=".5"/>' +
@@ -3654,7 +3673,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     LGT.forEach(function (t) { dc(arcLoungeTableSVG(), t[0], t[1] + 36, 130, 74, t[1] + 36); });
     SEATS.forEach(function (sa) { if (sa.stool) dc(arcStoolSVG(), sa.x, sa.y + 8, 40, 52, sa.y - 1); else { dc(arcChairSVG(), sa.x, sa.y - 2, 31, 28, sa.y - 1); dc(arcSeatSVG(), sa.x, sa.y + 5, 34, 17, sa.y + 1); } });
     lb("🛋️ ラウンジ", 500, 436);
-    dc(arcMoleSVG(), 200, 812, 300, 170, 812); lb("🔨 もぐらたたき（アシカは10点！）", 200, 834);
+    dc(arcMoleSVG(), 200, 846, 200, 190, 846);
 
     dc(arcTableSVG('ph'), 186, 616, 265, 133, 545); lb('♠ テキサスオパールホールデム', 186, 436);
     dc(arcTableSVG('bi'), 828, 607, 234, 117, 545); lb('🎱 オパールビンゴ', 828, 462);
@@ -3662,7 +3681,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     html += '<div class="tlbl" style="left:500px;top:766px">🚪 出口</div>';
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
-    DOORS = [{ k: 'arc:fps', x: 500, y: 330, w: 200, h: 160 }, { k: 'arc:holdem', x: 186, y: 616, w: 250, h: 105 }, { k: 'arc:bi', x: 828, y: 607, w: 210, h: 92 }, { k: 'arc:un', x: 828, y: 797, w: 210, h: 92 }, { k: 'arcout', x: 500, y: 800, w: 120, h: 70 }, { k: 'arc:rank', x: 800, y: 215, w: 160, h: 110 }, { k: 'arc:dis', x: 880, y: 352, w: 74, h: 80 }, { k: 'arc:prize', x: 700, y: 352, w: 74, h: 80 }, { k: 'arc:mole', x: 200, y: 812, w: 300, h: 150 }];
+    DOORS = [{ k: 'arc:fps', x: 500, y: 330, w: 200, h: 160 }, { k: 'arc:holdem', x: 186, y: 616, w: 250, h: 105 }, { k: 'arc:bi', x: 828, y: 607, w: 210, h: 92 }, { k: 'arc:un', x: 828, y: 797, w: 210, h: 92 }, { k: 'arcout', x: 500, y: 800, w: 120, h: 70 }, { k: 'arc:rank', x: 800, y: 215, w: 160, h: 110 }, { k: 'arc:dis', x: 880, y: 352, w: 74, h: 80 }, { k: 'arc:prize', x: 700, y: 352, w: 74, h: 80 }, { k: 'arc:mole', x: 200, y: 846, w: 200, h: 170 }];
     hero.x = 500; hero.y = 760; hero.dir = 1; hero.sit = null; ftarget = null; fz = zoomT;
     $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi(); addNpcs('arcade');
   }
@@ -4001,7 +4020,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 132;
+  var GV = 133;
   (function () {
     var last = Date.now();
     function chk() {
@@ -5613,36 +5632,39 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     });
     return { line: best, sc: sc, wd: wd, s7: sev };
   }
-  /* ---- もぐらたたき（ゲームセンター）：モグラ＝1点／アシカ＝10点 ---- */
-  function moleSVG() {
-    return '<svg viewBox="0 0 100 110"><defs><radialGradient id="mgB" cx=".4" cy=".3" r=".9"><stop offset="0" stop-color="#8a6446"/><stop offset=".6" stop-color="#523622"/><stop offset="1" stop-color="#26160c"/></radialGradient><radialGradient id="mgN" cx=".4" cy=".3" r=".8"><stop offset="0" stop-color="#ffb4b8"/><stop offset="1" stop-color="#d4606c"/></radialGradient></defs>' +
-      '<ellipse cx="50" cy="86" rx="40" ry="34" fill="url(#mgB)"/><path d="M14 80q-6-14 6-22l8 10z M86 80q6-14-6-22l-8 10z" fill="url(#mgB)"/>' +
-      '<ellipse cx="50" cy="48" rx="31" ry="29" fill="url(#mgB)"/><path d="M30 30q20-16 40 0" stroke="#a07a58" stroke-width="2" fill="none" opacity=".6"/>' +
-      '<path d="M32 54Q50 84 68 54Q50 44 32 54Z" fill="#6a4a34"/><ellipse cx="50" cy="60" rx="13" ry="10" fill="#7a5640"/>' +
-      '<path d="M40 56Q50 42 60 56Q56 70 50 71Q44 70 40 56Z" fill="url(#mgN)" stroke="#8a2a38" stroke-width="1"/><ellipse cx="45" cy="55" rx="2.4" ry="1.8" fill="#4a1018"/><ellipse cx="55" cy="55" rx="2.4" ry="1.8" fill="#4a1018"/><ellipse cx="47" cy="50" rx="3" ry="1.6" fill="#fff" opacity=".6"/>' +
-      '<rect x="46" y="68" width="3.6" height="8" rx="1.4" fill="#fffbe8" stroke="#a89a70" stroke-width=".7"/><rect x="50.6" y="68" width="3.6" height="8" rx="1.4" fill="#fffbe8" stroke="#a89a70" stroke-width=".7"/>' +
-      '<circle cx="36" cy="40" r="4.4" fill="#0a0604"/><circle cx="64" cy="40" r="4.4" fill="#0a0604"/><circle cx="37.4" cy="38.6" r="1.4" fill="#fff"/><circle cx="65.4" cy="38.6" r="1.4" fill="#fff"/>' +
-      '<g><ellipse cx="22" cy="92" rx="12" ry="9" fill="#e8a0a4" stroke="#8a4a50" stroke-width="1.2"/><path d="M13 98l-3 6M19 100l-2 7M25 101l0 7" stroke="#f4ecd8" stroke-width="3" stroke-linecap="round"/></g><g><ellipse cx="78" cy="92" rx="12" ry="9" fill="#e8a0a4" stroke="#8a4a50" stroke-width="1.2"/><path d="M87 98l3 6M81 100l2 7M75 101l0 7" stroke="#f4ecd8" stroke-width="3" stroke-linecap="round"/></g></svg>';
+  /* ---- もぐらたたき（ゲームセンター）：モグラ＝1点／サングラスのモグラ＝3点／アシカ＝10点 ---- */
+  /* 調べたこと：本物のモグラ＝黒っぽいビロードの毛・とがったピンクの鼻・ごく小さい目・耳なし・大きなピンクの手（出っ歯は、ネズミの特徴なので描かない）／アシカ＝耳たぶがある・前ヒレが長い・ボールを鼻にのせる芸 */
+  function moleSVG(sun) {
+    var eyes = sun ? '<g><rect x="25" y="44" width="23" height="14" rx="6" fill="#0c0c10" stroke="#ffd84a" stroke-width="1.6"/><rect x="52" y="44" width="23" height="14" rx="6" fill="#0c0c10" stroke="#ffd84a" stroke-width="1.6"/><path d="M48 50h4" stroke="#ffd84a" stroke-width="2"/><path d="M29 47l7 0M56 47l7 0" stroke="#fff" stroke-width="2" stroke-linecap="round" opacity=".8"/><path d="M25 50L18 47M75 50L82 47" stroke="#ffd84a" stroke-width="1.6"/></g>' :
+      '<circle cx="36" cy="51" r="6" fill="#f6f1e2" stroke="#1c1c24" stroke-width="1.2"/><circle cx="64" cy="51" r="6" fill="#f6f1e2" stroke="#1c1c24" stroke-width="1.2"/><circle cx="37.4" cy="52" r="3.2" fill="#06060a"/><circle cx="65.4" cy="52" r="3.2" fill="#06060a"/><circle cx="38.4" cy="50.6" r="1.1" fill="#fff"/><circle cx="66.4" cy="50.6" r="1.1" fill="#fff"/>';
+    return '<svg viewBox="0 0 100 110"><defs><radialGradient id="mgB" cx=".4" cy=".25" r=".95"><stop offset="0" stop-color="#7c7a8a"/><stop offset=".55" stop-color="#44434f"/><stop offset="1" stop-color="#1c1c24"/></radialGradient><linearGradient id="mgN" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffc2c6"/><stop offset="1" stop-color="#e2707c"/></linearGradient><linearGradient id="mgH" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffd0d0"/><stop offset="1" stop-color="#e88e98"/></linearGradient></defs>' +
+      '<ellipse cx="50" cy="90" rx="44" ry="34" fill="url(#mgB)"/><ellipse cx="50" cy="56" rx="38" ry="31" fill="url(#mgB)"/>' +
+      '<path d="M22 40Q34 22 50 22Q66 22 78 40" stroke="#9a98aa" stroke-width="2.2" fill="none" opacity=".5" stroke-linecap="round"/>' +
+      eyes +
+      '<path d="M39 60Q50 52 61 60Q60 80 50 88Q40 80 39 60Z" fill="url(#mgN)" stroke="#a8404e" stroke-width="1.2"/><ellipse cx="45" cy="80" rx="2.2" ry="1.7" fill="#6a1c28"/><ellipse cx="55" cy="80" rx="2.2" ry="1.7" fill="#6a1c28"/><ellipse cx="46" cy="64" rx="4" ry="2.4" fill="#fff" opacity=".55"/>' +
+      '<g><ellipse cx="17" cy="94" rx="15" ry="12" fill="url(#mgH)" stroke="#a8505c" stroke-width="1.4"/><path d="M6 86l-3-7M13 83l-1-8M21 83l1-8M28 87l4-6" stroke="#fffbea" stroke-width="3.4" stroke-linecap="round"/></g>' +
+      '<g><ellipse cx="83" cy="94" rx="15" ry="12" fill="url(#mgH)" stroke="#a8505c" stroke-width="1.4"/><path d="M94 86l3-7M87 83l1-8M79 83l-1-8M72 87l-4-6" stroke="#fffbea" stroke-width="3.4" stroke-linecap="round"/></g></svg>';
   }
   function sealSVG() {
-    return '<svg viewBox="0 0 100 120"><defs><linearGradient id="slB" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#9a8672"/><stop offset=".5" stop-color="#5c4a3a"/><stop offset="1" stop-color="#2a2018"/></linearGradient><radialGradient id="slS" cx=".35" cy=".25" r=".6"><stop offset="0" stop-color="#fff" stop-opacity=".7"/><stop offset="1" stop-color="#fff" stop-opacity="0"/></radialGradient></defs>' +
-      '<path d="M22 120Q18 70 34 52Q36 30 52 24Q70 22 76 38Q80 54 74 64Q84 84 80 120Z" fill="url(#slB)"/><path d="M30 118Q28 80 40 62" stroke="#c4aa90" stroke-width="3" fill="none" opacity=".4"/>' +
-      '<path d="M26 92Q6 88 4 74Q14 74 24 82Z" fill="url(#slB)" stroke="#2a2018" stroke-width="1.2"/><path d="M78 96Q96 92 98 78Q88 78 78 86Z" fill="url(#slB)" stroke="#2a2018" stroke-width="1.2"/>' +
-      '<ellipse cx="54" cy="40" rx="25" ry="22" fill="url(#slB)"/><path d="M44 24Q54 12 66 22Q60 28 52 26Z" fill="#6e5a48"/><ellipse cx="56" cy="30" rx="12" ry="8" fill="url(#slS)"/>' +
-      '<path d="M50 46Q64 40 78 48Q80 58 66 60Q54 60 50 46Z" fill="#7a644e"/><ellipse cx="78" cy="49" rx="4" ry="3.4" fill="#120c08"/><ellipse cx="76.6" cy="47.8" rx="1.4" ry="1" fill="#fff" opacity=".7"/>' +
-      '<path d="M62 56Q70 60 64 62" stroke="#2a1a10" stroke-width="1.6" fill="none"/>' +
-      '<circle cx="48" cy="36" r="5.6" fill="#0a0604"/><circle cx="46.4" cy="34.2" r="1.9" fill="#fff"/><circle cx="50" cy="38" r=".9" fill="#fff" opacity=".7"/><path d="M42 29Q47 26 52 29" stroke="#2a1a10" stroke-width="1.4" fill="none"/>' +
-      '<path d="M40 22q-3 -4 -5 0q2 4 5 3z" fill="#4a3828"/>' +
-      '<g stroke="#fff" stroke-width=".9" opacity=".9" fill="none"><path d="M70 52Q86 48 96 50M70 55Q88 56 98 60M70 58Q86 64 94 70M66 50Q80 42 92 40"/></g>' +
-      '<g fill="#bfe8ff" opacity=".85"><circle cx="16" cy="60" r="2"/><circle cx="90" cy="30" r="2.2"/><circle cx="8" cy="40" r="1.6"/><circle cx="94" cy="96" r="1.8"/></g></svg>';
+    return '<svg viewBox="0 0 100 120"><defs><radialGradient id="slB" cx=".4" cy=".25" r=".95"><stop offset="0" stop-color="#c4dae9"/><stop offset=".6" stop-color="#86a9c1"/><stop offset="1" stop-color="#5a7a92"/></radialGradient><clipPath id="slC"><circle cx="50" cy="15" r="13"/></clipPath></defs>' +
+      '<path d="M20 120Q14 84 30 70L70 70Q86 84 80 120Z" fill="url(#slB)"/><ellipse cx="50" cy="100" rx="22" ry="20" fill="#e6f0f7" opacity=".9"/>' +
+      '<path d="M26 92Q6 84 8 56Q16 58 20 66Q22 80 32 86Z" fill="url(#slB)" stroke="#4a6a82" stroke-width="1.4"/><path d="M74 92Q94 84 92 56Q84 58 80 66Q78 80 68 86Z" fill="url(#slB)" stroke="#4a6a82" stroke-width="1.4"/>' +
+      '<ellipse cx="22" cy="54" rx="5.4" ry="8" fill="#6a8aa2" stroke="#4a6a82" stroke-width="1.2" transform="rotate(-18 22 54)"/><ellipse cx="78" cy="54" rx="5.4" ry="8" fill="#6a8aa2" stroke="#4a6a82" stroke-width="1.2" transform="rotate(18 78 54)"/>' +
+      '<circle cx="50" cy="54" r="31" fill="url(#slB)" stroke="#4a6a82" stroke-width="1.4"/><ellipse cx="38" cy="38" rx="11" ry="6" fill="#fff" opacity=".35" transform="rotate(-25 38 38)"/>' +
+      '<ellipse cx="50" cy="66" rx="19" ry="13" fill="#eef5fa" stroke="#9ab6c8" stroke-width="1"/>' +
+      '<circle cx="36" cy="52" r="7.4" fill="#0a0e14"/><circle cx="64" cy="52" r="7.4" fill="#0a0e14"/><circle cx="33.8" cy="49.4" r="2.6" fill="#fff"/><circle cx="61.8" cy="49.4" r="2.6" fill="#fff"/><circle cx="38" cy="55" r="1.2" fill="#fff" opacity=".8"/><circle cx="66" cy="55" r="1.2" fill="#fff" opacity=".8"/>' +
+      '<ellipse cx="26" cy="64" rx="6" ry="3.6" fill="#ff9aa8" opacity=".7"/><ellipse cx="74" cy="64" rx="6" ry="3.6" fill="#ff9aa8" opacity=".7"/>' +
+      '<ellipse cx="50" cy="60" rx="5.4" ry="3.6" fill="#1a1e28"/><ellipse cx="48.6" cy="59" rx="1.6" ry="1" fill="#fff" opacity=".7"/><path d="M50 63.6V67M42 69Q50 76 58 69" stroke="#3a2a30" stroke-width="1.8" fill="none" stroke-linecap="round"/>' +
+      '<g fill="#5a6a7a"><circle cx="41" cy="65" r="1"/><circle cx="43" cy="68" r="1"/><circle cx="59" cy="65" r="1"/><circle cx="57" cy="68" r="1"/></g><g stroke="#fff" stroke-width="1.1" stroke-linecap="round" opacity=".95"><path d="M38 66L22 62M38 69L22 71M62 66L78 62M62 69L78 71"/></g>' +
+      '<circle cx="50" cy="15" r="13" fill="#fff" stroke="#8a8aa0" stroke-width="1"/><g clip-path="url(#slC)"><path d="M50 15L50 0L68 4Z" fill="#ff4a5a"/><path d="M50 15L68 4L80 20Z" fill="#ffd84a"/><path d="M50 15L80 20L62 34Z" fill="#3a9af0"/><path d="M50 15L62 34L40 32Z" fill="#ff4a5a"/><path d="M50 15L40 32L22 20Z" fill="#ffd84a"/><path d="M50 15L22 20L32 4Z" fill="#3a9af0"/></g><circle cx="50" cy="15" r="2.4" fill="#fff" stroke="#8a8aa0" stroke-width=".6"/><ellipse cx="45" cy="9" rx="4" ry="2.4" fill="#fff" opacity=".7"/></svg>';
   }
   function openMole() {
     var bet = 50, run = false, score = 0, combo = 0, bestC = 0, hitM = 0, hitS = 0, T = 30, left = 30, tk = 0, bg = 0, bgStep = 0, cells = [], nextSp = 0, sealAt = 0, over = false, t0 = 0;
     var cs = ''; for (var i = 0; i < 9; i++) cs += '<div class="mc" data-i="' + i + '"><div class="hole"></div><div class="mclip"><div class="an"></div></div><div class="mf"></div></div>';
     arcShow('<div class="tvh"><b>🔨 OPAL モグラたたき</b><span id="mlInfo" class="chipb"></span><button type="button" class="arcx" id="mlX">とじる</button></div>' +
-      '<div class="tvA mlA" id="mlA"><div class="mlMq"><div class="bulb"><i></i><i></i><i></i></div><div>SCORE<b id="mlS">0</b></div><div>TIME<b id="mlT">30</b></div><div><small>モグラ＝1点 / アシカ＝10点</small><span id="mlP"></span></div><div class="bulb"><i></i><i></i><i></i></div></div>' +
+      '<div class="tvA mlA" id="mlA"><div class="mlMq"><div class="fcs">' + moleSVG() + '</div><div>SCORE<b id="mlS">0</b></div><div>TIME<b id="mlT">30</b></div><div><small>モグラ＝1点<br>サングラス＝3点<br>アシカ＝10点</small></div><div class="fcs">' + sealSVG() + '</div></div>' +
       '<div class="mlG" id="mlG">' + cs + '<div class="mlCb" id="mlCb"></div></div><div class="mlFl" id="mlFl"></div>' +
-      '<div class="mlOv" id="mlOv"><h2>🔨 OPAL モグラたたき</h2><p>30秒で、顔を出したモグラをたたけ！<br>たまに出る <b>アシカ</b> は <b style="color:#ffe27a">10点</b>！<br>つづけてたたくと、コンボでボーナス。<br>40点で賭けたコインがもどる（最大6倍）</p></div></div>' +
+      '<div class="mlOv" id="mlOv"><h2>🔨 OPAL モグラたたき</h2><p>30秒で、顔を出したモグラをたたけ！<br>サングラスのモグラは <b style="color:#ffe27a">3点</b>、<br>「アシカ！」が出たら <b style="color:#ffe27a">10点</b>！<br>つづけてたたくと、コンボでボーナス。<br>40点で賭けたコインがもどる（最大6倍）</p></div></div>' +
       '<div class="tvM" id="mlMsg"></div><div class="tvC"><div class="tvB">' + [10, 50, 100, 500].map(function (b) { return '<button type="button" class="b bt' + (b === bet ? ' on' : '') + '" data-b="' + b + '">' + b + '</button>'; }).join('') + '<button type="button" class="b ra" id="mlGo">START</button></div></div>', 'tv');
     function info() { var e = $('mlInfo'); if (e) e.textContent = '🪙 ' + chipsGet().toLocaleString(); }
     info(); $('mlX').onclick = arcClose;
@@ -5651,7 +5673,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     function sndWhack() { mT(220, 55, .14, 'sine', .22); arNoise(.07, 900, .5, 0, 1.2); mT(900, 400, .06, 'square', .05); }
     function sndMole() { mT(520, 880, .09, 'square', .05, .03); mT(1040, 1560, .08, 'triangle', .05, .08); }
     function sndMiss() { arNoise(.1, 600, .25, 0, .8); mT(140, 90, .1, 'triangle', .08); }
-    function sndPop(seal) { if (seal) { mT(700, 1400, .12, 'sine', .07); mT(1400, 700, .12, 'sine', .05, .1); } else mT(300, 620, .07, 'triangle', .05); }
+    function sndPop(k) { if (k === 1) { [523, 659, 784, 1047, 1318].forEach(function (f, i) { mT(f, f * 1.02, .16, 'square', .06, i * .06); mT(f * 2, f * 2, .12, 'sine', .04, i * .06 + .02); }); mT(2093, 3136, .3, 'sine', .05, .32); } else if (k === 2) { mT(1568, 2349, .12, 'sine', .08); mT(2349, 3136, .14, 'sine', .07, .1); } else { mT(150, 560, .1, 'sine', .2); mT(560, 300, .09, 'triangle', .12, .09); arNoise(.05, 2600, .28, 0, 1.4); } }
     function sndSeal() { mT(420, 160, .16, 'sawtooth', .13); mT(430, 150, .16, 'sawtooth', .13, .2); mT(380, 140, .2, 'sawtooth', .1, .4); [523, 659, 784, 1047, 1318, 1568].forEach(function (f, k) { mT(f, f * 1.01, .22, 'square', .05, .15 + k * .07); mT(f / 2, f / 2, .22, 'triangle', .08, .15 + k * .07); }); }
     function sndFan() { [523, 659, 784, 1047, 784, 1047, 1318, 1568].forEach(function (f, k) { mT(f, f, .3, 'square', .05, k * .11); mT(f / 2, f / 2, .3, 'triangle', .08, k * .11); }); sndChip(.9); sndChip(1.0); }
     var MEL = [659, 659, 784, 659, 523, 587, 659, 0, 784, 784, 880, 784, 659, 587, 523, 0, 440, 523, 587, 659, 784, 659, 587, 523, 587, 659, 784, 880, 1047, 880, 784, 0], BAS = [131, 131, 98, 98, 110, 110, 87, 98];
@@ -5660,25 +5682,26 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     arcCl.push(function () { run = false; over = true; clearInterval(tk); clearInterval(bg); });
     var G = $('mlG'), A = $('mlA');
     for (i = 0; i < 9; i++) cells.push({ el: G.children[i], st: 0, k: 0, until: 0, hit: 0 });
-    function show(c, k, ms) { c.st = 1; c.k = k; c.hit = 0; c.until = performance.now() + ms; var an = c.el.querySelector('.an'); an.innerHTML = k ? sealSVG() : moleSVG(); c.el.classList.remove('hit'); c.el.classList.toggle('sl', !!k); c.el.classList.add('up'); sndPop(k); if (k) sndSeal0(); }
-    function sndSeal0() { mT(500, 320, .1, 'sawtooth', .05); }
-    function hide(c) { c.st = 0; c.el.classList.remove('up', 'hit'); }
+    function show(c, k, ms) { c.st = 1; c.k = k; c.hit = 0; c.until = performance.now() + ms; var an = c.el.querySelector('.an'); an.innerHTML = k === 1 ? sealSVG() : moleSVG(k === 2); c.el.classList.remove('hit'); c.el.classList.toggle('sl', k === 1); c.el.classList.add('up'); sndPop(k); if (k) { var bn = document.createElement('div'); bn.className = 'skb' + (k === 2 ? ' g' : ''); bn.textContent = k === 1 ? 'アシカ！' : '×3'; c.el.appendChild(bn); c.bn = bn; } }
+        function hide(c) { c.st = 0; c.el.classList.remove('up', 'hit'); if (c.bn) { c.bn.remove(); c.bn = null; } }
     function pop(c, txt, big) { var p = document.createElement('div'); p.className = 'pp' + (big ? ' big' : ''); p.textContent = txt; c.el.appendChild(p); setTimeout(function () { p.remove(); }, 760); }
     function setCb() { var e = $('mlCb'); if (e) e.textContent = combo >= 3 ? combo + ' COMBO!' : ''; }
     function whack(c) {
       var hm = document.createElement('div'); hm.className = 'hm'; hm.textContent = '🔨'; c.el.appendChild(hm); setTimeout(function () { hm.remove(); }, 260);
       if (c.st !== 1 || c.hit) { combo = 0; setCb(); sndMiss(); return; }
       c.hit = 1; c.el.classList.add('hit'); c.until = performance.now() + 260; sndWhack(); combo++; bestC = Math.max(bestC, combo);
-      var pt = c.k ? 10 : 1, bonus = combo > 0 && combo % 5 === 0 ? 1 : 0; score += pt + bonus; if (c.k) hitS++; else hitM++;
-      if (c.k) { pop(c, '×10！！', 1); sndSeal(); A.classList.remove('shk'); void A.offsetWidth; A.classList.add('shk'); var f = $('mlFl'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on'); vib([30, 20, 60]); }
+      var pt = [1, 10, 3][c.k], bonus = combo > 0 && combo % 5 === 0 ? 1 : 0; score += pt + bonus; if (c.k === 1) hitS++; else hitM++;
+      if (c.k === 2) { pop(c, '×3！', 1); sndMole(); mT(1568, 2349, .15, 'sine', .08, .1); }
+      else if (c.k === 1) { pop(c, '×10！！', 1); sndSeal(); A.classList.remove('shk'); void A.offsetWidth; A.classList.add('shk'); var f = $('mlFl'); f.classList.remove('on'); void f.offsetWidth; f.classList.add('on'); vib([30, 20, 60]); }
       else { pop(c, bonus ? '+2 ✨' : '+1'); sndMole(); }
+      if (c.bn) c.bn.style.display = 'none';
       setCb(); $('mlS').textContent = score;
     }
     G.addEventListener('pointerdown', function (e) { if (!run) return; var t = e.target.closest ? e.target.closest('.mc') : null; if (!t) return; e.preventDefault(); whack(cells[+t.dataset.i]); });
     function spawn(now) {
-      var free = cells.filter(function (c) { return c.st === 0; }); if (!free.length) return; var c = free[Math.floor(Math.random() * free.length)], el = (now - t0) / 1000, p = Math.min(1, el / T), seal = false;
-      if (now >= sealAt) { seal = true; sealAt = now + 5000 + Math.random() * 4000; }
-      show(c, seal ? 1 : 0, seal ? 1000 - 350 * p : 1250 - 650 * p);
+      var free = cells.filter(function (c) { return c.st === 0; }); if (!free.length) return; var c = free[Math.floor(Math.random() * free.length)], el = (now - t0) / 1000, p = Math.min(1, el / T);
+      var k = 0; if (now >= sealAt) { k = 1; sealAt = now + 5000 + Math.random() * 4000; } else if (Math.random() < .14) k = 2;
+      show(c, k, k === 1 ? 1100 - 350 * p : 1250 - 650 * p);
     }
     function loop() {
       if (!run) return; var now = performance.now(), el = (now - t0) / 1000; left = Math.max(0, Math.ceil(T - el)); $('mlT').textContent = left;
