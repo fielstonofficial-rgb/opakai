@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:144-->
+<!--GV:145-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -150,6 +150,12 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 .mlk button.on,#mwKinds button.on{border-color:#ff8a80;background:rgba(229,72,63,.3);color:#fff}
 .mlc{background:rgba(255,255,255,.06);border:1px solid var(--line);border-radius:14px;padding:12px 14px;margin-bottom:10px}
 .mlc.new{border-color:#ffd36a;box-shadow:0 0 0 1px rgba(255,211,106,.35)}
+#libQ{width:100%;box-sizing:border-box;padding:11px 14px;border-radius:12px;border:1px solid var(--line);background:rgba(255,255,255,.07);color:#fff;font-size:15px;margin-bottom:6px}
+.libcard{cursor:pointer}.libcard .ic svg{width:100%;height:100%}.libcard .rt{margin-left:8px;font-size:11px;font-weight:800}
+.libBig{width:112px;height:112px;margin:8px auto 4px;border-radius:24px;display:grid;place-items:center;background:radial-gradient(circle at 50% 35%,rgba(255,236,170,.22),rgba(255,255,255,.05));border:1px solid var(--line)}.libBig svg{width:92%;height:92%}.libBig .wic,.libBig .oic{display:block;width:92px;height:92px}
+.libH{text-align:center;font-size:21px;margin:6px 0}.libRt{width:max-content;margin:0 auto 12px;padding:3px 14px;border:1.5px solid;border-radius:999px;font-weight:800;font-size:13px}
+.libRow{padding:11px 14px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.04);margin-bottom:8px;font-size:14px;line-height:1.7}.libRow b{display:block;font-size:12px;color:#ffd36a;margin-bottom:2px}.libRow span{color:#e8eef0}
+.libTx{padding:14px;border:1px solid var(--line);border-radius:14px;background:rgba(255,255,255,.04);font-size:15px;line-height:1.85;color:#e8eef0;margin-bottom:10px}
 .mlh{display:flex;align-items:center;gap:8px;font-size:14px}.mlt{font-weight:800}.mln{background:#ffd36a;color:#3a2a00;border-radius:6px;padding:1px 6px;font-size:11px;font-weight:800}.mlw{margin-left:auto;opacity:.6;font-size:12px}
 .mlf{font-size:13px;opacity:.75;margin:4px 0 6px}.mlb{white-space:pre-wrap;word-break:break-word;font-size:16px;line-height:1.6}
 .mla{text-align:right;margin-top:6px}.mla button{background:none;border:0;color:#ff9a90;font-size:13px;padding:4px 2px}
@@ -1162,6 +1168,10 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     <div class="sheet" id="mailWrite">
       <div class="bar"><span style="width:42px"></span><h1>✉️ 運営への手紙</h1><button class="ib" data-close="mailWrite" type="button" aria-label="とじる">✕</button></div>
       <div class="body"><p class="tiny" style="font-size:14px;line-height:1.7">要望・不具合・質問・困りごとを、運営に届けます。（返事の手紙は出せません）</p><div id="mwKinds"></div><textarea id="mwTxt" maxlength="600" placeholder="ここに手紙を書いてね"></textarea><div id="mwCnt">0 / 600</div><button type="button" class="abtn" id="mwSend" style="width:100%">📮 投函する</button></div>
+    </div>
+    <div class="sheet" id="libBook">
+      <div class="bar"><button class="ib" id="libBack" type="button" aria-label="もどる" style="visibility:hidden">←</button><h1 id="libTtl">📚 図書館</h1><button class="ib" data-close="libBook" type="button" aria-label="とじる">✕</button></div>
+      <div class="body"><div id="libTools"></div><div id="libList"></div><div id="libDet" style="display:none"></div></div>
     </div>
     <div class="sheet" id="lobby">
       <div class="bar"><span style="width:42px"></span><h1 id="lbTtl">待合室</h1><button class="ib" id="lbClose" type="button" aria-label="とじる">✕</button></div>
@@ -2217,20 +2227,20 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     { id: 'ax34', slot: 'armor', nm: '炎帝の甲冑', price: 38000, tier: 3, ic: '👕', hp: 280, cl: ['#c0301a', '#ffd36a'], sty: 1, fx: 'HP +280' },
     { id: 'ax35', slot: 'armor', nm: '深淵の夜衣', price: 45000, tier: 3, ic: '👕', hp: 310, cl: ['#0a0a20', '#7ae0ff'], sty: 0, fx: 'HP +310' },
     { id: 'ax36', slot: 'armor', nm: '創世の祝福衣', price: 52000, tier: 3, ic: '👕', hp: 360, cl: ['#ffffff', '#ffd36a'], sty: 3, fx: 'HP +360' },
-    {"id": "lg01", "slot": "weapon", "kind": "sword", "nm": "ブラックオパールの剣", "price": 2000000, "tier": 3, "ic": "🗡️", "atk": 56, "cd": 0, "pw": 1.8, "hu": 230, "drop": true, "lg": true, "sp": "blizzard", "fx": "剣：こうげき +56 ／ 威力 ×1.8 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
-    {"id": "lg02", "slot": "weapon", "kind": "katana", "nm": "ブラックオパールの太刀", "price": 2000000, "tier": 3, "ic": "⚔️", "atk": 54, "mr": 165, "cd": 250, "pw": 1.98, "hu": 230, "drop": true, "lg": true, "sp": "iai", "fx": "刀：こうげき +54 ／ 威力 ×1.98 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
-    {"id": "lg03", "slot": "weapon", "kind": "axe", "nm": "ブラックオパールの大斧", "price": 2000000, "tier": 3, "ic": "🪓", "atk": 60, "mr": 140, "cd": 650, "pw": 2.52, "hu": 230, "drop": true, "lg": true, "sp": "crush", "fx": "斧：こうげき +60 ／ 威力 ×2.52 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
-    {"id": "lg04", "slot": "weapon", "kind": "dagger", "nm": "ブラックオパールの短剣", "price": 2000000, "tier": 3, "ic": "🔪", "atk": 58, "mr": 75, "cd": 100, "pw": 1.35, "hu": 230, "drop": true, "lg": true, "sp": "shadow", "fx": "短剣：こうげき +58 ／ 威力 ×1.35 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
-    {"id": "lg05", "slot": "weapon", "kind": "spear", "nm": "ボルダーオパールの槍", "price": 2000000, "tier": 3, "ic": "🔱", "atk": 60, "mr": 230, "cd": 380, "pw": 1.8, "hu": 25, "drop": true, "lg": true, "sp": "pierce", "fx": "槍：こうげき +60 ／ 威力 ×1.8 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
-    {"id": "lg06", "slot": "weapon", "kind": "hammer", "nm": "ボルダーオパールの戦槌", "price": 2000000, "tier": 3, "ic": "🔨", "atk": 56, "mr": 130, "cd": 1150, "pw": 3.42, "hu": 25, "drop": true, "lg": true, "sp": "quake", "fx": "ハンマー：こうげき +56 ／ 威力 ×3.42 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
-    {"id": "lg07", "slot": "weapon", "kind": "bow", "nm": "ボルダーオパールの弓", "price": 2000000, "tier": 3, "ic": "🏹", "atk": 40, "rng": 225, "cd": 450, "pw": 1.8, "hu": 25, "drop": true, "lg": true, "sp": "storm", "fx": "弓：こうげき +40 ／ 威力 ×1.8 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
-    {"id": "lg08", "slot": "weapon", "kind": "cbow", "nm": "ボルダーオパールのクロスボウ", "price": 2000000, "tier": 3, "ic": "🏹", "atk": 54, "rng": 270, "cd": 750, "pw": 2.7, "hu": 25, "drop": true, "lg": true, "sp": "holy", "fx": "クロスボウ：こうげき +54 ／ 威力 ×2.7 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
-    {"id": "lg09", "slot": "weapon", "kind": "gun", "nm": "ボルダーオパールの拳銃", "price": 2000000, "tier": 3, "ic": "🔫", "atk": 42, "rng": 300, "cd": 1000, "pw": 1.8, "hu": 25, "drop": true, "lg": true, "sp": "thunder", "fx": "銃：こうげき +42 ／ 威力 ×1.8 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
-    {"id": "lg10", "slot": "weapon", "kind": "smg", "nm": "ボルダーオパールの連射銃", "price": 2000000, "tier": 3, "ic": "🔫", "atk": 60, "rng": 260, "cd": 180, "pw": 0.99, "hu": 25, "drop": true, "lg": true, "sp": "barrage", "fx": "連射銃：こうげき +60 ／ 威力 ×0.99 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
-    {"id": "lg11", "slot": "weapon", "kind": "shotgun", "nm": "ボルダーオパールの散弾銃", "price": 2000000, "tier": 3, "ic": "💥", "atk": 56, "rng": 170, "cd": 1300, "aoe": 110, "pw": 3.6, "hu": 25, "drop": true, "lg": true, "sp": "pellet", "fx": "ショットガン：こうげき +56 ／ 威力 ×3.6 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
-    {"id": "lg12", "slot": "weapon", "kind": "rifle", "nm": "ボルダーオパールのライフル", "price": 2000000, "tier": 3, "ic": "🎯", "atk": 70, "rng": 600, "cd": 2000, "pw": 8.1, "hu": 25, "drop": true, "lg": true, "sp": "snipe", "fx": "ライフル：こうげき +70 ／ 威力 ×8.1 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
-    {"id": "lg13", "slot": "shield", "nm": "ボルダーオパールの盾", "price": 2000000, "tier": 3, "ic": "🛡️", "def": 0.8, "cl": ["#7a4a22", "#7ae0d0"], "sh": 3, "drop": true, "lg": true, "fx": "受けるダメージ 80% カット ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
-    {"id": "lg14", "slot": "armor", "nm": "ブラックオパールの鎧", "price": 2000000, "tier": 3, "ic": "👕", "hp": 720, "cl": ["#06060f", "#4aa8ff"], "sty": 1, "drop": true, "lg": true, "fx": "HP +720 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
+    {"id": "lg01", "slot": "weapon", "kind": "sword", "nm": "ブラックオパールの剣", "price": 400000, "tier": 3, "ic": "🗡️", "atk": 56, "cd": 0, "pw": 1.8, "hu": 230, "drop": true, "lg": true, "sp": "blizzard", "fx": "剣：こうげき +56 ／ 威力 ×1.8 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
+    {"id": "lg02", "slot": "weapon", "kind": "katana", "nm": "ブラックオパールの太刀", "price": 400000, "tier": 3, "ic": "⚔️", "atk": 54, "mr": 165, "cd": 250, "pw": 1.98, "hu": 230, "drop": true, "lg": true, "sp": "iai", "fx": "刀：こうげき +54 ／ 威力 ×1.98 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
+    {"id": "lg03", "slot": "weapon", "kind": "axe", "nm": "ブラックオパールの大斧", "price": 400000, "tier": 3, "ic": "🪓", "atk": 60, "mr": 140, "cd": 650, "pw": 2.52, "hu": 230, "drop": true, "lg": true, "sp": "crush", "fx": "斧：こうげき +60 ／ 威力 ×2.52 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
+    {"id": "lg04", "slot": "weapon", "kind": "dagger", "nm": "ブラックオパールの短剣", "price": 400000, "tier": 3, "ic": "🔪", "atk": 58, "mr": 75, "cd": 100, "pw": 1.35, "hu": 230, "drop": true, "lg": true, "sp": "shadow", "fx": "短剣：こうげき +58 ／ 威力 ×1.35 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
+    {"id": "lg05", "slot": "weapon", "kind": "spear", "nm": "ボルダーオパールの槍", "price": 400000, "tier": 3, "ic": "🔱", "atk": 60, "mr": 230, "cd": 380, "pw": 1.8, "hu": 25, "drop": true, "lg": true, "sp": "pierce", "fx": "槍：こうげき +60 ／ 威力 ×1.8 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
+    {"id": "lg06", "slot": "weapon", "kind": "hammer", "nm": "ボルダーオパールの戦槌", "price": 400000, "tier": 3, "ic": "🔨", "atk": 56, "mr": 130, "cd": 1150, "pw": 3.42, "hu": 25, "drop": true, "lg": true, "sp": "quake", "fx": "ハンマー：こうげき +56 ／ 威力 ×3.42 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
+    {"id": "lg07", "slot": "weapon", "kind": "bow", "nm": "ボルダーオパールの弓", "price": 400000, "tier": 3, "ic": "🏹", "atk": 40, "rng": 225, "cd": 450, "pw": 1.8, "hu": 25, "drop": true, "lg": true, "sp": "storm", "fx": "弓：こうげき +40 ／ 威力 ×1.8 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
+    {"id": "lg08", "slot": "weapon", "kind": "cbow", "nm": "ボルダーオパールのクロスボウ", "price": 400000, "tier": 3, "ic": "🏹", "atk": 54, "rng": 270, "cd": 750, "pw": 2.7, "hu": 25, "drop": true, "lg": true, "sp": "holy", "fx": "クロスボウ：こうげき +54 ／ 威力 ×2.7 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
+    {"id": "lg09", "slot": "weapon", "kind": "gun", "nm": "ボルダーオパールの拳銃", "price": 400000, "tier": 3, "ic": "🔫", "atk": 42, "rng": 300, "cd": 1000, "pw": 1.8, "hu": 25, "drop": true, "lg": true, "sp": "thunder", "fx": "銃：こうげき +42 ／ 威力 ×1.8 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
+    {"id": "lg10", "slot": "weapon", "kind": "smg", "nm": "ボルダーオパールの連射銃", "price": 400000, "tier": 3, "ic": "🔫", "atk": 60, "rng": 260, "cd": 180, "pw": 0.99, "hu": 25, "drop": true, "lg": true, "sp": "barrage", "fx": "連射銃：こうげき +60 ／ 威力 ×0.99 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
+    {"id": "lg11", "slot": "weapon", "kind": "shotgun", "nm": "ボルダーオパールの散弾銃", "price": 400000, "tier": 3, "ic": "💥", "atk": 56, "rng": 170, "cd": 1300, "aoe": 110, "pw": 3.6, "hu": 25, "drop": true, "lg": true, "sp": "pellet", "fx": "ショットガン：こうげき +56 ／ 威力 ×3.6 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
+    {"id": "lg12", "slot": "weapon", "kind": "rifle", "nm": "ボルダーオパールのライフル", "price": 400000, "tier": 3, "ic": "🎯", "atk": 70, "rng": 600, "cd": 2000, "pw": 8.1, "hu": 25, "drop": true, "lg": true, "sp": "snipe", "fx": "ライフル：こうげき +70 ／ 威力 ×8.1 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
+    {"id": "lg13", "slot": "shield", "nm": "ボルダーオパールの盾", "price": 400000, "tier": 3, "ic": "🛡️", "def": 0.8, "cl": ["#7a4a22", "#7ae0d0"], "sh": 3, "drop": true, "lg": true, "fx": "受けるダメージ 80% カット ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
+    {"id": "lg14", "slot": "armor", "nm": "ブラックオパールの鎧", "price": 400000, "tier": 3, "ic": "👕", "hp": 720, "cl": ["#06060f", "#4aa8ff"], "sty": 1, "drop": true, "lg": true, "fx": "HP +720 ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
     {"id": "lg15", "slot": "tool", "nm": "ボルダーオパールのつるはし", "price": 2000000, "tier": 3, "ic": "⛏️", "cut": 0.4, "drop": true, "lg": true, "fx": "掘る回数が 40% へる ／ 伝説の装備（最上位ボスが、ごくまれに落とす）"},
     {"id":"wx001","slot":"weapon","kind":"sword","nm":"小さな剣","price":600,"tier":0,"ic":"🗡️","atk":4,"cd":0,"hu":0,"fx":"剣：こうげき +4"},
     {"id":"wx002","slot":"weapon","kind":"sword","nm":"竹の細剣","price":400,"tier":0,"ic":"🗡️","atk":2,"cd":0,"hu":163,"fx":"剣：こうげき +2"},
@@ -3296,6 +3306,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
         '<path d="M64 152V116a16 16 0 0 1 32 0V152Z" fill="#8a5a30" stroke="#5a3519" stroke-width="2.4"/><path d="M80 100V152" stroke="rgba(0,0,0,.25)"/><circle cx="90" cy="134" r="2.6" fill="#ffd36a"/><rect x="58" y="152" width="44" height="5" rx="2" fill="#bfb090"/></svg>';
     }
     if (k === 'post') return postSVG();
+    if (k === 'lib') return libSVG();
     if (k === 'tree') return '<svg viewBox="0 0 90 120"><defs><radialGradient id="trF" cx=".35" cy=".3" r=".85"><stop offset="0" stop-color="#9be08a"/><stop offset=".6" stop-color="#4fa85a"/><stop offset="1" stop-color="#2f7d45"/></radialGradient><linearGradient id="trT" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a5f38"/><stop offset="1" stop-color="#5e3e22"/></linearGradient></defs>' + SH(45, 115, 26, 5) + '<path d="M40 112L42 64H50L52 112Z" fill="url(#trT)"/><circle cx="26" cy="56" r="22" fill="url(#trF)"/><circle cx="64" cy="56" r="22" fill="url(#trF)"/><circle cx="45" cy="36" r="30" fill="url(#trF)"/><circle cx="45" cy="60" r="24" fill="url(#trF)"/><circle cx="34" cy="26" r="9" fill="rgba(255,255,255,.22)"/><circle cx="58" cy="44" r="4" fill="rgba(255,255,255,.14)"/></svg>';
     if (k === 'tree2') return '<svg viewBox="0 0 80 130"><defs><linearGradient id="pnF" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#6cc27a"/><stop offset="1" stop-color="#2d7a48"/></linearGradient></defs>' + SH(40, 125, 22, 4.5) + '<rect x="36" y="104" width="8" height="20" fill="#6b4a2c"/><path d="M40 6L66 48H14Z" fill="url(#pnF)"/><path d="M40 28L72 76H8Z" fill="url(#pnF)"/><path d="M40 52L76 108H4Z" fill="url(#pnF)"/><path d="M40 6L48 20L40 14Z" fill="rgba(255,255,255,.25)"/></svg>';
     if (k === 'bush') return '<svg viewBox="0 0 80 50"><defs><radialGradient id="bhF" cx=".4" cy=".3" r=".9"><stop offset="0" stop-color="#8fdc86"/><stop offset="1" stop-color="#3f9650"/></radialGradient></defs>' + SH(40, 46, 34, 4) + '<circle cx="22" cy="30" r="16" fill="url(#bhF)"/><circle cx="58" cy="30" r="16" fill="url(#bhF)"/><circle cx="40" cy="24" r="20" fill="url(#bhF)"/><circle cx="34" cy="18" r="5" fill="rgba(255,255,255,.25)"/><circle cx="52" cy="14" r="2.6" fill="#ff9ab8"/><circle cx="26" cy="28" r="2.6" fill="#ffd36a"/><circle cx="60" cy="32" r="2.6" fill="#fff"/></svg>';
@@ -3328,7 +3339,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     for (i = 0; i < 520; i++) { x = Math.round(rr() * TW); y = 250 + Math.round(rr() * (TH - 260)); o += '<path d="M' + x + ' ' + y + 'q-3-8-6-9M' + x + ' ' + y + 'q0-9 1-11M' + x + ' ' + y + 'q3-8 6-8" stroke="#6fb35f" stroke-width="1.6" fill="none" opacity=".55" stroke-linecap="round"/>'; }
     for (i = 0; i < 210; i++) { x = Math.round(rr() * TW); y = 260 + Math.round(rr() * (TH - 270)); o += '<circle cx="' + x + '" cy="' + y + '" r="2.6" fill="' + cs[i % 4] + '" opacity=".9"/>'; }
     var P = function (d) { return '<path d="' + d + '" fill="#c9b68c" stroke="#c9b68c" stroke-width="16" stroke-linejoin="round"/><path d="' + d + '" fill="url(#tgC)"/>'; };
-    o += P('M-30 700H2130V792H-30Z') + P('M655 780H845V1800H655Z') + P('M-30 1500H2130V1590H-30Z') + P('M1655 780H1745V1500H1655Z') + P('M1500 1170a200 140 0 1 0 400 0a200 140 0 1 0 -400 0Z') + P('M1736 470H1784V705H1736Z') + P('M390 990a360 250 0 1 0 720 0a360 250 0 1 0 -720 0Z') +
+    o += P('M-30 700H2130V792H-30Z') + P('M655 780H845V1800H655Z') + P('M-30 1500H2130V1590H-30Z') + P('M1655 780H1745V1500H1655Z') + P('M1500 1170a200 140 0 1 0 400 0a200 140 0 1 0 -400 0Z') + P('M1736 470H1784V705H1736Z') + P('M1976 470H2024V705H1976Z') + P('M390 990a360 250 0 1 0 720 0a360 250 0 1 0 -720 0Z') +
       P('M298 470H362V705H298Z') + P('M706 470H794V705H706Z') + P('M1146 470H1194V705H1146Z') + P('M96 640H144V705H96Z') + P('M1356 650H1404V705H1356Z') + P('M1536 470H1584V705H1536Z');
     o += '<ellipse cx="750" cy="985" rx="150" ry="62" fill="#ead8b4" stroke="#c0aa7c" stroke-width="5"/><ellipse cx="750" cy="990" rx="400" ry="280" fill="url(#tgS)"/><ellipse cx="1700" cy="1145" rx="150" ry="62" fill="#ead8b4" stroke="#c0aa7c" stroke-width="5"/><ellipse cx="1700" cy="1150" rx="400" ry="280" fill="url(#tgS)"/>';
     return o + '</svg>';
@@ -3339,21 +3350,21 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     w.style.background = 'linear-gradient(180deg,#7ec3e6 0,#d4eef8 230px,#97cc80 231px)';
     html += townGround(TW, TH, rr);
     var put = function (k, x, y, wd, ht) { html += '<div class="dc" style="left:' + x + 'px;top:' + y + 'px;width:' + wd + 'px;height:' + ht + 'px;z-index:' + Math.round(y) + '">' + townSVG(k) + '</div>'; };
-    var lbl = function (t, x, y) { html += '<div class="tlbl" style="left:' + x + 'px;top:' + y + 'px">' + t + '</div>'; };
+    var lbl = function (t, x, y) { html += '<div class="tlbl" style="left:' + x + 'px;top:' + y + 'px;white-space:nowrap">' + t + '</div>'; };
     put('shop', 330, 470, 210, 189); lbl('ショップ', 330, 240);
     put('hall', 750, 470, 280, 226); lbl('ギルド', 750, 196);
     put('hosp', 1170, 470, 190, 190); lbl('🏥 病院', 1170, 236); put('house1', 120, 640, 150, 150); put('exch', 1380, 760, 180, 180); lbl('取引所', 1380, 560);
     put('fount', 750, 1010, 260, 195); put('arena', 150, 1000, 230, 196); lbl('⚔ 闘技場', 150, 765);
-    DOORS = [{ k: 'shop', x: 330, y: 470, w: 200, h: 180 }, { k: 'guild', x: 750, y: 470, w: 270, h: 210 }, { k: 'hospital', x: 1170, y: 470, w: 190, h: 180 }, { k: 'exch', x: 1380, y: 760, w: 180, h: 170 }, { k: 'arena', x: 150, y: 1000, w: 220, h: 190 }, { k: 'cafe', x: 1760, y: 470, w: 190, h: 180 }, { k: 'post', x: 1030, y: 1420, w: 200, h: 190 }, { k: 'skill', x: 1560, y: 470, w: 190, h: 180 }, { k: 'arcade', x: 1375, y: 470, w: 180, h: 170 }];
-    put('post', 1030, 1420, 220, 200); lbl('📮 郵便局', 1030, 1170); put('arcade', 1375, 470, 190, 190); lbl('🎰 ゲームセンター', 1375, 236); put('stall', 480, 905, 150, 120); put('stall', 1020, 905, 150, 120);
+    DOORS = [{ k: 'shop', x: 330, y: 470, w: 200, h: 180 }, { k: 'guild', x: 750, y: 470, w: 270, h: 210 }, { k: 'hospital', x: 1170, y: 470, w: 190, h: 180 }, { k: 'exch', x: 1380, y: 760, w: 180, h: 170 }, { k: 'arena', x: 150, y: 1000, w: 220, h: 190 }, { k: 'cafe', x: 1760, y: 470, w: 190, h: 180 }, { k: 'post', x: 2000, y: 470, w: 180, h: 170 }, { k: 'lib', x: 220, y: 1420, w: 280, h: 230 }, { k: 'skill', x: 1560, y: 470, w: 190, h: 180 }, { k: 'arcade', x: 1375, y: 470, w: 180, h: 170 }];
+    put('post', 2000, 470, 190, 190); lbl('📮 郵便局', 2000, 236); put('lib', 220, 1420, 300, 290); lbl('📚 図書館', 220, 1085); put('arcade', 1375, 470, 190, 190); lbl('🎰 ゲームセンター', 1375, 236); put('stall', 480, 905, 150, 120); put('stall', 1020, 905, 150, 120);
     put('cafe', 1760, 470, 190, 190); lbl('☕ カフェ', 1760, 236); put('skill', 1560, 470, 190, 190); lbl('🔮 スキルの館', 1560, 236); put('fount', 1700, 1170, 260, 195); put('stall', 1470, 1100, 150, 120); put('stall', 1930, 1100, 150, 120);
     [[500, 350, 'tree2', 62, 100], [1000, 350, 'tree2', 62, 100], [1300, 360, 'tree', 78, 104], [40, 380, 'tree', 78, 104], [60, 430, 'tree', 80, 106], [560, 520, 'tree', 78, 104],
-      [1960, 360, 'tree2', 62, 100], [2050, 440, 'tree', 80, 106], [2040, 600, 'tree', 78, 104], [1990, 560, 'tree2', 62, 100], [1540, 900, 'tree', 80, 106], [1880, 900, 'tree', 78, 104], [2040, 930, 'tree2', 62, 100], [1560, 1330, 'tree', 80, 106], [1880, 1310, 'tree2', 62, 100], [2040, 1380, 'tree', 78, 104], [1990, 1230, 'tree', 80, 106], [1420, 1450, 'tree', 78, 104], [250, 1420, 'tree', 80, 106], [520, 1400, 'tree2', 62, 100], [980, 1420, 'tree', 78, 104], [1250, 1400, 'tree2', 62, 100], [150, 1330, 'tree2', 62, 100],
+      [1540, 900, 'tree', 80, 106], [1880, 900, 'tree', 78, 104], [2040, 930, 'tree2', 62, 100], [1560, 1330, 'tree', 80, 106], [1880, 1310, 'tree2', 62, 100], [2040, 1380, 'tree', 78, 104], [1990, 1230, 'tree', 80, 106], [1420, 1450, 'tree', 78, 104], [520, 1400, 'tree2', 62, 100], [980, 1420, 'tree', 78, 104], [1250, 1400, 'tree2', 62, 100], 
       [300, 1680, 'tree', 80, 106], [560, 1700, 'tree2', 62, 100], [960, 1710, 'tree', 78, 104], [1250, 1700, 'tree2', 62, 100], [150, 1760, 'tree', 80, 106], [420, 1770, 'tree2', 62, 100], [1100, 1770, 'tree', 80, 106], [1420, 1730, 'tree', 78, 104], [1700, 1700, 'tree2', 62, 100], [1850, 1770, 'tree', 80, 106], [2040, 1730, 'tree2', 62, 100], [950, 520, 'tree', 78, 104],
-      [1440, 910, 'tree', 80, 106], [330, 880, 'tree', 78, 104], [1170, 880, 'tree', 78, 104], [200, 1180, 'tree', 80, 106], [1300, 1180, 'tree2', 62, 100], [420, 1250, 'tree', 80, 106], [90, 1260, 'tree2', 62, 100], [1420, 1260, 'tree', 78, 104]].forEach(function (q) { put(q[2], q[0], q[1], q[3], q[4]); });
+      [1440, 910, 'tree', 80, 106], [330, 880, 'tree', 78, 104], [1170, 880, 'tree', 78, 104], [1300, 1180, 'tree2', 62, 100], [420, 1250, 'tree', 80, 106], [1420, 1260, 'tree', 78, 104]].forEach(function (q) { put(q[2], q[0], q[1], q[3], q[4]); });
     [[240, 712], [560, 712], [940, 712], [1260, 712], [640, 870], [860, 870], [500, 1080], [1000, 1080], [1560, 712], [1900, 712], [2060, 712], [1636, 900], [1764, 900], [1636, 1350], [1764, 1350], [300, 1498], [900, 1498], [1300, 1498], [1540, 1498], [1900, 1498], [1500, 1180], [1900, 1180]].forEach(function (q) { put('lamp', q[0], q[1], 28, 86); });
-    [[250, 498], [420, 498], [640, 498], [860, 498], [1090, 498], [1260, 498], [60, 690], [190, 690], [1300, 690], [1460, 690], [1580, 690], [1700, 690], [1890, 690], [2030, 690], [1650, 498], [1870, 498], [1560, 480], [1990, 480]].forEach(function (q) { put('bush', q[0], q[1], 64, 40); });
-    [[270, 590], [390, 590], [620, 600], [880, 600], [1110, 590], [1230, 600], [250, 790], [1250, 790], [330, 1000], [1170, 1000], [750, 1230], [1700, 590], [1820, 590], [1640, 590], [1920, 880], [1990, 880], [1950, 940], [2020, 940], [1900, 1010], [1990, 1010], [2040, 1090], [200, 1400], [620, 1400], [1180, 1350], [300, 1670], [800, 1690], [1300, 1680], [1620, 1420], [1800, 1420], [1950, 1420], [2000, 1660]].forEach(function (q) { put('flower', q[0], q[1], 92, 38); });
+    [[250, 498], [420, 498], [640, 498], [860, 498], [1090, 498], [1260, 498], [60, 690], [190, 690], [1300, 690], [1460, 690], [1580, 690], [1700, 690], [1890, 690], [2030, 690], [1650, 498], [1870, 498], [1560, 480]].forEach(function (q) { put('bush', q[0], q[1], 64, 40); });
+    [[270, 590], [390, 590], [620, 600], [880, 600], [1110, 590], [1230, 600], [250, 790], [1250, 790], [330, 1000], [1170, 1000], [750, 1230], [1700, 590], [1820, 590], [1640, 590], [1920, 880], [1990, 880], [1950, 940], [2020, 940], [1900, 1010], [1990, 1010], [2040, 1090], [620, 1400], [1180, 1350], [300, 1670], [800, 1690], [1300, 1680], [1620, 1420], [1800, 1420], [1950, 1420], [2000, 1660]].forEach(function (q) { put('flower', q[0], q[1], 92, 38); });
     [[580, 1150], [920, 1150], [250, 780], [1250, 780], [1510, 1170], [1890, 1170], [1620, 1340], [1790, 1340], [450, 1480], [1050, 1480], [1560, 780], [1850, 780]].forEach(function (q) { put('bench', q[0], q[1], 90, 50); });
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
@@ -3371,6 +3382,9 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     else if (k === 'skill') { sfx(2); openSkillShop(); }
     else if (k === 'arcade') { sfx(2); openArcRoom(); }
     else if (k === 'arcout') { sfx(2); leaveCafe(); }
+    else if (k === 'lib') { sfx(2); openLibRoom(); }
+    else if (k === 'libout') { sfx(2); leaveCafe(); }
+    else if (k === 'libcase') { sfx(2); openLib('opal'); }
     else if (k === 'post') { sfx(2); openPostRoom(); }
     else if (k === 'postout') { sfx(2); leaveCafe(); }
     else if (k === 'arc:slot') { sfx(2); openSlot(); }
@@ -3609,8 +3623,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     RT.join('cafe', me, { onMsg: rtMsg, onPeers: rtPeers }, function (ok) { if (ok) { rtOn = true; rtLast = 0; rtSend(posMsg()); } else toast('つながりませんでした。カフェには一人だけですよ'); });
   }
   function leaveCafe() {
-    var wasArc = inArcRoom, wasPost = inPost; inArcRoom = false; inPost = false; arcClose();
-    standUp(); setCup(''); hero.order = null; inCafe = false; cafeBusy = false; rtStop(); openTown(); hero.x = wasPost ? 1030 : (wasArc ? 1375 : 1760); hero.y = wasPost ? 1480 : (wasArc ? 540 : 530); hero.dir = 1; ftarget = null; updHero(); camX = hero.x - 300; camY = hero.y - 400;
+    var wasArc = inArcRoom, wasPost = inPost, wasLib = inLib; inArcRoom = false; inPost = false; inLib = false; arcClose();
+    standUp(); setCup(''); hero.order = null; inCafe = false; cafeBusy = false; rtStop(); openTown(); hero.x = wasLib ? 220 : (wasPost ? 2000 : (wasArc ? 1375 : 1760)); hero.y = wasLib ? 1490 : (wasPost ? 540 : (wasArc ? 540 : 530)); hero.dir = 1; ftarget = null; updHero(); camX = hero.x - 300; camY = hero.y - 400;
   }
   /* ---------- 📮 郵便局（〒マークの赤い建物／中は受付カウンター） ---------- */
   function postMark(cx, cy, s, c) {
@@ -3738,6 +3752,371 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       else toast('送れなかったよ。もう一回やってみてね');
     });
   });
+  /* ---------- 📚 図書館（外観＝円柱とドームの大図書館／内装＝本棚の壁・ステンドグラス・シャンデリア・絨毯） ---------- */
+  function libRnd(seed) { var s = seed || 7; return function () { s = (s * 16807) % 2147483647; return (s - 1) / 2147483646; }; }
+  function libSVG() {
+    var o = '<svg viewBox="0 -40 300 290"><defs>' +
+      '<linearGradient id="lbW" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#f6efdc"/><stop offset="1" stop-color="#d9ccaa"/></linearGradient>' +
+      '<linearGradient id="lbC" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#cfc4a8"/><stop offset=".35" stop-color="#fffaf0"/><stop offset=".7" stop-color="#f1e8d2"/><stop offset="1" stop-color="#bfb293"/></linearGradient>' +
+      '<linearGradient id="lbD" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#7fd6bd"/><stop offset=".5" stop-color="#3f9f89"/><stop offset="1" stop-color="#26705f"/></linearGradient>' +
+      '<linearGradient id="lbG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a8"/><stop offset="1" stop-color="#e0a93a"/></linearGradient>' +
+      '<linearGradient id="lbWin" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#ffe9a0"/><stop offset="1" stop-color="#f3a64a"/></linearGradient>' +
+      '<linearGradient id="lbDoor" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6b3d1d"/><stop offset=".5" stop-color="#8a5229"/><stop offset="1" stop-color="#5b3217"/></linearGradient>' +
+      '<linearGradient id="lbOp" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#19f0a6"/><stop offset=".35" stop-color="#3a6bff"/><stop offset=".7" stop-color="#d23bff"/><stop offset="1" stop-color="#ffb23b"/></linearGradient></defs>';
+    o += '<ellipse cx="150" cy="238" rx="146" ry="10" fill="rgba(30,55,30,.30)"/>';
+    // 左右の翼（低い建物）
+    [[14, 0], [206, 0]].forEach(function (p) {
+      var x = p[0];
+      o += '<rect x="' + x + '" y="150" width="80" height="72" fill="url(#lbW)" stroke="#a89572" stroke-width="2"/>';
+      o += '<rect x="' + (x - 4) + '" y="142" width="88" height="10" fill="#e9dfc4" stroke="#a89572" stroke-width="2"/><rect x="' + (x - 6) + '" y="136" width="92" height="7" fill="#f6efdc" stroke="#a89572" stroke-width="1.6"/>';
+      o += '<rect x="' + (x + 2) + '" y="120" width="76" height="18" fill="#bfe0d2" stroke="#6aa591" stroke-width="2"/><path d="M' + (x + 2) + ' 120L' + (x + 40) + ' 104L' + (x + 78) + ' 120Z" fill="url(#lbD)" stroke="#26705f" stroke-width="2"/>';
+      [0, 1].forEach(function (k) {
+        var wx = x + 12 + k * 36;
+        o += '<path d="M' + wx + ' 206V172Q' + (wx + 14) + ' 150 ' + (wx + 28) + ' 172V206Z" fill="url(#lbWin)" stroke="#7a6a48" stroke-width="2.4"/><path d="M' + (wx + 14) + ' 158V206M' + wx + ' 184H' + (wx + 28) + '" stroke="#7a6a48" stroke-width="1.8"/><rect x="' + (wx - 3) + '" y="206" width="34" height="5" fill="#d9ccaa" stroke="#a89572" stroke-width="1.4"/>';
+      });
+    });
+    // ドーム
+    o += '<rect x="108" y="40" width="84" height="26" fill="url(#lbW)" stroke="#a89572" stroke-width="2"/>';
+    [0, 1, 2, 3].forEach(function (i) { var wx = 116 + i * 20; o += '<path d="M' + wx + ' 64V50Q' + (wx + 6) + ' 43 ' + (wx + 12) + ' 50V64Z" fill="url(#lbWin)" stroke="#7a6a48" stroke-width="1.4"/>'; });
+    o += '<path d="M100 42Q150 -30 200 42Z" fill="url(#lbD)" stroke="#1d5a4b" stroke-width="3" stroke-linejoin="round"/>';
+    [0, 1, 2, 3].forEach(function (i) { o += '<path d="M' + (116 + i * 23) + ' 40Q' + (130 + i * 14) + ' 4 150 -6" fill="none" stroke="rgba(255,255,255,.28)" stroke-width="1.6"/>'; });
+    o += '<rect x="145" y="-14" width="10" height="16" fill="#f6efdc" stroke="#a89572" stroke-width="1.6"/><path d="M142 -14L150 -26L158 -14Z" fill="url(#lbG)" stroke="#a87a10" stroke-width="1.4"/><circle cx="150" cy="-30" r="3.2" fill="url(#lbG)" stroke="#a87a10" stroke-width="1"/>';
+    o += '<rect x="96" y="40" width="108" height="6" rx="2" fill="#f6efdc" stroke="#a89572" stroke-width="1.8"/>';
+    // 本体
+    o += '<rect x="60" y="104" width="180" height="120" fill="url(#lbW)" stroke="#a89572" stroke-width="2.4"/>';
+    // ペディメント（三角屋根）
+    o += '<path d="M52 108L150 58L248 108Z" fill="#f3ead4" stroke="#a89572" stroke-width="3" stroke-linejoin="round"/><path d="M66 106L150 66L234 106Z" fill="#e4d8b8" stroke="#bfae84" stroke-width="1.6"/>';
+    o += '<path d="M44 112H256V122H44Z" fill="#f6efdc" stroke="#a89572" stroke-width="2.4"/><path d="M44 112H256" stroke="rgba(255,255,255,.7)" stroke-width="2"/>';
+    // 三角の中の紋章（開いた本とオパール）
+    o += '<circle cx="150" cy="92" r="15" fill="#fffaf0" stroke="#a87a10" stroke-width="2.6"/><circle cx="150" cy="92" r="11" fill="#1c2540"/>';
+    o += '<path d="M138 95Q144 90 150 95Q156 90 162 95V99Q156 94 150 99Q144 94 138 99Z" fill="#fff6e0" stroke="#e0a93a" stroke-width="1"/>';
+    o += '<path d="M150 82L156 87L150 93L144 87Z" fill="url(#lbOp)" stroke="#fff" stroke-width=".8"/>';
+    [[84, 108], [216, 108]].forEach(function (p) { o += '<path d="M' + (p[0] - 7) + ' ' + p[1] + 'L' + p[0] + ' ' + (p[1] - 10) + 'L' + (p[0] + 7) + ' ' + p[1] + 'Z" fill="url(#lbG)" stroke="#a87a10" stroke-width="1.2"/>'; });
+    // 円柱6本
+    for (var i = 0; i < 6; i++) {
+      var cx = 74 + i * 30.4;
+      o += '<rect x="' + (cx - 9) + '" y="124" width="18" height="86" fill="url(#lbC)" stroke="#a89572" stroke-width="1.4"/>';
+      for (var f = 0; f < 3; f++) o += '<path d="M' + (cx - 4 + f * 4) + ' 128V208" stroke="rgba(120,100,60,.28)" stroke-width="1"/>';
+      o += '<rect x="' + (cx - 12) + '" y="121" width="24" height="7" rx="1.5" fill="url(#lbG)" stroke="#a87a10" stroke-width="1.2"/><path d="M' + (cx - 10) + ' 121Q' + cx + ' 114 ' + (cx + 10) + ' 121Z" fill="#fff4cf" stroke="#a87a10" stroke-width="1"/>';
+      o += '<rect x="' + (cx - 12) + '" y="208" width="24" height="7" rx="1.5" fill="#efe6d0" stroke="#a89572" stroke-width="1.4"/>';
+    }
+    // 柱の奥の壁・窓・扉
+    o += '<rect x="64" y="128" width="172" height="80" fill="#e9dcb8" opacity=".55"/>';
+    [[88, 0], [196, 0]].forEach(function (p) { var wx = p[0]; o += '<path d="M' + wx + ' 200V158Q' + (wx + 8) + ' 142 ' + (wx + 16) + ' 158V200Z" fill="url(#lbWin)" stroke="#7a6a48" stroke-width="2"/><path d="M' + (wx + 8) + ' 148V200M' + wx + ' 174H' + (wx + 16) + '" stroke="#7a6a48" stroke-width="1.4"/>'; });
+    o += '<path d="M122 208V160Q150 126 178 160V208Z" fill="url(#lbDoor)" stroke="#3a2010" stroke-width="3"/>';
+    o += '<path d="M128 164Q150 138 172 164Z" fill="#1c2540" stroke="#3a2010" stroke-width="2"/>';
+    o += '<path d="M150 146L158 156L150 166L142 156Z" fill="url(#lbOp)" stroke="#fff" stroke-width=".8"/><circle cx="136" cy="158" r="3" fill="#3a6bff" opacity=".85"/><circle cx="164" cy="158" r="3" fill="#d23bff" opacity=".85"/>';
+    o += '<path d="M150 166V208" stroke="#3a2010" stroke-width="2.4"/><rect x="128" y="172" width="18" height="30" rx="2" fill="none" stroke="#c89a58" stroke-width="1.6"/><rect x="154" y="172" width="18" height="30" rx="2" fill="none" stroke="#c89a58" stroke-width="1.6"/>';
+    o += '<circle cx="145" cy="190" r="2.6" fill="url(#lbG)"/><circle cx="155" cy="190" r="2.6" fill="url(#lbG)"/>';
+    // 看板
+    o += '<rect x="108" y="124" width="84" height="16" rx="3" fill="#2a3a52" stroke="#e0a93a" stroke-width="2"/><text x="150" y="136" text-anchor="middle" font-size="12" font-weight="800" fill="#ffe9a8" font-family="sans-serif" letter-spacing="3">図書館</text>';
+    // 階段（3段）
+    o += '<rect x="40" y="214" width="220" height="8" fill="#efe6d0" stroke="#a89572" stroke-width="1.8"/><rect x="30" y="221" width="240" height="8" fill="#e6dcc2" stroke="#a89572" stroke-width="1.8"/><rect x="20" y="228" width="260" height="8" fill="#ddd2b6" stroke="#a89572" stroke-width="1.8"/>';
+    // 街灯とトピアリー
+    [[26, 0], [274, 0]].forEach(function (p) {
+      var x = p[0];
+      o += '<rect x="' + (x - 7) + '" y="214" width="14" height="14" rx="2" fill="#b98350" stroke="#6f4524" stroke-width="1.6"/><circle cx="' + x + '" cy="204" r="12" fill="#58a868" stroke="#2f6b3c" stroke-width="2"/><circle cx="' + (x - 4) + '" cy="200" r="4" fill="#7ccb88" opacity=".8"/>';
+    });
+    return o + '</svg>';
+  }
+  /* 本棚（正面から見た、背の高い木製の本棚。背表紙は色とりどり） */
+  function libShelfSVG(w, h, seed, tint) {
+    var R = libRnd(seed), pal = tint || ['#7a2e2a', '#2f5a8a', '#2f7a55', '#8a6a1f', '#5a3a7a', '#a8532f', '#1f4a5a', '#8a2f5a', '#3a3a3a', '#c8a458'];
+    var o = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="100%" preserveAspectRatio="none"><defs><linearGradient id="lsW' + seed + '" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#3c2210"/><stop offset=".5" stop-color="#5b3419"/><stop offset="1" stop-color="#3c2210"/></linearGradient><linearGradient id="lsB' + seed + '" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#1c0f06"/><stop offset="1" stop-color="#2e1a0b"/></linearGradient></defs>';
+    o += '<rect x="0" y="12" width="' + w + '" height="' + (h - 12) + '" rx="3" fill="url(#lsW' + seed + ')" stroke="#24120a" stroke-width="3"/>';
+    var ix = 14, iw = w - 28, top = 38, bot = h - 52, rows = Math.max(3, Math.round((bot - top) / 54)), rh = (bot - top) / rows;
+    o += '<rect x="' + ix + '" y="' + top + '" width="' + iw + '" height="' + (bot - top) + '" fill="url(#lsB' + seed + ')"/>';
+    for (var r = 0; r < rows; r++) {
+      var y1 = top + (r + 1) * rh, x = ix + 3, k = 0;
+      while (x < ix + iw - 10) {
+        var bw = 8 + Math.floor(R() * 10), bh = rh * (0.52 + R() * 0.38), c = pal[Math.floor(R() * pal.length)];
+        if (R() < 0.07) { x += 8 + R() * 14; continue; }
+        if (R() < 0.06 && x < ix + iw - 40) { // 置物（オパールの原石か壺）
+          var gx = x + 12; o += '<ellipse cx="' + gx + '" cy="' + (y1 - 8) + '" rx="10" ry="8" fill="#e8e0d0" stroke="#8a7a58" stroke-width="1.4"/><path d="M' + (gx - 4) + ' ' + (y1 - 10) + 'L' + gx + ' ' + (y1 - 16) + 'L' + (gx + 4) + ' ' + (y1 - 10) + 'Z" fill="#7a5ad0"/>'; x += 28; continue;
+        }
+        var lean = R() < 0.05;
+        o += '<g' + (lean ? ' transform="rotate(-12 ' + (x + bw) + ' ' + y1 + ')"' : '') + '><rect x="' + x + '" y="' + (y1 - bh) + '" width="' + bw + '" height="' + bh + '" rx="1.4" fill="' + c + '" stroke="rgba(0,0,0,.45)" stroke-width="1"/><rect x="' + (x + 1.2) + '" y="' + (y1 - bh + 1) + '" width="1.6" height="' + (bh - 2) + '" fill="rgba(255,255,255,.2)"/><rect x="' + x + '" y="' + (y1 - bh + 5) + '" width="' + bw + '" height="2.2" fill="#e8c46a" opacity=".85"/><rect x="' + x + '" y="' + (y1 - 7) + '" width="' + bw + '" height="1.8" fill="#e8c46a" opacity=".6"/></g>';
+        x += bw + 0.6; k++;
+      }
+      o += '<rect x="' + ix + '" y="' + (y1 - 1) + '" width="' + iw + '" height="6" fill="#6b4020" stroke="#24120a" stroke-width="1.2"/><rect x="' + ix + '" y="' + (y1 - 1) + '" width="' + iw + '" height="1.8" fill="rgba(255,255,255,.2)"/>';
+    }
+    // 下の扉
+    o += '<rect x="10" y="' + (h - 50) + '" width="' + (w - 20) + '" height="44" fill="#4a2a14" stroke="#24120a" stroke-width="2"/>';
+    var dn = w > 200 ? 3 : 2, dw = (w - 28) / dn;
+    for (var d = 0; d < dn; d++) { o += '<rect x="' + (14 + d * dw + 4) + '" y="' + (h - 45) + '" width="' + (dw - 8) + '" height="34" rx="2" fill="#5d3519" stroke="#2c170a" stroke-width="1.6"/><rect x="' + (14 + d * dw + 10) + '" y="' + (h - 39) + '" width="' + (dw - 20) + '" height="22" rx="1.5" fill="none" stroke="rgba(255,220,150,.28)" stroke-width="1.2"/><circle cx="' + (14 + d * dw + dw / 2) + '" cy="' + (h - 28) + '" r="2.8" fill="#e8c46a" stroke="#8a6a1f" stroke-width="1"/>'; }
+    // 上の飾り（王冠モールディング）
+    o += '<path d="M-4 16Q-4 4 6 4H' + (w - 6) + 'Q' + (w + 4) + ' 4 ' + (w + 4) + ' 16V28H-4Z" fill="#6b4020" stroke="#24120a" stroke-width="2.4"/><rect x="-4" y="6" width="' + (w + 8) + '" height="3" fill="rgba(255,255,255,.22)"/>';
+    for (var s = 0; s < Math.floor(w / 24); s++) o += '<path d="M' + (8 + s * 24) + ' 28Q' + (20 + s * 24) + ' 38 ' + (32 + s * 24) + ' 28" fill="none" stroke="#e8c46a" stroke-width="1.8"/>';
+    // 左右の柱
+    o += '<rect x="0" y="12" width="12" height="' + (h - 12) + '" fill="#4a2a14" stroke="#24120a" stroke-width="1.6"/><rect x="' + (w - 12) + '" y="12" width="12" height="' + (h - 12) + '" fill="#4a2a14" stroke="#24120a" stroke-width="1.6"/>';
+    return o + '</svg>';
+  }
+  function libCarpetSVG(w, h) {
+    var o = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="100%" preserveAspectRatio="none"><defs><pattern id="lcP" width="26" height="26" patternUnits="userSpaceOnUse"><rect width="26" height="26" fill="#7a1f2b"/><path d="M13 3L23 13L13 23L3 13Z" fill="none" stroke="#c89a58" stroke-width="1.2"/><circle cx="13" cy="13" r="2" fill="#e8c46a"/></pattern></defs>';
+    o += '<rect x="2" y="2" width="' + (w - 4) + '" height="' + (h - 4) + '" rx="10" fill="#e8c46a" stroke="#7a5a1f" stroke-width="3"/><rect x="10" y="10" width="' + (w - 20) + '" height="' + (h - 20) + '" rx="6" fill="#1f2f5a" stroke="#e8c46a" stroke-width="2"/><rect x="20" y="20" width="' + (w - 40) + '" height="' + (h - 40) + '" rx="4" fill="url(#lcP)" stroke="#e8c46a" stroke-width="1.6"/>';
+    for (var i = 0; i < Math.floor(w / 60); i++) o += '<path d="M' + (40 + i * 60) + ' 4V16M' + (40 + i * 60) + ' ' + (h - 16) + 'V' + (h - 4) + '" stroke="#7a5a1f" stroke-width="3"/>';
+    return o + '</svg>';
+  }
+  function libRoundRugSVG(w, h) {
+    var cx = w / 2, cy = h / 2, o = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="100%"><defs><radialGradient id="lrG"><stop offset="0" stop-color="#2a3a7a"/><stop offset="1" stop-color="#14204a"/></radialGradient></defs>';
+    o += '<ellipse cx="' + cx + '" cy="' + cy + '" rx="' + (cx - 2) + '" ry="' + (cy - 2) + '" fill="#e8c46a" stroke="#7a5a1f" stroke-width="3"/><ellipse cx="' + cx + '" cy="' + cy + '" rx="' + (cx - 14) + '" ry="' + (cy - 12) + '" fill="#7a1f2b"/><ellipse cx="' + cx + '" cy="' + cy + '" rx="' + (cx - 30) + '" ry="' + (cy - 24) + '" fill="url(#lrG)" stroke="#e8c46a" stroke-width="2"/>';
+    for (var i = 0; i < 16; i++) { var a = i / 16 * 6.283; o += '<circle cx="' + (cx + Math.cos(a) * (cx - 22)) + '" cy="' + (cy + Math.sin(a) * (cy - 18)) + '" r="3" fill="#e8c46a"/>'; }
+    for (var j = 0; j < 8; j++) { var b = j / 8 * 6.283; o += '<path d="M' + cx + ' ' + cy + 'L' + (cx + Math.cos(b) * (cx - 44)) + ' ' + (cy + Math.sin(b) * (cy - 36)) + '" stroke="rgba(232,196,106,.35)" stroke-width="1.4"/>'; }
+    return o + '</svg>';
+  }
+  /* ステンドグラスの窓（遊色の青・緑・紫・金） */
+  function libWindowSVG(w, h) {
+    var o = '<svg viewBox="0 0 ' + w + ' ' + h + '" width="100%" height="100%" preserveAspectRatio="none"><defs><linearGradient id="lwG" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#19f0a6"/><stop offset=".4" stop-color="#3a6bff"/><stop offset=".75" stop-color="#d23bff"/><stop offset="1" stop-color="#ffb23b"/></linearGradient></defs>';
+    var r = w / 2;
+    o += '<path d="M2 ' + h + 'V' + r + 'A' + (r - 2) + ' ' + (r - 2) + ' 0 0 1 ' + (w - 2) + ' ' + r + 'V' + h + 'Z" fill="#3a2410" stroke="#24120a" stroke-width="3"/>';
+    o += '<clipPath id="lwC"><path d="M10 ' + (h - 6) + 'V' + r + 'A' + (r - 10) + ' ' + (r - 10) + ' 0 0 1 ' + (w - 10) + ' ' + r + 'V' + (h - 6) + 'Z"/></clipPath>';
+    o += '<path d="M10 ' + (h - 6) + 'V' + r + 'A' + (r - 10) + ' ' + (r - 10) + ' 0 0 1 ' + (w - 10) + ' ' + r + 'V' + (h - 6) + 'Z" fill="url(#lwG)" opacity=".92"/><g clip-path="url(#lwC)">';
+    var cols = ['#ffd36a', '#ff8ab0', '#7ae0ff', '#a98bff', '#8affc0'], n = 0;
+    for (var yy = 14; yy < h - 8; yy += 26) for (var xx = 12; xx < w - 12; xx += 22) { o += '<rect x="' + xx + '" y="' + yy + '" width="20" height="24" fill="' + cols[(n++ * 7) % 5] + '" opacity=".38"/>'; }
+    o += '</g>';
+    o += '<path d="M' + (w / 2) + ' 8V' + h + 'M10 ' + (h * .45) + 'H' + (w - 10) + 'M10 ' + (h * .72) + 'H' + (w - 10) + '" stroke="#24120a" stroke-width="3"/><circle cx="' + (w / 2) + '" cy="' + (r * .85) + '" r="' + (r * .42) + '" fill="none" stroke="#24120a" stroke-width="3"/>';
+    o += '<path d="M' + (w / 2 - r * .3) + ' ' + (r * .85) + 'L' + (w / 2) + ' ' + (r * .45) + 'L' + (w / 2 + r * .3) + ' ' + (r * .85) + 'L' + (w / 2) + ' ' + (r * 1.25) + 'Z" fill="rgba(255,255,255,.55)" stroke="#24120a" stroke-width="2"/>';
+    return o + '</svg>';
+  }
+  function libChandelierSVG() {
+    var o = '<svg viewBox="0 0 160 200"><defs><radialGradient id="lcgl" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="rgba(255,225,150,.7)"/><stop offset="1" stop-color="rgba(255,225,150,0)"/></radialGradient></defs>';
+    o += '<ellipse cx="80" cy="110" rx="78" ry="70" fill="url(#lcgl)"/><path d="M80 0V70" stroke="#8a6a1f" stroke-width="3"/>';
+    o += '<ellipse cx="80" cy="96" rx="58" ry="12" fill="none" stroke="#c89a3a" stroke-width="5"/><ellipse cx="80" cy="96" rx="58" ry="12" fill="none" stroke="#ffe9a8" stroke-width="1.6"/>';
+    o += '<path d="M80 70Q40 72 26 96M80 70Q120 72 134 96M80 70Q60 80 52 106M80 70Q100 80 108 106" fill="none" stroke="#c89a3a" stroke-width="3.4"/>';
+    [[26, 96], [52, 106], [80, 108], [108, 106], [134, 96]].forEach(function (p) {
+      o += '<rect x="' + (p[0] - 3) + '" y="' + (p[1] - 18) + '" width="6" height="16" fill="#fff6e0" stroke="#c9b88a" stroke-width="1"/><path d="M' + p[0] + ' ' + (p[1] - 28) + 'Q' + (p[0] + 6) + ' ' + (p[1] - 20) + ' ' + p[0] + ' ' + (p[1] - 17) + 'Q' + (p[0] - 6) + ' ' + (p[1] - 20) + ' ' + p[0] + ' ' + (p[1] - 28) + 'Z" fill="#ffd36a"/>';
+    });
+    for (var i = 0; i < 9; i++) { var x = 28 + i * 13; o += '<path d="M' + x + ' 106V' + (122 + (i % 3) * 8) + '" stroke="rgba(255,255,255,.7)" stroke-width="1"/><path d="M' + x + ' ' + (122 + (i % 3) * 8) + 'l-3 6l3 6l3 -6Z" fill="rgba(180,230,255,.85)" stroke="#fff" stroke-width=".8"/>'; }
+    o += '<path d="M80 108V150" stroke="#c89a3a" stroke-width="3"/><path d="M80 150l-8 12l8 14l8 -14Z" fill="url(#lbOp)" opacity=".9"/><defs><linearGradient id="lbOp" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="#19f0a6"/><stop offset=".5" stop-color="#3a6bff"/><stop offset="1" stop-color="#d23bff"/></linearGradient></defs>';
+    return o + '</svg>';
+  }
+  /* オパールの展示ケース（真ん中。タップでオパールの勉強） */
+  function libCaseSVG() {
+    var o = '<svg viewBox="0 0 360 250"><defs><linearGradient id="lkM" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="#fbfaf6"/><stop offset="1" stop-color="#c9c4b8"/></linearGradient><linearGradient id="lkGl" x1="0" y1="0" x2="1" y2="1"><stop offset="0" stop-color="rgba(220,245,255,.5)"/><stop offset="1" stop-color="rgba(160,200,230,.18)"/></linearGradient>' +
+      '<radialGradient id="lkB" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#9ffff0"/><stop offset=".3" stop-color="#2a6bff"/><stop offset=".65" stop-color="#8a2bff"/><stop offset="1" stop-color="#0b0f1e"/></radialGradient>' +
+      '<radialGradient id="lkW" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#fffdf6"/><stop offset=".35" stop-color="#ffe0f0"/><stop offset=".7" stop-color="#bfe8ff"/><stop offset="1" stop-color="#e6dcc8"/></radialGradient>' +
+      '<radialGradient id="lkBo" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#ffd8a0"/><stop offset=".3" stop-color="#19f0a6"/><stop offset=".6" stop-color="#b86a30"/><stop offset="1" stop-color="#5a3018"/></radialGradient></defs>';
+    o += '<ellipse cx="180" cy="238" rx="168" ry="12" fill="rgba(0,0,0,.28)"/>';
+    o += '<path d="M20 232L36 150H324L340 232Z" fill="url(#lkM)" stroke="#8a8474" stroke-width="3"/><path d="M26 226H334" stroke="#8a8474" stroke-width="1.6"/><rect x="14" y="224" width="332" height="14" rx="3" fill="#e8e2d2" stroke="#8a8474" stroke-width="2.4"/>';
+    o += '<path d="M36 150L52 40H308L324 150Z" fill="url(#lkGl)" stroke="#9ec4dc" stroke-width="3"/><path d="M52 40L36 150M308 40L324 150" stroke="#e8c46a" stroke-width="4"/><rect x="46" y="32" width="268" height="12" rx="3" fill="#e8c46a" stroke="#8a6a1f" stroke-width="2"/>';
+    o += '<rect x="44" y="140" width="272" height="14" rx="3" fill="#1c2540" stroke="#e8c46a" stroke-width="2"/>';
+    o += '<ellipse cx="110" cy="132" rx="46" ry="14" fill="#1a1230"/><ellipse cx="110" cy="116" rx="40" ry="30" fill="url(#lkB)" stroke="#fff" stroke-opacity=".7" stroke-width="1.6"/><ellipse cx="96" cy="102" rx="12" ry="7" fill="rgba(255,255,255,.55)"/>';
+    o += '<ellipse cx="250" cy="132" rx="46" ry="14" fill="#1a1230"/><ellipse cx="250" cy="118" rx="38" ry="28" fill="url(#lkBo)" stroke="#fff" stroke-opacity=".7" stroke-width="1.6"/><ellipse cx="238" cy="106" rx="11" ry="6" fill="rgba(255,255,255,.55)"/>';
+    o += '<ellipse cx="180" cy="134" rx="40" ry="13" fill="#1a1230"/><ellipse cx="180" cy="94" rx="30" ry="34" fill="url(#lkW)" stroke="#fff" stroke-opacity=".8" stroke-width="1.6"/><ellipse cx="170" cy="78" rx="10" ry="8" fill="rgba(255,255,255,.7)"/>';
+    o += '<g fill="#fff" opacity=".9"><path d="M72 70l3-8l3 8l8 3l-8 3l-3 8l-3-8l-8-3Z"/><path d="M286 64l2.4-6l2.4 6l6 2.4l-6 2.4l-2.4 6l-2.4-6l-6-2.4Z"/><path d="M180 52l2-5l2 5l5 2l-5 2l-2 5l-2-5l-5-2Z"/></g>';
+    o += '<path d="M60 48L40 142" stroke="rgba(255,255,255,.55)" stroke-width="3"/><path d="M80 44L62 140" stroke="rgba(255,255,255,.28)" stroke-width="2"/>';
+    return o + '</svg>';
+  }
+  function libTableSVG() {
+    return '<svg viewBox="0 0 220 130"><ellipse cx="110" cy="118" rx="100" ry="10" fill="rgba(0,0,0,.25)"/><rect x="22" y="70" width="14" height="48" fill="#4a2a14" stroke="#24120a" stroke-width="2"/><rect x="184" y="70" width="14" height="48" fill="#4a2a14" stroke="#24120a" stroke-width="2"/><rect x="10" y="48" width="200" height="28" rx="5" fill="#7a4a24" stroke="#24120a" stroke-width="2.6"/><rect x="10" y="48" width="200" height="8" rx="4" fill="rgba(255,255,255,.2)"/><rect x="14" y="76" width="192" height="6" fill="#3a2010"/>' +
+      '<rect x="40" y="38" width="46" height="12" rx="2" fill="#2f5a8a" stroke="#14304a" stroke-width="1.6"/><rect x="42" y="30" width="42" height="10" rx="2" fill="#a8532f" stroke="#5a2a14" stroke-width="1.6"/><path d="M122 46Q136 36 150 46V50H122Z" fill="#fffdf4" stroke="#8a7a58" stroke-width="1.4"/><path d="M136 42V50" stroke="#8a7a58"/>' +
+      '<path d="M170 48V30M170 30Q176 18 188 22" fill="none" stroke="#8a6a1f" stroke-width="3" stroke-linecap="round"/><path d="M180 18Q198 14 200 28L184 28Z" fill="#1f7a55" stroke="#0e3a28" stroke-width="1.6"/><ellipse cx="170" cy="48" rx="10" ry="3.4" fill="#8a6a1f"/></svg>';
+  }
+  function libGlobeSVG() {
+    return '<svg viewBox="0 0 100 130"><defs><radialGradient id="lgG" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="#9fd8ff"/><stop offset="1" stop-color="#1f5aa8"/></radialGradient></defs><ellipse cx="50" cy="122" rx="34" ry="6" fill="rgba(0,0,0,.25)"/><path d="M50 98V116M30 118H70" stroke="#6b4020" stroke-width="5" stroke-linecap="round"/><circle cx="50" cy="56" r="38" fill="url(#lgG)" stroke="#8a6a1f" stroke-width="3"/><path d="M30 40Q44 30 52 42Q46 54 34 52ZM56 54Q70 50 72 66Q64 78 56 70ZM44 66Q50 72 46 82Q38 76 44 66Z" fill="#7ccb88" opacity=".9"/><path d="M12 56A38 38 0 0 1 88 56" fill="none" stroke="#c89a3a" stroke-width="3"/><ellipse cx="40" cy="38" rx="10" ry="6" fill="rgba(255,255,255,.4)"/></svg>';
+  }
+  function libClockSVG() {
+    return '<svg viewBox="0 0 70 190"><ellipse cx="35" cy="184" rx="30" ry="5" fill="rgba(0,0,0,.25)"/><rect x="8" y="12" width="54" height="170" rx="6" fill="#5b3419" stroke="#24120a" stroke-width="3"/><path d="M8 24Q35 -6 62 24Z" fill="#6b4020" stroke="#24120a" stroke-width="3"/><circle cx="35" cy="42" r="19" fill="#fffdf4" stroke="#c89a3a" stroke-width="3.4"/><path d="M35 42V30M35 42L44 48" stroke="#2a2a2a" stroke-width="2.4" stroke-linecap="round"/><rect x="18" y="72" width="34" height="86" rx="3" fill="#2e1a0b" stroke="#c89a3a" stroke-width="2"/><path d="M35 78V132" stroke="#c89a3a" stroke-width="2"/><circle cx="35" cy="140" r="9" fill="#e8c46a" stroke="#8a6a1f" stroke-width="2"/></svg>';
+  }
+  function libBustSVG() {
+    return '<svg viewBox="0 0 70 120"><ellipse cx="35" cy="114" rx="26" ry="5" fill="rgba(0,0,0,.25)"/><rect x="12" y="78" width="46" height="34" fill="#cfc8b8" stroke="#8a8474" stroke-width="2"/><rect x="8" y="106" width="54" height="8" fill="#e6e0d2" stroke="#8a8474" stroke-width="2"/><path d="M14 80Q18 62 35 60Q52 62 56 80Z" fill="#f0ece2" stroke="#9a9484" stroke-width="2"/><ellipse cx="35" cy="42" rx="14" ry="18" fill="#f6f2e8" stroke="#9a9484" stroke-width="2"/><path d="M22 38Q24 22 35 22Q46 22 48 38Q42 30 35 32Q28 30 22 38Z" fill="#d9d4c6" stroke="#9a9484" stroke-width="1.6"/></svg>';
+  }
+  function libPlantSVG() {
+    return '<svg viewBox="0 0 80 130"><ellipse cx="40" cy="124" rx="28" ry="5" fill="rgba(0,0,0,.25)"/><path d="M20 90H60L54 122H26Z" fill="#b8643a" stroke="#6a3318" stroke-width="2"/><path d="M18 90H62" stroke="#e8c46a" stroke-width="3"/><path d="M40 92Q14 70 8 40Q26 56 40 92ZM40 92Q66 70 72 40Q54 56 40 92ZM40 92Q28 52 40 14Q52 52 40 92ZM40 92Q10 84 4 66Q24 68 40 92ZM40 92Q70 84 76 66Q56 68 40 92Z" fill="#3f9a5a" stroke="#1f5a30" stroke-width="1.6"/></svg>';
+  }
+  function libChairSVG() {
+    return '<svg viewBox="0 0 90 90"><ellipse cx="45" cy="84" rx="34" ry="5" fill="rgba(0,0,0,.25)"/><rect x="12" y="20" width="66" height="44" rx="14" fill="#7a1f2b" stroke="#3a0e14" stroke-width="2.6"/><rect x="6" y="40" width="78" height="30" rx="12" fill="#8c2634" stroke="#3a0e14" stroke-width="2.6"/><rect x="2" y="38" width="18" height="34" rx="8" fill="#6a1822" stroke="#3a0e14" stroke-width="2"/><rect x="70" y="38" width="18" height="34" rx="8" fill="#6a1822" stroke="#3a0e14" stroke-width="2"/><circle cx="30" cy="34" r="2.4" fill="#e8c46a"/><circle cx="45" cy="30" r="2.4" fill="#e8c46a"/><circle cx="60" cy="34" r="2.4" fill="#e8c46a"/><path d="M14 70V80M76 70V80" stroke="#3a2010" stroke-width="5" stroke-linecap="round"/></svg>';
+  }
+  function libLadderSVG(h) {
+    return '<svg viewBox="0 0 46 ' + h + '" width="100%" height="100%" preserveAspectRatio="none"><path d="M6 0V' + h + 'M40 0V' + h + '" stroke="#8a5a2b" stroke-width="5" stroke-linecap="round"/>' + (function () { var s = ''; for (var y = 20; y < h - 6; y += 28) s += '<path d="M6 ' + y + 'H40" stroke="#6b4020" stroke-width="4.4" stroke-linecap="round"/>'; return s; })() + '<circle cx="6" cy="3" r="3.4" fill="#c89a3a"/><circle cx="40" cy="3" r="3.4" fill="#c89a3a"/></svg>';
+  }
+  function libGround(W, H) {
+    var o = '<svg class="tground" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" style="position:absolute;left:0;top:0;pointer-events:none;z-index:0"><defs>' +
+      '<pattern id="lbPq" width="64" height="64" patternUnits="userSpaceOnUse"><rect width="64" height="64" fill="#b98350"/><g stroke="rgba(60,30,10,.45)" stroke-width="1.4"><path d="M0 16H32M32 0V32M32 48H64M0 32V64M64 16V64M32 32H64"/></g><rect x="0" y="0" width="32" height="16" fill="#c4915a"/><rect x="32" y="16" width="32" height="16" fill="#c4915a"/><rect x="0" y="32" width="32" height="16" fill="#a8733f"/><rect x="32" y="48" width="32" height="16" fill="#a8733f"/><rect x="32" y="0" width="16" height="32" fill="#b98350" opacity=".6"/></pattern>' +
+      '<pattern id="lbWp" width="56" height="70" patternUnits="userSpaceOnUse"><rect width="56" height="70" fill="#1f4a3c"/><path d="M28 6Q40 18 28 30Q16 18 28 6ZM28 40Q40 52 28 64Q16 52 28 40Z" fill="none" stroke="rgba(232,196,106,.22)" stroke-width="2"/><circle cx="28" cy="35" r="3" fill="rgba(232,196,106,.18)"/></pattern>' +
+      '<linearGradient id="lbWG" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(0,0,0,.55)"/><stop offset="1" stop-color="rgba(0,0,0,0)"/></linearGradient>' +
+      '<linearGradient id="lbRay" x1="0" y1="0" x2="0" y2="1"><stop offset="0" stop-color="rgba(255,236,170,.34)"/><stop offset="1" stop-color="rgba(255,236,170,0)"/></linearGradient></defs>';
+    o += '<rect width="' + W + '" height="' + H + '" fill="url(#lbPq)"/>';
+    o += '<rect width="' + W + '" height="360" fill="url(#lbWp)"/><rect width="' + W + '" height="360" fill="url(#lbWG)"/>';
+    // 幅木と大理石の床ライン
+    o += '<rect y="340" width="' + W + '" height="24" fill="#e9e2d0" stroke="#8a8474" stroke-width="3"/><rect y="340" width="' + W + '" height="5" fill="rgba(255,255,255,.7)"/><rect y="362" width="' + W + '" height="10" fill="rgba(0,0,0,.28)"/>';
+    // 光の筋（ステンドグラスから）
+    for (var i = 0; i < 6; i++) { var x = 160 + i * 300; o += '<path d="M' + x + ' 340L' + (x + 90) + ' 340L' + (x + 230) + ' 760L' + (x + 80) + ' 760Z" fill="url(#lbRay)" opacity=".7"/>'; }
+    // 手前の壁（入口側）
+    o += '<rect y="' + (H - 60) + '" width="' + W + '" height="60" fill="#3a2410"/><rect y="' + (H - 66) + '" width="' + W + '" height="8" fill="#e8c46a" stroke="#8a6a1f" stroke-width="1.6"/>';
+    return o + '</svg>';
+  }
+  var LIB_W = 1900, LIB_H = 1300;
+  /* 図書館：ジャンルごとの本棚（key / 看板 / 色 / 置き場所） */
+  var LIBG = [
+    { k: 'weapon', t: '⚔ 武器の本棚', x: 185, y: 360, w: 280, h: 232, row: 0, tint: ['#7a2e2a', '#a8532f', '#8a2f2f', '#c8a458', '#3a3a3a'] },
+    { k: 'armor', t: '🛡 盾と防具の本棚', x: 495, y: 360, w: 280, h: 232, row: 0, tint: ['#2f5a8a', '#1f4a5a', '#3a5a9a', '#c0c8d8', '#2a2a4a'] },
+    { k: 'outfit', t: '👕 服とおしゃれの本棚', x: 805, y: 360, w: 280, h: 232, row: 0, tint: ['#c0507a', '#e08aa8', '#8a2f5a', '#f0c0d0', '#a070c0'] },
+    { k: 'tool', t: '⛏ 採掘道具の本棚', x: 1115, y: 360, w: 280, h: 232, row: 0, tint: ['#8a6a1f', '#6a4a22', '#a8532f', '#c8a458', '#4a3a2a'] },
+    { k: 'skill', t: '🔮 スキルの本棚', x: 1425, y: 360, w: 280, h: 232, row: 0, tint: ['#5a3a7a', '#7a4ac0', '#3a2a6a', '#a98bff', '#2a2050'] },
+    { k: 'monster', t: '👹 モンスターとボスの本棚', x: 1735, y: 360, w: 280, h: 232, row: 0, tint: ['#2f7a55', '#1f5a3a', '#5a8a2f', '#8a2f2f', '#2a3a2a'] },
+    { k: 'stone', t: '💎 石の図鑑の本棚', x: 260, y: 700, w: 260, h: 214, row: 1, tint: ['#2f8a8a', '#3a6bff', '#19a07a', '#d23bff', '#c8e8f0'] },
+    { k: 'opal', t: '🇦🇺 オパールの本棚', x: 600, y: 700, w: 260, h: 214, row: 1, tint: ['#0b0f1e', '#19a07a', '#3a6bff', '#d23bff', '#c8a458'] },
+    { k: 'terms', t: '📖 宝石用語の本棚', x: 1300, y: 700, w: 260, h: 214, row: 1, tint: ['#8a6a1f', '#c8a458', '#5a3a1f', '#7a2e2a', '#2f5a8a'] },
+    { k: 'gems', t: '🪨 天然石の本棚', x: 1640, y: 700, w: 260, h: 214, row: 1, tint: ['#7a2e2a', '#2f7a55', '#2f5a8a', '#8a2f5a', '#c8a458'] },
+    { k: 'guide', t: '🎮 遊び方の本棚', x: 330, y: 1085, w: 260, h: 200, row: 2, tint: ['#e8a030', '#2f8aca', '#e0503a', '#6ac060', '#a070c0'] },
+    { k: 'mines', t: '🗺 世界の鉱山の本棚', x: 1570, y: 1085, w: 260, h: 200, row: 2, tint: ['#8a5a3a', '#c9a27a', '#4a6a8a', '#7a3f30', '#c8a458'] }
+  ];
+  function libRoomHTML(opt) {
+    opt = opt || {};
+    var html = libGround(LIB_W, LIB_H);
+    var dc = function (svg, x, y, wd, ht, z, cls) { html += '<div class="dc' + (cls ? ' ' + cls : '') + '" style="left:' + x + 'px;top:' + y + 'px;width:' + wd + 'px;height:' + ht + 'px;z-index:' + Math.round(z == null ? y : z) + '">' + svg + '</div>'; };
+    var lb = function (t, x, y) { html += '<div class="tlbl" style="left:' + x + 'px;top:' + y + 'px;white-space:nowrap;font-size:17px">' + t + '</div>'; };
+    // 絨毯：入口から中央まで続く赤い道＋展示ケースの丸い敷物
+    dc(libCarpetSVG(300, 560), 950, LIB_H - 66, 300, 560, 2);
+    dc(libRoundRugSVG(620, 300), 950, 905, 620, 300, 3);
+    // ステンドグラスの窓（6枚）
+    LIBG.filter(function (g) { return g.row === 0; }).forEach(function (g) { dc(libWindowSVG(120, 150), g.x, 150, 120, 150, 5); });
+    // 本棚
+    LIBG.forEach(function (g) {
+      dc(libShelfSVG(g.w, g.h, 11 + g.x % 97 + g.y % 53, g.tint), g.x, g.y, g.w, g.h, g.y);
+      lb(g.t, g.x, g.y - g.h - (g.row === 0 ? 2 : 24));
+    });
+    // 梯子（奥の壁）
+    dc(libLadderSVG(200), 650, 372, 46, 200, 371);
+    // 中央の展示ケース
+    dc(libCaseSVG(), 950, 810, 360, 250, 810, 'lcase');
+    lb('✨ オパールの展示', 950, 535);
+    // シャンデリア
+    [340, 950, 1560].forEach(function (x) { dc(libChandelierSVG(), x, 470, 150, 188, 99000); });
+    // 家具と飾り
+    dc(libTableSVG(), 700, 1070, 210, 124, 1070); dc(libChairSVG(), 640, 1110, 70, 70, 1110); dc(libChairSVG(), 770, 1110, 70, 70, 1110);
+    dc(libTableSVG(), 1200, 1070, 210, 124, 1070); dc(libChairSVG(), 1140, 1110, 70, 70, 1110); dc(libChairSVG(), 1270, 1110, 70, 70, 1110);
+    dc(libClockSVG(), 70, 640, 66, 180, 640); dc(libGlobeSVG(), 1830, 660, 90, 117, 660);
+    dc(libBustSVG(), 700, 770, 60, 104, 770); dc(libBustSVG(), 1200, 770, 60, 104, 770);
+    dc(libPlantSVG(), 50, 430, 70, 110, 430); dc(libPlantSVG(), 1860, 430, 70, 110, 430); dc(libPlantSVG(), 60, 1150, 70, 110, 1150); dc(libPlantSVG(), 1850, 1150, 70, 110, 1150);
+    // 出口
+    dc('<svg viewBox="0 0 200 110"><path d="M10 110V50Q100 -20 190 50V110Z" fill="url(#lbDoor)" stroke="#2a1608" stroke-width="5"/><path d="M100 18V110" stroke="#2a1608" stroke-width="4"/><circle cx="88" cy="70" r="4" fill="#e8c46a"/><circle cx="112" cy="70" r="4" fill="#e8c46a"/><path d="M26 108V56Q100 -4 174 56V108" fill="none" stroke="#c89a58" stroke-width="2.4"/></svg>', 950, LIB_H, 200, 110, LIB_H);
+    lb('🚪 出口', 950, LIB_H - 150);
+    return html;
+  }
+  /* ---------- 📚 図書館の本の中身（実在の知識）。確認：GIA 宝石百科・オーストラリア産地ガイドほか ---------- */
+  var LIBK = {};
+  LIBK.opal = [
+    { c: 'きほん', ic: '💎', t: 'オパールって、どんな石？', d: 'オパールは、二酸化ケイ素（シリカ）に水が入ってできた石です。化学式は SiO₂・nH₂O。水晶みたいな結晶ではなく、規則正しい結晶の形をもたない「非晶質（アモルファス）」です。\n水分は多いもので約20%。含まれる水が、オパール独特のしっとりした輝きに関わっています。10月の誕生石です。' },
+    { c: 'きほん', ic: '🌈', t: '遊色効果（プレイオブカラー）', d: 'オパールの虹色のきらめきを「遊色効果」と呼びます。\nしくみ：オパールの中には、ごく小さなシリカの球（直径は約0.2ミクロン前後。1ミクロンは1000分の1ミリ）が、ぎっしり規則正しく積み重なっています。ここに光が入ると、球のすき間で光が曲がって（回折して）分かれ、角度によって色が変わって見えます。\n球が小さいと青〜紫、大きいと橙〜赤になるといわれます。球の並びはひとつひとつ違うので、同じ遊色のオパールは世界に2つとありません。' },
+    { c: 'きほん', ic: '📏', t: 'オパールの性質（数字で見る）', d: 'モース硬度：5〜6.5（水晶の7より少しやわらかい）\n比重：約2.15（ダイヤの約3.5より軽く、大きくても着けやすい）\n屈折率：約1.37〜1.47\n水分：最大で約20%（一般的には数%〜10%くらい）\n複屈折：なし（単屈折）\nもろさ：衝撃や急な乾燥・温度変化に弱いので、割れやヒビ（クラック）に注意。' },
+    { c: 'きほん', ic: '🕰', t: 'できかた（何百万年もの時間）', d: 'ケイ酸を含んだ水が、地面の割れ目や空洞にしみこみ、水がゆっくり蒸発すると、シリカが小さな球になって積もっていきます。これが何百万年もかけて固まるとオパールになります。\nオーストラリアの内陸は、大昔は海（内海）におおわれていた場所。その地層の割れ目で、オパールが育ったと考えられています。' },
+    { c: '種類', ic: '🖤', t: 'ブラックオパール', d: '体色（ベースの色）が、黒〜濃い灰色〜濃紺のオパール。暗い背景のおかげで遊色がくっきり浮かび、とても高価です。\nオーストラリア・ニューサウスウェールズ州の「ライトニングリッジ」が、世界的に有名な産地です。遊色のなかで赤が強く出るものが、特に貴重とされます。\nゲーム内では「激レア」の石です。' },
+    { c: '種類', ic: '🤍', t: 'ホワイトオパール（ライトオパール）', d: '体色が白〜乳白色〜明るい灰色のオパール。やさしい雰囲気で、パステルのような遊色が出ます。\n南オーストラリア州の「クーバーペディ」が代表的な産地です。ブラックオパールより流通が多く、手に入りやすい種類です。' },
+    { c: '種類', ic: '🔮', t: 'クリスタルオパール', d: '透明〜半透明で、ガラスのように奥まで光が通るオパール。透けた石の中で、遊色が立体的に動いて見えます。\nブラック（暗い体色）のクリスタルは「ブラッククリスタル」とも呼ばれ、とても人気があります。ライトニングリッジ、クーバーペディ、アンダムーカなどで見つかります。' },
+    { c: '種類', ic: '🟤', t: 'ボルダーオパール', d: '鉄分をふくんだ茶色の硬い岩（アイアンストーン）の割れ目に、オパールがうすい層になって入っているもの。岩ごとカットして、茶色い背景の上に遊色を浮かび上がらせます。\nクイーンズランド州（ウィントン、クイルピー、コロイッドなど）が産地です。岩が土台になっていて丈夫なため、ジュエリーに向く種類。\n「ボルダー」は英語で「大きな岩」の意味です。' },
+    { c: '種類', ic: '🥜', t: 'ヤワー・ナッツ（ボルダーオパールの一種）', d: 'クイーンズランド州のヤワーという町で見つかる、丸い茶色の石の塊（ナッツ）。割ると、中心部にオパールが入っていることがあります。\n外側は硬い岩、中はオパール…という、宝探しにぴったりの石です。' },
+    { c: '種類', ic: '🩶', t: 'マトリックスオパール', d: '岩（母岩）のすき間にオパールがしみこんで、岩とオパールが混ざり合っている石。ふつうのオパールより遊色が細かく散った見た目になります。\n南オーストラリア州のアンダムーカで有名です。' },
+    { c: '種類', ic: '🔥', t: 'ファイアオパール', d: '体色が、橙〜赤〜黄色のオパール。炎のような色が特徴です。遊色が出るものもありますが、出ない（遊色なし）ものも多く、色の美しさを楽しみます。\nメキシコが有名な産地。透明なものは、ダイヤのように面を付けた「ファセットカット」にされることもあります。' },
+    { c: '種類', ic: '🌍', t: 'エチオピアン（ウェロ）オパール', d: 'アフリカ・エチオピアのウェロ地方で見つかるオパール。2008年ごろから、市場に多く出回るようになりました。\n水を吸いやすい（ハイドロファン）ものが多く、水にぬれると透明になり、乾くと元にもどる性質があります。明るい遊色が出るものが多く、お手頃なものもあります。' },
+    { c: '産地', ic: '🇦🇺', t: 'オーストラリアは、オパールの王国', d: 'オーストラリアは、世界でいちばんオパールをたくさん産出する国で、「貴重な（遊色のある）オパール」の大部分がここで採れるといわれます。1890年代ごろから本格的に生産が始まりました。\nオパールは、1993年にオーストラリアの国石（国の宝石）に選ばれています。\n主な産地：ニューサウスウェールズ州（ライトニングリッジ、ホワイトクリフス）／南オーストラリア州（クーバーペディ、アンダムーカ、ミンタビー）／クイーンズランド州（ウィントン、クイルピー、ヤワー、コロイッド）' },
+    { c: '産地', ic: '⚡', t: 'ライトニングリッジ（ニューサウスウェールズ州）', d: 'ブラックオパールの産地として世界一有名な町。赤茶けた大地に、掘った土の山がぽつぽつと並びます。\n1900年代のはじめに、黒い体色のオパールが見つかり、世界に知られるようになりました。ブラックオパールのほか、ダークオパール、クリスタルオパールなども出ます。' },
+    { c: '産地', ic: '🕳', t: 'クーバーペディ（南オーストラリア州）', d: '世界最大級のオパール産地の町。夏は非常に暑いので、住人の多くが地下の家（ダグアウト）で暮らしていることでも有名です。教会やお店が、地下にあることも。\nホワイトオパールやクリスタルオパールが中心です。町の名前は、先住民アボリジニの言葉で「白人の穴」を意味するという説があります。\n町の周りには、掘った土の山が広がっていて、小さなオパールのかけらを探す「ヌードリング」を楽しめる場所もあります。' },
+    { c: '産地', ic: '🟫', t: 'クイーンズランド州（ボルダーオパールの国）', d: 'ウィントン、クイルピー、ヤワー、コロイッド、ジュンダ、オパルトンなどの産地があります。\n・ウィントン：明るくあざやかな、ボルダーオパール\n・クイルピー：自然な形のまま磨いた、フリーフォームのボルダー\n・ヤワー：丸い「ナッツ」で有名\n・コロイッド：模様のきれいなボルダーオパール' },
+    { c: '産地', ic: '⛏', t: 'アンダムーカ・ミンタビー・ホワイトクリフス', d: '・アンダムーカ（南オーストラリア州）：1930年代にオパールの生産が始まった。マトリックスオパールとクリスタルオパールが有名。\n・ミンタビー（南オーストラリア州）：黒っぽい体色のダークオパールで知られた産地。\n・ホワイトクリフス（ニューサウスウェールズ州）：1800年代の終わりに採掘が始まった、オーストラリアでも古い産地。「パイナップル・オパール」という、パイナップルの形をした珍しい石が出ます。' },
+    { c: '模様', ic: '🧩', t: '遊色の模様（パターン）', d: 'オパールの遊色の並びかたには、名前がついています。\n・ハーレクイン：色のかたまりがモザイクのように並ぶ。いちばん人気で価値が高いとされる。\n・ピンファイア：小さな点（ピン）のような遊色が散らばる。\n・ローリングフラッシュ：石を動かすと、大きな光の帯がゆっくり走る。\n・フラッグストーン：旗のような、細かい四角いブロック状の模様。\n・リボン：細いリボンのような色の筋が流れる。\n・ストロー：わらをばらまいたような、細い線が並ぶ。\n・チャイニーズライティング：漢字（書き文字）に見える、細かい模様。\n・フローラル：花が咲いたような丸い模様。' },
+    { c: '模様', ic: '🌟', t: '色の貴重さ（どの色がレア？）', d: 'オパールの遊色は、赤がもっとも出にくく、価値が高いといわれます。\n貴重さの目安：赤 ＞ 橙 ＞ 黄 ＞ 緑 ＞ 青 ＞ 紫\n赤・橙・緑・青など、いろんな色が全部入っている石は、とくに人気です。\n※これは一般的な目安で、模様・明るさ・体色との組み合わせでも価値は大きく変わります。' },
+    { c: '見かた', ic: '🔎', t: '品質の見かた（5つのポイント）', d: '1. 体色（トーン）：黒に近いほど高価になりやすい（明るさは N1〜N9 の段階で表す）\n2. 遊色の明るさ（ブライトネス）：光ってまぶしいほど良い\n3. 遊色の色・模様：赤が入る／模様がはっきりしているほど良い\n4. 遊色の広がり：石の表面全体に出ているほど良い（全面に出るのを「フルフェイス」という）\n5. カットと厚み：きれいな形で、厚みがあるほど良い\nヒビ（クラック）や欠け（ポットホール）、茶色い砂岩の付着は、価値を下げる原因になります。' },
+    { c: '見かた', ic: '🪨', t: 'ソリッド・ダブレット・トリプレット', d: '・ソリッドオパール：1つの石だけで作られた、混じりけのないオパール。いちばん価値が高い。\n・ダブレット：薄いオパールの板を、黒い土台にはりあわせたもの。暗い背景のおかげで、遊色が濃く見える。\n・トリプレット：ダブレットの上に、透明な石英やガラスのドームをのせた3層のもの。傷や水に強くなる。\n横から見ると、はりあわせの線が見えるので、見分けられます。ダブレット・トリプレットは、ソリッドより値段が安く、ふつうのジュエリーとしても人気です。' },
+    { c: 'お手入れ', ic: '🧼', t: 'オパールのお手入れ', d: '・急な温度変化（熱いお風呂、冷たい水、ストーブの前）を避ける\n・強い衝撃や、堅いものにぶつけるのを避ける（硬度が5〜6.5で、ダイヤや水晶より傷つきやすい）\n・超音波洗浄機や、強い薬品は使わない\n・汚れは、やわらかい布でそっと拭く。長時間、水につけたままにしない\n・ほかの宝石と、ぶつからないよう別々にしまう\n・極端に乾燥した場所に、何年も置きっぱなしにしない\n指輪は、家事や運動のときは外すと安心です。' },
+    { c: 'お手入れ', ic: '💧', t: 'ヒビ（クレイジング）はなぜ起こる？', d: 'オパールには水が含まれているので、急に乾燥したり、温度が急に変わったりすると、細かいヒビが入ることがあります（これを「クレイジング」と呼びます）。\nボルダーオパールのように、岩が土台になっているタイプは、割れにくい傾向があるといわれます。\n気になる傷やヒビは、自分で直さず、専門の研磨・修理のお店に相談するのが安全です。' },
+    { c: '見かた', ic: '🧪', t: '合成オパール・模造オパール', d: '・合成（ラボ）オパール：人の手で、天然とほぼ同じ構造のオパールを作ったもの。1970年代ごろから作られている。\n・模造オパール：ガラスやプラスチックなどで、オパールに似せたもの。\n・処理オパール：天然のオパールに、染色や含浸などの加工をしたもの。\n見分けるには、拡大して遊色の模様を見たり、専門機関の鑑別を受けるのがたしかです。ネットや旅行先で買うときは、「天然」「ソリッド」の表記と、鑑別書の有無を確認しましょう。' },
+    { c: '歴史', ic: '📜', t: 'オパールの歴史と伝説', d: '・名前の由来：インドの古い言葉（サンスクリット語）の「ウパラ（宝石）」が、ラテン語の「オパルス」になったとされる。\n・古代ローマ：とても貴重で力のある宝石だと考えられていた。\n・中東の人々（ベドウィン）：雷が落ちたときに、オパールが生まれると信じていた。\n・1829年の小説『ガイエルシュタインのアン』が、「オパールは不吉」というイメージを広めたといわれる。実際には、オパールは多くの国で幸運の石として愛されています。' },
+    { c: '歴史', ic: '🎁', t: '誕生石と石言葉', d: 'オパールは、10月の誕生石です（もう1つの10月の石はトルマリン）。\nよく言われる石言葉は「希望」「創造力」「純真」など。\n遊色が七色に変わることから、「いろんな宝石の色を全部もつ石」とも言われてきました。' },
+    { c: '採掘', ic: '⛏', t: 'オパールの採掘のしかた', d: '昔は、つるはしとスコップの手掘りでした。今は、小さな機械や重機も使います。\n・縦穴を掘って、横に広がる「オパールの層」を探す\n・地下の暗い穴では、ヘッドライトを付けて作業する\n・掘った土は、水で洗ったり、ブラックライトを当てたりして、オパールのかけらを探す（ブラックライトで光る種類もある）\n・小さなかけらを、地面の上の土の山から探す「ヌードリング」は、旅行者にも人気\nこのゲームの鉱山も、そのイメージで作られています。' },
+    { c: '加工', ic: '✂', t: 'オパールの研磨とカット', d: 'オパールは、ふつう「カボション（丸く盛り上げた形）」に磨きます。ダイヤのように面をたくさん付ける（ファセット）より、遊色がよく見えるからです。\nカットのコツ：\n・遊色がいちばん強い層を、石の上に残す\n・ヒビや砂岩を、できるだけ避けて形を決める\n・石の形に合わせた、自由な形（フリーフォーム）にして、できるだけ大きく残す\n磨き方はとても細かく、傷を消す「傷取り」や、形を整える「リカット」には、職人の技が必要です。' }
+  ];
+  LIBK.terms = [
+    { c: '形・カット', ic: '💠', t: 'ルース', d: 'ジュエリーに取り付ける前の、バラバラの（裸の）宝石のこと。「裸石（はだかいし）」とも呼びます。' },
+    { c: '形・カット', ic: '🔘', t: 'カボション（カボッションカット）', d: '上を丸く盛り上げて、底が平らな形に磨くカット。オパール、ターコイズ、ムーンストーンなど、遊色や模様を楽しむ石によく使われます。' },
+    { c: '形・カット', ic: '💎', t: 'ファセットカット', d: '宝石の表面に、平らな小さな面（ファセット）をたくさん付けて光を反射させるカット。ダイヤモンドやルビー、サファイアなど、透明な石に多いです。' },
+    { c: '形・カット', ic: '🔷', t: 'ブリリアントカット', d: 'ダイヤモンドのために考えられた、全部で57面（またはその前後）のファセットを持つ丸いカット。光がもっとも強く輝くように設計されています。' },
+    { c: '形・カット', ic: '🪨', t: 'ラフ（原石）', d: '掘り出したままで、まだ磨いていない石。そこから、いちばん美しい部分を見つけて削り出します。' },
+    { c: '形・カット', ic: '🧱', t: 'フリーフォーム', d: '決まった形ではなく、石の形や模様を活かして自由な形に磨くこと。ボルダーオパールに多い仕上げです。' },
+    { c: '重さ・大きさ', ic: '⚖️', t: 'カラット（ct）', d: '宝石の重さの単位。1カラット（1ct）＝ 0.2グラム。\nたとえば、0.3ct は 0.06グラムです。\n※大きさ（見た目）は石の種類で変わります。同じ1ctでも、オパールはダイヤより軽い（比重が小さい）ので、少し大きく見えます。' },
+    { c: '重さ・大きさ', ic: '🔤', t: '4C（フォーシー）', d: 'ダイヤモンドの品質を決める、4つの基準。\n・カラット（Carat）：重さ\n・カラー（Color）：色\n・クラリティ（Clarity）：透明度・傷の少なさ\n・カット（Cut）：形の整い方と輝き\nオパールには、また別の見かた（遊色や模様）があります。' },
+    { c: '性質', ic: '🔨', t: 'モース硬度', d: '石の「ひっかき傷のつきにくさ」を、1〜10の10段階で表したもの。\n1 滑石 ／ 2 石膏 ／ 3 方解石 ／ 4 蛍石 ／ 5 燐灰石 ／ 6 正長石 ／ 7 石英 ／ 8 トパーズ ／ 9 コランダム ／ 10 ダイヤモンド\n数字が大きい石は、小さい石に傷をつけられます。「割れにくさ」とは別の性質です。' },
+    { c: '性質', ic: '💥', t: '靭性（じんせい）・へき開', d: '・靭性：割れたり欠けたりしにくい強さ。ヒスイは、とても高い靭性をもっています。\n・へき開：石が、決まった方向にスパッと割れやすい性質。ダイヤモンドは、へき開があるので、強く打つと割れます。\n硬度が高くても、靭性が低い石は、ぶつけると欠けることがあります。' },
+    { c: '性質', ic: '⚓', t: '比重（ひじゅう）', d: '同じ体積の水と比べた、石の重さの割合。オパールは約2.15で、ダイヤ（約3.5）、ルビー・サファイア（約4）より軽い石です。' },
+    { c: '性質', ic: '🔦', t: '屈折率（くっせつりつ）', d: '光が石の中に入るとき、どれくらい曲がるかを表す数字。ダイヤモンドは2.42と高くて強く輝き、オパールは約1.45とやや低めです。宝石を見分けるときに使います。' },
+    { c: '性質', ic: '🔆', t: '光沢（ラスター）', d: '石の表面の、光の反射のしかた。ダイヤは「金剛光沢」、水晶やルビーは「ガラス光沢」、真珠は「真珠光沢」、琥珀は「樹脂光沢」と呼ばれます。' },
+    { c: '性質', ic: '🌗', t: '透明度（トランスペアレンシー）', d: '透明（向こうが見える）／半透明（ぼんやり透ける）／不透明（光が通らない）の3つに大きく分けます。オパールは、透明なクリスタルから不透明なものまで幅広くあります。' },
+    { c: '光の効果', ic: '🌈', t: '遊色効果（プレイオブカラー）', d: 'オパールだけに見られる、虹色のきらめき。シリカの球が並んだところで、光が回折して分かれて見えます。見る角度で色が変わります。' },
+    { c: '光の効果', ic: '🔄', t: '変色効果（カラーチェンジ）', d: '太陽光の下と、白熱灯の下で、石の色がちがって見える効果。アレキサンドライトが有名で、昼は青緑、夜は赤紫に見えます。' },
+    { c: '光の効果', ic: '✨', t: 'スター効果（アステリズム）', d: '石の中で、光が星の形（4条や6条）に見える効果。スターサファイア、スタールビーが有名です。カボションカットにすると、よく見えます。' },
+    { c: '光の効果', ic: '🐱', t: 'キャッツアイ効果（シャトヤンシー）', d: '猫の目のように、石の表面にすっと1本の光の筋が走る効果。クリソベリルのキャッツアイが有名です。' },
+    { c: '光の効果', ic: '🌙', t: 'シラー（アデュラレッセンス）', d: '石を動かすと、青白い光がふわっと浮かんで動く効果。ムーンストーンが有名です。' },
+    { c: '光の効果', ic: '🫧', t: '虹彩効果（イリデッセンス）', d: 'シャボン玉のように、表面や内部で、虹のような色が見える現象。ラブラドライト（ラブラドレッセンス）や、真珠の「テリ」もこの仲間です。' },
+    { c: '光の効果', ic: '💡', t: '蛍光（フルオレッセンス）', d: 'ブラックライト（紫外線）を当てると、石が光る性質。ダイヤモンドやオパールの一部で、見られることがあります。' },
+    { c: '傷・特徴', ic: '🔍', t: '内包物（インクルージョン）', d: '石の中にふくまれている、小さな結晶や割れ目、気泡のこと。天然石の「個性」ですが、多すぎると透明度や価値が下がります。天然の証拠にもなります。' },
+    { c: '傷・特徴', ic: '🕳', t: 'ポットホール', d: 'オパールの表面にできた、小さなくぼみや欠け。磨く前の砂岩やゆるい部分が取れてできます。深いものは、価値が下がります。' },
+    { c: '傷・特徴', ic: '🕸', t: 'クレイジング', d: 'オパールの表面に入る、細かいヒビ（網の目のようなひび割れ）。急な乾燥や温度変化で起こります。' },
+    { c: '傷・特徴', ic: '🪨', t: '母岩（マトリックス）', d: '宝石をふくんでいる、土台の岩のこと。ボルダーオパールは、鉄鉱石の母岩ごと磨くことで、遊色が引き立ちます。' },
+    { c: '傷・特徴', ic: '🧵', t: 'シーム／ヌビー', d: '・シーム：岩の割れ目に、薄い板のように入ったオパールの層。\n・ヌビー（ノビー）：丸い塊の形をした、オパールの石。' },
+    { c: '種類', ic: '🌿', t: '天然石・合成石・模造石', d: '・天然石：自然の中で作られて、掘り出された石\n・合成石（ラボグロウン）：人間が工場で作った、天然とほぼ同じ成分・構造の石。ダイヤ、ルビー、サファイアなどにある\n・模造石：ガラスなど、似せた別の素材。ジルコニア（CZ）が有名\n合成石は「偽物」ではなく、成分は同じ本物の石です。ただし、天然とは別の種類として扱われ、値段も違います。' },
+    { c: '種類', ic: '🔥', t: '処理（トリートメント）', d: '宝石の色や透明度を良く見せるために加える加工。たとえば、加熱でルビー・サファイアの色を良くするもの、オイルを含ませてエメラルドの傷を目立たなくするもの、などがあります。処理のあるなしは、値段に関わります。' },
+    { c: '鑑定', ic: '📄', t: '鑑別書と鑑定書', d: '・鑑別書：その石が「何という石か」「天然か合成か」「処理はあるか」を調べた書類。\n・鑑定書（グレーディングレポート）：石の品質（4Cなど）を評価した書類。ダイヤモンドに多い。\n大きな買い物のときは、どちらかの書類があると安心です。' },
+    { c: 'ジュエリー', ic: '🥇', t: '地金（K18・Pt900）', d: 'ジュエリーの枠（金属）のこと。\n・K18：金が18/24（75%）\n・K10：金が10/24（約42%）\n・Pt900：プラチナが90%\n・シルバー925：銀が92.5%\n数字が大きいほど、金やプラチナの割合が高くなります。' },
+    { c: 'ジュエリー', ic: '🔗', t: '爪留め・覆輪（ふくりん）留め', d: '石を留める方法。\n・爪留め：数本の爪で石をはさむ。光がたくさん入って、石がきれいに見える\n・覆輪留め（ベゼル）：金属で石のまわりをぐるっと囲む。石が守られるので、オパールのような傷つきやすい石に向く' },
+    { c: 'ジュエリー', ic: '📿', t: 'ペンダントトップ／ヘッド', d: 'ネックレスの、中心にぶら下がる飾りの部分。ルースを取り付けて、ペンダントにします。' },
+    { c: 'ジュエリー', ic: '🛠', t: '研磨・傷取り・リカット', d: '・研磨（ポリッシュ）：石の表面をなめらかに磨くこと\n・傷取り：表面のひっかき傷を、細かく磨いて消すこと\n・リカット：形が崩れたり、欠けたりした石を、新しい形に削り直すこと\nオパールは熱に弱いので、熱がこもらないよう、水で冷やしながら低速で、そっと磨きます。' },
+    { c: 'ジュエリー', ic: '🎀', t: '誕生石（バースストーン）', d: '生まれた月にあてられた宝石。1月ガーネット、2月アメジスト、3月アクアマリン、4月ダイヤモンド、5月エメラルド、6月真珠・ムーンストーン、7月ルビー、8月ペリドット・スピネル、9月サファイア、10月オパール・トルマリン、11月トパーズ・シトリン、12月ターコイズ・タンザナイト・ラピスラズリ・ジルコン（日本で多く使われる組み合わせ）。' },
+    { c: '色', ic: '🎨', t: '体色（ボディカラー）', d: 'オパールの、ベースになっている色。黒・灰色・白・橙・透明など。体色が暗い（黒に近い）ほど、遊色が際立つため、ブラックオパールは高価になります。' },
+    { c: '色', ic: '🔢', t: 'トーン（N1〜N9）', d: 'オパールの体色の明るさを、段階で表したもの。N1（最も暗い・黒）〜N9（最も明るい・白）。N1〜N4 がブラックオパール、N5〜N6 がダークオパール、N7〜N9 がライトオパールとして区別されます。' }
+  ];
+  LIBK.gems = [
+    { c: 'ダイヤ・コランダム', ic: '💎', t: 'ダイヤモンド', d: '硬度10。地球上でもっとも硬い天然の物質。炭素だけでできています。4月の誕生石。\n透明でもっとも輝くため、婚約指輪に使われます。ほかにも、黄・ピンク・青などの「カラーダイヤ」があり、とても希少です。' },
+    { c: 'ダイヤ・コランダム', ic: '❤️', t: 'ルビー', d: 'コランダム（酸化アルミニウム）の赤い石。硬度9。7月の誕生石。\n中でも、鮮やかな赤（ピジョンブラッド＝鳩の血の色）は最高級。産地：ミャンマー（モゴック）、モザンビーク、タイなど。' },
+    { c: 'ダイヤ・コランダム', ic: '💙', t: 'サファイア', d: 'コランダムの、赤以外の色の石（青が有名）。硬度9。9月の誕生石。\nピンクサファイア、黄色、緑なども存在。オレンジ〜ピンクの「パパラチア」は、スリランカ産が特別に貴重とされます。産地：スリランカ、マダガスカル、カシミールなど。' },
+    { c: 'ダイヤ・コランダム', ic: '⭐', t: 'スターサファイア・スタールビー', d: 'カボションカットにすると、光が星の形（6条）に見えるコランダム。石の中の針のような結晶（ルチル）が、光を反射して星を作ります。' },
+    { c: 'ベリル', ic: '💚', t: 'エメラルド', d: 'ベリルの緑色の石。硬度7.5〜8。5月の誕生石。\n内部に細かい傷（内包物）が多いのが普通で、これを庭（ジャルダン）と呼びます。産地：コロンビア（ムゾー鉱山など）、ザンビア、ブラジルなど。' },
+    { c: 'ベリル', ic: '🌊', t: 'アクアマリン', d: 'ベリルの、水色〜青緑色の石。硬度7.5〜8。3月の誕生石。名前は「海水」の意味。透明度が高く、大きな石も採れます。航海のお守りともいわれる。' },
+    { c: 'ベリル', ic: '🌸', t: 'モルガナイト', d: 'ベリルの、ピンク〜オレンジがかったピンクの石。硬度7.5〜8。やさしい色合いで、人気があります。' },
+    { c: 'クリソベリル', ic: '🌗', t: 'アレキサンドライト', d: 'クリソベリルの一種。硬度8.5。6月の誕生石。昼の太陽光では青緑、夜の白熱灯では赤紫に見える「変色効果」で有名。ロシアのウラル山脈で発見され、当時の皇太子アレクサンドルにちなんで名付けられたといわれます。' },
+    { c: 'クリソベリル', ic: '🐱', t: 'キャッツアイ（クリソベリル）', d: 'クリソベリルの中で、猫の目のように光の筋が走る石。硬度8.5。ミルクとハチミツの色が分かれて見える「ミルク＆ハニー」が、最高とされます。' },
+    { c: 'ケイ酸塩', ic: '🍷', t: 'ガーネット', d: '深い赤が有名な石（ほかにもオレンジ、緑、ピンクなど種類が多い）。硬度は6.5〜7.5。1月の誕生石。\n緑色の「ツァボライト」や、オレンジの「スペサルティン」など、高価な種類もあります。' },
+    { c: 'ケイ酸塩', ic: '💜', t: 'アメジスト', d: '紫色の水晶（石英）。硬度7。2月の誕生石。昔は、お酒に酔わない石といわれ、名前もギリシャ語の「酔わない」が由来とされます。' },
+    { c: 'ケイ酸塩', ic: '🟡', t: 'シトリン', d: '黄色〜オレンジ色の水晶。硬度7。11月の誕生石。「太陽の石」とも呼ばれ、金運や明るさをもたらすといわれます。' },
+    { c: 'ケイ酸塩', ic: '🔮', t: '水晶（クォーツ）', d: '二酸化ケイ素の結晶で、透明なもの。硬度7。ローズクォーツ（ピンク）、スモーキークォーツ（茶色）、ルチルクォーツ（針が入った）など、仲間がたくさんいます。' },
+    { c: 'ケイ酸塩', ic: '💛', t: 'トパーズ', d: '硬度8。11月の誕生石。黄〜オレンジ（インペリアルトパーズ）やピンク、青（ブルートパーズ）など。ブルートパーズは、無色のトパーズに加熱や照射をして作ったものが多いです。' },
+    { c: 'ケイ酸塩', ic: '🍏', t: 'ペリドット', d: '緑〜黄緑色の石。硬度6.5〜7。8月の誕生石。マグマに運ばれて、地球の深いところからやってくることもあります。「太陽の石」とも呼ばれる。' },
+    { c: 'ケイ酸塩', ic: '🌈', t: 'トルマリン', d: '10月の誕生石。硬度7〜7.5。赤・緑・青・ピンクなど、あらゆる色があり、1つの結晶に2色ふくむ「バイカラー」や、スイカのような「ウォーターメロン」もあります。\nブラジルのパライバ州で見つかった、ネオンのような青緑の「パライバトルマリン」は、とても希少で高価です。' },
+    { c: 'ケイ酸塩', ic: '🔷', t: 'ジルコン', d: '硬度6.5〜7.5。12月の誕生石の1つ。ダイヤに近い、強い輝きがあります。※「キュービックジルコニア」は、人工的に作った別の物質（模造石）です。' },
+    { c: 'ケイ酸塩', ic: '🔵', t: 'タンザナイト', d: '硬度6.5〜7。12月の誕生石の1つ。青〜紫の美しい石。タンザニアのキリマンジャロ山のふもとだけで採れます。1967年に発見されたとされ、比較的新しい宝石です。' },
+    { c: 'ケイ酸塩', ic: '🌙', t: 'ムーンストーン', d: '硬度6〜6.5。6月の誕生石。月の光のような青白いシラー（アデュラレッセンス）が、ふわっと動いて見えます。' },
+    { c: 'ケイ酸塩', ic: '🦚', t: 'ラブラドライト', d: '硬度6〜6.5。石を動かすと、青・緑・金色のきらめき（ラブラドレッセンス）が現れる石。ラブラドル半島（カナダ）で見つかったのが名前の由来。' },
+    { c: 'ケイ酸塩', ic: '🌅', t: 'サンストーン', d: '硬度6〜6.5。オレンジ色の石の中に、金色のきらきらした小さな粒（銅などの結晶）が入っています。太陽のような見た目です。' },
+    { c: 'その他の鉱物', ic: '🌷', t: 'スピネル', d: '硬度8。8月の誕生石の1つ。赤・ピンク・青・黒など。昔は、ルビーと間違えられた歴史があり、世界の有名な「ルビー」の中にも、スピネルがあります。' },
+    { c: 'その他の鉱物', ic: '🧿', t: 'ターコイズ（トルコ石）', d: '硬度5〜6。12月の誕生石の1つ。空や海のような、青〜青緑の不透明な石。昔から、旅のお守りとして使われてきました。' },
+    { c: 'その他の鉱物', ic: '🌌', t: 'ラピスラズリ', d: '硬度5〜5.5。12月の誕生石の1つ。深い青の中に、金色の粒（黄鉄鉱）がちりばめられた、夜空のような石。古くから、青い絵の具の原料としても使われました。' },
+    { c: 'その他の鉱物', ic: '🍀', t: 'マラカイト（孔雀石）', d: '硬度3.5〜4。美しい緑色で、年輪のような縞模様が入ります。やわらかく、傷つきやすい石です。' },
+    { c: 'その他の鉱物', ic: '🍃', t: 'ヒスイ（翡翠）', d: '「ジェダイト（硬玉）」と「ネフライト（軟玉）」の2種類があり、一般にヒスイと呼ばれるのはジェダイト。硬度6.5〜7。\nとても粘り強く（靭性が高い）割れにくい石。緑色が有名で、日本では新潟県の糸魚川が産地として知られています。' },
+    { c: 'その他の鉱物', ic: '🟣', t: 'フローライト（蛍石）', d: '硬度4。紫・緑・青など、美しい色が出ます。名前は、熱すると光る（蛍光する）ことに由来します。やわらかく、割れやすいので、置き石として楽しむことが多いです。' },
+    { c: 'その他の鉱物', ic: '🌹', t: 'ロードクロサイト', d: '硬度3.5〜4.5。バラの花のようなピンク〜赤色で、縞模様が入ります。「インカローズ」とも呼ばれます。' },
+    { c: '瑪瑙・石英の仲間', ic: '🟠', t: 'アゲート（瑪瑙）／カーネリアン', d: '石英の細かい結晶が、層になってできた縞模様の石（アゲート）。硬度6.5〜7。\nその中で、赤〜オレンジのものを「カーネリアン」、黒白の縞のものを「オニキス」と呼ぶことがあります。' },
+    { c: '有機宝石', ic: '🦪', t: '真珠（パール）', d: '貝の中でできる、生き物が作る宝石。硬度2.5〜4.5。6月の誕生石。\n海で育つアコヤ真珠（日本）、南洋真珠、淡水の真珠などがあり、色や形、巻きの厚さなどで価値が変わります。酸や汗に弱いので、使ったあとは拭いて保管します。' },
+    { c: '有機宝石', ic: '🪸', t: 'サンゴ（珊瑚）', d: '海の生き物（サンゴ虫）が作った骨格。硬度3〜4。赤や桃色、白色。日本でも高知県の近海などで採れる宝石サンゴが有名です。' },
+    { c: '有機宝石', ic: '🍯', t: '琥珀（こはく）', d: '大昔の木の樹脂が、何千万年もかけて固まった化石。硬度2〜2.5。とても軽く、中に虫や植物が入っているものもあります。バルト海沿岸が有名な産地。' },
+    { c: '人工', ic: '🧬', t: 'ラボグロウンダイヤモンド', d: '工場（ラボ）で作った、天然のダイヤモンドと成分・構造が同じ石。炭素だけでできていて、硬度も10。天然ダイヤと同じ光り方をします。\n天然ダイヤは、地球の奥深くで何億年〜何十億年もかけてできたものですが、ラボグロウンは、数週間ほどで作れます。価格は、天然より手頃な傾向です。鑑別書で「ラボグロウン」と区別されます。' },
+    { c: '人工', ic: '🔶', t: 'キュービックジルコニア（CZ）', d: '硬度8〜8.5。ダイヤの代わりに使われる模造石で、安価。ダイヤにとてもよく似ていますが、別の物質です。天然のジルコンとも別のものです。' },
+    { c: '人工', ic: '💠', t: 'モアッサナイト', d: '硬度約9.25。炭化ケイ素の石で、天然は隕石の中にごくまれに見つかる程度。市販されているのは、ほとんどが人工です。ダイヤに近い輝きがあります。' }
+  ];
+  LIBK.guide = [
+    { c: '基本', ic: '👆', t: '基本の操作', d: '・歩く：行きたい所をタップ（ゆびで画面を押す）\n・掘る：光っている場所をタップすると、歩いていって掘りはじめる\n・街の建物：ドアの近くに行ってタップすると、中に入れる\n・人に話しかける：NPC（街にいる人）をタップ\n・下のボタンで、もちもの・図鑑・設定などを開く' },
+    { c: '基本', ic: '⛏', t: '鉱山で石を掘る', d: '世界地図から鉱山をえらんで、光る場所をタップして掘ります。1つの石を掘るのに、約10回タップします。\n掘った石は、図鑑に登録されて、もちものから売ることもできます。石の品質（遊色の強さなど）によって、売れる値段が変わります。\n強い鉱山は、レベルが上がると開きます。' },
+    { c: '基本', ic: '📈', t: 'レベルと強さ', d: 'レベルが上がると、HP（体力）と攻撃力が上がります。レベルは、石を掘ったり、敵を倒したり、ボスを倒すと上がる経験値で上がります。\nレベルの上限は100です。1日にもらえる経験値には、上限があります。\n装備の「こうげき」「HP」「ダメージカット」は、レベルの強さに足されます。' },
+    { c: '装備', ic: '⚔', t: '装備の種類', d: '・武器：剣、刀、斧、槍、ハンマー、短剣、弓、クロスボウ、銃、連射銃、ショットガン、ライフルの12種類\n・盾：受けるダメージを何%かカットする\n・防具：HPが増える\n・服：見た目が変わる。服には、HPやダメージなどのボーナスが付いているものもある\n・採掘道具：掘る回数が減る\nくわしくは、それぞれの本棚で調べてね。' },
+    { c: '装備', ic: '🌟', t: 'レア度（ノーマル〜伝説）', d: '・ノーマル：お店で買える\n・レア：ふつうの敵が、まれに落とす\n・超レア：強い敵（大きい敵）が、ごくまれに落とす\n・激レア：ボスだけが落とす\n・伝説（レジェンダリー）：最上位のボスだけが、ごくまれに落とす。激レアの約2倍の強さ。オパールの名前が付いた特別な装備\nレア度が高いほど、光り方も強くなります。' },
+    { c: '戦い', ic: '👹', t: 'モンスターとボス', d: '鉱山には、モンスターが出ます。タップで攻撃！ 倒すと、経験値とコインがもらえて、まれに装備を落とします。\nボスは、パーティー（2〜5人）で挑む強い敵です。倒すと、経験値とコインが、パーティーの全員に満額でもらえます。1日にもらえる回数には、上限があります。' },
+    { c: '戦い', ic: '💫', t: '倒れたら？（復活のしくみ）', d: 'HPが0になると倒れます。パーティーの仲間が、倒れた人を10回タップすると、HP30%で復活します。\n仲間と協力して、ボスに挑もう。' },
+    { c: '戦い', ic: '🔮', t: 'スキル', d: '「スキルの館」で、スキルを買って使えます。ボタンを押すと発動して、そのあとは、しばらく待つと使えるようになります（クールタイム）。\n武器にも、その種類に合わせた特別な技がついているものがあります。くわしくはスキルの本棚へ。' },
+    { c: '街', ic: '🏘', t: '街の建物', d: '・ショップ：武器・防具・服などを買う\n・ギルド：ギルド（仲間のグループ）を作る・入る\n・病院：HPを全回復\n・取引所：プレイヤー同士で、アイテムを売り買い\n・闘技場：プレイヤー同士で戦える（報酬なし）\n・ゲームセンター：スロット、もぐらたたき、ブラックジャック、ポーカーなど\n・カフェ：飲み物を飲みながら、友達とおしゃべり\n・スキルの館：スキルを買う\n・郵便局：運営に手紙を送る\n・図書館：このゲームのあらゆることを調べられる' },
+    { c: '街', ic: '☕', t: 'カフェ・ゲームセンター', d: 'カフェでは、ドリンクが全部無料。椅子に座っておしゃべりできます。\nゲームセンターには、スロット、もぐらたたき、ブラックジャック、ポーカーなどがあります。' },
+    { c: '街', ic: '🏟', t: '闘技場', d: '観客席から降りた闘技場の中では、近くにいる誰からでも攻撃されます（誰でも攻撃できます）。1対1の決闘もできます。\n報酬は出ず、持ち物も減りません。腕試しに遊ぼう。' },
+    { c: '街', ic: '📮', t: '郵便局', d: '運営への手紙（要望・不具合・質問など）を送れます。1通600文字まで、1日10通までです。' }
+  ];
+
   /* ---------- 🎮 ゲームセンター室内（カフェと同じ、自由に歩ける） ---------- */
   function arcGround(W, H) {
     var o = '<svg class="tground" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" style="position:absolute;left:0;top:0;pointer-events:none;z-index:0"><defs>' +
@@ -3858,7 +4237,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     arcSyncGet();
   }
 
-  function leaveTown() { inCafe = false; inPost = false; inTown = false; zoomT = ZW; fz = ZW; $('field').classList.remove('town'); rtStop(); setWorld(760, 1000); }
+  function leaveTown() { inCafe = false; inPost = false; inLib = false; inTown = false; zoomT = ZW; fz = ZW; $('field').classList.remove('town'); rtStop(); setWorld(760, 1000); }
   function sendChat() {
     var inp = $('tin'), t = String(inp.value || '').replace(/\s+/g, ' ').trim().slice(0, 40); if (!t) return;
     var now = Date.now(); if (now - tChatAt < 1800) { toast('ちょっと待ってください'); return; } tChatAt = now;
@@ -4183,7 +4562,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 144;
+  var GV = 145;
   (function () {
     var last = Date.now();
     function chk() {
@@ -4276,14 +4655,14 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       placeEl(e, n.x, n.y); $('world').appendChild(e);
     });
   }
-  function npcAt(wx, wy) { var r = null, bd = 62; var wh = inPlaza ? 'plaza' : (inPost ? 'post' : (inCafe ? 'cafe' : 'town')); Object.keys(NPCS).forEach(function (k) { var n = NPCS[k]; if ((n.where || 'town') !== wh) return; var d = Math.hypot(wx - n.x, wy - (n.y - 32)); if (d < bd) { bd = d; r = k; } }); return r; }
+  function npcAt(wx, wy) { var r = null, bd = 62; var wh = inPlaza ? 'plaza' : (inLib ? 'lib' : (inPost ? 'post' : (inCafe ? 'cafe' : 'town'))); Object.keys(NPCS).forEach(function (k) { var n = NPCS[k]; if ((n.where || 'town') !== wh) return; var d = Math.hypot(wx - n.x, wy - (n.y - 32)); if (d < bd) { bd = d; r = k; } }); return r; }
   var npcCur = null;
   function npcSay(t) { $('npcSay').textContent = t; }
   function openNpc(k) {
     var n = NPCS[k]; if (!n) return; npcCur = k; sfx(2);
     $('npcN').textContent = n.nm; npcSay(n.hi); $('npcIn').value = '';
     $('npcQs').innerHTML = n.faq.map(function (f, i) { return '<button type="button" data-i="' + i + '">' + esc(f.q) + '</button>'; }).join('');
-    $('npcAct').innerHTML = n.enter ? '<button type="button" class="abtn" id="npcEnter" style="width:100%;margin-top:10px">⚔ 闘技場に入る</button>' : (n.post ? '<button type="button" class="abtn" id="npcMail" style="width:100%;margin-top:10px">✉️ 手紙を書く</button>' : n.spar ? sparUI() : (n.drinks ? drinkUI() : ''));
+    $('npcAct').innerHTML = n.lib ? '<button type="button" class="abtn" id="npcLib" style="width:100%;margin-top:10px">📚 本棚をひらいて しらべる</button>' : n.enter ? '<button type="button" class="abtn" id="npcEnter" style="width:100%;margin-top:10px">⚔ 闘技場に入る</button>' : (n.post ? '<button type="button" class="abtn" id="npcMail" style="width:100%;margin-top:10px">✉️ 手紙を書く</button>' : n.spar ? sparUI() : (n.drinks ? drinkUI() : ''));
     if (n.spar) sparInfo();
     $('npc').classList.add('on');
   }
@@ -4369,6 +4748,189 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   $('npcGo').addEventListener('click', function () { npcAsk($('npcIn').value); });
   $('npcIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); npcAsk($('npcIn').value); } });
   $('npc').addEventListener('click', function (e) { if (e.target.closest && e.target.closest('#npcMail')) { $('npc').classList.remove('on'); openMailWrite(); } });
+  /* ---------- 📚 図書館：司書NPC・本棚の図鑑・部屋 ---------- */
+  var inLib = false;
+  var LIBNPC = [
+    { k: 'weapon', nm: '武器の司書 ケン', av: { name: 'ケン', gender: 0, skin: 2, face: 1, hair: 2, hairColor: 2, outfit: 5, outfitColor: 4, pattern: 0, patColor: 6, bottom: 2, bottomColor: 3, acc: 2 },
+      hi: 'いらっしゃい。武器の担当、ケンです。剣から、ライフルまで、このゲームの武器は全部ここにあるよ。「本棚をひらく」を押すと、全種類を、強さ順やレア度で調べられるんだ。',
+      faq: [{ q: '武器って何種類あるの？', k: ['種類', '何', 'いくつ'], a: '剣、刀、斧、槍、ハンマー、短剣、弓、クロスボウ、銃、連射銃、ショットガン、ライフルの12種類です。それぞれ、射程や攻撃のはやさが違うよ。' }, { q: 'レアな武器はどこで手に入る？', k: ['レア', '手に入', 'ドロップ', '落と'], a: 'ノーマルはショップ。レアはふつうの敵、超レアは強い（大きい）敵、激レアはボスだけが落とします。伝説の武器は、最上位のボスだけが、ごくまれに落とすんだ。' }, { q: 'いちばん強い武器は？', k: ['強い', '最強', 'いちばん'], a: '伝説の武器です。オパールの名前がついた特別な武器で、激レアの約2倍の強さ。ブラックオパールの剣、ボルダーオパールのライフルなど、12種類あるよ。' }] },
+    { k: 'armor', nm: '防具の司書 ミサキ', av: { name: 'ミサキ', gender: 1, skin: 1, face: 2, hair: 3, hairColor: 5, outfit: 3, outfitColor: 6, pattern: 0, patColor: 6, bottom: 1, bottomColor: 4, acc: 4 },
+      hi: 'こんにちは、防具担当のミサキです。盾と防具の本棚へようこそ。盾は「受けるダメージのカット」、防具は「HPアップ」が決め手だよ。',
+      faq: [{ q: '盾と防具の違いは？', k: ['違い', '盾', '防具'], a: '盾は、敵から受けるダメージを何%かカットします。防具は、HP（体力）を増やします。両方つけると、とても頑丈になるよ。' }, { q: 'ダメージカットの上限は？', k: ['上限', 'カット', '最大'], a: 'ガードや装備を合わせても、ダメージカットは最大85%までです。0にはならないから、気をつけてね。' }, { q: '伝説の盾や防具は？', k: ['伝説', 'レジェンダリー', 'オパール'], a: '盾はボルダーオパールの盾（80%カット）、防具はブラックオパールの鎧（HP+720）。どちらも、最上位のボスがごくまれに落とすよ。' }] },
+    { k: 'outfit', nm: 'おしゃれの司書 アヤ', av: { name: 'アヤ', gender: 1, skin: 1, face: 3, hair: 5, hairColor: 7, outfit: 6, outfitColor: 0, pattern: 1, patColor: 8, bottom: 1, bottomColor: 1, acc: 3 },
+      hi: 'ようこそ〜！ 服とおしゃれの司書、アヤです。ここには、このゲームの服が、ぜーんぶ載ってるよ。レアな服には、HPやダメージのボーナスが付いてるの。',
+      faq: [{ q: '服にも強さはある？', k: ['強さ', '強い', 'ボーナス', '効果'], a: 'レアな服には、HPアップやダメージアップ、素早さアップなどのボーナスが付いてるものがあります。ふつうの服は、見た目だけだよ。' }, { q: 'おしゃれな服はどこで手に入る？', k: ['手に入', '買', 'どこ'], a: 'ふつうの服はショップで買えます。レア・超レア・激レアの服は、モンスターやボスが落とします。' }, { q: '着替えはどうするの？', k: ['着替え', '装備', 'つけ'], a: '下の「もちもの」から、服をえらんで装備するだけ。見た目も、すぐに変わるよ。' }] },
+    { k: 'tool', nm: '採掘道具の司書 ゴウ', av: { name: 'ゴウ', gender: 0, skin: 3, face: 0, hair: 0, hairColor: 0, outfit: 1, outfitColor: 7, pattern: 0, patColor: 6, bottom: 3, bottomColor: 5, acc: 1 },
+      hi: 'おう、採掘道具のゴウだ。つるはしや発掘機は、掘る回数を減らしてくれる、頼れる相棒だぜ。',
+      faq: [{ q: '採掘道具って何が良いの？', k: ['採掘', '道具', '効果'], a: '石を掘るのに必要なタップの回数が、何%か減るんだ。いい道具ほど、早く掘れる。' }, { q: '伝説のつるはしは？', k: ['伝説', 'つるはし', 'オパール'], a: 'ボルダーオパールのつるはし。掘る回数が40%も減る、最強の道具だ。最上位のボスが、ごくまれに落とす。' }, { q: '道具はどこで買える？', k: ['買', '店', 'ショップ'], a: 'ふつうの道具は、ショップで買える。伝説の道具は、売ってないぞ。' }] },
+    { k: 'skill', nm: 'スキルの司書 ルカ', av: { name: 'ルカ', gender: 1, skin: 1, face: 1, hair: 4, hairColor: 9, outfit: 7, outfitColor: 9, pattern: 3, patColor: 9, bottom: 1, bottomColor: 6, acc: 5 },
+      hi: 'ふふ、いらっしゃい。スキルの司書のルカよ。スキルの館で買える技と、武器がもつ必殺技、どちらもここで調べられるわ。',
+      faq: [{ q: 'スキルと必殺技の違いは？', k: ['違い', '必殺', 'スキル'], a: 'スキルは、スキルの館で買って覚える技。必殺技は、武器の種類（または特別な武器）にもともとついている技よ。' }, { q: 'クールタイムって？', k: ['クール', '待ち', '再使用'], a: '技を使ったあと、もう一度使えるようになるまでの待ち時間のこと。強い技ほど長めよ。' }, { q: 'おすすめのスキルは？', k: ['おすすめ', '強い'], a: '敵がたくさんいるときは、まとめて攻撃できる「旋風斬」や「大地の怒り」がおすすめ。ボス戦なら、1匹に大ダメージの技ね。' }] },
+    { k: 'monster', nm: 'モンスターの司書 ダイ', av: { name: 'ダイ', gender: 0, skin: 2, face: 4, hair: 1, hairColor: 11, outfit: 4, outfitColor: 2, pattern: 2, patColor: 5, bottom: 0, bottomColor: 2, acc: 0 },
+      hi: 'やあ！ モンスター担当のダイだよ。鉱山にいる敵と、パーティーで戦う強いボスのことを、ここで教えるよ。',
+      faq: [{ q: 'ボスはどこにいる？', k: ['ボス', 'どこ', '場所'], a: 'ボス戦は、世界地図のボスの場所から挑戦できるよ。パーティーを組んで、みんなで戦おう。' }, { q: 'ボスを倒すと何がもらえる？', k: ['報酬', 'もらえる', 'ごほうび', '倒す'], a: 'コインと経験値が、パーティーの全員に満額でもらえる。装備を落とすこともあるよ。' }, { q: 'やられたらどうなる？', k: ['やられ', '倒れ', '復活', 'HP'], a: '仲間が、倒れた人を10回タップすると、HP30%で復活します。' }] },
+    { k: 'stone', nm: '石の司書 ヒカル', av: { name: 'ヒカル', gender: 0, skin: 1, face: 2, hair: 3, hairColor: 12, outfit: 2, outfitColor: 5, pattern: 0, patColor: 6, bottom: 2, bottomColor: 7, acc: 6 },
+      hi: 'こんにちは、石の担当のヒカルです。鉱山で掘れる石は、ぜんぶ、この本棚に載っています。どこで掘れるかも、わかるよ。',
+      faq: [{ q: 'いちばん貴重な石は？', k: ['貴重', 'レア', 'いちばん'], a: '激レアの石は、ブラックオパール、ボルダーオパール、ファイアオパールの3つです。' }, { q: '石の値段は、何で決まる？', k: ['値段', '売', '価値'], a: '石の種類（レア度）と、品質で決まります。オパールは、遊色が強いほど、高く売れるよ。' }, { q: '図鑑は埋めたほうがいい？', k: ['図鑑', '埋め', 'コンプ'], a: '全部そろえると楽しいよ。いろいろな鉱山に行って、石を集めてみてね。' }] },
+    { k: 'opal', nm: 'オパール博士 オパ子', av: { name: 'オパ子', gender: 1, skin: 1, face: 3, hair: 6, hairColor: 13, outfit: 8, outfitColor: 1, pattern: 4, patColor: 3, bottom: 1, bottomColor: 0, acc: 7 },
+      hi: 'ようこそ。オパール博士のオパ子です。オパールの種類、産地、遊色のしくみ、お手入れまで、実際のオーストラリアのオパールの知識を、全部ここにそろえました。真ん中の展示ケースも、見ていってね。',
+      faq: [{ q: 'オパールって何でできてるの？', k: ['何', '成分', 'できて', '水'], a: 'シリカ（二酸化ケイ素）に水が入った石です。水が最大で約20%も含まれています。水晶のような結晶ではなく、非晶質という、結晶の形をもたない石です。' }, { q: 'ブラックオパールがなぜ高いの？', k: ['ブラック', '高い', '黒'], a: '体色が黒に近いと、遊色がくっきり浮かんで、とても美しく見えるから。ライトニングリッジの産地は、ほとんど世界でここだけなので、希少なんです。' }, { q: 'お手入れのコツは？', k: ['お手入れ', '手入れ', '保管', '洗'], a: '急な温度変化と乾燥、強い衝撃を避けること。超音波洗浄機や強い薬品は使わないでね。汚れはやわらかい布でやさしく拭いてください。' }] },
+    { k: 'terms', nm: '用語の司書 レン', av: { name: 'レン', gender: 0, skin: 1, face: 3, hair: 0, hairColor: 3, outfit: 0, outfitColor: 3, pattern: 0, patColor: 6, bottom: 3, bottomColor: 1, acc: 2 },
+      hi: '宝石の用語の担当、レンです。「ルース」「カボション」「カラット」…むずかしい言葉を、やさしく説明した本が、ここにそろっているよ。',
+      faq: [{ q: 'カラットって、何？', k: ['カラット', '重さ'], a: '宝石の重さの単位。1カラット＝0.2グラムです。大きさではなくて、重さなんですよ。' }, { q: 'ルースって？', k: ['ルース', '裸石'], a: 'ジュエリーに付ける前の、バラバラの宝石のこと。「裸石」とも呼びます。' }, { q: '天然石と合成石の違いは？', k: ['合成', '天然', 'ラボ', '違い'], a: '天然石は、自然の中で何万年もかけてできた石。ラボグロウン（合成石）は、工場で作った、同じ成分の石です。偽物ではないけれど、天然とは別の種類として扱われます。' }] },
+    { k: 'gems', nm: '天然石の司書 ソウ', av: { name: 'ソウ', gender: 0, skin: 1, face: 0, hair: 4, hairColor: 6, outfit: 9, outfitColor: 10, pattern: 0, patColor: 6, bottom: 2, bottomColor: 4, acc: 0 },
+      hi: '天然石担当のソウです。ダイヤ、ルビー、サファイアから、ヒスイや真珠まで、世界の宝石を、ひととおり並べています。誕生石や、硬さの数字も載っていますよ。',
+      faq: [{ q: 'いちばん硬い宝石は？', k: ['硬い', '硬度', 'いちばん'], a: 'ダイヤモンドです。モース硬度は10。そのあとは、ルビー・サファイア（硬度9）が続きます。' }, { q: '10月の誕生石は？', k: ['10月', '誕生石'], a: 'オパールとトルマリンです。' }, { q: '宝石を傷つけない保管のコツは？', k: ['保管', '傷', 'しまう'], a: '硬度が違う石を、一緒の箱に入れないこと。やわらかい石（オパール、真珠など）は、硬い石に傷つけられちゃうので、別々にしまおうね。' }] },
+    { k: 'guide', nm: '案内の司書 ミオ', av: { name: 'ミオ', gender: 1, skin: 2, face: 4, hair: 1, hairColor: 8, outfit: 9, outfitColor: 4, pattern: 2, patColor: 2, bottom: 1, bottomColor: 2, acc: 1 },
+      hi: 'こんにちは！ ミオです。ゲームの遊び方を、ぜんぶ教えるよ。迷ったら、まずここに来てね。',
+      faq: [{ q: 'まず何をすればいい？', k: ['最初', 'まず', '始め', 'はじめ'], a: 'まずは鉱山に行って、石を掘ってみよう。掘った石は、売ってコインにできるよ。コインで装備を買って、もっと強い鉱山へ！' }, { q: 'レベルを上げるには？', k: ['レベル', '経験値', '上げ'], a: '石を掘る、敵を倒す、ボスを倒すと、経験値がたまります。パーティーなら、ボーナスで経験値が増えます。' }, { q: '仲間と遊ぶには？', k: ['仲間', 'パーティー', '一緒', '友達'], a: '鉱山で「パーティー」を作って、仲間を呼んでね。2〜5人で、ボスに挑めます。' }] },
+    { k: 'mines', nm: '地図の司書 タク', av: { name: 'タク', gender: 0, skin: 3, face: 1, hair: 5, hairColor: 4, outfit: 5, outfitColor: 8, pattern: 0, patColor: 6, bottom: 3, bottomColor: 6, acc: 3 },
+      hi: '世界の鉱山の担当、タクだよ。ライトニングリッジから、アフリカ、南米まで。どの鉱山で、何の石が掘れるか、地図で調べられるよ。',
+      faq: [{ q: '強い鉱山はいつ開く？', k: ['開く', 'レベル', 'いつ'], a: 'それぞれの鉱山に、開くレベルがあります。本棚で、必要なレベルを確認してね。' }, { q: 'オパールはどこで掘れる？', k: ['オパール', 'ブラック', 'ボルダー'], a: 'ブラックオパールはライトニングリッジ、ボルダーオパールはクイーンズランド州の鉱山（コロイッド、ヤワー、ウィントン）が中心です。' }, { q: 'ボスはどこにいる？', k: ['ボス', 'どこ'], a: 'ボス戦は、世界地図から挑めます。オーストラリアの内陸を中心に、世界各地に、ボスのステージがあるよ。' }] }
+  ];
+  LIBNPC.forEach(function (n) {
+    var g = LIBG.filter(function (x) { return x.k === n.k; })[0];
+    NPCS['lib_' + n.k] = { nm: n.nm, where: 'lib', x: g.x, y: g.y + (g.row === 0 ? 76 : (g.row === 1 ? 82 : 84)), av: n.av, hi: n.hi, faq: n.faq, lib: n.k };
+  });
+  function buildLibRoom() {
+    var w = $('world'); setWorld(LIB_W, LIB_H); w.classList.remove('cave'); w.style.background = '#2a170b'; SEATS = [];
+    var html = '<svg width="0" height="0" style="position:absolute"><defs><linearGradient id="lbDoor" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#6b3d1d"/><stop offset=".5" stop-color="#8a5229"/><stop offset="1" stop-color="#5b3217"/></linearGradient></defs></svg>' + libRoomHTML();
+    html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
+    w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
+    DOORS = [{ k: 'libout', x: 950, y: 1230, w: 200, h: 120 }, { k: 'libcase', x: 950, y: 810, w: 340, h: 230 }];
+    hero.x = 950; hero.y = 1170; hero.dir = 0; hero.sit = null; ftarget = null; fz = zoomT;
+    $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi(); addNpcs('lib');
+  }
+  function openLibRoom() {
+    inTown = true; inCafe = true; inPost = false; inLib = true; inArcRoom = false; shared = false; curMine = null; hero.cup = ''; hero.cupS = -1; hero.lastSeat = null; hero.order = null; cafeBusy = false;
+    rtStop(); $('field').classList.remove('chat'); $('field').classList.add('town'); $('fTtl').textContent = '図書館'; fz = zoomT = .72;
+    buildLibRoom(); show('field'); closeSheets(); digUI(false); BGM.set('town'); gearUi();
+    $('fhud').innerHTML = ''; $('tlog').innerHTML = '';
+    var by = document.querySelector('.gh.npc[data-npc="lib_guide"]'); if (by) setTimeout(function () { bubble(by, 'ようこそ、図書館へ！'); }, 600);
+    var me = { id: myMid, n: (player.avatar && player.avatar.name) || '', av: player.avatar };
+    RT.join('lib', me, { onMsg: rtMsg, onPeers: rtPeers }, function (ok) { if (ok) { rtOn = true; rtLast = 0; rtSend(posMsg()); } });
+  }
+  /* ----- 本棚をひらく：図鑑の画面 ----- */
+  var KN = { sword: '剣', katana: '刀', axe: '斧', spear: '槍', hammer: 'ハンマー', dagger: '短剣', bow: '弓', cbow: 'クロスボウ', gun: '銃', smg: '連射銃', shotgun: 'ショットガン', rifle: 'ライフル' };
+  var LRN = ['ノーマル', 'レア', '超レア', '激レア', '伝説'], LRC = ['#9db0b8', '#58a6ff', '#b583ff', '#ffd36a', '#ff7ad9'];
+  function libRar(i) { return i.lg ? 4 : (i.tier || 0); }
+  function libHow(i) {
+    if (i.lg) return '最上位のボス（Lv250で3%、Lv300で5%）だけが、ごくまれに落とす。お店では売っていません。';
+    var t = i.tier || 0;
+    if (t === 0 && !i.drop) return 'ショップで買える（' + (i.price || 0).toLocaleString() + ' コイン）。';
+    return ['ふつうの敵が、まれに落とす。', 'ふつうの敵が、まれに落とす（レア）。', '強い敵（大きい敵）が、ごくまれに落とす。', 'ボスだけが落とす。'][t] + 'お店では売っていません。';
+  }
+  function libWeapSkill(i) { var d = SPD[i.sp || ('k_' + i.kind)]; return d ? '「' + d.nm + '」：' + d.ds : ''; }
+  function libItemEntries(slots) {
+    return ITEMS.filter(function (i) { return slots.indexOf(i.slot) >= 0; }).map(function (i) {
+      var cat = i.slot === 'weapon' ? (KN[i.kind] || 'その他') : (i.slot === 'shield' ? '盾' : (i.slot === 'armor' ? '防具' : (i.slot === 'tool' ? '採掘道具' : ((i.bhp || i.batk || i.bspd) ? 'ボーナスつき' : 'ふつうの服')))), r = libRar(i), sub = '';
+      if (i.slot === 'weapon') sub = cat + ' ／ こうげき +' + i.atk + (i.pw ? ' ／ 威力 ×' + i.pw : '');
+      else if (i.slot === 'shield') sub = 'ダメージ ' + Math.round(i.def * 100) + '% カット';
+      else if (i.slot === 'armor') sub = 'HP +' + i.hp;
+      else if (i.slot === 'tool') sub = '掘る回数 ' + Math.round((i.cut || 0) * 100) + '% へる';
+      else sub = ((i.bhp ? 'HP+' + i.bhp + ' ' : '') + (i.batk ? 'ダメージ+' + i.batk + ' ' : '') + (i.bspd ? '素早さ+' + i.bspd + '% ' : '')).trim() || '見た目だけ';
+      var rows = [['レア度', LRN[r]]];
+      String(i.fx || '').split(' ／ ').forEach(function (s) { if (s && !/^(店では売っていません|ボスだけが落とす|強い敵から、ごくまれに落ちる|伝説の装備)/.test(s)) rows.push(['', s]); });
+      var det = { ic: i.ic, nm: i.nm, r: r, rows: rows, how: libHow(i), sell: Math.round((i.price || 0) * .5) };
+      return { id: i.id, ic: i.ic, nm: i.nm, r: r, cat: cat, sub: sub, ord: -(r * 100000 + (i.atk || 0) * 10 + (i.hp || 0) + (i.def || 0) * 1000 + (i.cut || 0) * 1000 + (i.bhp || 0) + (i.batk || 0) * 5), det: det };
+    }).sort(function (a, b) { return a.ord - b.ord; });
+  }
+  function libSkillEntries() {
+    var a = SKD.map(function (d) { return { id: d.id, ic: '<span style="font-size:30px">' + d.ic + '</span>', nm: d.nm, r: -1, cat: 'スキルの館', sub: '値段 ' + d.price.toLocaleString() + ' コイン ／ 待ち時間 ' + (d.cd / 1000) + '秒', det: { ic: '<span style="font-size:56px">' + d.ic + '</span>', nm: d.nm, r: -1, rows: [['内容', d.ds], ['値段', d.price.toLocaleString() + ' コイン'], ['クールタイム', (d.cd / 1000) + ' 秒']], how: 'スキルの館で買える。', sell: 0 } }; });
+    Object.keys(SPD).forEach(function (k) {
+      var d = SPD[k], users = ITEMS.filter(function (i) { return i.slot === 'weapon' && (i.sp || ('k_' + i.kind)) === k; }), ex = users.slice(0, 6).map(function (i) { return i.nm; }).join('、') + (users.length > 6 ? ' ほか' : '');
+      a.push({ id: 'sp_' + k, ic: '<span style="font-size:30px">⚔️</span>', nm: d.nm, r: -1, cat: '武器の必殺技', sub: d.ds.slice(0, 26) + '…', det: { ic: '<span style="font-size:56px">⚔️</span>', nm: d.nm, r: -1, rows: [['内容', d.ds], ['使える武器', users.length + ' 本：' + ex]], how: 'この技がついた武器を装備すると使える。', sell: 0 } });
+    });
+    return a;
+  }
+  function libMonEntries() {
+    var DN = ['ふつうの敵', 'ふつうの敵（レア寄り）', '強い敵'], a = [];
+    MONS.forEach(function (d) {
+      var sv = String(d.svg).replace(/@SH@/g, '');
+      a.push({ id: 'mon_' + d.nm, ic: '<span style="display:block;width:44px;height:44px">' + sv + '</span>', nm: d.nm, r: -1, cat: 'モンスター', sub: DN[d.tier] || '', det: { ic: '<span style="display:block;width:92px;height:92px">' + sv + '</span>', nm: d.nm, r: -1, rows: [['強さ', DN[d.tier]], ['出る場所', 'どの鉱山にも出る'], ['倒すと', '経験値とコイン。装備を、まれに落とす。' + (d.tier >= 2 ? '強い敵は「超レア」の装備も、ごくまれに落とす。' : '')]], how: '', sell: 0 } });
+    });
+    BOSSES.forEach(function (b) {
+      var st = (b.sig || []).map(function (s) { return BY[s] ? BY[s].nm : s; }).join('、');
+      a.push({ id: 'boss_' + b.bl, ic: '<span style="font-size:32px">👑</span>', nm: b.bn, r: -1, cat: 'ボス', sub: '推奨 Lv' + b.bl + ' ／ ' + b.pn + '人〜 ／ ' + b.zone, det: { ic: '<span style="font-size:60px">👑</span>', nm: b.bn, r: -1, rows: [['ステージ', b.zone], ['推奨レベル', 'Lv' + b.bl + ' 以上'], ['パーティー', b.pn + ' 人（以上）'], ['ここで出る石', st], ['倒すと', 'コインと経験値が、パーティー全員に満額で入る。装備も、まれに落とす（激レアが出やすい）。' + (b.bl >= 250 ? '伝説の装備のチャンスもある（Lv' + b.bl + ' のボスで ' + (b.bl >= 300 ? '5' : '3') + '%）。' : '')]], how: '', sell: 0 } });
+    });
+    return a;
+  }
+  function libStoneEntries() {
+    return STONES.map(function (s) {
+      var where = MINES.filter(function (m) { return (m.sig || []).indexOf(s.id) >= 0; }).map(function (m) { return m.nm; });
+      var bw = BOSSES.filter(function (b) { return (b.sig || []).indexOf(s.id) >= 0; }).map(function (b) { return b.zone; });
+      var rows = [['レア度', TIERS[s.t].n], ['説明', s.tri], ['掘れる鉱山', where.length ? where.join('、') : '（特別な場所）']];
+      if (bw.length) rows.push(['ボスのステージ', bw.join('、')]);
+      if (s.f === 'opal' || s.f === 'boulder') rows.push(['遊色の強さ', '色なし → うすめ → あざやか → 極上、の4段階。遊色が強いほど高く売れる。']);
+      return { id: 'st_' + s.id, ic: gemHTML(s.id), nm: s.nm, r: s.t, cat: (s.id.indexOf('opal') >= 0) ? 'オパール' : '石', sub: TIERS[s.t].n + ' ／ ' + s.tri.slice(0, 22) + '…', ord: -s.t, det: { ic: gemHTML(s.id), nm: s.nm, r: s.t, rows: rows, how: '', sell: 0 } };
+    });
+  }
+  function libMineEntries() {
+    return MINES.map(function (m) {
+      var st = (m.sig || []).map(function (s) { return BY[s] ? BY[s].nm : s; }).join('、');
+      return { id: 'mi_' + m.id, ic: '<span style="font-size:30px">⛏</span>', nm: m.nm, r: -1, cat: (m.ct.split('・')[0]), sub: m.ct.split('・').pop() + ' ／ Lv' + (m.need ? m.need : '0') + '〜', ord: m.need || 0, det: { ic: '<span style="font-size:56px">⛏</span>', nm: m.nm, r: -1, rows: [['場所', m.ct], ['開くレベル', m.need ? 'Lv' + m.need : 'はじめから行ける'], ['おもに掘れる石', st], ['ひとこと', m.about]], how: '', sell: 0 } };
+    }).sort(function (a, b) { return a.ord - b.ord; });
+  }
+  function libKnow(arr, extra) {
+    var a = arr.map(function (e, n) { return { id: 'k' + n, ic: '<span style="font-size:30px">' + e.ic + '</span>', nm: e.t, r: -1, cat: e.c, sub: e.d.replace(/\n/g, ' ').slice(0, 30) + '…', det: { ic: '<span style="font-size:56px">' + e.ic + '</span>', nm: e.t, r: -1, rows: [], text: e.d, how: '', sell: 0 } }; });
+    return (extra || []).concat(a);
+  }
+  var LIBTT = { weapon: '⚔ 武器の図鑑', armor: '🛡 盾と防具の図鑑', outfit: '👕 服とおしゃれの図鑑', tool: '⛏ 採掘道具の図鑑', skill: '🔮 スキルの図鑑', monster: '👹 モンスターとボス', stone: '💎 石の図鑑', opal: '🇦🇺 オパールの本', terms: '📖 宝石用語集', gems: '🪨 天然石の図鑑', guide: '🎮 遊び方の本', mines: '🗺 世界の鉱山' };
+  function libEntries(k) {
+    if (k === 'weapon') return libItemEntries(['weapon']);
+    if (k === 'armor') return libItemEntries(['shield', 'armor']);
+    if (k === 'outfit') return libItemEntries(['outfit']);
+    if (k === 'tool') return libItemEntries(['tool']);
+    if (k === 'skill') return libSkillEntries();
+    if (k === 'monster') return libMonEntries();
+    if (k === 'stone') return libStoneEntries();
+    if (k === 'mines') return libMineEntries();
+    if (k === 'opal') return libKnow(LIBK.opal, libStoneEntries().filter(function (e) { return e.cat === 'オパール'; }).map(function (e) { e.cat = 'ゲームのオパール'; return e; }));
+    if (k === 'terms') return libKnow(LIBK.terms);
+    if (k === 'gems') return libKnow(LIBK.gems);
+    if (k === 'guide') return libKnow(LIBK.guide);
+    return [];
+  }
+  var libS = { k: null, all: [], q: '', cat: '', rar: -9, det: null };
+  function openLib(k) {
+    libS = { k: k, all: libEntries(k), q: '', cat: '', rar: -9, det: null };
+    $('libTtl').textContent = LIBTT[k] || '📚 図書館'; $('libBook').classList.add('on'); libTools(); libList(); $('libBack').style.visibility = 'hidden';
+    var bd = $('libBook').querySelector('.body'); if (bd) bd.scrollTop = 0;
+  }
+  function libTools() {
+    var cats = [], nR = 0; libS.all.forEach(function (e) { if (cats.indexOf(e.cat) < 0) cats.push(e.cat); if (e.r >= 0) nR++; }); var hasR = nR > libS.all.length / 2;
+    var h = '<input id="libQ" type="search" placeholder="🔍 ことばで さがす" autocomplete="off" value="' + esc(libS.q) + '">';
+    if (cats.length > 1) h += '<div class="mlk">' + ['ぜんぶ'].concat(cats).map(function (c) { var v = c === 'ぜんぶ' ? '' : c; return '<button type="button" data-lc="' + esc(v) + '" class="' + (libS.cat === v ? 'on' : '') + '">' + esc(c) + '</button>'; }).join('') + '</div>';
+    if (hasR) h += '<div class="mlk">' + [['ぜんぶ', -9]].concat(LRN.map(function (n, i) { return [n, i]; })).map(function (a) { return '<button type="button" data-lr="' + a[1] + '" class="' + (libS.rar === a[1] ? 'on' : '') + '">' + a[0] + '</button>'; }).join('') + '</div>';
+    $('libTools').innerHTML = h;
+  }
+  function libList() {
+    var q = libS.q.trim().toLowerCase(), l = libS.all.filter(function (e) { return (!libS.cat || e.cat === libS.cat) && (libS.rar === -9 || e.r === libS.rar) && (!q || (e.nm + ' ' + e.sub + ' ' + e.cat).toLowerCase().indexOf(q) >= 0); });
+    $('libTools').style.display = ''; $('libList').style.display = ''; $('libDet').style.display = 'none';
+    $('libList').innerHTML = '<div class="tiny" style="margin:2px 2px 10px">' + l.length + ' 件</div>' + (l.length ? l.slice(0, 400).map(function (e) {
+      return '<div class="it libcard" data-lid="' + esc(e.id) + '"><div class="ic">' + e.ic + '</div><div class="tx"><b>' + esc(e.nm) + '</b>' + (e.r >= 0 ? '<span class="rt" style="color:' + LRC[e.r] + '">' + LRN[e.r] + '</span>' : '') + '<br>' + esc(e.sub) + '</div></div>';
+    }).join('') : '<p class="tiny" style="text-align:center;margin-top:30px">見つからなかったよ</p>');
+  }
+  function libDetail(e) {
+    libS.det = e; var d = e.det;
+    var h = '<div class="libBig">' + d.ic + '</div><h2 class="libH">' + esc(d.nm) + '</h2>';
+    if (d.r >= 0) h += '<div class="libRt" style="color:' + LRC[d.r] + ';border-color:' + LRC[d.r] + '">' + LRN[d.r] + '</div>';
+    if (d.text) h += '<div class="libTx">' + esc(d.text).replace(/\n/g, '<br>') + '</div>';
+    d.rows.forEach(function (r) { h += '<div class="libRow">' + (r[0] ? '<b>' + esc(r[0]) + '</b>' : '') + '<span>' + esc(r[1]) + '</span></div>'; });
+    if (d.how) h += '<div class="libRow"><b>手に入れ方</b><span>' + esc(d.how) + '</span></div>';
+    if (d.sell) h += '<div class="libRow"><b>売ると</b><span>🪙 ' + d.sell.toLocaleString() + '</span></div>';
+    $('libDet').innerHTML = h; $('libTools').style.display = 'none'; $('libList').style.display = 'none'; $('libDet').style.display = ''; $('libBack').style.visibility = 'visible';
+    var bd = $('libBook').querySelector('.body'); if (bd) bd.scrollTop = 0;
+  }
+  $('libBack').addEventListener('click', function () { sfx(0); libS.det = null; $('libBack').style.visibility = 'hidden'; libList(); $('libTools').style.display = ''; });
+  $('libTools').addEventListener('input', function (e) { if (e.target.id === 'libQ') { libS.q = e.target.value; libList(); } });
+  $('libTools').addEventListener('click', function (e) {
+    var c = e.target.closest && e.target.closest('button[data-lc]'), r = e.target.closest && e.target.closest('button[data-lr]');
+    if (c) { sfx(0); libS.cat = c.dataset.lc; libTools(); libList(); }
+    if (r) { sfx(0); libS.rar = +r.dataset.lr; libTools(); libList(); }
+  });
+  $('libList').addEventListener('click', function (e) { var c = e.target.closest && e.target.closest('.libcard'); if (!c) return; var en = libS.all.filter(function (x) { return x.id === c.dataset.lid; })[0]; if (en) { sfx(2); libDetail(en); } });
+  $('npc').addEventListener('click', function (e) { var b = e.target.closest && e.target.closest('#npcLib'); if (b && npcCur && NPCS[npcCur] && NPCS[npcCur].lib) { var lk = NPCS[npcCur].lib; $('npc').classList.remove('on'); openLib(lk); } });
   $('npcX').addEventListener('click', function () { $('npc').classList.remove('on'); });
   $('npc').addEventListener('click', function (e) {
     if (e.target === this) this.classList.remove('on'); var b = e.target.closest && e.target.closest('#npcEnter'); if (b) { $('npc').classList.remove('on'); openArena(); }
@@ -7510,7 +8072,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     spots.forEach(function (s) { if (s.used || (s.by && s.by !== myMid)) return; var d = Math.hypot(wx - s.x, wy - (s.y - 12)); if (d < best) { best = d; hit = s; } });
     var pg = document.createElement('i'); pg.className = 'ping'; pg.style.left = wx + 'px'; pg.style.top = wy + 'px'; $('world').appendChild(pg); setTimeout(function () { pg.remove(); }, 520);
     if (hit) ftarget = { x: hit.x - 58, y: hit.y + 26, spot: hit };
-    else ftarget = { x: clamp(wx, 30, WW - 30), y: clamp(wy, inCafe ? (inPost ? 296 : 276) : (inTown ? 260 : topY()), WH - 40), spot: null };
+    else ftarget = { x: clamp(wx, 30, WW - 30), y: clamp(wy, inCafe ? (inLib ? 396 : (inPost ? 296 : 276)) : (inTown ? 260 : topY()), WH - 40), spot: null };
     $('ftip').style.opacity = 0;
   });
   function digUI(on) {
