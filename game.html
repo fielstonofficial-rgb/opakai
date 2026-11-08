@@ -284,6 +284,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 #arc .mlA::before{content:'⭐';position:absolute;left:6px;top:46px;font-size:16px;opacity:.7;animation:mlBl 1.1s infinite alternate}#arc .mlA::after{content:'💖';position:absolute;right:8px;bottom:8px;font-size:18px;opacity:.8;animation:mlBl 1.4s infinite alternate}
 #arc .tvh{flex:0 0 auto;display:flex;align-items:center;justify-content:space-between;gap:6px;font-size:15px;color:#ffe27a;font-weight:800;max-width:460px;width:100%;margin:0 auto}
 #arc .tvh .chipb{margin:0;padding:3px 10px;font-size:13px}
+#arc .tvh{flex-wrap:nowrap}#arc .tvh>b{min-width:0;flex:1 1 0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}#arc .tvh .chipb,#arc .tvh .arcx{flex:none;white-space:nowrap}
 #arc .tvh .arcx{margin:0;padding:6px 12px;font-size:12px}
 #arc .tvA{flex:1 1 0;min-height:0;position:relative;width:100%;max-width:460px;margin:0 auto}
 #arc .tvM{flex:0 0 auto;min-height:18px;font-size:12px;color:#cfd8e3;line-height:1.3}
@@ -2561,7 +2562,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   var SLOTS = ['outfit', 'tool', 'weapon', 'shield', 'armor'], SLN = { outfit: '衣装', tool: '採掘道具', weapon: '武器', shield: '盾', armor: '防具' };
 
   /* ---------- レア度の整理：店で売るのは「ノーマル」だけ。レア＝ふつうの敵がまれに／超レア＝強い敵だけ／激レア＝ボスだけ ---------- */
-  var WRE = {"gx01":[80000,2],"wx113":[12000,0],"g1":[13000,0],"wx115":[14400,0],"wx114":[16700,0],"wx117":[18600,0],"wx118":[20800,0],"wx119":[22400,0],"wx116":[25900,1],"wx120":[32000,1],"wx122":[35000,1],"wx123":[39000,1],"wx121":[45000,1],"wx125":[52000,2],"wx126":[58000,2],"g2":[63000,2],"wx124":[72000,2],"g3":[97000,3],"g4":[150000,3],"wx129":[15000,0],"wx127":[17300,0],"wx131":[20000,0],"wx130":[23100,0],"wx135":[27500,0],"wx137":[31000,1],"wx133":[34000,1],"wx132":[39000,1],"wx128":[43000,1],"wx136":[48000,1],"wx134":[62000,2],"wx139":[76000,2],"wx138":[91000,2],"wx140":[140000,3],"wx155":[30000,0],"wx156":[37000,0],"wx157":[41000,0],"wx158":[51000,0],"wx159":[58000,1],"wx161":[67000,1],"wx162":[77000,1],"wx160":[87000,1],"wx163":[98000,1],"wx164":[111000,2],"wx165":[124000,2],"wx166":[166000,2],"wx168":[211000,3],"wx167":[290000,3],"b1":[8000,0],"wx087":[8700,0],"wx086":[10200,0],"b2":[11500,0],"wx085":[12500,0],"wx089":[14100,0],"wx091":[15200,0],"wx088":[19500,0],"wx090":[21100,1],"wx092":[24800,1],"wx093":[26800,1],"wx095":[30000,1],"wx094":[36000,1],"b3":[43000,2],"wx096":[47000,2],"wx097":[53000,2],"wx098":[60000,2],"b4":[81000,3],"b5":[140000,3],"wx141":[18000,0],"wx142":[22500,0],"wx143":[24500,0],"wx144":[32000,0],"wx145":[35000,0],"wx146":[38000,1],"wx147":[42000,1],"wx149":[50000,1],"wx150":[57000,1],"wx148":[68000,1],"wx151":[74000,2],"wx154":[111000,2],"wx152":[151000,2],"wx153":[180000,3],"wx100":[10000,0],"wx099":[11600,0],"wx101":[13400,0],"wx102":[17300,0],"wx104":[19000,0],"wx103":[22000,1],"wx105":[24200,1],"wx108":[29500,1],"wx106":[34000,1],"wx109":[42000,1],"wx107":[51000,2],"wx112":[62000,2],"wx111":[76000,2],"wx110":[120000,3],"wx071":[700,0],"wx072":[850,0],"wx073":[1150,0],"wx075":[1500,0],"wx076":[1950,0],"wx077":[2300,1],"wx074":[3300,1],"wx078":[4600,1],"wx079":[5500,1],"wx080":[7700,1],"wx081":[20000,2],"wx083":[20000,2],"wx084":[23400,2],"wx082":[60000,3],"wx058":[1800,0],"wx057":[2450,0],"wx059":[2900,0],"wx061":[3600,0],"wx062":[4200,0],"wx060":[5800,1],"wx063":[8000,1],"wx066":[10900,1],"wx067":[13800,1],"wx064":[17500,1],"wx065":[24000,2],"wx070":[49000,2],"wx068":[67000,2],"wx069":[100000,3],"wx030":[1500,0],"wx031":[1950,0],"wx029":[2750,0],"wx033":[3500,0],"wx032":[4600,0],"wx034":[7000,1],"wx035":[8400,1],"wx037":[10900,1],"wx038":[13000,1],"wx039":[19800,1],"wx036":[27900,2],"wx040":[43000,2],"wx041":[107000,3],"wx042":[150000,3],"wx002":[900,0],"w1":[1150,0],"wx001":[1450,0],"wx003":[1650,0],"wx007":[2300,0],"w2":[2950,0],"wx005":[3700,0],"wx006":[4300,0],"wx004":[5400,1],"wx009":[7600,1],"w3":[9600,1],"wx011":[12200,1],"wx010":[17000,1],"wx008":[21500,1],"w4":[36000,2],"w6":[50000,2],"wx014":[64000,2],"w5":[98000,2],"wx012":[113000,2],"wx013":[157000,3],"w7":[265000,3],"wx045":[1500,0],"wx043":[2400,0],"wx044":[2900,0],"wx046":[4600,0],"wx047":[5600,0],"wx049":[6800,1],"wx048":[9100,1],"wx053":[13200,1],"wx050":[21000,1],"wx051":[27900,1],"wx052":[37000,2],"wx054":[85000,2],"wx055":[162000,3],"wx056":[235000,3],"wx017":[3000,0],"wx015":[3900,0],"wx016":[5600,0],"wx018":[8900,0],"wx020":[11600,0],"wx021":[13900,1],"wx019":[18100,1],"wx023":[23700,1],"wx022":[37000,1],"wx024":[49000,1],"wx025":[58000,2],"wx028":[121000,2],"wx027":[174000,2],"wx026":[300000,3]}, SRE = {"sx01":0,"sx02":0,"sx03":0,"sx04":0,"sx05":1,"sx06":1,"sx07":1,"sx08":1,"sx09":2,"sx10":2,"sx11":2,"sx12":2,"sx13":3,"sx14":3,"sx15":3,"sx16":3,"ax01":0,"ax02":0,"ax03":0,"ax04":0,"ax05":1,"ax06":1,"ax07":1,"ax08":1,"ax09":2,"ax10":2,"ax11":2,"ax12":2,"ax13":3,"ax14":3,"ax15":3,"ax16":3,"s1":0,"s2":1,"s3":2,"s4":3,"sx17":0,"sx18":0,"sx19":0,"sx20":0,"sx21":0,"sx22":0,"sx23":0,"sx24":0,"sx25":1,"sx26":1,"sx27":1,"sx28":1,"sx29":1,"sx30":2,"sx31":2,"sx32":2,"sx33":2,"sx34":3,"sx35":3,"sx36":3,"ax17":0,"ax18":0,"ax19":0,"ax20":0,"ax21":0,"ax22":0,"ax23":0,"ax24":0,"ax25":1,"ax26":1,"ax27":1,"ax28":1,"ax29":1,"ax30":2,"ax31":2,"ax32":2,"ax33":2,"ax34":3,"ax35":3,"ax36":3,"a1":0,"a2":1,"a3":2,"a4":3};
+  var WRE = {"gx01":[80000,2],"wx113":[12000,0],"g1":[31000,0],"wx115":[14400,0],"wx114":[31000,0],"wx117":[58000,0],"wx118":[100000,0],"wx119":[100000,0],"wx116":[25900,1],"wx120":[32000,1],"wx122":[35000,1],"wx123":[39000,1],"wx121":[45000,1],"wx125":[52000,2],"wx126":[58000,2],"g2":[63000,2],"wx124":[72000,2],"g3":[97000,3],"g4":[150000,3],"wx129":[15000,0],"wx127":[17300,0],"wx131":[20000,0],"wx130":[72000,0],"wx135":[100000,0],"wx137":[31000,1],"wx133":[34000,1],"wx132":[39000,1],"wx128":[43000,1],"wx136":[48000,1],"wx134":[62000,2],"wx139":[76000,2],"wx138":[91000,2],"wx140":[140000,3],"wx155":[30000,0],"wx156":[37000,0],"wx157":[41000,0],"wx158":[100000,0],"wx159":[58000,1],"wx161":[67000,1],"wx162":[77000,1],"wx160":[87000,1],"wx163":[98000,1],"wx164":[111000,2],"wx165":[124000,2],"wx166":[166000,2],"wx168":[211000,3],"wx167":[290000,3],"b1":[8000,0],"wx087":[8700,0],"wx086":[10200,0],"b2":[11500,0],"wx085":[12500,0],"wx089":[16800,0],"wx091":[16800,0],"wx088":[100000,0],"wx090":[21100,1],"wx092":[24800,1],"wx093":[26800,1],"wx095":[30000,1],"wx094":[36000,1],"b3":[43000,2],"wx096":[47000,2],"wx097":[53000,2],"wx098":[60000,2],"b4":[81000,3],"b5":[140000,3],"wx141":[18000,0],"wx142":[22500,0],"wx143":[24500,0],"wx144":[100000,0],"wx145":[100000,0],"wx146":[38000,1],"wx147":[42000,1],"wx149":[50000,1],"wx150":[57000,1],"wx148":[68000,1],"wx151":[74000,2],"wx154":[111000,2],"wx152":[151000,2],"wx153":[180000,3],"wx100":[10000,0],"wx099":[11600,0],"wx101":[19400,0],"wx102":[100000,0],"wx104":[100000,0],"wx103":[22000,1],"wx105":[24200,1],"wx108":[29500,1],"wx106":[34000,1],"wx109":[42000,1],"wx107":[51000,2],"wx112":[62000,2],"wx111":[76000,2],"wx110":[120000,3],"wx071":[700,0],"wx072":[850,0],"wx073":[31000,0],"wx075":[58000,0],"wx076":[100000,0],"wx077":[2300,1],"wx074":[3300,1],"wx078":[4600,1],"wx079":[5500,1],"wx080":[7700,1],"wx081":[20000,2],"wx083":[20000,2],"wx084":[23400,2],"wx082":[60000,3],"wx058":[1800,0],"wx057":[53000,0],"wx059":[53000,0],"wx061":[100000,0],"wx062":[100000,0],"wx060":[5800,1],"wx063":[8000,1],"wx066":[10900,1],"wx067":[13800,1],"wx064":[17500,1],"wx065":[24000,2],"wx070":[49000,2],"wx068":[67000,2],"wx069":[100000,3],"wx030":[1500,0],"wx031":[1950,0],"wx029":[31000,0],"wx033":[58000,0],"wx032":[100000,0],"wx034":[7000,1],"wx035":[8400,1],"wx037":[10900,1],"wx038":[13000,1],"wx039":[19800,1],"wx036":[27900,2],"wx040":[43000,2],"wx041":[107000,3],"wx042":[150000,3],"wx002":[900,0],"w1":[1150,0],"wx001":[8800,0],"wx003":[8800,0],"wx007":[37000,0],"w2":[63000,0],"wx005":[100000,0],"wx006":[100000,0],"wx004":[5400,1],"wx009":[7600,1],"w3":[9600,1],"wx011":[12200,1],"wx010":[17000,1],"wx008":[21500,1],"w4":[36000,2],"w6":[50000,2],"wx014":[64000,2],"w5":[98000,2],"wx012":[113000,2],"wx013":[157000,3],"w7":[265000,3],"wx045":[1500,0],"wx043":[19400,0],"wx044":[19400,0],"wx046":[100000,0],"wx047":[100000,0],"wx049":[6800,1],"wx048":[9100,1],"wx053":[13200,1],"wx050":[21000,1],"wx051":[27900,1],"wx052":[37000,2],"wx054":[85000,2],"wx055":[162000,3],"wx056":[235000,3],"wx017":[3000,0],"wx015":[3900,0],"wx016":[12800,0],"wx018":[66000,0],"wx020":[100000,0],"wx021":[13900,1],"wx019":[18100,1],"wx023":[23700,1],"wx022":[37000,1],"wx024":[49000,1],"wx025":[58000,2],"wx028":[121000,2],"wx027":[174000,2],"wx026":[300000,3]}, SRE = {"sx01":0,"sx02":0,"sx03":0,"sx04":0,"sx05":1,"sx06":1,"sx07":1,"sx08":1,"sx09":2,"sx10":2,"sx11":2,"sx12":2,"sx13":3,"sx14":3,"sx15":3,"sx16":3,"ax01":0,"ax02":0,"ax03":0,"ax04":0,"ax05":1,"ax06":1,"ax07":1,"ax08":1,"ax09":2,"ax10":2,"ax11":2,"ax12":2,"ax13":3,"ax14":3,"ax15":3,"ax16":3,"s1":0,"s2":1,"s3":2,"s4":3,"sx17":0,"sx18":0,"sx19":0,"sx20":0,"sx21":0,"sx22":0,"sx23":0,"sx24":0,"sx25":1,"sx26":1,"sx27":1,"sx28":1,"sx29":1,"sx30":2,"sx31":2,"sx32":2,"sx33":2,"sx34":3,"sx35":3,"sx36":3,"ax17":0,"ax18":0,"ax19":0,"ax20":0,"ax21":0,"ax22":0,"ax23":0,"ax24":0,"ax25":1,"ax26":1,"ax27":1,"ax28":1,"ax29":1,"ax30":2,"ax31":2,"ax32":2,"ax33":2,"ax34":3,"ax35":3,"ax36":3,"a1":0,"a2":1,"a3":2,"a4":3};
   var ORE = {"o2":1,"o3":2,"o4":3,"ox121":1,"ox122":1,"ox123":1,"ox124":1,"ox125":1,"ox126":1,"ox127":2,"ox128":2,"ox129":2,"ox130":2,"ox131":2,"ox132":2,"ox133":2,"ox134":2,"ox135":3,"ox136":3,"ox137":3,"ox138":3,"ox139":3,"ox140":3}, OBN = {"o2":{"hp":30},"ox121":{"spd":4},"ox122":{"atk":3},"ox123":{"hp":40},"ox124":{},"ox125":{"atk":3},"ox126":{"hp":50,"spd":3},"o3":{"atk":5,"spd":4},"ox127":{"hp":80},"ox128":{"spd":8},"ox129":{"atk":5},"ox130":{},"ox131":{"hp":70,"atk":5},"ox132":{"spd":7,"hp":60},"ox133":{"atk":5,"spd":6},"ox134":{"hp":90},"o4":{"hp":150,"atk":10,"spd":10},"ox135":{"atk":10},"ox136":{"hp":160},"ox137":{"spd":12,"atk":5},"ox138":{"hp":120,"atk":10},"ox139":{"atk":10,"spd":12},"ox140":{"hp":200,"atk":10,"spd":8}};
   var RFX = ['', ' ／ 店では売っていません（モンスターが、まれに落とす）', ' ／ 強い敵から、ごくまれに落ちる', ' ／ ボスだけが落とす'];
   ITEMS.forEach(function (i) {
@@ -2762,7 +2763,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function peerGlow(pr) { if (!pr || !pr.hb) return; var o = peerItem(pr), t = (o && o.tier > 0 && !pr.gm) ? o.tier : 0; if (pr.glk === t + '|' + (o ? o.id : '')) return; pr.glk = t + '|' + (o ? o.id : ''); glowOn(pr.hb, pr.el, t > 0 ? o : null); }
   function renderBag() {
     var coins = (player || {}).coins || 0, have = (player || {}).items || [], h = '';
-    $('coinBar').innerHTML = '<span>Lv ' + ((player || {}).lv || 1) + '</span><span>🪙 ゲームコイン</span><b>' + coins.toLocaleString() + '</b>';
+    $('coinBar').innerHTML = '<span>Lv ' + ((player || {}).lv || 1) + '</span><span>🪙 ゲームコイン</span><b>' + (isGM() ? '∞' : coins.toLocaleString()) + '</b>';
     Array.prototype.forEach.call($('bagTabs').children, function (b) { b.classList.toggle('on', +b.dataset.t === bagTab); });
     if (bagTab === 0) {
       var any = false;
@@ -2939,7 +2940,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     $('mxBody').innerHTML = '<p class="tiny">しらべてるよ…</p>'; mxCoinUi();
     api({ action: 'market_list' }).then(function (j) { mkList = j.listings || []; renderMarket(); }).catch(function () { $('mxBody').innerHTML = '<p class="tiny">つながりませんでした。もう一回開いてください</p>'; });
   }
-  function mxCoinUi() { $('mxCoin').innerHTML = '<span>🪙 ゲームコイン</span><b>' + (((player || {}).coins) || 0).toLocaleString() + '</b>'; }
+  function mxCoinUi() { $('mxCoin').innerHTML = '<span>🪙 ゲームコイン</span><b>' + (isGM() ? '∞' : (((player || {}).coins) || 0).toLocaleString()) + '</b>'; }
   function mkInfo(l) {
     if (l.kind === 'ticket') { var k = TKN[l.tk] || TKN.r; return { ic: k.ic, nm: k.nm, rk: k.rk, col: k.col, fx: 'リアルのお店で使えるチケット。' + k.ds.split('。')[0] + '。' }; }
     var i = IBY[l.item]; if (!i) return { ic: '❓', nm: l.item, rk: '', col: '#9db0b8', fx: '' };
@@ -3806,7 +3807,7 @@ var TB = {
   function openSkillShop() { skArm = null; renderSkillShop(); $('skp').classList.add('on'); }
   function renderSkillShop() {
     var coins = (player || {}).coins || 0, haveS = player.skills || [], eqS = player.skEq || [], h = '';
-    $('skpCoin').innerHTML = '<span>🪙 ゲームコイン</span><b>' + coins.toLocaleString() + '</b>';
+    $('skpCoin').innerHTML = '<span>🪙 ゲームコイン</span><b>' + (isGM() ? '∞' : coins.toLocaleString()) + '</b>';
     h += '<div class="skmaster"><div class="skm-ic">🧙</div><div class="skm-tx"><b>館の主</b><br>いらっしゃい。ここは、戦いの技を売る「スキルの館」だよ。買った技は、「そうび」のスキル枠にセットすると、戦いで使えるようになる。ここでも、すぐセットできるからね。枠は3つ。どの技を組み合わせるかで、戦い方が変わるよ。</div></div>';
     h += '<div class="sec">スキル枠　<span class="tiny" style="margin:0">' + [0, 1, 2].map(function (i) { var d = SKBY[eqS[i]]; return (i + 1) + ':' + (d ? d.ic + d.nm : 'なし'); }).join('　') + '</span></div>';
     SKD.slice().sort(function (a, b) { return a.price - b.price; }).forEach(function (d) {
@@ -4958,7 +4959,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 160;
+  var GV = 164;
   (function () {
     var last = Date.now();
     function chk() {
@@ -5383,7 +5384,7 @@ var TB = {
       if (!trDirty) trDraft = trMineDraft();
     }
   }
-  function trCoinUi() { $('trCoin').innerHTML = '<span>🪙 あなたのゲームコイン</span><b>' + (((player || {}).coins) || 0).toLocaleString() + '</b>'; }
+  function trCoinUi() { $('trCoin').innerHTML = '<span>🪙 あなたのゲームコイン</span><b>' + (isGM() ? '∞' : (((player || {}).coins) || 0).toLocaleString()) + '</b>'; }
   function trShow() { $('trd').classList.add('on'); trSig = ''; trCoinUi(); trRender(); clearInterval(trTimer); trTimer = setInterval(trPoll, 2500); }
   function trClose() { clearInterval(trTimer); trTimer = 0; trade = null; trDirty = false; trPick = false; $('trd').classList.remove('on'); }
   function trStart(pr) {
@@ -6661,7 +6662,7 @@ var TB = {
   function chipsRaw() { try { var v = localStorage.getItem('opa_chips'); return v == null ? 1000 : Math.max(0, parseInt(v, 10) || 0); } catch (e) { return 1000; } }
   /* ゲームコインとゲームセンターのコインは、同じ財布（player.coins）。ゲームセンター側の増減は「差分」をサーバーに送る */
   var CD = { pend: 0, fly: 0, tm: 0, q: Promise.resolve() };
-  function chipsGet() { if (player && player.gm) return 99999; if (player && token && typeof player.coins === 'number') return Math.max(0, Math.floor(player.coins)); return chipsRaw(); }
+  function chipsGet() { if (player && player.gm) return 1e12; if (player && token && typeof player.coins === 'number') return Math.max(0, Math.floor(player.coins)); return chipsRaw(); }
   function chipsSet(n) {
     if (player && player.gm) { return; } n = Math.max(0, Math.floor(n));
     if (player && token && typeof player.coins === 'number') { CD.pend += n - Math.floor(player.coins); player.coins = n; cdSched(); }
@@ -6721,7 +6722,8 @@ var TB = {
   }
   function arStand() { try { if (hero && (hero.sit === 99 || (hero.sit != null && SEATS[hero.sit] && SEATS[hero.sit].tbl))) standUp(); } catch (e) { } }
   function arcClose() { if (tvQ) tvQuiet(false); arStand(); if (typeof PK !== 'undefined' && PK) pkLeave(); if (typeof BJ !== 'undefined' && BJ) bjLeave(); if (typeof TG !== 'undefined' && TG) tgLeave(); try { BGM.duck(false); } catch (e) {} arcCl.splice(0).forEach(function (f) { try { f(); } catch (e) {} }); arcFlush(); fpStop(); arcTm.forEach(clearTimeout); arcTm = []; $('arc').classList.remove('on'); }
-  function chipBar() { return '<div class="chipb">🪙 <b id="chipN">' + chipsGet().toLocaleString() + '</b> コイン</div>'; }
+  function chipBar() { return '<div class="chipb">🪙 <b id="chipN">' + cfmt(chipsGet()) + '</b> コイン</div>'; }
+  function cfmt(n) { n = Math.floor(n || 0); var a = Math.abs(n), sg = n < 0 ? '-' : ''; if (a >= 1e11) return sg + '∞'; if (a >= 1e9) return sg + (Math.floor(a / 1e8) / 10).toString() + 'B'; if (a >= 1e6) return sg + (Math.floor(a / 1e5) / 10).toString() + 'M'; return n.toLocaleString(); }
   function coinTotal() { var t = chipsGet(); try { if (PK && PK.T) { var a = PK.T.seats[pkMine()]; if (a) t += a.stack; } else if (BJ && BJ.T) { var b = BJ.T.seats[bjMine()]; if (b) t += b.stack; } else if (TG && TG.T) { var b2 = TG.T.seats[tgMine()]; if (b2) t += b2.stack; } } catch (e) {} return t; }
   function coinGauge() {
     var g = $('cgauge'), bb = $('bagBtn'); if (!player || !inArcRoom || PK || BJ || TG || !bb) { if (g) g.style.display = 'none'; return; }
@@ -6731,7 +6733,7 @@ var TB = {
     var pc = Math.max(4, Math.min(100, t / pk * 100)); g.style.display = 'flex'; g.style.background = 'linear-gradient(90deg,#c98a00 0,#ffe27a ' + pc + '%,#2a2418 ' + pc + '%)'; g.lastChild.textContent = t.toLocaleString() + '枚';
   }
   setInterval(coinGauge, 800);
-  function chipUpd() { var e = $('chipN'); if (e) e.textContent = chipsGet().toLocaleString(); }
+  function chipUpd() { var e = $('chipN'); if (e) e.textContent = cfmt(chipsGet()); }
   function rescueN() { try { return Math.max(0, parseInt(localStorage.getItem('opa_rescue_n') || '0', 10) || 0); } catch (e) { return 0; } }
   function rescueAdd() { try { localStorage.setItem('opa_rescue_n', String(rescueN() + 1)); } catch (e) {} }
   function chipFree() { if (player && player.gm) return; if (chipsGet() < 10) { if (rescueN() >= 10) return; rescueAdd(); chipsSet(chipsGet() + 500); chipUpd(); } }
@@ -6806,7 +6808,7 @@ var TB = {
       '<div class="mlG" id="mlG">' + cs + '<div class="mlCb" id="mlCb"></div></div><div class="mlFl" id="mlFl"></div>' +
       '<div class="mlOv" id="mlOv"><h2>🔨 OPAL モグラたたき</h2><p>30秒で、顔を出したモグラをたたけ！<br>サングラスのモグラは <b style="color:#ffe27a">3点</b>、<br>「アシカ！」が出たら <b style="color:#ffe27a">10点</b>！<br>つづけてたたくと、コンボでボーナス。<br>45点で賭けたコインがもどる（最大6倍）</p></div></div>' +
       '<div class="tvM" id="mlMsg"></div><div class="tvC"><div class="tvB">' + [10, 50, 100, 500].map(function (b) { return '<button type="button" class="b bt' + (b === bet ? ' on' : '') + '" data-b="' + b + '">' + b + '</button>'; }).join('') + '<button type="button" class="b ra" id="mlGo">START</button></div></div>', 'tv');
-    function info() { var e = $('mlInfo'); if (e) e.textContent = '🪙 ' + chipsGet().toLocaleString(); }
+    function info() { var e = $('mlInfo'); if (e) e.textContent = '🪙 ' + cfmt(chipsGet()); }
     info(); $('mlX').onclick = arcClose;
     Array.prototype.forEach.call($('arcc').querySelectorAll('.bt'), function (b) { b.onclick = function () { if (run) return; bet = +b.dataset.b; Array.prototype.forEach.call($('arcc').querySelectorAll('.bt'), function (x) { x.classList.toggle('on', +x.dataset.b === bet); }); sndChip(); }; });
     function mT(f0, f1, dur, type, vol, dly) { if (!soundOn) return; var A = actx(); if (!A) return; try { var o = A.createOscillator(), g = A.createGain(), t = A.currentTime + (dly || 0); o.type = type || 'sine'; o.frequency.setValueAtTime(f0, t); o.frequency.exponentialRampToValueAtTime(Math.max(20, f1), t + dur); g.gain.setValueAtTime(vol || .1, t); g.gain.exponentialRampToValueAtTime(.001, t + dur); o.connect(g); g.connect(A.destination); o.start(t); o.stop(t + dur + .02); } catch (e) {} }
@@ -6879,7 +6881,7 @@ var TB = {
     chipUpd2(); var slX = $('slX'); slX.onclick = arcClose; $('slPb').onclick = function () { $('slPay').classList.add('on'); }; $('slPc').onclick = function () { $('slPay').classList.remove('on'); };
     function setBet(b, snd) { bet = b; Array.prototype.forEach.call($('arcc').querySelectorAll('.bt'), function (x) { x.classList.toggle('on', +x.dataset.b === b); }); if (snd) sndChip(); }
     Array.prototype.forEach.call($('arcc').querySelectorAll('.bt'), function (b) { b.onclick = function () { if (spinning || fs) return; setBet(+b.dataset.b, 1); }; });
-    function chipUpd2() { var e = $('slInfo'); if (e) e.textContent = '🪙 ' + chipsGet().toLocaleString(); }
+    function chipUpd2() { var e = $('slInfo'); if (e) e.textContent = '🪙 ' + cfmt(chipsGet()); }
     function later(f, ms) { var t = setTimeout(function () { try { f(); } catch (e) { forceEnd(); } }, ms); arcTm.push(t); return t; }
     function sf(f) { try { f(); } catch (e) { } }
     var kd = function (e) { if (e.code === 'Space' || e.code === 'Enter') { if ($('slGo') && !e.repeat) { e.preventDefault(); spin(); } } };
@@ -7026,7 +7028,7 @@ var TB = {
   function disN() { try { var o = JSON.parse(localStorage.getItem('opa_dis') || 'null'); if (o && o.d === disDay()) return o.n | 0; } catch (e) {} return 0; }
   function openDis() {
     arcShow('<h2>🪙 コイン受け取り機</h2><div class="chipb">🪙 <b id="disC"></b> コイン</div><p id="disI" style="margin:8px 0;line-height:1.6"></p><button type="button" class="arcx" id="disGo" style="font-size:16px;padding:12px 20px">🪙 コインを受け取る</button><div id="disM" style="min-height:24px;margin:10px 0;color:#ffe27a;font-weight:700"></div><button type="button" class="arcx" id="disX">とじる</button>');
-    var upd = function () { $('disC').textContent = chipsGet().toLocaleString(); $('disI').innerHTML = '1回で <b>+500コイン</b>（持ってるコインが5,000になるまで）<br>きょうの残り <b>' + Math.max(0, 10 - disN()) + '</b> / 10回'; }, say = function (t) { $('disM').textContent = t; };
+    var upd = function () { $('disC').textContent = cfmt(chipsGet()); $('disI').innerHTML = '1回で <b>+500コイン</b>（持ってるコインが5,000になるまで）<br>きょうの残り <b>' + Math.max(0, 10 - disN()) + '</b> / 10回'; }, say = function (t) { $('disM').textContent = t; };
     upd(); $('disX').onclick = arcClose;
     $('disGo').onclick = function () {
       var n = disN(), c = chipsGet(); if (n >= 10) { say('きょうは10回ぜんぶ受け取ったよ。また明日きてね'); return; } if (c >= 5000) { say('5,000コイン持ってるから、これ以上は受け取れないよ'); return; }
@@ -7270,7 +7272,7 @@ var TB = {
   function bjRender() {
     arSeatSync(BJ, 'bj');
     if (!BJ || !$('bjTbl')) return; var T = BJ.T, me = BJ.me, A = $('bjTbl');
-    if ($('bjInfo')) $('bjInfo').textContent = '🪙 ' + coinTotal().toLocaleString();
+    if ($('bjInfo')) $('bjInfo').textContent = '🪙 ' + cfmt(coinTotal());
     if (!T) { A.innerHTML = '<div class="tvW">テーブルにつないでいます…</div>'; return; }
     var X = tvCtx(BJ, A), W = X.W, H = X.H, mineS = me >= 0 ? T.seats[me] : null, now = Date.now(), h = tvDealer(X) + '<div class="tvO bj"></div>';
     h += '<div class="bjD">' + T.d.map(function (c, k) { return tvCard(cdTxt(CRK[c.r], c), c.s === 1 || c.s === 2, T.hide && k === 1 && T.st !== 'show', 'sm', 'd' + T.rd + '_' + k, X, 0, -H * .22); }).join('') + (T.d.length ? '<span class="bjT">' + (T.hide && T.st !== 'show' ? bjVal([T.d[0]]) : bjVal(T.d)) + '</span>' : '<span class="bjL">DEALER</span>') + '</div>';
@@ -7279,8 +7281,8 @@ var TB = {
       var dx = (50 - p[0]) / 100 * W, dy = (8 - p[1]) / 100 * H, v = s.h.length ? bjVal(s.h) : 0, rs = s.res ? ({ bust: 'BUST', bj: 'BLACKJACK', win: 'WIN', push: 'PUSH', lose: 'LOSE' })[s.res] : '';
       BJ.pos[s.id] = p; h += '<div class="pkSeat bjs' + (i === me ? ' me' : '') + (i === T.turn ? ' turn' : '') + (s.res === 'win' || s.res === 'bj' ? ' win' : '') + (s.res === 'lose' || s.res === 'bust' ? ' fold' : '') + '" style="left:' + p[0] + '%;top:' + p[1] + '%">' + (bb && bb.exp > now ? '<div class="tvBub">' + esc(bb.x) + '</div>' : '') + '<div class="bjH">' +
         s.h.map(function (c, k) { return tvCard(cdTxt(CRK[c.r], c), c.s === 1 || c.s === 2, 0, 'sm', 'p' + T.rd + '_' + i + '_' + k, X, dx, dy); }).join('') + '</div>' + (s.h.length ? '<div class="bjT">' + v + '</div>' : '') +
-        '<div class="pkNm">' + esc(s.nm) + (s.npc ? ' 🤖' : '') + '</div><div class="pkSt">🪙 ' + s.stack.toLocaleString() + '</div>' + (s.bet > 0 ? '<div class="pkB2">賭け ' + s.bet.toLocaleString() + '</div>' : '') +
-        (rs ? '<div class="pkW">' + rs + (s.pay > 0 ? ' +' + s.pay.toLocaleString() : (s.pay < 0 ? ' ' + s.pay.toLocaleString() : '')) + '</div>' : '') + '</div>';
+        '<div class="pkNm">' + esc(s.nm) + (s.npc ? ' 🤖' : '') + '</div><div class="pkSt">🪙 ' + cfmt(s.stack) + '</div>' + (s.bet > 0 ? '<div class="pkB2">賭け ' + cfmt(s.bet) + '</div>' : '') +
+        (rs ? '<div class="pkW">' + rs + (s.pay > 0 ? ' +' + cfmt(s.pay) : (s.pay < 0 ? ' ' + cfmt(s.pay) : '')) + '</div>' : '') + '</div>';
     });
     A.innerHTML = h; tvPlay(X);
     if (BJ.laSeen === undefined) BJ.laSeen = T.la ? T.la.e : 0; else if (T.la && T.la.e > BJ.laSeen) { BJ.laSeen = T.la.e; bjVoice(T, T.la); }
@@ -7313,7 +7315,7 @@ var TB = {
   function openBJ() {
     tvQuiet(true);
     try { var pend = parseInt(localStorage.getItem('opa_pk_pend') || '0', 10); if (pend > 0) { chipsSet(chipsGet() + pend); localStorage.removeItem('opa_pk_pend'); } } catch (e) {}
-    chipFree(); var buy = chipsGet(); if (buy < 20) { arcShow('<h2>🃏 ブラックジャック</h2><p>コインが足りません</p><button type="button" class="arcx" id="pkX0">とじる</button>'); $('pkX0').onclick = arcClose; return; }
+    chipFree(); var buy = (player && player.gm) ? 1e9 : chipsGet(); if (buy < 20) { arcShow('<h2>🃏 ブラックジャック</h2><p>コインが足りません</p><button type="button" class="arcx" id="pkX0">とじる</button>'); $('pkX0').onclick = arcClose; return; }
     chipsSet(chipsGet() - buy); if (!(player && player.gm)) { try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {} }
     arcShow('<div class="tvh"><b>🃏 ブラックジャック</b><span id="bjInfo" class="chipb"></span><button type="button" class="arcx" id="bjX">席を立つ</button></div><div class="tvAw"><div id="bjTbl" class="tvA tvAi"></div><div id="bjFl" class="tvFl"></div></div><div id="bjMsg" class="tvM"></div><div id="bjCtl" class="tvC"></div>' + tcHTML('bj'), 'tv');
     BJ = { T: null, me: -1, last: Date.now(), hb: 0, seen: {}, iv: 0, buy: buy, sel: 10, bub: {}, pos: {}, cl: [] }; tcInit('bj', BJ, 'bj'); BJ.iv = setInterval(bjTick, 250);
@@ -7365,7 +7367,7 @@ var TB = {
   function tgWin(T, i, why) {
     var G = TGG[T.k], s = T.seats[i]; if (T.k === 'bi' && T.g && T.g.ob) { T.pot *= 5; why += '（💎オパールボールで賞金5倍！）'; }
     T.seats.forEach(function (q, qi) { if (q && q.in) { q.pay = qi === i ? T.pot - G.ante : -G.ante; q.res = qi === i ? 'win' : 'lose'; } });
-    s.stack += T.pot; T.log = s.nm + ' の勝ち！ ' + why + '（+' + s.pay.toLocaleString() + 'コイン）'; T.st = 'end'; T.nt = Date.now() + 6500; T.winner = i; T.ev++; T.la = { e: T.ev, k: 'win', i: i };
+    s.stack += T.pot; T.log = s.nm + ' の勝ち！ ' + why + '（+' + cfmt(s.pay) + 'コイン）'; T.st = 'end'; T.nt = Date.now() + 6500; T.winner = i; T.ev++; T.la = { e: T.ev, k: 'win', i: i };
   }
   function tgRefund(T, why) {
     var G = TGG[T.k]; T.seats.forEach(function (q) { if (q && q.in) { q.stack += G.ante; q.pay = 0; q.res = ''; } });
@@ -7450,7 +7452,7 @@ var TB = {
     var now = Date.now();
     return '<div class="tgO">' + T.seats.map(function (s, i) {
       if (!s || i === me) return ''; var bb = TG.bub[s.id]; TG.pos[s.id] = [50, 8];
-      return '<div class="tgP' + (T.st === 'play' && T.g.turn === i ? ' turn' : '') + (s.res === 'win' ? ' win' : '') + (s.in ? '' : ' spec') + '">' + (bb && bb.exp > now ? '<div class="tvBub">' + esc(bb.x) + '</div>' : '') + '<div class="pkNm">' + esc(s.nm) + (s.npc ? ' 🤖' : '') + '</div><div class="pkSt">🪙 ' + s.stack.toLocaleString() + '</div><div class="tgI">' + infoFn(s) + '</div></div>';
+      return '<div class="tgP' + (T.st === 'play' && T.g.turn === i ? ' turn' : '') + (s.res === 'win' ? ' win' : '') + (s.in ? '' : ' spec') + '">' + (bb && bb.exp > now ? '<div class="tvBub">' + esc(bb.x) + '</div>' : '') + '<div class="pkNm">' + esc(s.nm) + (s.npc ? ' 🤖' : '') + '</div><div class="pkSt">🪙 ' + cfmt(s.stack) + '</div><div class="tgI">' + infoFn(s) + '</div></div>';
     }).join('') + '</div>';
   }
   function tgOverH(T) {
@@ -7458,7 +7460,7 @@ var TB = {
     if (TG.bn && TG.bn.exp > now) h += '<div class="tgBn">' + TG.bn.x + '</div>';
     if (T.st === 'end' && T.winner >= 0 && T.seats[T.winner]) {
       var w = T.seats[T.winner], cf = '', k; for (k = 0; k < 14; k++) cf += '<span class="tgCf" style="left:' + (k * 7 + 2) + '%;animation-delay:' + (-(k * 0.37)).toFixed(2) + 's">' + ['🎉', '✨', '🪙', '🎊', '💎'][k % 5] + '</span>';
-      h += '<div class="tgWin">' + cf + '<div>🏆 ' + esc(w.nm) + ' の勝ち！</div><small>+' + Math.max(0, w.pay).toLocaleString() + ' コイン</small></div>';
+      h += '<div class="tgWin">' + cf + '<div>🏆 ' + esc(w.nm) + ' の勝ち！</div><small>+' + cfmt(Math.max(0, w.pay)) + ' コイン</small></div>';
     }
     return h;
   }
@@ -7507,7 +7509,7 @@ var TB = {
     var g = T.g, dr = g.drawn || [], last = dr.length ? dr[dr.length - 1] : 0, lob = T.st === 'lobby';
     var h = '<div class="tgW"><div class="tgHd">' + tgStaffH() + tgOppH(T, me, function (s) { if (lob) return (s.npc || s.join === 1) ? '<b class="jn">✅ 参加</b>' : (s.join === 2 ? '👀 観戦' : '…まだ'); return T.st === 'play' && s.in ? ('穴 ' + (s.mk.length - 1) + (biReach(s) ? ' <b class="rc">リーチ!</b>' : '')) : (s.in ? '&nbsp;' : '観戦'); }) + '</div>';
     var pop = last && TG.ballSeen !== T.rd + ':' + last; TG.ballSeen = T.rd + ':' + last;
-    h += '<div class="bgTop">' + biMachine(pop) + '<div class="bgBw"><div class="bgB' + (last ? '' : ' off') + (pop ? ' pop' : '') + '">' + (last ? (last === 76 ? '<small>OPAL</small>💎' : '<small>' + BIL[Math.floor((last - 1) / 15)] + '</small>' + last) : '—') + '</div></div><div class="bgH"><div>' + dr.slice(-9, -1).reverse().map(function (n) { return '<span>' + (n === 76 ? '💎' : n) + '</span>'; }).join('') + '</div><div class="bgPot">🪙 ポット ' + T.pot.toLocaleString() + (g.ob ? ' <b style="color:#7af0ff">💎×5</b>' : '') + '<br>のこり ' + (g.pool ? g.pool.length : 75) + '個</div></div></div>';
+    h += '<div class="bgTop">' + biMachine(pop) + '<div class="bgBw"><div class="bgB' + (last ? '' : ' off') + (pop ? ' pop' : '') + '">' + (last ? (last === 76 ? '<small>OPAL</small>💎' : '<small>' + BIL[Math.floor((last - 1) / 15)] + '</small>' + last) : '—') + '</div></div><div class="bgH"><div>' + dr.slice(-9, -1).reverse().map(function (n) { return '<span>' + (n === 76 ? '💎' : n) + '</span>'; }).join('') + '</div><div class="bgPot">🪙 ポット ' + cfmt(T.pot) + (g.ob ? ' <b style="color:#7af0ff">💎×5</b>' : '') + '<br>のこり ' + (g.pool ? g.pool.length : 75) + '個</div></div></div>';
     if (mineS && mineS.in && mineS.card) {
       if (!TG.sh || TG.shR !== T.rd) { TG.sh = {}; TG.shR = T.rd; }
       if (TG.pickK === 'op' && !(mineS.op && !mineS.ow && T.st === 'play')) TG.pickK = null;
@@ -7648,7 +7650,7 @@ var TB = {
     if (T.st === 'lobby') st = '<div class="st">' + ((s.npc || s.join === 1) ? '✅ 参加' : s.join === 2 ? '👀 観戦' : '…まだ') + '</div>';
     else if (!s.in) st = '<div class="st sp">観戦</div>';
     else if (!isMe && s.h) { m = Math.min(n, 8); st = '<div class="fan">'; for (k = 0; k < m; k++) st += '<i class="mb2" style="transform:rotate(' + ((k - (m - 1) / 2) * 10) + 'deg)"></i>'; st += '<small>' + n + '</small></div>'; }
-    return '<div class="unS' + rt + (isMe ? ' me' : '') + (turn ? ' turn' : '') + (s.res === 'win' ? ' win' : '') + (s.in || T.st === 'lobby' ? '' : ' spec') + '" style="' + pos + '">' + (bb && bb.exp > now ? '<div class="tvBub">' + esc(bb.x) + '</div>' : '') + '<div class="ch"></div><div class="av' + (s.cat ? ' cat' : '') + '">' + (s.cat ? catSVG(s.cat) : tgAvatar(s.nm)) + (s.res === 'win' ? '<b class="cr">👑</b>' : '') + (turn && s.npc ? '<span class="th">…</span>' : '') + (T.st === 'play' && s.in && n === 1 ? '<b class="unU">UNO!</b>' : '') + '</div><div class="nm">' + esc(s.nm) + (s.npc ? ' 🤖' : '') + '</div><div class="cn">🪙 ' + s.stack.toLocaleString() + '</div>' + st + '</div>';
+    return '<div class="unS' + rt + (isMe ? ' me' : '') + (turn ? ' turn' : '') + (s.res === 'win' ? ' win' : '') + (s.in || T.st === 'lobby' ? '' : ' spec') + '" style="' + pos + '">' + (bb && bb.exp > now ? '<div class="tvBub">' + esc(bb.x) + '</div>' : '') + '<div class="ch"></div><div class="av' + (s.cat ? ' cat' : '') + '">' + (s.cat ? catSVG(s.cat) : tgAvatar(s.nm)) + (s.res === 'win' ? '<b class="cr">👑</b>' : '') + (turn && s.npc ? '<span class="th">…</span>' : '') + (T.st === 'play' && s.in && n === 1 ? '<b class="unU">UNO!</b>' : '') + '</div><div class="nm">' + esc(s.nm) + (s.npc ? ' 🤖' : '') + '</div><div class="cn">🪙 ' + cfmt(s.stack) + '</div>' + st + '</div>';
   }
   function unRender(T, mineS, me) {
     var g = T.g, now = Date.now(), base = me >= 0 ? me : 0, h = '<div class="tgW"><div class="unT" style="--gc:' + (g.col ? UNCC[g.col] : '#ffe27a') + '">' + UNBT + '<div class="unF"></div><span class="unPr" style="left:39%;top:30%">☕</span><span class="unPr" style="left:61%;top:30%">🍰</span>';
@@ -7710,7 +7712,7 @@ var TB = {
   function tgRender() {
     arSeatSync(TG, TG && TG.k);
     if (!TG || !$('tgTbl')) return; var T = TG.T, me = TG.me, A = $('tgTbl'), G = TGG[TG.k];
-    if ($('tgInfo')) $('tgInfo').textContent = '🪙 ' + coinTotal().toLocaleString();
+    if ($('tgInfo')) $('tgInfo').textContent = '🪙 ' + cfmt(coinTotal());
     if (!T) { A.innerHTML = '<div class="tvW">テーブルにつないでいます…</div>'; return; }
     var mineS = me >= 0 ? T.seats[me] : null, now = Date.now();
     if (TG.laSeen === undefined) TG.laSeen = T.la ? T.la.e : 0;
@@ -7724,7 +7726,7 @@ var TB = {
   function tgOpen(k) {
     var G = TGG[k]; tvQuiet(true);
     try { var pend = parseInt(localStorage.getItem('opa_pk_pend') || '0', 10); if (pend > 0) { chipsSet(chipsGet() + pend); localStorage.removeItem('opa_pk_pend'); } } catch (e) {}
-    chipFree(); var buy = chipsGet(); chipsSet(chipsGet() - buy); if (!(player && player.gm)) { try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {} }
+    chipFree(); var buy = (player && player.gm) ? 1e9 : chipsGet(); chipsSet(chipsGet() - buy); if (!(player && player.gm)) { try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {} }
     arcShow('<div class="tvh"><b>' + G.ic + ' ' + G.nm + '</b><span id="tgInfo" class="chipb"></span><button type="button" class="arcx" id="tgR">📖 ルール</button><button type="button" class="arcx" id="tgX">席を立つ</button></div><div class="tvAw"><div id="tgTbl" class="tvA tvAi tgA ' + k + '"></div><div id="tgFl" class="tvFl"></div><div id="tgRl" class="tgRl"></div></div><div id="tgMsg" class="tvM"></div><div id="tgCtl" class="tvC"></div>' + tcHTML('tg'), 'tv');
     TG = { k: k, T: null, me: -1, last: Date.now(), hb: 0, seen: {}, iv: 0, buy: buy, bub: {}, pos: {}, cl: [], pickK: null }; tcInit(k, TG, 'tg'); TG.iv = setInterval(tgTick, 250); TG.mv = setInterval(tgMsgUpd, 500);
     $('tgX').onclick = tgLeave;
@@ -7877,7 +7879,7 @@ var TB = {
     T.res = { won: won, desc: desc, shown: shown, uncontested: sc ? 0 : 1 }; T.pot = 0; T.st = 'show'; T.run = 0; T.turn = -1; T.nt = Date.now() + 6500;
     T.seats.forEach(function (s) { if (s) s.bet = 0; });
     try { T.seats.forEach(function (q) { if (q && q.npc && Math.random() < .35) { var win = false; T.seats.forEach(function (z, k) { if (z === q && won[k]) win = true; }); var L = win ? ['ふふ、いただき', '運がよかったね', 'ナイスハンド？'] : ['やるね〜', 'くやしい！', '次は負けないよ', 'ありゃ〜']; T.nbn = (T.nbn || 0) + 1; T.nb = { id: q.id, x: L[Math.floor(Math.random() * L.length)], e: T.nbn }; } }); } catch (e) {}
-    T.log = Object.keys(won).map(function (i) { var s = T.seats[i]; return s.nm + (desc[i] ? '（' + desc[i] + '）' : '') + ' が ' + won[i].toLocaleString() + ' 獲得'; }).join(' ／ ');
+    T.log = Object.keys(won).map(function (i) { var s = T.seats[i]; return s.nm + (desc[i] ? '（' + desc[i] + '）' : '') + ' が ' + cfmt(won[i]) + ' 獲得'; }).join(' ／ ');
   }
   function pkShow(T) { var sc = {}; T.seats.forEach(function (s, i) { if (s && !s.f) sc[i] = pkBest(s.hole.concat(T.board)); }); pkAward(T, sc); }
   function pkNpcAct(T, i) {
@@ -7940,17 +7942,17 @@ var TB = {
   function pkRender() {
     arSeatSync(PK, 'pk');
     if (!PK || !$('pkTbl')) return; var T = PK.T, me = PK.me, A = $('pkTbl');
-    if ($('pkInfo')) $('pkInfo').textContent = '🪙 ' + coinTotal().toLocaleString();
+    if ($('pkInfo')) $('pkInfo').textContent = '🪙 ' + cfmt(coinTotal());
     if (!T) { A.innerHTML = '<div class="tvW">テーブルにつないでいます…</div>'; return; }
     var X = tvCtx(PK, A), W = X.W, H = X.H, rel = me < 0 ? 0 : me, h = tvDealer(X) + '<div class="tvO"></div>', mineS = me >= 0 ? T.seats[me] : null, now = Date.now(), rk = pkRankInfo(T, mineS);
-    h += '<div class="tvBd">' + T.board.map(function (c, k) { return tvCard(cdTxt(PKRK[c.r], c), c.s === 1 || c.s === 2, 0, 0, 'b' + T.hand + '_' + k, X, 0, -H * .3, 1); }).join('') + '</div><div class="tvPot">ポット ' + T.pot.toLocaleString() + '</div>';
+    h += '<div class="tvBd">' + T.board.map(function (c, k) { return tvCard(cdTxt(PKRK[c.r], c), c.s === 1 || c.s === 2, 0, 0, 'b' + T.hand + '_' + k, X, 0, -H * .3, 1); }).join('') + '</div><div class="tvPot">ポット ' + cfmt(T.pot) + '</div>';
     T.seats.forEach(function (s, i) {
       var r = (i - rel + 8) % 8, p = PKPOS[r]; if (!s) { h += '<div class="pkSeat empty" style="left:' + p[0] + '%;top:' + p[1] + '%">空席</div>'; return; }
       PK.pos[s.id] = p; var mine = i === me, sh = T.res && T.res.shown.indexOf(i) >= 0, face = mine || sh, inH = T.hand > 0 && T.st !== 'wait' && s.hole.length === 2 && !(s.f && T.st !== 'show'), dx = (50 - p[0]) / 100 * W, dy = (10 - p[1]) / 100 * H, bb = PK.bub[s.id];
       h += '<div class="pkSeat' + (mine ? ' me' : '') + (i === T.turn ? ' turn' : '') + (s.f ? ' fold' : '') + (T.res && T.res.won[i] ? ' win' : '') + '" style="left:' + p[0] + '%;top:' + p[1] + '%">' + (bb && bb.exp > now ? '<div class="tvBub">' + esc(bb.x) + '</div>' : '') + '<div class="pkCs">' +
-        (inH ? s.hole.map(function (c, k) { return tvCard(cdTxt(PKRK[c.r], c), c.s === 1 || c.s === 2, !face, 'sm', 'h' + T.hand + '_' + i + '_' + k, X, dx, dy); }).join('') : '') + '</div><div class="pkNm">' + (i === T.btn ? '<i class="pkD">D</i>' : '') + esc(s.nm) + (s.npc ? ' 🤖' : '') + (s.so ? ' ☕' : '') + '</div><div class="pkSt">🪙 ' + s.stack.toLocaleString() + '</div>' +
-        (T.res && T.res.won[i] ? '<div class="pkW">+' + T.res.won[i].toLocaleString() + (T.res.desc[i] ? ' ' + T.res.desc[i] : '') + '</div>' : (mine && rk && T.st !== 'show' ? '<div class="pkRk' + (PK.rkUp && now - PK.rkUp < 1500 ? ' up' : '') + '">現在：' + rk.t + '</div>' : '')) + '</div>';
-      if (s.bet > 0) h += '<div class="pkBet" style="left:' + (p[0] + (50 - p[0]) * .34) + '%;top:' + (p[1] + (57 - p[1]) * .34) + '%">🪙' + s.bet.toLocaleString() + '</div>';
+        (inH ? s.hole.map(function (c, k) { return tvCard(cdTxt(PKRK[c.r], c), c.s === 1 || c.s === 2, !face, 'sm', 'h' + T.hand + '_' + i + '_' + k, X, dx, dy); }).join('') : '') + '</div><div class="pkNm">' + (i === T.btn ? '<i class="pkD">D</i>' : '') + esc(s.nm) + (s.npc ? ' 🤖' : '') + (s.so ? ' ☕' : '') + '</div><div class="pkSt">🪙 ' + cfmt(s.stack) + '</div>' +
+        (T.res && T.res.won[i] ? '<div class="pkW">+' + T.res.cfmt(won[i]) + (T.res.desc[i] ? ' ' + T.res.desc[i] : '') + '</div>' : (mine && rk && T.st !== 'show' ? '<div class="pkRk' + (PK.rkUp && now - PK.rkUp < 1500 ? ' up' : '') + '">現在：' + rk.t + '</div>' : '')) + '</div>';
+      if (s.bet > 0) h += '<div class="pkBet" style="left:' + (p[0] + (50 - p[0]) * .34) + '%;top:' + (p[1] + (57 - p[1]) * .34) + '%">🪙' + cfmt(s.bet) + '</div>';
     });
     A.innerHTML = h; tvPlay(X);
     /* 音・声（ディーラーが読み上げる） */
@@ -7975,13 +7977,13 @@ var TB = {
     var myTurn = !!(mineS && T.turn === me && !T.run && T.st !== 'show' && T.st !== 'wait'), key = [T.hand, T.st, T.turn, T.cur, me, mineS ? mineS.stack : 0, myTurn ? 1 : 0].join('|'), cb = $('pkCtl');
     if (cb.dataset.k !== key) {
       cb.dataset.k = key; var s = mineS || { bet: 0, stack: 0 }, need = T.cur - s.bet, maxTo = s.bet + s.stack, minTo = Math.min(maxTo, T.cur + T.minR), canR = myTurn && maxTo > T.cur, dis = myTurn ? '' : ' disabled';
-      cb.innerHTML = '<div class="tvB pkL"><button type="button" class="b fo" id="pkF"' + dis + '>フォールド</button><button type="button" class="b ca" id="pkC"' + dis + '>' + (myTurn && need > 0 ? 'コール ' + Math.min(need, s.stack).toLocaleString() : 'チェック') + '</button><button type="button" class="b ra" id="pkRb"' + (canR ? '' : ' disabled') + '>レイズ</button></div>' +
+      cb.innerHTML = '<div class="tvB pkL"><button type="button" class="b fo" id="pkF"' + dis + '>フォールド</button><button type="button" class="b ca" id="pkC"' + dis + '>' + (myTurn && need > 0 ? 'コール ' + cfmt(Math.min(need, s.stack)) : 'チェック') + '</button><button type="button" class="b ra" id="pkRb"' + (canR ? '' : ' disabled') + '>レイズ</button></div>' +
         '<div class="pkMd"><div class="pv" id="pkRv">' + (canR ? '' : '－') + '</div><div class="pkR3">' + [['½', 'h'], ['ポット', 'p'], ['ALL', 'a'], ['+100', 100], ['+200', 200], ['+400', 400], ['+800', 800], ['−', 'm'], ['＋', 'n']].map(function (q) { return '<button type="button" data-q="' + q[1] + '"' + (canR ? '' : ' disabled') + '>' + q[0] + '</button>'; }).join('') + '</div></div>' +
         '<div class="pkV"><input type="range" class="vr" id="pkRs" min="' + minTo + '" max="' + Math.max(minTo, maxTo) + '" step="10" value="' + minTo + '"' + (canR ? '' : ' disabled') + '></div>';
       if (myTurn) { $('pkF').onclick = function () { pkAct('f', 0); }; $('pkC').onclick = function () { pkAct('c', 0); }; }
       if (canR) {
         var sl = $('pkRs'), clampA = function (v) { v = Math.round(v / 10) * 10; return Math.max(Math.min(minTo, maxTo), Math.min(maxTo, v)); };
-        var upd = function () { var amt = Math.min(maxTo, +sl.value); $('pkRv').textContent = amt >= maxTo ? 'ALL IN' : amt.toLocaleString(); $('pkRb').textContent = amt >= maxTo ? 'オールイン' : 'レイズ ' + amt.toLocaleString(); return amt; };
+        var upd = function () { var amt = Math.min(maxTo, +sl.value); $('pkRv').textContent = amt >= maxTo ? 'ALL IN' : cfmt(amt); $('pkRb').textContent = amt >= maxTo ? 'オールイン' : 'レイズ ' + cfmt(amt); return amt; };
         var setA = function (v) { sl.value = clampA(v); upd(); };
         sl.oninput = upd; upd();
         cb.querySelectorAll('.pkR3 button').forEach(function (bt) { bt.onclick = function () { var q = bt.getAttribute('data-q'), v; if (q === 'a') v = maxTo; else if (q === 'h') v = T.cur + (T.pot + need) / 2; else if (q === 'p') v = T.cur + T.pot + need; else if (q === 'm') v = +sl.value - 20; else if (q === 'n') v = +sl.value + 20; else v = T.cur + (+q); setA(v); }; });
@@ -7995,8 +7997,8 @@ var TB = {
     var wr = PKS.h ? Math.round(PKS.w / PKS.h * 100) : 0;
     m.innerHTML = '<b style="color:#ffd36a;font-size:14px">☰ メニュー</b> <span style="float:right;color:#9fd0ff" id="pkMc">✕ とじる</span><h4>💡 ヒント（勝率・ポットオッズ）</h4><div class="sg"><button data-h="0" class="' + (PKS.hint ? '' : 'on') + '">OFF</button><button data-h="1" class="' + (PKS.hint ? 'on' : '') + '">ON</button></div>' +
       '<h4>🤖 NPCの強さ（あなたがホストの時）</h4><div class="sg">' + ['やさしい', 'ふつう', 'つよい'].map(function (t, i) { return '<button data-l="' + i + '" class="' + ((PKS.lv == null ? 1 : PKS.lv | 0) === i ? 'on' : '') + '">' + t + '</button>'; }).join('') + '</div><div style="font-size:10.5px;color:#9fb4c4">やさしい＝弱め（ひとり時はさらに弱い）／ふつう＝標準（初期設定）／つよい＝読みが鋭い</div>' +
-      '<h4>💎 オパールカード</h4><div style="font-size:11px;line-height:1.6">たまに（5ゲームに1回ほど）だれかの手札に1枚だけ入るよ。<b>どのカードにもなれるオールマイティ</b>で、手持ちで一番強い役を自動で作るよ。だれが持ってるかは、勝負が終わるまでヒミツ！</div><h4>📊 成績</h4><div class="hl"><span>プレイしたハンド</span><b>' + PKS.h + '</b></div><div class="hl"><span>勝ち（勝率）</span><b>' + PKS.w + '（' + wr + '%）</b></div><div class="hl"><span>通算の増減</span><b style="color:' + (PKS.net >= 0 ? '#7dff9a' : '#ff8a8a') + '">' + (PKS.net >= 0 ? '+' : '') + PKS.net.toLocaleString() + '</b></div><div class="hl"><span>最大ポット獲得</span><b>' + PKS.big.toLocaleString() + '</b></div>' +
-      '<h4>🕘 ハンド履歴（新しい順）</h4>' + (PKS.hist.length ? PKS.hist.map(function (x) { return '<div class="hl"><span>#' + x.n + ' ' + x.r + ' ' + esc(x.d || '') + '</span><b style="color:' + (x.v >= 0 ? '#7dff9a' : '#ff8a8a') + '">' + (x.v >= 0 ? '+' : '') + x.v.toLocaleString() + '</b></div>'; }).join('') : '<div style="color:#9fb4c4">まだありません</div>') +
+      '<h4>💎 オパールカード</h4><div style="font-size:11px;line-height:1.6">たまに（5ゲームに1回ほど）だれかの手札に1枚だけ入るよ。<b>どのカードにもなれるオールマイティ</b>で、手持ちで一番強い役を自動で作るよ。だれが持ってるかは、勝負が終わるまでヒミツ！</div><h4>📊 成績</h4><div class="hl"><span>プレイしたハンド</span><b>' + PKS.h + '</b></div><div class="hl"><span>勝ち（勝率）</span><b>' + PKS.w + '（' + wr + '%）</b></div><div class="hl"><span>通算の増減</span><b style="color:' + (PKS.net >= 0 ? '#7dff9a' : '#ff8a8a') + '">' + (PKS.net >= 0 ? '+' : '') + cfmt(PKS.net) + '</b></div><div class="hl"><span>最大ポット獲得</span><b>' + cfmt(PKS.big) + '</b></div>' +
+      '<h4>🕘 ハンド履歴（新しい順）</h4>' + (PKS.hist.length ? PKS.hist.map(function (x) { return '<div class="hl"><span>#' + x.n + ' ' + x.r + ' ' + esc(x.d || '') + '</span><b style="color:' + (x.v >= 0 ? '#7dff9a' : '#ff8a8a') + '">' + (x.v >= 0 ? '+' : '') + cfmt(x.v) + '</b></div>'; }).join('') : '<div style="color:#9fb4c4">まだありません</div>') +
       '<div style="margin-top:8px"><button type="button" class="arcx" id="pkMr">成績をリセット</button></div>';
     m.style.display = 'block';
     m.querySelectorAll('[data-h]').forEach(function (b) { b.onclick = function () { PKS.hint = +b.getAttribute('data-h'); PK.hk = null; pkSave(); m.style.display = 'none'; pkMenu(); pkRender(); }; });
@@ -8007,7 +8009,7 @@ var TB = {
   function openHoldem() {
     tvQuiet(true);
     try { var pend = parseInt(localStorage.getItem('opa_pk_pend') || '0', 10); if (pend > 0) { chipsSet(chipsGet() + pend); localStorage.removeItem('opa_pk_pend'); } } catch (e) {}
-    chipFree(); var buy = chipsGet(); if (buy < 20) { arcShow('<h2>♠ テキサスオパールホールデム</h2><p>コインが足りません</p><button type="button" class="arcx" id="pkX0">とじる</button>'); $('pkX0').onclick = arcClose; return; }
+    chipFree(); var buy = (player && player.gm) ? 1e9 : chipsGet(); if (buy < 20) { arcShow('<h2>♠ テキサスオパールホールデム</h2><p>コインが足りません</p><button type="button" class="arcx" id="pkX0">とじる</button>'); $('pkX0').onclick = arcClose; return; }
     chipsSet(chipsGet() - buy); if (!(player && player.gm)) { try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {} }
     arcShow('<div class="tvh"><b style="white-space:nowrap;font-size:10.5px;letter-spacing:-.02em">♠ テキサスオパールホールデム</b><span id="pkInfo" class="chipb" style="white-space:nowrap;font-size:12px;padding:3px 8px"></span><button type="button" class="arcx" id="pkH" style="margin-right:4px">役</button><button type="button" class="arcx" id="pkM" style="margin-right:4px">☰</button><button type="button" class="arcx" id="pkX" style="white-space:nowrap">席を立つ</button></div><div class="tvAw"><div id="pkTbl" class="tvA tvAi"></div><div id="pkFl" class="tvFl"></div><button type="button" id="pkRest" class="pkRest">☕ 休憩</button><div id="pkHelp" style="display:none;position:absolute;left:6%;right:6%;top:8%;z-index:30;background:#101820ee;border:2px solid #ffd36a;border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.55;color:#fff"><b style="color:#ffd36a">役の強さ（上ほど強い）</b><br>① ストレートフラッシュ：同じマークの連番5枚<br>② フォーカード：同じ数字4枚<br>③ フルハウス：3枚＋2枚の組み合わせ<br>④ フラッシュ：同じマーク5枚（♠♥♦♣）<br>⑤ ストレート：連番5枚（マークはバラバラでOK）<br>⑥ スリーカード：同じ数字3枚<br>⑦ ツーペア：ペアが2組<br>⑧ ワンペア：同じ数字2枚<br>⑨ ハイカード：役なし（いちばん大きい数字）<br><span style="color:#9fd0ff">手札2枚＋場の5枚から、いちばん強い5枚で勝負。自分の役は「現在：○○」で出るよ。（タップで閉じる）</span></div></div><div id="pkMsg" class="tvM"></div><div id="pkCtl" class="tvC"></div>' + tcHTML('pk'), 'tv');
     PK = { T: null, me: -1, last: Date.now(), hb: 0, seen: {}, iv: 0, buy: buy, bub: {}, pos: {}, cl: [] }; tcInit('pk', PK, 'pk'); PK.iv = setInterval(pkTick, 250);
@@ -8563,7 +8565,7 @@ var TB = {
   var TSTEPS = [
     { k: 'intro' },
     { k: 'shop', t: '🏪 ショップに入ろう', s: '光る矢印の「ショップ」をタップして、お店に入ろう。入れたらクリア！', door: 'shop', test: function () { return $('bag').classList.contains('on') && (bagTab === 1 || !!TUT.doors.shop); }, n: '装備はここで買えるよ。' },
-    { k: 'buy', t: '🛒 装備を1つ買おう', s: '「木の剣」がおすすめ（2,500コイン）。装備をタップ → もう一度タップで購入。コインは3,000あるよ。', test: function () { return (player.items || []).length > TUT.n0; }, snap: function () { TUT.n0 = (player.items || []).length; } },
+    { k: 'buy', t: '🛒 装備を1つ買おう', s: '「使い込んだ短剣」がおすすめ（3,500コイン）。装備をタップ → もう一度タップで購入。コインは5,000あるよ。', test: function () { return (player.items || []).length > TUT.n0; }, snap: function () { TUT.n0 = (player.items || []).length; } },
     { k: 'equip', t: '⚔ 買った装備を身につけよう', s: '「⚔️ 装備」タブで、武器のマスをタップ → 買った装備をタップ。つけると見た目と強さが変わるよ。', test: function () { return JSON.stringify(player.equip || {}) !== TUT.e0; }, snap: function () { TUT.e0 = JSON.stringify(player.equip || {}); } },
     { k: 'mkt', t: '💱 取引所で装備を出品してみよう', s: '閉じて、矢印の「取引所」へ。「➕ 出す」タブで装備をタップ → 値段を決めて出品。プレイヤー同士で売り買いできる場所やで。（今回は出さなくてOK、画面を開けたらクリア）', door: 'exch', test: function () { return $('mkt').classList.contains('on') && mkTab === 1 && !!mkSel; } },
     { k: 'lib', t: '📚 図書館をのぞいてみよう', s: '矢印の「図書館」に入ろう。装備もモンスターもオパールのことも、全部ここで調べられるよ。', door: 'lib', test: function () { return inLib; } },
@@ -8571,7 +8573,8 @@ var TB = {
     { k: 'mine', t: '⛏ 最初の鉱山に入ろう', s: '光っているピンをタップ → 「掘りに行く」。最初はレベルの低い鉱山でOK。', test: function () { return $('field').classList.contains('on') && !inTown && !!curMine; } },
     { k: 'dig', t: '💎 石を掘ってみよう', s: '地面の光ってる鉱脈をタップして近づき、出てくる「掘る！」を連打。ゲージがたまったら石が出るよ。\n掘ってる最中、超まれに「スペシャルチケット」が出ることもあるよ。', test: function () { return (player.digs || 0) > TUT.d0; }, snap: function () { TUT.d0 = player.digs || 0; if (eqItem('weapon') && wHand === 'weapon') { wHand = 'pick'; try { gearUi(); handUi(); } catch (e) {} toast('つるはしに持ちかえたよ'); } } },
     { k: 'kill', t: '👹 敵を1体たおそう', s: '敵が出たらタップで攻撃。買った武器で戦うよ。やられても町の病院で復活するから安心してな。敵が見つからんときは「とばす」でOK。', test: function () { return !!TUT.killed; }, snap: function () { TUT.killed = 0; } },
-    { k: 'done', t: '🏘 町に戻って、ミミに報告しよう', s: '鉱山を出て、マップの「🏘️ オパ会の町へ」を押してな。矢印のミミに話しかけたら完了！', npc: 'guide', test: function () { return inTown && !!TUT.doors['npc:guide']; }, noSkip: 1 }
+    { k: 'coin', t: '🪙 コイン受け取り機でコインをもらおう', s: '鉱山を出て町へ → 矢印の「ゲームセンター」に入って、奥の「コイン受け取り機」で受け取ってみよう。1回500コイン、1日10回（持ってるコインが5,000になるまで）。毎日もらって装備代にしてな。', doors: ['arcade', 'arc:dis'], test: function () { return disN() > TUT.d0 || (!!TUT.doors['arc:dis'] && chipsGet() >= 5000); }, snap: function () { TUT.d0 = disN(); } },
+    { k: 'done', t: '🏘 町に戻って、ミミに報告しよう', s: '町の矢印のミミに話しかけたら完了！（まだ鉱山にいるなら、マップの「🏘️ オパ会の町へ」から戻ってな）', npc: 'guide', test: function () { return inTown && !!TUT.doors['npc:guide']; }, noSkip: 1 }
   ];
   function tutDlg(pages, cb) {
     var i = 0, d = $('tutD'); TUT.dlg = 1;
@@ -8588,7 +8591,7 @@ var TB = {
       'ようこそ、オパ会の町へ！ 私は案内役のミミです。\nここは冒険の拠点。装備を買ったり、石を売ったり、仲間と会ったりする町やで。',
       'このゲームは、世界中の鉱山でオパールや宝石を掘って、レベルを上げて、装備を強くして、もっと奥の鉱山をめざす冒険です。',
       'いまからチュートリアルをやるね。画面の下に「やること」が出るから、順番にやってみて。\n光る矢印がついてたら、そこが行き先やで。\n行きたい所は、タップしたら歩いていくよ。',
-      '1つクリアするごとに経験値がもらえて、最後まで終わったらレベル7になるよ！\n' + (TUT.test ? '（テスト中やから、コインも経験値も増えへんよ）まずはショップに行こう！' : '最初の軍資金に、3,000コインあげる。まずはショップに行こう！')
+      '1つクリアするごとに経験値がもらえて、最後まで終わったらレベル7になるよ！\n' + (TUT.test ? '（テスト中やから、コインも経験値も増えへんよ）まずはショップに行こう！' : '最初の軍資金に、5,000コインあげる。まずはショップに行こう！')
     ], function () { tutDone('intro'); });
   }
   function tutFlash(msg) {
@@ -8625,7 +8628,7 @@ var TB = {
   function tutArrow(st) {
     var w = $('world'), a = $('tutArrow'), pos = null;
     if (st && fieldOn && w) {
-      if (st.door) { for (var i = 0; i < DOORS.length; i++) if (DOORS[i].k === st.door) pos = { x: DOORS[i].x, y: DOORS[i].y - DOORS[i].h - 10 }; }
+      if (st.door || st.doors) { var dks = st.doors || [st.door]; for (var i = 0; i < DOORS.length; i++) if (dks.indexOf(DOORS[i].k) >= 0) { pos = { x: DOORS[i].x, y: DOORS[i].y - DOORS[i].h - 10 }; pos.k0 = DOORS[i].k; } }
       else if (st.npc && NPCS[st.npc] && inTown && !inCafe) pos = { x: NPCS[st.npc].x, y: NPCS[st.npc].y - 150 };
     }
     var dr = $('tutDir');
@@ -8635,7 +8638,7 @@ var TB = {
     if (!dr) { dr = document.createElement('div'); dr.id = 'tutDir'; document.body.appendChild(dr); }
     var dx = pos.x - hero.x, dy = (pos.y + 110) - hero.y, dist = Math.hypot(dx, dy);
     if (dist < 330) { dr.style.display = 'none'; return; }
-    var ang = Math.atan2(dy, dx), R = Math.min(window.innerWidth, window.innerHeight) * .34, nm = st.door ? ({ shop: 'ショップ', exch: '取引所', lib: '図書館' }[st.door] || '') : (st.npc ? 'ミミ' : '');
+    var ang = Math.atan2(dy, dx), R = Math.min(window.innerWidth, window.innerHeight) * .34, nm = (st.door || st.doors) ? ({ shop: 'ショップ', exch: '取引所', lib: '図書館', arcade: 'ゲームセンター', 'arc:dis': 'コイン受け取り機' }[pos.k0 || st.door] || '') : (st.npc ? 'ミミ' : '');
     dr.style.display = 'block'; dr.style.left = (window.innerWidth / 2 + Math.cos(ang) * R) + 'px'; dr.style.top = (window.innerHeight * .46 + Math.sin(ang) * R) + 'px';
     dr.innerHTML = '<i style="transform:rotate(' + ang + 'rad)">➤</i><small>' + nm + '</small>';
   }
