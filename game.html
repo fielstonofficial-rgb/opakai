@@ -2799,7 +2799,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
       if (!gl.length) h += '<p class="tiny">売れる装備は、まだ持っていません。</p>';
     } else {
       h += eqStage(true);
-      h += '<p class="tiny">ゲームコインは、石を掘ると貯まるよ（お金では買えません）。いいランクの石ほど、たくさんもらえるよ。</p>';
+      h += '<p class="tiny">ゲームコインは、石を掘る・敵を倒す・ゲームセンターで遊ぶ・コイン受け取り機でもらう、などで貯まるよ（お金では買えません）。</p>';
       h += '<div class="chips">' + SLOTS.map(function (s) { return '<button type="button" class="' + (shopSlot === s ? 'on' : '') + '" data-shs="' + s + '">' + SLN[s] + '</button>'; }).join('') + '</div>';
       var subs = shopSlot === 'weapon' ? WKINDS : (shopSlot === 'outfit' ? OSTY : null);
       if (subs) h += '<div class="chips s">' + subs.map(function (k) { return '<button type="button" class="' + (shopKind === k[0] ? 'on' : '') + '" data-shk="' + k[0] + '">' + k[1] + '</button>'; }).join('') + '</div>';
@@ -4503,8 +4503,8 @@ var TB = {
     { c: '戦い', ic: '👹', t: 'モンスターとボス', d: '鉱山には、モンスターが出ます。タップで攻撃！ 倒すと、経験値とコインがもらえて、まれに装備を落とします。\nボスは、パーティー（2〜5人）で挑む強い敵です。倒すと、経験値とコインが、パーティーの全員に満額でもらえます。1日にもらえる回数には、上限があります。' },
     { c: '戦い', ic: '💫', t: '倒れたら？（復活のしくみ）', d: 'HPが0になると倒れます。パーティーの仲間が、倒れた人を10回タップすると、HP30%で復活します。\n仲間と協力して、ボスに挑もう。' },
     { c: '戦い', ic: '🔮', t: 'スキル', d: '「スキルの館」で、スキルを買って使えます。ボタンを押すと発動して、そのあとは、しばらく待つと使えるようになります（クールタイム）。\n武器にも、その種類に合わせた特別な技がついているものがあります。くわしくはスキルの本棚へ。' },
-    { c: '街', ic: '🏘', t: '街の建物', d: '・ショップ：武器・防具・服などを買う\n・ギルド：ギルド（仲間のグループ）を作る・入る\n・病院：HPを全回復\n・取引所：プレイヤー同士で、アイテムを売り買い\n・闘技場：プレイヤー同士で戦える（報酬なし）\n・ゲームセンター：スロット、もぐらたたき、ブラックジャック、ポーカーなど\n・カフェ：飲み物を飲みながら、友達とおしゃべり\n・スキルの館：スキルを買う\n・郵便局：運営に手紙を送る\n・図書館：このゲームのあらゆることを調べられる' },
-    { c: '街', ic: '☕', t: 'カフェ・ゲームセンター', d: 'カフェでは、ドリンクが全部無料。椅子に座っておしゃべりできます。\nゲームセンターには、スロット、もぐらたたき、ブラックジャック、ポーカーなどがあります。' },
+    { c: '街', ic: '🏘', t: '街の建物', d: '・ショップ：武器・防具・服などを買う\n・ギルド：ギルド（仲間のグループ）を作る・入る\n・病院：HPを全回復\n・取引所：プレイヤー同士で、アイテムを売り買い\n・闘技場：プレイヤー同士で戦える（報酬なし）\n・ゲームセンター：スロット、もぐらたたき、ブラックジャック、ポーカー、ビンゴ、UNO、FPS、コイン受け取り機（毎日もらえる）など\n・カフェ：飲み物を飲みながら、友達とおしゃべり\n・スキルの館：スキルを買う\n・郵便局：運営に手紙を送る\n・図書館：このゲームのあらゆることを調べられる' },
+    { c: '街', ic: '☕', t: 'カフェ・ゲームセンター', d: 'カフェでは、ドリンクが全部無料。椅子に座っておしゃべりできます。\nゲームセンターには、スロット、もぐらたたき、ブラックジャック、ポーカー、ビンゴ、UNO、FPSなどがあります。\n「コイン受け取り機」では、1回500コインを1日10回まで受け取れます（持ってるコインが5,000になるまで）。' },
     { c: '街', ic: '🏟', t: '闘技場', d: '観客席から降りた闘技場の中では、近くにいる誰からでも攻撃されます（誰でも攻撃できます）。1対1の決闘もできます。\n報酬は出ず、持ち物も減りません。腕試しに遊ぼう。' },
     { c: '街', ic: '📮', t: '郵便局', d: '運営への手紙（要望・不具合・質問など）を送れます。1通600文字まで、1日10通までです。' },
     { c: 'スペシャルチケット', ic: '🎟', t: 'スペシャルチケットとは？', d: '石を掘っているとき、ごくまれに出てくる、本物のお買い物・サービスに使える特別なチケットです。\n種類は3つ。\n・✨ レア：優先リカット研磨券（リカットや傷取りを、予定に割り込んで優先してもらえる予約券）\n・🎫 超レア：アモンの商品 5%オフ券\n・👑 激レア：アモンの商品 10%オフ券\n出たら、画面にチケットが出て、番号が付きます。「もちもの」の「スペシャルチケット」で、いつでも見られます。番号は控えておいてね。\n【ここがポイント】装備の「レア度」とは別ものです。モンスターからは出ません。出るのは、石を「掘ったとき」だけです。' },
@@ -4959,7 +4959,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 164;
+  var GV = 167;
   (function () {
     var last = Date.now();
     function chk() {
@@ -7028,7 +7028,7 @@ var TB = {
   function disN() { try { var o = JSON.parse(localStorage.getItem('opa_dis') || 'null'); if (o && o.d === disDay()) return o.n | 0; } catch (e) {} return 0; }
   function openDis() {
     arcShow('<h2>🪙 コイン受け取り機</h2><div class="chipb">🪙 <b id="disC"></b> コイン</div><p id="disI" style="margin:8px 0;line-height:1.6"></p><button type="button" class="arcx" id="disGo" style="font-size:16px;padding:12px 20px">🪙 コインを受け取る</button><div id="disM" style="min-height:24px;margin:10px 0;color:#ffe27a;font-weight:700"></div><button type="button" class="arcx" id="disX">とじる</button>');
-    var upd = function () { $('disC').textContent = cfmt(chipsGet()); $('disI').innerHTML = '1回で <b>+500コイン</b>（持ってるコインが5,000になるまで）<br>きょうの残り <b>' + Math.max(0, 10 - disN()) + '</b> / 10回'; }, say = function (t) { $('disM').textContent = t; };
+    var upd = function () { $('disC').textContent = cfmt(chipsGet()); $('disI').innerHTML = '1回で <b>+500コイン</b><br><span style="font-size:12px;opacity:.8">（持ってるコインが5,000になるまで）</span><br>きょうの残り <b>' + Math.max(0, 10 - disN()) + '</b> / 10回'; }, say = function (t) { $('disM').textContent = t; };
     upd(); $('disX').onclick = arcClose;
     $('disGo').onclick = function () {
       var n = disN(), c = chipsGet(); if (n >= 10) { say('きょうは10回ぜんぶ受け取ったよ。また明日きてね'); return; } if (c >= 5000) { say('5,000コイン持ってるから、これ以上は受け取れないよ'); return; }
@@ -8565,8 +8565,8 @@ var TB = {
   var TSTEPS = [
     { k: 'intro' },
     { k: 'shop', t: '🏪 ショップに入ろう', s: '光る矢印の「ショップ」をタップして、お店に入ろう。入れたらクリア！', door: 'shop', test: function () { return $('bag').classList.contains('on') && (bagTab === 1 || !!TUT.doors.shop); }, n: '装備はここで買えるよ。' },
-    { k: 'buy', t: '🛒 装備を1つ買おう', s: '「使い込んだ短剣」がおすすめ（3,500コイン）。装備をタップ → もう一度タップで購入。コインは5,000あるよ。', test: function () { return (player.items || []).length > TUT.n0; }, snap: function () { TUT.n0 = (player.items || []).length; } },
-    { k: 'equip', t: '⚔ 買った装備を身につけよう', s: '「⚔️ 装備」タブで、武器のマスをタップ → 買った装備をタップ。つけると見た目と強さが変わるよ。', test: function () { return JSON.stringify(player.equip || {}) !== TUT.e0; }, snap: function () { TUT.e0 = JSON.stringify(player.equip || {}); } },
+    { k: 'buy', t: '🎁 ミミから最初の武器をもらおう', s: 'ミミが、最初の1本目をプレゼントしてくれるよ。画面の話を読んで「OK！」を押してな。', snap: function () { setTimeout(function () { if (TUT.dlg || !TUT.on || !TSTEPS[tutIdx()] || TSTEPS[tutIdx()].k !== 'buy') return; tutDlg(['ここがショップやで。武器や防具や服を、コインで買えるよ。', '最初の1本目は、ミミからプレゼントや！\n「使い込んだ短剣」をあげるで。' + (TUT.test ? '（テスト中やから、実際には増えへんよ）' : ''), 'コインは、石を掘ったり、敵を倒したり、ゲームセンターで遊んだりして貯めるんやで。\n次は、もらった短剣を身につけてみよう！'], function () { TUT.pend = 'buy'; tutDone('buy'); }); }, 500); } },
+    { k: 'equip', t: '⚔ もらった武器を身につけよう', s: '「⚔️ 装備」タブで、武器のマスをタップ → もらった短剣をタップ。つけると見た目と強さが変わるよ。', test: function () { return JSON.stringify(player.equip || {}) !== TUT.e0; }, snap: function () { TUT.e0 = JSON.stringify(player.equip || {}); } },
     { k: 'mkt', t: '💱 取引所で装備を出品してみよう', s: '閉じて、矢印の「取引所」へ。「➕ 出す」タブで装備をタップ → 値段を決めて出品。プレイヤー同士で売り買いできる場所やで。（今回は出さなくてOK、画面を開けたらクリア）', door: 'exch', test: function () { return $('mkt').classList.contains('on') && mkTab === 1 && !!mkSel; } },
     { k: 'lib', t: '📚 図書館をのぞいてみよう', s: '矢印の「図書館」に入ろう。装備もモンスターもオパールのことも、全部ここで調べられるよ。', door: 'lib', test: function () { return inLib; } },
     { k: 'map', t: '🗺 マップを開こう', s: '図書館を出て、画面の上の「🚪 マップへ」をタップ。世界の鉱山が見えるよ。', test: function () { return $('map').classList.contains('on'); } },
@@ -8591,7 +8591,7 @@ var TB = {
       'ようこそ、オパ会の町へ！ 私は案内役のミミです。\nここは冒険の拠点。装備を買ったり、石を売ったり、仲間と会ったりする町やで。',
       'このゲームは、世界中の鉱山でオパールや宝石を掘って、レベルを上げて、装備を強くして、もっと奥の鉱山をめざす冒険です。',
       'いまからチュートリアルをやるね。画面の下に「やること」が出るから、順番にやってみて。\n光る矢印がついてたら、そこが行き先やで。\n行きたい所は、タップしたら歩いていくよ。',
-      '1つクリアするごとに経験値がもらえて、最後まで終わったらレベル7になるよ！\n' + (TUT.test ? '（テスト中やから、コインも経験値も増えへんよ）まずはショップに行こう！' : '最初の軍資金に、5,000コインあげる。まずはショップに行こう！')
+      '1つクリアするごとに経験値がもらえて、最後まで終わったらレベル7になるよ！\n' + (TUT.test ? '（テスト中やから、コインも経験値も増えへんよ）まずはショップに行こう！' : '最初の軍資金に、3,000コインあげる。まずはショップに行こう！')
     ], function () { tutDone('intro'); });
   }
   function tutFlash(msg) {
@@ -8600,7 +8600,7 @@ var TB = {
   }
   function tutDone(k) {
     if (TUT.busy) return;
-    if (TUT.test) { TUT.pend = ''; TUT.ld.push(k); TUT.key = ''; sfx(1); if (k === 'done') { tutStop(); tutDlg(['テストおわり！ ここまでが、はじめてのチュートリアルです。\n本番では、最後にちょうどLv7になって、500コインももらえるよ。'], null); } else tutFlash('✅ クリア！（テスト）'); return; }
+    if (TUT.test) { TUT.pend = ''; TUT.ld.push(k); TUT.key = ''; sfx(1); if (k === 'done') { tutStop(); tutDlg(['テストおわり！ ここまでが、はじめてのチュートリアルです。\n本番では、最後にちょうどLv7になって、5,000コインももらえるよ。'], null); } else if (k !== 'intro') tutFlash('✅ クリア！'); return; }
     TUT.busy = 1;
     api({ action: 'game_tut', step: k }).then(function (j) {
       TUT.busy = 0;
@@ -8610,7 +8610,7 @@ var TB = {
         player = j.player; player.coins = (player.coins || 0) + cp;
         try { stats(); } catch (e) {} try { gearUi(); hpUi(); } catch (e) {}
         sfx(1); vib([30, 20, 40]);
-        if (k === 'done') { tutStop(); tutDlg(['おめでとう！ チュートリアルは全部クリア。いまのキミは Lv' + (player.lv || 7) + ' やで！\nごほうびに500コインもプレゼント。', '最初のうちは、低いレベルの鉱山で掘って、お金をためて、装備を強くしていこう。レベルが上がると、新しい鉱山やお店の品物が増えていくよ。', '石を掘っていると、超まれに「スペシャルチケット」が出ることがあります。\n・レア：優先リカット研磨券（予定に割り込んで研磨してもらえる予約券。研磨の費用は別にかかるよ）\n・超レア：アモンの商品 5%オフ券\n・激レア：アモンの商品 10%オフ券\nもちものの画面で見られるよ。ほんまに運がいいと出る、おまけやね。','仲間とパーティーを組むと、経験値が3倍になるよ。わからんことは、図書館の司書さんか、ワタシ（町のミミ）にいつでも聞いてな。\nそれじゃ、いってらっしゃい！ 💎'], function () { tutFlash('🎉 Lv' + (player.lv || 7) + ' になったよ！'); }); }
+        if (k === 'done') { tutStop(); tutDlg(['おめでとう！ チュートリアルは全部クリア。いまのキミは Lv' + (player.lv || 7) + ' やで！\nごほうびに5,000コインもプレゼント。', '最初のうちは、低いレベルの鉱山で掘って、お金をためて、装備を強くしていこう。レベルが上がると、新しい鉱山やお店の品物が増えていくよ。', '石を掘っていると、超まれに「スペシャルチケット」が出ることがあります。\n・レア：優先リカット研磨券（予定に割り込んで研磨してもらえる予約券。研磨の費用は別にかかるよ）\n・超レア：アモンの商品 5%オフ券\n・激レア：アモンの商品 10%オフ券\nもちものの画面で見られるよ。ほんまに運がいいと出る、おまけやね。','仲間とパーティーを組むと、経験値が3倍になるよ。わからんことは、図書館の司書さんか、ワタシ（町のミミ）にいつでも聞いてな。\nそれじゃ、いってらっしゃい！ 💎'], function () { tutFlash('🎉 Lv' + (player.lv || 7) + ' になったよ！'); }); }
         else tutFlash('✅ クリア！' + (j.xp ? ' ✨+' + j.xp + ' XP' : '') + (j.coins ? ' 🪙+' + j.coins : ''));
         TUT.key = '';
       } else if (j && (j.error === 'bad_step' || j.error === 'no_tut')) {
