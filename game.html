@@ -1300,6 +1300,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function $(id) { return document.getElementById(id); }
   function LSget(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function LSset(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
+  try { if (LSget('opa_is_master') === '1' && LSget('opa_fix1110') !== '1') { LSset('opa_gm_off', '0'); if ((LSget('opa_gen_name') || '').trim() === 'たかお') localStorage.removeItem('opa_gen_name'); LSset('opa_fix1110', '1'); } } catch (e) {} /* マスター端末：「たかお」の一般モードから、マスターに戻す（一度だけ） */
   var MTOK = LSget('opa_token'), GTOK = LSget('opa_token_gen'), token = MTOK;
   var player = null, nick = '';
   var taps = 0, busy = false;
@@ -2634,8 +2635,8 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     snipe: { nm: '遠撃', b: .30, p: .10, ds: function (v) { return '近すぎると×0.9、最大射程だと +' + Math.round(v * 100) + '%。離れて撃つほど強い'; } },
     close: { nm: '近撃', b: .40, p: .12, ds: function (v) { return '遠いと×0.85、ゼロ距離だと +' + Math.round(v * 100) + '%。近づいて撃つほど強い'; } },
     drain: { nm: '吸収', b: .06, p: .02, ds: function (v) { return '与えたダメージの' + Math.round(v * 100) + '%ぶん、HPが回復（1回で最大HPの5%まで）'; } },
-    cleave: { nm: '薙ぎ払い', b: .45, p: .08, ds: function (v) { return '当てた敵のまわり（約1.7マス）の敵にも、' + Math.round(v * 100) + '%のダメージ'; } },
-    pierce: { nm: '貫通', b: .55, p: .08, ds: function (v) { return '当てた敵の後ろにならんだ敵にも、' + Math.round(v * 100) + '%のダメージ'; } }
+    cleave: { nm: '薙ぎ払い', b: .45, p: .08, ds: function (v) { return '当てた敵のまわり（約1.7マス）の敵にも、' + Math.round(v * 100) + '%のダメージ（まわりに敵がいない時は、当てた敵に+20%）'; } },
+    pierce: { nm: '貫通', b: .55, p: .08, ds: function (v) { return '当てた敵の後ろにならんだ敵にも、' + Math.round(v * 100) + '%のダメージ（後ろに敵がいない時は、当てた敵に+20%）'; } }
   };
   var TRP = {
     sword: ['crit', 'exec', 'drain', 'opener', 'combo'], katana: ['crit', 'combo', 'opener', 'exec'], axe: ['cleave', 'exec', 'crit'],
@@ -2710,7 +2711,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function isGM() { return !!(player && player.gm); }
   function gmTogUi() { var b = $('gmTog'); if (!b) return; var on = $('map').classList.contains('on') || $('field').classList.contains('on'); var inF = $('field').classList.contains('on'), tl = $('fTools'); if (!b._home) b._home = b.parentNode; var fb = $('fBag'), host = inF ? (fb && fb.parentNode) : b._home; if (host && b.parentNode !== host) { if (inF) host.insertBefore(b, fb); else host.appendChild(b); } b.style.display = (player && (player.gmReal || genMode) && on) ? 'block' : 'none'; b.className = gmOn ? 'on' : ''; b.textContent = inF ? (gmOn ? '👑 マスター' : '🙂 一般') : (gmOn ? '👑 マスター中（タップで一般に変身）' : '🙂 一般中（タップでマスターに変身）'); }
   var GEN_LV = 30;
-  function genName() { return (LSget('opa_gen_name') || '').trim() || 'たかお'; }
+  function genName() { var n = (LSget('opa_gen_name') || '').trim(); if (n && n !== 'たかお') return n; return (player && player.avReal && player.avReal.name) || (player && player.avatar && player.avatar.name) || 'プレイヤー'; }
   function genAv(a) { var o = {}; for (var k in a) o[k] = a[k]; o.name = genName(); o.acc = 0; return o; }
   function applyGmMode() {
     if (!player || !player.gmReal) return;
@@ -4507,9 +4508,9 @@ var TB = {
     { c: '街', ic: '☕', t: 'カフェ・ゲームセンター', d: 'カフェでは、ドリンクが全部無料。椅子に座っておしゃべりできます。\nゲームセンターには、スロット、もぐらたたき、ブラックジャック、ポーカー、ビンゴ、UNO、FPSなどがあります。\n「コイン受け取り機」では、1回500コインを1日10回まで受け取れます（持ってるコインが5,000になるまで）。' },
     { c: '街', ic: '🏟', t: '闘技場', d: '観客席から降りた闘技場の中では、近くにいる誰からでも攻撃されます（誰でも攻撃できます）。1対1の決闘もできます。\n報酬は出ず、持ち物も減りません。腕試しに遊ぼう。' },
     { c: '街', ic: '📮', t: '郵便局', d: '運営への手紙（要望・不具合・質問など）を送れます。1通600文字まで、1日10通までです。' },
-    { c: 'スペシャルチケット', ic: '🎟', t: 'スペシャルチケットとは？', d: '石を掘っているとき、ごくまれに出てくる、本物のお買い物・サービスに使える特別なチケットです。\n種類は3つ。\n・✨ レア：優先リカット研磨券（リカットや傷取りを、予定に割り込んで優先してもらえる予約券）\n・🎫 超レア：アモンの商品 5%オフ券\n・👑 激レア：アモンの商品 10%オフ券\n出たら、画面にチケットが出て、番号が付きます。「もちもの」の「スペシャルチケット」で、いつでも見られます。番号は控えておいてね。\n【ここがポイント】装備の「レア度」とは別ものです。モンスターからは出ません。出るのは、石を「掘ったとき」だけです。' },
-    { c: 'スペシャルチケット', ic: '✨', t: 'レア：優先リカット研磨券', d: '予定に割り込んで、お客様のオパールのリカットや傷取りをしてもらえる「予約券」です。待たずに、先に仕上げてもらえます。\n※研磨の費用は別にかかります（傷取り2,200円・リカット4,400円・送料600円／税込）。\n\n【出る確率】石を1回掘るごとに 1 / 10,000（0.01%）。\n・100回掘って出る確率：約1.0%\n・1,000回掘って出る確率：約9.5%\n・10,000回掘った平均で、1枚のイメージ\n\n【毎月の上限】全プレイヤーあわせて、月に1枚だけ。' },
-    { c: 'スペシャルチケット', ic: '🎫', t: '超レア：アモンの商品 5%オフ券', d: 'アモンの商品を買うとき、金額から5%引きになります。\n\n【出る確率】石を1回掘るごとに 1 / 3,600（約0.028%）。\n・100回掘って出る確率：約2.7%\n・1,000回掘って出る確率：約24%\n・3,600回掘った平均で、1枚のイメージ\n\n【毎月の上限】全プレイヤーあわせて、月に1枚だけ。今月すでに誰かに出ていたら、次の月まで出ません。' },
+    { c: 'スペシャルチケット', ic: '🎟', t: 'スペシャルチケットとは？', d: '石を掘っているとき、ごくまれに出てくる、本物のお買い物・サービスに使える特別なチケットです。\n種類は3つ。\n・✨ レア：優先リカット研磨券（リカットや傷取りを、予定に割り込んで優先してもらえる予約券）\n・🎫 超レア：アモンの商品 5%オフ券\n・👑 激レア：アモンの商品 10%オフ券\n\n【出る確率（石を1回掘るごと）】\n・✨ レア：1 / 3,600\n・🎫 超レア：1 / 10,000\n・👑 激レア：1 / 60,000\n\n出たら、画面にチケットが出て、番号が付きます。「もちもの」の「スペシャルチケット」で、いつでも見られます。番号は控えておいてね。\n【ここがポイント】装備の「レア度」とは別ものです。モンスターからは出ません。出るのは、石を「掘ったとき」だけです。' },
+    { c: 'スペシャルチケット', ic: '✨', t: 'レア：優先リカット研磨券', d: '予定に割り込んで、お客様のオパールのリカットや傷取りをしてもらえる「予約券」です。待たずに、先に仕上げてもらえます。\n※研磨の費用は別にかかります（傷取り2,200円・リカット4,400円・送料600円／税込）。\n\n【出る確率】石を1回掘るごとに 1 / 3,600（約0.028%）。\n・100回掘って出る確率：約2.7%\n・1,000回掘って出る確率：約24%\n・3,600回掘った平均で、1枚のイメージ\n\n【毎月の上限】全プレイヤーあわせて、月に1枚だけ。' },
+    { c: 'スペシャルチケット', ic: '🎫', t: '超レア：アモンの商品 5%オフ券', d: 'アモンの商品を買うとき、金額から5%引きになります。\n\n【出る確率】石を1回掘るごとに 1 / 10,000（0.01%）。\n・100回掘って出る確率：約1.0%\n・1,000回掘って出る確率：約9.5%\n・10,000回掘った平均で、1枚のイメージ\n\n【毎月の上限】全プレイヤーあわせて、月に1枚だけ。今月すでに誰かに出ていたら、次の月まで出ません。' },
     { c: 'スペシャルチケット', ic: '👑', t: '激レア：アモンの商品 10%オフ券', d: 'アモンの商品を買うとき、金額から10%引きになる、いちばん大きなチケットです。\n\n【出る確率】石を1回掘るごとに 1 / 60,000（約0.0017%）。\n・1,000回掘って出る確率：約1.7%\n・10,000回掘って出る確率：約15%\n・60,000回掘った平均で、1枚のイメージ\n\n【毎月の上限】全プレイヤーあわせて、月に1枚だけ。出たら、本当にラッキー！' },
     { c: 'スペシャルチケット', ic: '📅', t: '毎月の上限と、当たりかた', d: '3種類とも、毎月「全プレイヤーで1枚ずつ」だけ当たります。つまり、1か月に、レア・超レア・激レアが、それぞれ1名様までです。\n・上限に達したら、その月はもう出ません（月が変わると、また出るようになります）\n・たくさん掘るほど、チャンスは増えます。でも、確率は掘るごとに同じで、「そろそろ出る」ということはありません\n・レベルや装備、鉱山の種類で、出やすさは変わりません\n・チケットが出るのは、石を掘ったときだけです（敵やボスからは出ません）\n使い方の細かいところは、決まり次第お知らせします。' }
   ];
@@ -4959,7 +4960,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 167;
+  var GV = 169;
   (function () {
     var last = Date.now();
     function chk() {
@@ -5021,7 +5022,7 @@ var TB = {
         { q: '装備の付けかえ', k: ['装備', '付け', '着替', 'リュック', '持ち物', '持物', 'もちもの'], a: '画面の右上の「装備・持物」ボタンで、持ってる装備の付けかえができるよ。持ち物の確認もそこです。' },
         { q: 'ギルド', k: ['ギルド', '仲間', 'チーム', '入る', '申請'], a: 'ギルドはレベル10から。町のギルドの建物で、🪙10,000を払えば、承認なしですぐ作れるよ。最大30人まで入れます。' },
         { q: '仲間と協力', k: ['協力', 'パーティ', '待合', '招待', 'みんな', '一緒', 'ボス', '複数'], a: 'マップの下の「パーティーの待合室」で、最大5人まで仲間を集められるよ。同じ鉱山に入ったら協力プレイです。人数が多いほど、掘るのが早くなる。2人以上だと、ボスのごほうびも出るよ。' },
-        { q: 'スペシャルチケット', k: ['チケット', '券', '割引', 'スペシャル', '当た'], a: '掘ってると、まれに当たることがあるよ。当たる確率は、レベルや装備、人数では変わりません。細かい使い方は、決まったらお知らせします。' },
+        { q: 'スペシャルチケット', k: ['チケット', '券', '割引', 'スペシャル', '当た'], a: '掘ってると、まれに当たることがあるよ。確率は、石を1回掘るごとに、レア1/3,600・超レア1/10,000・激レア1/60,000。レベルや装備、人数では変わりません。細かい使い方は、決まったらお知らせします。' },
         { q: '闘技場って？', k: ['闘技', '対戦', 'バトル', '決闘', 'pvp', '勝負'], a: '町の左下にあるよ。観客席は安全な場所。闘技場内に入ると、相手をタップするだけで攻撃できる（攻撃もされる）。観客席の人をタップして「戦いを挑む」を押して、相手が受けたら、1対1の決闘です。負けても持ち物は減りませんから安心してください。' },
         { q: 'ひとこと（クイックチャット）', k: ['チャット', 'ひとこと', '話', '会話', '助けて', 'メッセージ'], a: '町や協力プレイでは、画面の下の「💬」ボタンで、「たすけて」「ナイス」をワンタッチで送れるよ。町では、文字を打って話すこともできる（ことばは保存されません）。' },
         { q: '音や振動を切りたい', k: ['音', 'bgm', '音楽', '振動', 'うるさ', '消'], a: '右上の⚙で、BGM、効果音、振動を、それぞれオンオフできるよ。' }
@@ -7030,9 +7031,18 @@ var TB = {
     arcShow('<h2>🪙 コイン受け取り機</h2><div class="chipb">🪙 <b id="disC"></b> コイン</div><p id="disI" style="margin:8px 0;line-height:1.6"></p><button type="button" class="arcx" id="disGo" style="font-size:16px;padding:12px 20px">🪙 コインを受け取る</button><div id="disM" style="min-height:24px;margin:10px 0;color:#ffe27a;font-weight:700"></div><button type="button" class="arcx" id="disX">とじる</button>');
     var upd = function () { $('disC').textContent = cfmt(chipsGet()); $('disI').innerHTML = '1回で <b>+500コイン</b><br><span style="font-size:12px;opacity:.8">（持ってるコインが5,000になるまで）</span><br>きょうの残り <b>' + Math.max(0, 10 - disN()) + '</b> / 10回'; }, say = function (t) { $('disM').textContent = t; };
     upd(); $('disX').onclick = arcClose;
+    var disBusy = 0;
+    var disSync = function (j) { if (j && typeof j.n === 'number') { try { localStorage.setItem('opa_dis', JSON.stringify({ d: disDay(), n: j.n })); } catch (e) {} } };
+    if (token) cdFlush().then(function () { return cdPost({ action: 'dis_claim', peek: 1 }); }).then(function (j) { disSync(j); if ($('disC')) upd(); }).catch(function () {});
     $('disGo').onclick = function () {
-      var n = disN(), c = chipsGet(); if (n >= 10) { say('きょうは10回ぜんぶ受け取ったよ。また明日きてね'); return; } if (c >= 5000) { say('5,000コイン持ってるから、これ以上は受け取れないよ'); return; }
-      var g = Math.min(500, 5000 - c); chipsSet(c + g); try { localStorage.setItem('opa_dis', JSON.stringify({ d: disDay(), n: n + 1 })); } catch (e) {} sndChip(); sndChip(.08); say('🪙 +' + g.toLocaleString() + ' コイン受け取ったよ！'); upd(); chipUpd();
+      if (disBusy) return; var c = chipsGet(); if (c >= 5000) { say('5,000コイン持ってるから、これ以上は受け取れないよ'); return; }
+      disBusy = 1; say('…');
+      cdFlush().then(function () { return cdPost({ action: 'dis_claim' }); }).then(function (j) {
+        disBusy = 0; if (!$('disM')) return;
+        if (j && j.ok) { player.coins = j.coins + CD.pend; disSync(j); sndChip(); sndChip(.08); say('🪙 +' + j.got.toLocaleString() + ' コイン受け取ったよ！'); upd(); chipUpd(); }
+        else if (j && j.message) { disSync(j); say(j.message); upd(); }
+        else say('つながりませんでした。もう一回ためしてね');
+      }).catch(function () { disBusy = 0; if ($('disM')) say('つながりませんでした。もう一回ためしてね'); });
     };
   }
   function openPrize() {
@@ -7766,6 +7776,7 @@ var TB = {
   /* --- テキサスホールデム（最大8人・NPC1人が常駐。ゲーム用コイン・景品なし） --- */
   var PK = null, PKCAT = ['ハイカード', 'ワンペア', 'ツーペア', 'スリーカード', 'ストレート', 'フラッシュ', 'フルハウス', 'フォーカード', 'ストレートフラッシュ'], PKRK = ['', '', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
   var PKSB = 10, PKBB = 20, PKBUY = 1000, OPALP = .2; /* オパールカードが出る確率（1ゲームにつき） */
+  try { if (LSget('opa_is_master') === '1' && localStorage.getItem('opa_fix1108b') !== '1') { localStorage.removeItem('opa_pk_set'); localStorage.setItem('opa_fix1108b', '1'); } } catch (e) {} /* マスターの端末だけ：ポーカーの成績記録（たかお）を一度だけリセット */
   var PKS = (function () { var d = { hint: 0, lv: 1, h: 0, w: 0, net: 0, big: 0, hist: [] }; try { var o = JSON.parse(localStorage.getItem('opa_pk_set') || 'null'); if (o) for (var k in o) d[k] = o[k]; } catch (e) {} return d; })();
   function pkSave() { try { localStorage.setItem('opa_pk_set', JSON.stringify(PKS)); } catch (e) {} }
   function pkDeck() { var d = [], s, r, i; for (s = 0; s < 4; s++) for (r = 2; r <= 14; r++) d.push({ r: r, s: s }); for (i = d.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = d[i]; d[i] = d[j]; d[j] = t; } return d; }
@@ -8323,9 +8334,11 @@ var TB = {
     if (eqItem('weapon') && wHand === 'pick') { wHand = 'weapon'; gearUi(); handUi(); toast('武器に持ちかえた！'); }
     if (!canAttack()) return true;
     var wq = curW(); if (wq && wq.rng) shootFx(hit.x, hit.y, wq.kind);
-    var trr = trHit(hit, atkP()), dm = trr.dm; impactSnd(); vib(20); swingAnim(); dustW(hit.x, hit.y - 30); floatTxt(hit.x, hit.y - 80, isGM() ? '一撃！' : '-' + dm, 'y'); trDone(trr, hit);
+    var trr = trHit(hit, atkP()), dm = trr.dm; impactSnd(); vib(20); swingAnim(); dustW(hit.x, hit.y - 30); trDone(trr, hit);
     var aoeL = []; if (wq && wq.aoe) { aoeL = foes.filter(function (f) { return f !== hit && f.mode !== 'dead' && Math.hypot(f.x - hit.x, f.y - hit.y) < wq.aoe; }); var af = document.createElement('i'); af.className = 'aoefx'; af.style.cssText = 'left:' + hit.x + 'px;top:' + (hit.y - 30) + 'px;width:' + (wq.aoe * 2) + 'px;height:' + (wq.aoe * 2) + 'px'; $('world').appendChild(af); setTimeout(function () { af.remove(); }, 400); }
     var exL = trExtra(hit, trr, aoeL.map(function (f) { return { f: f, m: .7 }; }));
+    if ((trr.cleave || trr.pierce) && !exL.length) { dm = Math.round(dm * 1.2); floatTxt(hit.x + 30, hit.y - 112, '単体ボーナス+20%', 'y'); } /* 巻き込める敵がいない時（ボス1体など）は、当てた敵に+20% */
+    floatTxt(hit.x, hit.y - 80, isGM() ? '一撃！' : '-' + dm, 'y');
     if (amFoeHost()) { var was = hit.hp; applyFoeDamage(hit, dm); exL.forEach(function (o) { applyFoeDamage(o.f, Math.round(dm * o.m)); }); }
     else { rtSend({ t: 'hit', i: hit.id, d: dm }); hit.el.classList.remove('hit'); void hit.el.offsetWidth; hit.el.classList.add('hit'); exL.forEach(function (o) { rtSend({ t: 'hit', i: o.f.id, d: Math.round(dm * o.m) }); }); }
     return true;
