@@ -863,6 +863,91 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 
 #fBack.wide{width:auto;height:42px;border-radius:999px;padding:0 13px;font-size:12px;font-weight:800;white-space:nowrap}
 #fBack.wide small{display:none}
+/* ===== 抽選会場 ===== */
+#field:not(.lot) #lotUI,#field:not(.lot) #lotShow,#field:not(.lot) #lotModal,#field:not(.lot) #lotOp,#field:not(.lot) #lotFx{display:none !important}
+#field.lot #tchat,#field.lot #fTools,#field.lot #qcBtn,#field.lot #qcPanel{display:none !important}
+#lotUI{position:absolute;inset:0;pointer-events:none;z-index:60}
+#lotTop{position:absolute;top:92px;left:0;right:0;display:flex;flex-wrap:wrap;align-items:center;gap:6px;padding:6px 8px;pointer-events:none}
+#lotTop>*{pointer-events:auto}
+#lotPh{background:#2a0a1a;color:#ffe27a;border:2px solid #d9b24c;border-radius:999px;padding:5px 12px;font-weight:900;font-size:14px}
+#lotCnt{background:rgba(20,10,30,.78);color:#fff;border-radius:999px;padding:5px 10px;font-weight:800;font-size:13px}
+#lotSeal{background:rgba(20,10,30,.78);color:#9fe8ff;border-radius:999px;padding:5px 10px;font-weight:800;font-size:12px;font-family:monospace}
+#lotCnt:empty,#lotSeal:empty{display:none}
+#lotEnterBtn{border:0;border-radius:14px;padding:11px 18px;font-weight:900;font-size:17px;color:#fff;background:linear-gradient(180deg,#ff6b8b,#d62a52);box-shadow:0 4px 14px rgba(0,0,0,.45)}
+#lotEnterBtn.pulse{animation:lotPulse 1.1s infinite}
+#lotEnterBtn.done{background:linear-gradient(180deg,#59d38a,#2a9a5a);font-size:14px}
+@keyframes lotPulse{0%,100%{transform:scale(1);box-shadow:0 4px 14px rgba(0,0,0,.45)}50%{transform:scale(1.07);box-shadow:0 0 22px #ff6b8b}}
+#lotShowBtn,#lotOpBtn{border:0;border-radius:12px;padding:8px 12px;font-size:16px;font-weight:900;background:#3a2a5a;color:#fff}
+#lotChat{position:relative;flex:none;height:34%;min-height:190px;display:flex;flex-direction:column;background:#10081a;border-top:3px solid #d9b24c;z-index:70}
+#field:not(.lot) #lotChat{display:none !important}
+#lotChat.mini{height:auto;min-height:0}#lotChat.mini #lotMsgs,#lotChat.mini #lotRow{display:none}
+#lotChatH{display:flex;justify-content:space-between;align-items:center;padding:6px 10px;color:#ffe27a;font-size:14px}
+#lotChatT{border:0;border-radius:10px;padding:4px 10px;background:#3a2a5a;color:#fff;font-weight:800;font-size:12px}
+#lotMsgs{flex:1;overflow-y:auto;padding:4px 10px;font-size:15px;color:#fff;-webkit-overflow-scrolling:touch}
+.lm{margin:3px 0;line-height:1.4;word-break:break-all}.lm b{color:#ffd36a;margin-right:4px}
+.lm.sys{color:#9fb0c8;text-align:center;font-size:13px}
+.lm.win{background:linear-gradient(90deg,#d9b24c,#ffe27a,#d9b24c);color:#5a1020;font-weight:900;font-size:18px;text-align:center;border-radius:10px;padding:8px;margin:8px 0;box-shadow:0 0 16px #ffd23a;animation:lotWin 1.2s 3}
+@keyframes lotWin{0%,100%{transform:scale(1)}50%{transform:scale(1.04)}}
+#lotRow{display:flex;gap:6px;padding:6px 8px calc(8px + env(safe-area-inset-bottom))}
+#lotIn{flex:1;border:2px solid #d9b24c;border-radius:10px;padding:10px;font-size:16px;background:#fff;color:#222}
+#lotSend{border:0;border-radius:10px;padding:0 18px;font-weight:900;font-size:15px;background:linear-gradient(180deg,#ffd36a,#e0a020);color:#3a2a08}
+.lotSign{position:absolute;transform:translateX(-50%);z-index:60;font-weight:900;font-size:40px;color:#ffe27a;text-shadow:0 0 14px #ff9a3a,0 3px 0 #7a4a00;white-space:nowrap;letter-spacing:3px}
+#lotBoard{position:absolute;transform:translateX(-50%);z-index:60;width:760px;height:126px;background:#07120f;border:6px solid #d9b24c;border-radius:10px;box-shadow:0 0 0 4px #5a1020,0 8px 18px rgba(0,0,0,.5);overflow:hidden;padding:4px 8px}
+.lbT{color:#7dffb0;font-weight:900;font-size:14px;letter-spacing:2px}
+.lbG{display:flex;flex-wrap:wrap;gap:3px 7px;color:#eaffea;font-weight:800;line-height:1.15;max-height:96px;overflow:hidden}
+.lbN.s{color:#ffe27a;text-shadow:0 0 6px #ffb53a}.lbN.o{opacity:.28}.lbN.w{color:#fff;background:#d9b24c;color:#5a1020;border-radius:4px;padding:0 4px;box-shadow:0 0 10px #ffd23a}.lbN.me{text-decoration:underline}
+.lbE{color:#6a8;font-size:14px}
+.lflk{animation:lflk 1.6s infinite}@keyframes lflk{0%,100%{opacity:1}50%{opacity:.55}}
+.lmB{animation:lmJ .9s infinite alternate ease-in-out}@keyframes lmJ{from{transform:translate(0,0)}to{transform:translate(4px,-5px)}}
+.lmBat.sw{animation:lmSw .3s ease-out}@keyframes lmSw{0%{transform:rotate(-70deg)}60%{transform:rotate(40deg)}100%{transform:rotate(0)}}
+#lotMach.run .lmBat{animation:lmIdle .9s infinite alternate}@keyframes lmIdle{from{transform:rotate(-12deg)}to{transform:rotate(14deg)}}
+#lotShow{position:absolute;inset:0;z-index:80;background:rgba(10,4,20,.93);display:none;flex-direction:column;pointer-events:auto}
+#lotShow.on{display:flex}
+#lsHead{display:flex;justify-content:space-between;align-items:center;gap:8px;padding:56px 10px 6px;color:#ffe27a;font-size:15px}
+#lsMin{border:0;border-radius:10px;padding:8px 12px;background:#3a2a5a;color:#fff;font-weight:900;flex:none}
+#lsStage{position:relative;height:30%;min-height:150px;margin:0 8px}
+#lsStage .lsTank{position:absolute;inset:0}
+.lsBall{position:absolute;left:22%;top:41%;width:46px;height:46px;margin:-23px 0 0 -23px;border-radius:50%;background:radial-gradient(circle at 30% 30%,#fff,#ffd36a 55%,#e0a020);color:#5a1020;font-weight:900;font-size:12px;display:none;align-items:center;justify-content:center;box-shadow:0 0 12px #ffd23a;z-index:3}
+.lsBall.go{display:flex;animation:lsGo 1s ease-in forwards}
+@keyframes lsGo{0%{left:22%;top:41%;transform:scale(.6)}42%{left:72%;top:55%;transform:scale(.7)}52%{left:72%;top:55%;transform:scale(.7)}100%{left:50%;top:-6%;transform:scale(2.6);opacity:0}}
+.lsName{position:absolute;left:0;right:0;top:4px;text-align:center;z-index:4;pointer-events:none}
+.lsPop{display:inline-block;background:linear-gradient(180deg,#fff7d6,#ffe27a);color:#5a1020;font-weight:900;font-size:26px;border-radius:16px;padding:8px 22px;box-shadow:0 0 26px #ffd23a;animation:lsPop .35s ease-out}
+.lsPop small{display:block;font-size:12px;opacity:.7}.lsPop em{display:block;font-style:normal;font-size:14px;color:#1a9a4a;letter-spacing:3px}.lsPop.me{background:linear-gradient(180deg,#d6fff0,#7dff9a);box-shadow:0 0 34px #7dff9a}
+@keyframes lsPop{0%{transform:scale(.3);opacity:0}70%{transform:scale(1.15)}100%{transform:scale(1);opacity:1}}
+.lsEnd{display:inline-block;font-size:24px;font-weight:900;color:#fff;background:#2a9a5a;border-radius:14px;padding:8px 20px}
+#lsBody{flex:1;overflow-y:auto;padding:6px 10px 14px;color:#fff}
+.lsPools{text-align:center;color:#9fe8ff;font-weight:900;margin-bottom:6px}
+.lsGrid{display:flex;flex-wrap:wrap;gap:6px;justify-content:center;max-height:100%;overflow-y:auto}
+.chip{background:#2a3a5a;border:1px solid #5a7aa8;color:#fff;border-radius:999px;padding:4px 10px;font-size:13px;font-weight:800}
+.chip i{font-style:normal;color:#ffd36a;margin-right:5px;font-size:11px}.chip.me{background:#1a6a4a;border-color:#7dff9a}
+.lsLad{width:100%}.lsWin{text-align:center;font-size:20px;font-weight:900;color:#ffe27a;margin:6px 0}
+#lotModal,#lotOp{position:absolute;inset:0;z-index:90;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;pointer-events:auto}
+#lotModal.on,#lotOp.on{display:flex}
+.lmBox,.loBox{width:min(88vw,360px);background:linear-gradient(180deg,#4a0f20,#2a0a14);border:4px solid #d9b24c;border-radius:18px;padding:18px;color:#fff;text-align:center}
+.lmBox h3,.loBox h3{margin:0 0 10px;color:#ffe27a}
+.lmId{font-size:17px}.lmId b{color:#7dffb0;font-size:22px}.lmNo{font-size:18px}.lmNo b{color:#ffd36a;font-size:26px}
+#lmGo{width:100%;margin-top:12px;border:0;border-radius:16px;padding:18px;font-size:24px;font-weight:900;color:#fff;background:linear-gradient(180deg,#ff6b8b,#d62a52);box-shadow:0 0 22px #ff6b8b}
+#lmClose,.loC{width:100%;margin-top:10px;border:0;border-radius:12px;padding:10px;font-weight:800;background:#3a2a5a;color:#fff}
+.loRow{display:flex;align-items:center;justify-content:center;gap:12px;margin:10px 0;font-size:15px}.loRow b{font-size:24px;color:#ffd36a;min-width:34px}
+.loRow button{width:40px;height:40px;border:0;border-radius:10px;font-size:22px;font-weight:900;background:#d9b24c;color:#3a2a08}
+.loG{width:100%;margin-top:10px;border:0;border-radius:14px;padding:14px;font-weight:900;font-size:16px;color:#fff;background:linear-gradient(180deg,#59d38a,#2a9a5a)}
+#lotFx{position:absolute;inset:0;z-index:100;display:none;pointer-events:auto;background:rgba(10,4,20,.55);overflow:hidden}
+#lotFx.on{display:block}
+.fxK{position:absolute;left:0;right:0;top:12%;text-align:center}
+.fxBall{width:min(52vw,220px);overflow:visible;animation:fxShake .5s 3}
+.fxL{transform-origin:20px 100px;animation:fxOpL .8s 1.4s forwards}.fxR{transform-origin:180px 100px;animation:fxOpR .8s 1.4s forwards}
+@keyframes fxShake{0%,100%{transform:rotate(0)}25%{transform:rotate(-6deg)}75%{transform:rotate(6deg)}}
+@keyframes fxOpL{to{transform:rotate(-70deg) translate(-14px,10px)}}@keyframes fxOpR{to{transform:rotate(70deg) translate(14px,10px)}}
+.fxBan{margin:8px auto 0;width:max-content;max-width:92vw;background:linear-gradient(90deg,#d9b24c,#ffe27a,#d9b24c);color:#5a1020;font-weight:900;font-size:24px;border-radius:12px;padding:10px 18px;box-shadow:0 0 28px #ffd23a;transform-origin:top;animation:fxBan .7s 1.9s both}
+@keyframes fxBan{from{transform:scaleY(0);opacity:0}to{transform:scaleY(1);opacity:1}}
+.fxList{position:absolute;left:0;right:0;top:46%;text-align:center;opacity:0;animation:fxLi .6s 2.3s forwards}
+@keyframes fxLi{to{opacity:1}}
+.fxW{display:inline-block;margin:6px;background:#fff7d6;color:#5a1020;font-weight:900;font-size:24px;border-radius:14px;padding:8px 18px;box-shadow:0 0 22px #ffd23a}.fxW small{display:block;font-size:12px;opacity:.7}.fxW.me{background:#d6fff0;box-shadow:0 0 30px #7dff9a}
+.fxMe{font-size:26px;font-weight:900;color:#fff;text-shadow:0 0 18px #ff6b8b,0 0 6px #ffd23a;margin-bottom:6px}
+#lotFx.still .fxBall,#lotFx.still .fxL,#lotFx.still .fxR,#lotFx.still .fxBan,#lotFx.still .fxList{animation-duration:.01s;animation-delay:0s}
+.cf{position:absolute;top:-20px;width:9px;height:14px;opacity:.95;animation:cfF linear infinite}
+@keyframes cfF{to{top:105%;margin-left:40px}}
+
 #field.plaza #tchat{display:none}
 #field.town #tchat{display:block;bottom:46px}
 .spfx.warn{border-color:#ff5a5a;box-shadow:0 0 24px #ff3a3a,inset 0 0 24px #ff3a3a;animation-duration:.75s}
@@ -3209,7 +3294,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
     var now = performance.now();
     if ((moved && now - rtLast > 110) || (!moved && rtWas) || now - rtLast > 1500) { rtLast = now; rtSend(posMsg()); }
     rtWas = moved;
-    var k = Math.min(1, dt * 10);
+    var k = Math.min(1, dt * (inLot ? 2.2 : 10));
     Object.keys(peers).forEach(function (id) {
       var pr = peers[id]; if (!pr.el) return;
       var dx = pr.tx - pr.x, dy = pr.ty - pr.y; pr.x += dx * k; pr.y += dy * k;
@@ -3697,7 +3782,7 @@ var TB = {
   var TOWN = { W: 2400, H: 2340, cx: 1200, cy: 1170, rx: 860, ry: 540 };
   var TD = {};
   var TSLOTS = [
-    { k: 'guild', s: 'hall', a: 270, w: 330, nm: 'ギルド' },
+    { k: 'lottery', s: 'hall', a: 270, w: 330, nm: '🎁 プレゼント抽選会場' },
     { k: 'shop', s: 'shop', a: 238, w: 250, nm: 'ショップ' },
     { k: 'exch', s: 'exch', a: 302, w: 290, nm: '取引所' },
     { k: 'skill', s: 'skill', a: 206, w: 240, nm: '🔮 スキルの館' },
@@ -3732,7 +3817,7 @@ var TB = {
     // 建物へのスポーク道
     TSLOTS.forEach(function (sl) { var a = sl.a * Math.PI / 180, p0 = tAt(sl.a, .62), p1 = tAt(sl.a, 1.0), nx = -Math.sin(a), ny = Math.cos(a), wd = 44; o += P('M' + (p0.x + nx * wd) + ' ' + (p0.y + ny * wd) + 'L' + (p1.x + nx * wd) + ' ' + (p1.y + ny * wd) + 'L' + (p1.x - nx * wd) + ' ' + (p1.y - ny * wd) + 'L' + (p0.x - nx * wd) + ' ' + (p0.y - ny * wd) + 'Z'); });
     // 南の大通り（入口）と図書館への道
-    o += P('M1110 1380H1290V' + TH + 'H1110Z') + P('M300 1840H1110V1930H300Z');
+    o += P('M1110 1380H1290V' + TH + 'H1110Z') + P('M300 1840H1110V1930H300Z') + P('M1290 1840H1900V1930H1290Z');
     // 中央広場
     o += P(tEll(C.cx, C.cy, 520, 330)) + '<path d="' + tEll(C.cx, C.cy, 520, 330) + '" fill="url(#tgD)" opacity=".55"/>';
     [.94, .8, .66, .52].forEach(function (f, n) { o += '<path d="' + tEll(C.cx, C.cy, 520 * f, 330 * f) + '" fill="none" stroke="' + (n % 2 ? '#c9b68c' : '#b99e64') + '" stroke-width="' + (n % 2 ? 3 : 5) + '"/>'; });
@@ -3754,6 +3839,7 @@ var TB = {
     var door = function (k, x, y, wd, ht) { TD[k] = { x: Math.round(x), y: Math.round(y) }; DOORS.push({ k: k, x: Math.round(x), y: Math.round(y), w: Math.round(wd * .62), h: Math.round(ht * .8) }); };
     TSLOTS.forEach(function (sl) { var p = tAt(sl.a, 1), vb = VB[sl.s], ht = Math.round(sl.w * vb[1] / vb[0]); put(sl.s, p.x, p.y, sl.w, ht); lbl(sl.nm, p.x, p.y - ht - 4); door(sl.k, p.x, p.y, sl.w, ht); });
     put('lib', 330, 1860, 300, 290); lbl('📚 図書館', 330, 1860 - 290 - 4); door('lib', 330, 1860, 300, 290);
+    put('hall', 1870, 1860, 190, 163); lbl('🏰 ギルド', 1870, 1860 - 163 - 4); door('guild', 1870, 1860, 190, 163);
     // 中央の噴水
     put('fount', C.cx, C.cy + 140, 520, 442);
     // 広場：ベンチ・屋台・街灯
@@ -3767,7 +3853,7 @@ var TB = {
     // 外側の林
     for (var gy = 300; gy < TH - 40; gy += 120) for (var gx = 70; gx < TW - 40; gx += 140) {
       var x = gx + (rr() - .5) * 90, y = gy + (rr() - .5) * 70, ex = (x - C.cx) / (C.rx + 190), ey = (y - C.cy) / (C.ry + 170);
-      if (ex * ex + ey * ey < 1) continue; if (Math.abs(x - 1200) < 200 && y > 1380) continue; if (x < 640 && y > 1560 && y < 2040) continue; if (y > 1800 && y < 1960 && x < 1200) continue; if (rr() < .22) continue;
+      if (ex * ex + ey * ey < 1) continue; if (Math.abs(x - 1200) < 200 && y > 1380) continue; if (x < 640 && y > 1560 && y < 2040) continue; if (x > 1700 && y > 1560 && y < 2040) continue; if (y > 1800 && y < 1960 && x < 1200) continue; if (rr() < .22) continue;
       var big = rr() < .55; put(big ? 'tree' : 'tree2', x, y, big ? 78 : 62, big ? 104 : 100);
     }
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
@@ -3780,6 +3866,10 @@ var TB = {
     TUT.doors[k] = 1;
     if (k === 'shop') { sfx(2); openBag(1); }
     else if (k === 'guild') { sfx(2); openGuild(); }
+    else if (k === 'lottery') { sfx(2); openLot(); }
+    else if (k === 'lotout') { sfx(2); leaveCafe(); }
+    else if (k === 'lot:entry') { sfx(2); lotEntryOpen(); }
+    else if (/^lot:(up|dn)[LR]$/.test(k)) lotStair(k);
     else if (k === 'hospital') healFull();
     else if (k === 'exch') { sfx(2); openMarket(); }
     else if (k === 'arena') { sfx(2); openArena(); }
@@ -3806,6 +3896,397 @@ var TB = {
     else if (/^seat:/.test(k)) sitDown(+k.slice(5));
     else if (/^npc:/.test(k)) openNpc(k.slice(4));
   }
+  /* ---------- 🎁 プレゼント抽選会場（受付→サバイバル抽選→あみだ→当選。サーバーが結果を決める。Realtimeは使わず、2.5秒ごとに取りにいく） ---------- */
+  var inLot = false, lotUp = 0, LOT_W = 2000, LOT_H = 1720, LT = null, lotTimer = 0;
+  function lotApi(b) {
+    b.token = token;
+    return fetch(API.replace(/opa-game$/, 'opa-lottery'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b) })
+      .then(function (r) { return r.json().then(function (j) { j._s = r.status; return j; }); }).catch(function () { return { error: 'net' }; });
+  }
+  function lotSeats() {
+    SEATS = [];
+    var r, c;
+    for (r = 0; r < 10; r++) for (c = 0; c < 8; c++) { SEATS.push({ x: 300 + c * 80, y: 560 + r * 80, d: 1 }); SEATS.push({ x: 1140 + c * 80, y: 560 + r * 80, d: 1 }); }
+    for (r = 0; r < 11; r++) { SEATS.push({ x: 70, y: 500 + r * 80, d: 1 }, { x: 150, y: 500 + r * 80, d: 1 }, { x: LOT_W - 150, y: 500 + r * 80, d: 1 }, { x: LOT_W - 70, y: 500 + r * 80, d: 1 }); }
+  }
+  function lotChairSVG() {
+    return '<svg viewBox="0 0 50 44"><path d="M5 42V14Q5 4 25 4T45 14V42Z" fill="#8c1b2c" stroke="#d9b24c" stroke-width="2.4"/><path d="M13 38V16Q13 11 25 11T37 16V38Z" fill="#b8263d"/></svg>';
+  }
+  function lotPadSVG() {
+    return '<svg viewBox="0 0 56 26"><rect x="8" y="14" width="5" height="12" fill="#6b4a14"/><rect x="43" y="14" width="5" height="12" fill="#6b4a14"/><ellipse cx="28" cy="9" rx="25" ry="9" fill="#a8223a" stroke="#d9b24c" stroke-width="2.4"/><ellipse cx="28" cy="7" rx="16" ry="4" fill="rgba(255,255,255,.22)"/></svg>';
+  }
+  function lotChandSVG() {
+    var o = '<svg viewBox="0 0 160 190"><defs><radialGradient id="lcG" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="rgba(255,236,170,.9)"/><stop offset="1" stop-color="rgba(255,220,120,0)"/></radialGradient></defs>';
+    o += '<ellipse cx="80" cy="110" rx="78" ry="70" fill="url(#lcG)"/><path d="M80 0V40" stroke="#d9b24c" stroke-width="4"/>';
+    o += '<path d="M80 40Q20 46 12 92M80 40Q140 46 148 92M80 40Q50 56 44 96M80 40Q110 56 116 96M80 40V96" stroke="#e6c15a" stroke-width="5" fill="none" stroke-linecap="round"/>';
+    o += '<ellipse cx="80" cy="100" rx="70" ry="12" fill="none" stroke="#d9b24c" stroke-width="5"/>';
+    [[12, 92], [44, 96], [80, 98], [116, 96], [148, 92]].forEach(function (p, i) { o += '<rect x="' + (p[0] - 3) + '" y="' + (p[1] - 18) + '" width="6" height="16" fill="#fff6d6"/><ellipse cx="' + p[0] + '" cy="' + (p[1] - 22) + '" rx="5" ry="8" fill="#ffd36a" class="lflk" style="animation-delay:' + (i * .3) + 's"/>'; });
+    for (var i = 0; i < 11; i++) { var x = 14 + i * 13.2; o += '<path d="M' + x + ' 108l-4 14l4 10l4-10z" fill="rgba(210,240,255,.9)" stroke="#9fd2ea" stroke-width="1"/>'; }
+    return o + '<path d="M80 118V176" stroke="#d9b24c" stroke-width="3"/><path d="M80 176l-8 10h16z" fill="rgba(210,240,255,.95)" stroke="#9fd2ea"/></svg>';
+  }
+  function lotColSVG() {
+    return '<svg viewBox="0 0 60 300"><rect x="4" y="0" width="52" height="14" rx="3" fill="#e9dcc0" stroke="#b79a58" stroke-width="2"/><rect x="10" y="14" width="40" height="258" fill="#f7efe0"/><path d="M18 14V272M27 14V272M36 14V272M45 14V272" stroke="rgba(170,145,90,.45)" stroke-width="2"/><rect x="4" y="272" width="52" height="16" rx="3" fill="#e9dcc0" stroke="#b79a58" stroke-width="2"/><rect x="0" y="286" width="60" height="14" rx="3" fill="#d9b24c"/></svg>';
+  }
+  function lotRecepSVG() {
+    return '<svg viewBox="0 0 170 130"><ellipse cx="85" cy="122" rx="78" ry="8" fill="rgba(0,0,0,.35)"/><rect x="14" y="30" width="142" height="92" rx="10" fill="#7d1226" stroke="#d9b24c" stroke-width="4"/><rect x="26" y="40" width="118" height="34" rx="6" fill="#10222e" stroke="#d9b24c" stroke-width="2.5"/><text x="85" y="63" font-size="17" font-weight="900" fill="#7dffb0" text-anchor="middle" font-family="sans-serif">受付はこちら</text><circle cx="85" cy="96" r="16" fill="#ff3b4e" stroke="#fff" stroke-width="3.5"/><circle cx="85" cy="92" r="9" fill="rgba(255,255,255,.35)"/><rect x="28" y="84" width="34" height="10" rx="3" fill="#2a0a12" stroke="#d9b24c"/><rect x="108" y="84" width="34" height="10" rx="3" fill="#2a0a12" stroke="#d9b24c"/><rect x="40" y="8" width="90" height="26" rx="8" fill="#d9b24c" stroke="#8a6a1a" stroke-width="2.5"/><text x="85" y="27" font-size="15" font-weight="900" fill="#5a1020" text-anchor="middle" font-family="sans-serif">🎟 受付機</text></svg>';
+  }
+  function lotMachSVG() {
+    var o = '<svg viewBox="0 0 420 190"><defs><radialGradient id="lmG" cx=".35" cy=".3" r=".8"><stop offset="0" stop-color="rgba(255,255,255,.85)"/><stop offset=".5" stop-color="rgba(190,225,255,.35)"/><stop offset="1" stop-color="rgba(120,170,230,.3)"/></radialGradient></defs>';
+    o += '<ellipse cx="210" cy="182" rx="196" ry="8" fill="rgba(0,0,0,.35)"/><rect x="20" y="130" width="380" height="50" rx="8" fill="#5a1020" stroke="#d9b24c" stroke-width="4"/>';
+    o += '<circle cx="92" cy="78" r="64" fill="#10222e" stroke="#d9b24c" stroke-width="5"/>';
+    var bc = ['#ff6b8b', '#ffd36a', '#6ee0ff', '#8cf09a', '#c79bff', '#ff9f5a'];
+    for (var i = 0; i < 22; i++) { var a = i * 2.4, rr = 12 + (i * 7) % 40; o += '<circle class="lmB" style="animation-delay:' + ((i % 7) * .12) + 's" cx="' + (92 + Math.cos(a) * rr * .9) + '" cy="' + (84 + Math.sin(a) * rr * .8) + '" r="9" fill="' + bc[i % 6] + '" stroke="rgba(255,255,255,.7)" stroke-width="1.4"/>'; }
+    o += '<circle cx="92" cy="78" r="64" fill="url(#lmG)"/><rect x="74" y="136" width="36" height="20" fill="#3a0c18" stroke="#d9b24c" stroke-width="2.5"/>';
+    o += '<path d="M130 108Q190 120 250 126" stroke="#d9b24c" stroke-width="8" fill="none" stroke-linecap="round"/><path d="M130 108Q190 120 250 126" stroke="#3a0c18" stroke-width="3" fill="none" stroke-linecap="round"/>';
+    o += '<g id="lmBat"><g class="lmBat" style="transform-origin:312px 124px"><rect x="306" y="50" width="12" height="76" rx="6" fill="#d9a85a" stroke="#6b4a14" stroke-width="2.5"/><rect x="308" y="118" width="8" height="18" rx="3" fill="#6b4a14"/></g></g>';
+    o += '<circle cx="330" cy="96" r="13" fill="#f5cda0" stroke="#7a4a1a" stroke-width="2.5"/><path d="M316 94Q330 78 344 94Z" fill="#c8263d" stroke="#7a1020" stroke-width="2"/><rect x="316" y="108" width="28" height="38" rx="9" fill="#c8263d" stroke="#7a1020" stroke-width="2.5"/>';
+    o += '<text x="312" y="172" font-size="15" font-weight="900" fill="#ffe9a8" text-anchor="middle" font-family="sans-serif">🎰 ラッキーピッチャー</text>';
+    return o + '</svg>';
+  }
+  function lotGround(W, H) {
+    var o = '<svg class="tground" width="' + W + '" height="' + H + '" viewBox="0 0 ' + W + ' ' + H + '" style="position:absolute;left:0;top:0;pointer-events:none;z-index:0"><defs>' +
+      '<pattern id="ltF" width="140" height="140" patternUnits="userSpaceOnUse"><rect width="140" height="140" fill="#f4efe6"/><rect width="70" height="70" fill="#d9d4ca"/><rect x="70" y="70" width="70" height="70" fill="#d9d4ca"/><path d="M0 0H140M0 70H140M0 0V140M70 0V140" stroke="rgba(200,165,70,.55)" stroke-width="1.6"/><path d="M10 120Q35 100 60 128M90 20Q110 40 130 14" stroke="rgba(150,150,170,.35)" stroke-width="2" fill="none"/></pattern>' +
+      '<pattern id="ltW" width="80" height="80" patternUnits="userSpaceOnUse"><rect width="80" height="80" fill="#4a0f20"/><path d="M40 6Q56 22 40 40Q24 22 40 6ZM40 40Q56 58 40 74Q24 58 40 40Z" fill="rgba(217,178,76,.35)"/><path d="M0 40H80" stroke="rgba(217,178,76,.18)"/></pattern>' +
+      '<pattern id="ltB" width="60" height="60" patternUnits="userSpaceOnUse"><rect width="60" height="60" fill="#c9a36a"/><path d="M0 30H60M30 0V60" stroke="#a8803f" stroke-width="2"/></pattern>' +
+      '<linearGradient id="ltS" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="rgba(0,0,0,.45)"/><stop offset="1" stop-color="rgba(0,0,0,0)"/></linearGradient>' +
+      '<linearGradient id="ltSR" x1="1" y1="0" x2="0" y2="0"><stop offset="0" stop-color="rgba(0,0,0,.45)"/><stop offset="1" stop-color="rgba(0,0,0,0)"/></linearGradient>' +
+      '<radialGradient id="ltL" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="rgba(255,236,170,.55)"/><stop offset="1" stop-color="rgba(255,220,120,0)"/></radialGradient></defs>';
+    o += '<rect width="' + W + '" height="' + H + '" fill="url(#ltF)"/>';
+    o += '<rect width="' + W + '" height="345" fill="url(#ltW)"/>';
+    // 2階（左右のギャラリー）：床を一段高く、手すり付き
+    o += '<rect x="0" y="345" width="220" height="' + (H - 345) + '" fill="url(#ltB)"/><rect x="' + (W - 220) + '" y="345" width="220" height="' + (H - 345) + '" fill="url(#ltB)"/>';
+    o += '<rect x="212" y="345" width="40" height="' + (H - 345) + '" fill="url(#ltS)"/><rect x="' + (W - 252) + '" y="345" width="40" height="' + (H - 345) + '" fill="url(#ltSR)"/>';
+    o += '<rect x="214" y="345" width="10" height="' + (H - 345) + '" fill="#d9b24c"/><rect x="' + (W - 224) + '" y="345" width="10" height="' + (H - 345) + '" fill="#d9b24c"/>';
+    for (var by = 360; by < H - 20; by += 26) o += '<rect x="217" y="' + by + '" width="4" height="18" rx="2" fill="#f1d684"/><rect x="' + (W - 221) + '" y="' + by + '" width="4" height="18" rx="2" fill="#f1d684"/>';
+    // 中央の赤じゅうたん
+    o += '<rect x="900" y="380" width="200" height="' + (H - 380) + '" fill="#a8142c"/><rect x="900" y="380" width="200" height="' + (H - 380) + '" fill="none" stroke="#d9b24c" stroke-width="6"/><rect x="916" y="380" width="168" height="' + (H - 380) + '" fill="none" stroke="#e6c15a" stroke-width="2" stroke-dasharray="14 8"/>';
+    [700, 1000, 1300].forEach(function (y) { o += '<ellipse cx="1000" cy="' + y + '" rx="320" ry="170" fill="url(#ltL)"/>'; });
+    // ステージ
+    o += '<rect x="230" y="188" width="1540" height="160" fill="#5a1020" stroke="#d9b24c" stroke-width="6"/><rect x="230" y="188" width="1540" height="160" fill="url(#ltB)" opacity=".0"/><rect x="236" y="194" width="1528" height="148" fill="#7d1226"/><path d="M236 250H1764M236 300H1764" stroke="rgba(217,178,76,.22)" stroke-width="3"/>';
+    o += '<rect x="230" y="344" width="1540" height="30" fill="#d9b24c"/><rect x="230" y="364" width="1540" height="12" fill="#8a6a1a"/>';
+    o += '<path d="M880 376H1120L1150 400H850Z" fill="#c9a36a" stroke="#8a6a1a" stroke-width="3"/>';
+    // 赤いカーテン
+    o += '<path d="M236 0H430Q470 120 420 340H236Z" fill="#a8142c" stroke="#d9b24c" stroke-width="4"/><path d="M1764 0H1570Q1530 120 1580 340H1764Z" fill="#a8142c" stroke="#d9b24c" stroke-width="4"/>';
+    for (var k = 0; k < 6; k++) o += '<path d="M' + (262 + k * 28) + ' 0Q' + (276 + k * 30) + ' 160 ' + (262 + k * 26) + ' 336" stroke="rgba(0,0,0,.16)" stroke-width="5" fill="none"/><path d="M' + (1738 - k * 28) + ' 0Q' + (1724 - k * 30) + ' 160 ' + (1738 - k * 26) + ' 336" stroke="rgba(0,0,0,.16)" stroke-width="5" fill="none"/>';
+    o += '<rect x="430" y="0" width="1140" height="12" fill="#d9b24c"/>';
+    // 出口の床マーク
+    o += '<rect x="900" y="' + (H - 70) + '" width="200" height="40" rx="8" fill="#7d1226" stroke="#d9b24c" stroke-width="4"/>';
+    return o + '</svg>';
+  }
+  function lotStairSVG(m) {
+    var o = '<svg viewBox="0 0 130 130" style="' + (m ? 'transform:scaleX(-1)' : '') + '"><path d="M4 126L126 126L126 100L96 100L96 74L66 74L66 48L36 48L36 22L4 22Z" fill="#c9a36a" stroke="#6b4a14" stroke-width="3"/>';
+    o += '<path d="M4 22H36V48H66V74H96V100H126" stroke="#f1d684" stroke-width="4" fill="none"/><path d="M36 22V126M66 48V126M96 74V126" stroke="rgba(107,74,20,.5)" stroke-width="2"/>';
+    return o + '</svg>';
+  }
+  function buildLot() {
+    var w = $('world'), html = '', W = LOT_W, H = LOT_H; setWorld(W, H); w.classList.remove('cave'); w.style.background = '#f4efe6'; lotSeats();
+    html += lotGround(W, H);
+    var dc = function (svg, x, y, wd, ht, z) { html += '<div class="dc" style="left:' + x + 'px;top:' + y + 'px;width:' + wd + 'px;height:' + ht + 'px;z-index:' + Math.round(z == null ? y : z) + '">' + svg + '</div>'; };
+    var em = function (t, x, y, fs, z) { html += '<div class="cfe" style="left:' + x + 'px;top:' + y + 'px;font-size:' + fs + 'px;z-index:' + Math.round(z == null ? y : z) + '">' + t + '</div>'; };
+    var lb = function (t, x, y) { html += '<div class="tlbl" style="left:' + x + 'px;top:' + y + 'px;white-space:nowrap">' + t + '</div>'; };
+    // 看板（舞台の上）と掲示板
+    html += '<div class="lotSign" style="left:1000px;top:14px">🎁 プレゼント抽選会 🎁</div>';
+    html += '<div id="lotBoard" style="left:1000px;top:62px"></div>';
+    // シャンデリア
+    [[360, 30], [560, 30], [1440, 30], [1640, 30]].forEach(function (p) { html += '<div class="dc lotCh" style="left:' + p[0] + 'px;top:' + (p[1] + 180) + 'px;width:130px;height:154px;z-index:90000">' + lotChandSVG() + '</div>'; });
+    html += '<div class="dc lotCh" style="left:1000px;top:560px;width:150px;height:180px;z-index:90000;opacity:.55">' + lotChandSVG() + '</div>';
+    html += '<div class="dc lotCh" style="left:560px;top:960px;width:130px;height:154px;z-index:90000;opacity:.45">' + lotChandSVG() + '</div><div class="dc lotCh" style="left:1440px;top:960px;width:130px;height:154px;z-index:90000;opacity:.45">' + lotChandSVG() + '</div>';
+    // 柱
+    [[250, 520], [250, 1000], [250, 1480], [W - 250, 520], [W - 250, 1000], [W - 250, 1480]].forEach(function (p) { dc(lotColSVG(), p[0], p[1], 50, 250, p[1]); });
+    // 機械
+    dc(lotRecepSVG(), 525, 346, 170, 130, 346); lb('🎟 受付機', 525, 214);
+    html += '<div class="dc" id="lotMach" style="left:1330px;top:352px;width:420px;height:190px;z-index:352">' + lotMachSVG() + '</div>'; lb('🎰 抽選機', 1330, 150);
+    em('🌹', 860, 336, 44, 337); em('🌹', 1140, 336, 44, 337); em('🏆', 1620, 330, 40, 331); em('🪴', 1700, 520, 54, 520); em('🪴', 300, 420, 54, 420);
+    // 椅子
+    SEATS.forEach(function (sa) { dc(lotChairSVG(), sa.x, sa.y - 2, 50, 44, sa.y - 1); dc(lotPadSVG(), sa.x, sa.y + 8, 56, 26, sa.y + 1); });
+    // 階段（左右）
+    dc(lotStairSVG(0), 330, H - 60, 130, 130, H - 60); dc(lotStairSVG(1), W - 330, H - 60, 130, 130, H - 60);
+    lb('⬆ 2階へ', 330, H - 232); lb('⬆ 2階へ', W - 330, H - 232);
+    dc(lotStairSVG(0), 110, H - 50, 110, 110, H - 50); dc(lotStairSVG(1), W - 110, H - 50, 110, 110, H - 50);
+    lb('⬇ 1階へ', 110, H - 112); lb('⬇ 1階へ', W - 110, H - 112);
+    lb('🚪 出口', 1000, H - 112);
+    html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
+    w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
+    DOORS = [
+      { k: 'lotout', x: 1000, y: H - 20, w: 200, h: 90 }, { k: 'lot:entry', x: 525, y: 352, w: 190, h: 150 },
+      { k: 'lot:upL', x: 390, y: H - 70, w: 120, h: 100 }, { k: 'lot:upR', x: W - 390, y: H - 70, w: 120, h: 100 },
+      { k: 'lot:dnL', x: 110, y: H - 70, w: 120, h: 100 }, { k: 'lot:dnR', x: W - 110, y: H - 70, w: 120, h: 100 }
+    ];
+    hero.x = 1000; hero.y = H - 130; hero.dir = 1; hero.sit = null; ftarget = null; fz = zoomT = .55; lotUp = 0;
+    $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi();
+  }
+  function lotClamp() {
+    var ox = hero.x, oy = hero.y;
+    if (lotUp) { var left = hero.x < LOT_W / 2; hero.x = left ? clamp(hero.x, 30, 205) : clamp(hero.x, LOT_W - 205, LOT_W - 30); hero.y = clamp(hero.y, 400, LOT_H - 50); }
+    else { hero.x = clamp(hero.x, 258, LOT_W - 258); hero.y = clamp(hero.y, 400, LOT_H - 24); }
+    if (hero.x !== ox || hero.y !== oy) { ftarget = null; var hh = $('hero2'); if (hh) hh.classList.remove('walk'); updHero(); }
+  }
+  function lotStair(k) {
+    var H = LOT_H;
+    if (k === 'lot:upL' && !lotUp) { lotUp = 1; hero.x = 110; hero.y = H - 150; }
+    else if (k === 'lot:upR' && !lotUp) { lotUp = 1; hero.x = LOT_W - 110; hero.y = H - 150; }
+    else if (k === 'lot:dnL' && lotUp) { lotUp = 0; hero.x = 390; hero.y = H - 150; }
+    else if (k === 'lot:dnR' && lotUp) { lotUp = 0; hero.x = LOT_W - 390; hero.y = H - 150; }
+    else return;
+    sfx(2); ftarget = null; updHero(); camX = hero.x - 300; camY = hero.y - 400; lotPoll();
+  }
+  /* ----- 画面の部品 ----- */
+  function lotUiBuild() {
+    if ($('lotUI')) return;
+    var f = $('field'), d = document.createElement('div');
+    d.innerHTML =
+      '<div id="lotUI"><div id="lotTop"><div id="lotPh">…</div><div id="lotCnt"></div><div id="lotSeal"></div><button id="lotEnterBtn" type="button">🎟 抽選に参加する</button><button id="lotShowBtn" type="button">📺</button><button id="lotOpBtn" type="button">⚙</button></div>' +
+      '</div>' +
+      '<div id="lotChat"><div id="lotChatH"><b>💬 みんなのチャット</b><button id="lotChatT" type="button">▼ 小さく</button></div><div id="lotMsgs"></div><div id="lotRow"><input id="lotIn" type="text" maxlength="80" placeholder="ひとこと（80字まで）" autocomplete="off"><button id="lotSend" type="button">送る</button></div></div>' +
+      '<div id="lotShow"><div id="lsHead"><b id="lsTtl"></b><button id="lsMin" type="button">✕ とじる</button></div><div id="lsStage"></div><div id="lsBody"></div></div>' +
+      '<div id="lotModal"><div class="lmBox"><h3>🎟 抽選の受付</h3><p class="lmId">ID名：<b id="lmName"></b></p><p class="lmNo" id="lmNo"></p><button id="lmGo" type="button">✋ 受付する</button><button id="lmClose" type="button">とじる</button></div></div>' +
+      '<div id="lotOp"><div class="loBox"><h3>⚙ 運営パネル</h3><div class="loRow">当選人数<button data-k="w" data-d="-1">−</button><b id="loW">1</b><button data-k="w" data-d="1">＋</button></div><div class="loRow">ミニゲームに入る人数<button data-k="t" data-d="-1">−</button><b id="loT">10</b><button data-k="t" data-d="1">＋</button></div><div id="loBtns"></div><button id="loClose" type="button" class="loC">とじる</button></div></div>' +
+      '<div id="lotFx"></div>';
+    while (d.firstChild) f.appendChild(d.firstChild);
+    $('lotEnterBtn').addEventListener('click', lotEntryOpen);
+    $('lotShowBtn').addEventListener('click', function () { lotShowOpen(true); });
+    $('lotOpBtn').addEventListener('click', function () { $('lotOp').classList.add('on'); lotOpUi(); });
+    $('loClose').addEventListener('click', function () { $('lotOp').classList.remove('on'); });
+    $('lsMin').addEventListener('click', function () { lotShowOpen(false); });
+    $('lmClose').addEventListener('click', function () { $('lotModal').classList.remove('on'); });
+    $('lmGo').addEventListener('click', lotEnter);
+    $('lotChatT').addEventListener('click', function () { var c = $('lotChat'); c.classList.toggle('mini'); $('lotChatT').textContent = c.classList.contains('mini') ? '▲ 大きく' : '▼ 小さく'; });
+    $('lotSend').addEventListener('click', lotSay);
+    $('lotIn').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); lotSay(); } });
+    $('lotOp').addEventListener('click', function (e) {
+      var b = e.target.closest && e.target.closest('button'); if (!b || !LT) return;
+      if (b.dataset.k) {
+        var w = LT.winners + (b.dataset.k === 'w' ? +b.dataset.d : 0), t = LT.thresh + (b.dataset.k === 't' ? +b.dataset.d : 0);
+        w = Math.max(1, Math.min(50, w)); t = Math.max(Math.max(2, w), Math.min(30, t)); LT.winners = w; LT.thresh = t; lotOpUi();
+        lotApi({ action: 'lot_set', winners: w, thresh: t }).then(function (j) { if (j && j.error) toast('変えられへんかった'); lotPoll(); }); return;
+      }
+      var a = b.dataset.a; if (!a) return;
+      if (a === 'lot_start' && !confirm('受付を締め切って、抽選を始める？（取り消せへん）')) return;
+      if (a === 'lot_reset' && !confirm('この抽選を終わりにして、最初の状態に戻す？')) return;
+      b.disabled = true; var body = { action: a }; if (a === 'lot_open') { body.winners = LT.winners; body.thresh = LT.thresh; }
+      lotApi(body).then(function (j) { b.disabled = false; if (j && j.error) toast('できへんかった（' + (j.message || j.error) + '）'); lotPoll(); });
+    });
+    ['lotUI', 'lotShow', 'lotModal', 'lotOp', 'lotFx'].forEach(function (id) { $(id).addEventListener('pointerdown', function (e) { e.stopPropagation(); }); });
+    $('lotFx').addEventListener('click', function () { $('lotFx').classList.remove('on'); $('lotFx').innerHTML = ''; });
+  }
+  function lotMyName() { return (player.avatar && player.avatar.name) || genName(); }
+  function lotEntryOpen() {
+    if (!LT) return; $('lmName').textContent = lotMyName();
+    var no = LT.mine ? LT.mine.no : 0, ph = LT.phase;
+    $('lmNo').innerHTML = no ? '受付番号　<b>No.' + no + '</b>' : '受付番号　<b>まだ受付していません</b>';
+    var go = $('lmGo'); go.style.display = (!no && ph === 'open') ? '' : 'none';
+    if (!no && ph !== 'open') $('lmNo').innerHTML += '<br><span class="tiny">' + (ph === 'idle' ? 'いまは受付していません。開始までお待ちください' : '受付は締め切りました') + '</span>';
+    $('lotModal').classList.add('on');
+  }
+  function lotEnter() {
+    var go = $('lmGo'); go.disabled = true;
+    lotApi({ action: 'lot_enter', n: lotMyName(), av: lotAv() }).then(function (j) {
+      go.disabled = false;
+      if (j && j.ok) { sfx(3); vib([30, 30, 60]); if (LT) LT.mine = { no: j.no }; lotEntryOpen(); lotPoll(); }
+      else toast((j && j.message) || '受付できへんかった。もう一回押してな');
+    });
+  }
+  function lotSay() {
+    var inp = $('lotIn'), t = inp.value.trim(); if (!t) return; inp.value = '';
+    lotApi({ action: 'lot_say', text: t }).then(function (j) { if (j && j.error === 'slow') toast('ちょっと待ってな'); lotPoll(); });
+    bubble($('hero2'), t.slice(0, 40));
+  }
+  function lotAv() { var a = {}; var s = player.avatar || {}; for (var k in s) a[k] = s[k]; a.__eq = posMsg().eq; return a; }
+  function lotOpUi() {
+    if (!LT) return; $('loW').textContent = LT.winners; $('loT').textContent = LT.thresh;
+    var ph = LT.phase, h = '';
+    if (ph === 'idle' || ph === 'done') h += '<button type="button" class="loG" data-a="lot_open">🎟 受付を始める（新しい抽選）</button>';
+    if (ph === 'open') h += '<button type="button" class="loG" data-a="lot_start">🚀 受付を締めて、抽選スタート</button>';
+    if (ph === 'run') h += '<button type="button" class="loG" data-a="lot_next">▶ 次へ（' + (LT.st ? LT.st.shown : 0) + '/' + (LT.st ? LT.st.total : 0) + '）</button>';
+    if (ph !== 'idle') h += '<button type="button" class="loC" data-a="lot_reset">⏹ 終わりにする（リセット）</button>';
+    $('loBtns').innerHTML = h;
+  }
+  /* ----- ポーリング ----- */
+  function lotPoll() {
+    if (!inLot || document.hidden && LT) return;
+    lotApi({ action: 'lot_poll', x: Math.round(hero.x), y: Math.round(hero.y), d: hero.dir, sit: (hero.sit != null && hero.sit >= 0) ? hero.sit + 1 : 0, f: lotUp, n: lotMyName(), av: lotAv(), since: LT ? LT.chatSince : 0 }).then(function (j) {
+      if (!inLot) return; if (!j || j.error) { if (j && j.error === 'auth') toast('ログインが切れたみたい。入り直してな'); return; }
+      lotApply(j);
+    });
+  }
+  function lotApply(j) {
+    var first = !LT; if (first) LT = { chatSince: 0, played: 0, epoch: -1, winners: 1, thresh: 10, busy: false, seen: {}, mine: null };
+    if (LT.epoch !== j.epoch) { LT.epoch = j.epoch; LT.played = 0; LT.safeSet = null; LT.fin = null; lotShowReset(); }
+    LT.phase = j.phase; LT.isOp = !!j.isOp; LT.entries = j.entries || []; LT.mine = j.mine || null; LT.seal = j.seal; LT.st = j.step;
+    if (j.phase === 'idle' || j.phase === 'open') { LT.winners = j.winners; LT.thresh = j.thresh; }
+    else { LT.winners = j.winners; LT.thresh = j.thresh; }
+    LT.now = j.now; LT.seed = j.seed;
+    // 上の帯
+    var phT = { idle: '🕒 準備中', open: '🟢 受付中！', run: '🎰 抽選中', done: '🏆 結果発表' }[j.phase] || ''; $('lotPh').textContent = phT;
+    $('lotCnt').textContent = (j.phase === 'idle' ? '' : '受付 ' + LT.entries.length + '人');
+    $('lotSeal').textContent = (j.seal && j.phase !== 'idle') ? '🔒封印 ' + j.seal.slice(0, 10) : '';
+    var eb = $('lotEnterBtn'); eb.style.display = (j.phase === 'open' || LT.mine) ? '' : 'none';
+    eb.textContent = LT.mine ? '🎟 No.' + LT.mine.no + ' 受付ずみ' : '🎟 抽選に参加する'; eb.classList.toggle('done', !!LT.mine); eb.classList.toggle('pulse', j.phase === 'open' && !LT.mine);
+    $('lotOpBtn').style.display = LT.isOp ? '' : 'none'; $('lotShowBtn').style.display = (j.step && j.step.shown > 0) ? '' : 'none';
+    if (LT.isOp) lotOpUi();
+    lotBoardUi();
+    lotPeopleUi(j.people || []);
+    lotChatUi(j.chat || []);
+    lotStepUi();
+    var mach = $('lotMach'); if (mach) mach.classList.toggle('run', j.phase === 'run');
+  }
+  function lotPeopleUi(list) {
+    var me = hero; list = list.filter(function (p) { return p && p.id && p.id !== myMid; });
+    list.sort(function (a, b) { return Math.hypot(a.x - me.x, a.y - me.y) - Math.hypot(b.x - me.x, b.y - me.y); });
+    var shown = list.slice(0, 60);
+    rtPeers(shown.map(function (p) { var av = p.av || {}; return { id: p.id, n: p.n, av: av }; }));
+    shown.forEach(function (p) {
+      rtMsg({ t: 'pos', f: p.id, x: p.x, y: p.y, d: p.d, st: p.sit, eq: (p.av && p.av.__eq) || '', lv: 1, h: 100 });
+      var pr = peers[p.id]; if (pr && pr.el) { var g = pr.el.querySelector('.gname'); if (g) g.textContent = p.n || ''; }
+    });
+    LT.crowd = list.length + 1;
+  }
+  function lotChatUi(msgs) {
+    if (!msgs.length) return; var box = $('lotMsgs'), stick = box.scrollTop + box.clientHeight >= box.scrollHeight - 30;
+    msgs.forEach(function (m) {
+      if (m.id <= LT.chatSince) return; LT.chatSince = Math.max(LT.chatSince, m.id);
+      var d = document.createElement('div'); d.className = 'lm ' + (m.k || 'say');
+      if (m.k === 'say') { var b = document.createElement('b'); b.textContent = m.n; d.appendChild(b); d.appendChild(document.createTextNode(' ' + m.t)); }
+      else d.textContent = m.t;
+      box.appendChild(d); while (box.children.length > 120) box.removeChild(box.firstChild);
+      if (m.k === 'say' && !LT.first) { var pr = null; Object.keys(peers).forEach(function (id) { if (peers[id].n === m.n) pr = peers[id]; }); if (pr && pr.el && Date.now() - m.ts < 8000) bubble(pr.el, m.t.slice(0, 40)); }
+      if (m.k === 'win') { sfx(3); }
+    });
+    LT.first = false; if (stick) box.scrollTop = box.scrollHeight;
+  }
+  /* ----- 掲示板（壁）----- */
+  function lotBoardUi() {
+    var b = $('lotBoard'); if (!b) return; var es = LT.entries, n = es.length, st = LT.st;
+    var safe = LT.safeSet, win = LT.fin && LT.fin.winners ? LT.fin.winners : null, key = n + '|' + (safe ? Object.keys(safe).length : -1) + '|' + (win ? win.length : -1) + '|' + LT.phase;
+    if (b.dataset.k === key) return; b.dataset.k = key;
+    var fs = n <= 30 ? 22 : n <= 60 ? 17 : n <= 110 ? 13 : 10;
+    var h = '<div class="lbT">📋 参加者 ' + n + '人</div><div class="lbG" style="font-size:' + fs + 'px">';
+    if (!n) h += '<span class="lbE">受付がはじまると、ここに名前が出るよ</span>';
+    es.forEach(function (e) { var c = ''; if (win) c = win.some(function (w) { return w.id === e.id; }) ? ' w' : ' o'; else if (safe) c = safe[e.id] ? ' s' : ' o'; h += '<span class="lbN' + c + (e.id === myMid ? ' me' : '') + '">' + esc(e.n) + '</span>'; });
+    b.innerHTML = h + '</div>';
+  }
+  /* ----- みんなで見る大画面（ラウンド演出・あみだ・当選）----- */
+  function lotShowOpen(on) { $('lotShow').classList.toggle('on', !!on); if (on) lotShowRender(); }
+  function lotShowReset() { LT.animTok = (LT.animTok || 0) + 1; LT.busy = false; $('lsBody').innerHTML = ''; $('lsStage').innerHTML = ''; $('lotShow').classList.remove('on'); $('lotFx').classList.remove('on'); $('lotFx').innerHTML = ''; }
+  function lotStageHTML() {
+    return '<div class="lsTank">' + lotMachSVG().replace('<svg ', '<svg style="width:100%;height:100%" ') + '</div><div class="lsBall" id="lsBall"></div><div class="lsName" id="lsName"></div>';
+  }
+  function lotSafeMap(r) { var m = {}; (r.safe || []).forEach(function (s) { m[s.id] = 1; }); return m; }
+  function lotStepUi() {
+    var st = LT.st; if (!st) { LT.safeSet = null; LT.fin = null; return; }
+    var R = st.rounds.length;
+    // 掲示板の状態（見せ終わった分だけ反映）
+    var sh = LT.played;
+    if (sh > 0 && st.rounds[Math.min(sh, R) - 1]) LT.safeSet = lotSafeMap(st.rounds[Math.min(sh, R) - 1]); else if (sh === 0) LT.safeSet = null;
+    if (st.result && sh >= st.total) LT.fin = st.result;
+    if (LT.busy) return;
+    if (LT.played < st.shown) {
+      var idx = st.shown - 1, fresh = (LT.initDone ? true : (LT.now - st.shownAt) < 9000) && LT.played === st.shown - 1;
+      LT.played = st.shown;
+      lotPlay(idx, fresh);
+    }
+    LT.initDone = true;
+  }
+  function lotPlay(idx, animate) {
+    var st = LT.st, R = st.rounds.length, hasL = !!st.ladder, tok = ++LT.animTok;
+    if (animate) $('lotShow').classList.add('on'); $('lsStage').innerHTML = lotStageHTML();
+    var ttl = $('lsTtl');
+    if (idx < R) {
+      var r = st.rounds[idx], pools = st.rounds.slice(0, idx + 1).map(function (x) { return x.pool; }); pools.push(r.safe.length);
+      ttl.textContent = 'ラウンド' + (idx + 1) + '　' + r.pool + '人 → ' + r.safe.length + '人（名前が出たらセーフ！）';
+      $('lsBody').innerHTML = '<div class="lsPools">' + pools.join(' → ') + '</div><div class="lsGrid" id="lsGrid"></div>';
+      lotRoundAnim(r, animate, tok, function () { if (tok !== LT.animTok) return; LT.busy = false; LT.safeSet = lotSafeMap(r); lotBoardUi(); });
+    } else if (hasL && idx === R) {
+      ttl.textContent = '🪜 ' + st.ladder.cols.length + '人で、あみだくじ！';
+      $('lsStage').innerHTML = ''; $('lsBody').innerHTML = '<div class="lsLad" id="lsLad"></div>'; lotLadderDraw(st.ladder, null, false, tok); LT.busy = false;
+    } else {
+      ttl.textContent = '🏆 結果発表';
+      $('lsStage').innerHTML = ''; $('lsBody').innerHTML = '<div class="lsLad" id="lsLad"></div>';
+      if (hasL) lotLadderDraw(st.ladder, st.result, animate, tok, animate ? function () { lotCelebrate(st.result.winners, true); } : null);
+      else if (animate) lotCelebrate(st.result.winners, true);
+      LT.busy = animate && hasL;
+    }
+  }
+  function lotShowRender() {
+    var st = LT && LT.st; if (!st || !st.shown) return;
+    var idx = Math.min(st.shown, st.total) - 1, R = st.rounds.length; LT.animTok++; var tok = LT.animTok;
+    $('lsStage').innerHTML = ''; var ttl = $('lsTtl');
+    if (idx < R) { var r = st.rounds[idx]; ttl.textContent = 'ラウンド' + (idx + 1) + '　' + r.pool + '人 → ' + r.safe.length + '人'; $('lsBody').innerHTML = '<div class="lsPools">' + st.rounds.slice(0, idx + 1).map(function (x) { return x.pool; }).concat([r.safe.length]).join(' → ') + '</div><div class="lsGrid" id="lsGrid">' + r.safe.map(function (s) { return lotChip(s); }).join('') + '</div>'; }
+    else if (st.ladder && idx === R) { ttl.textContent = '🪜 あみだくじ'; $('lsBody').innerHTML = '<div class="lsLad" id="lsLad"></div>'; lotLadderDraw(st.ladder, null, false, tok); }
+    else { ttl.textContent = '🏆 結果発表'; $('lsBody').innerHTML = '<div class="lsLad" id="lsLad"></div>'; if (st.ladder) lotLadderDraw(st.ladder, st.result, false, tok); $('lsBody').insertAdjacentHTML('afterbegin', '<div class="lsWin">🎉 当選：' + st.result.winners.map(function (w) { return esc(w.n) + '（No.' + w.no + '）'; }).join('　') + '</div>'); }
+  }
+  function lotChip(s) { return '<span class="chip' + (s.id === myMid ? ' me' : '') + '"><i>No.' + s.no + '</i>' + esc(s.n) + '</span>'; }
+  function lotRoundAnim(r, animate, tok, done) {
+    var grid = $('lsGrid'), n = r.safe.length, i = 0, mach = $('lotMach');
+    if (!animate) { r.safe.forEach(function (s) { grid.insertAdjacentHTML('beforeend', lotChip(s)); }); done(); return; }
+    LT.busy = true; if (mach) mach.classList.add('run');
+    var T = Math.max(150, Math.min(1500, 22000 / n)), full = T >= 420, nm = $('lsName'), ball = $('lsBall');
+    function next() {
+      if (tok !== LT.animTok) return;
+      if (i >= n) { $('lsName').innerHTML = '<span class="lsEnd">残り ' + n + '人！</span>'; setTimeout(function () { if (tok === LT.animTok) done(); }, 1400); return; }
+      var s = r.safe[i++], mine = s.id === myMid;
+      var show = function () {
+        if (tok !== LT.animTok) return;
+        nm.innerHTML = '<span class="lsPop' + (mine ? ' me' : '') + '"><small>No.' + s.no + '</small>' + esc(s.n) + '<em>SAFE!</em></span>'; sfx(mine ? 3 : 0); if (mine) { vib([40, 30, 80]); toast('🎉 あなたはセーフ！'); }
+        grid.insertAdjacentHTML('beforeend', lotChip(s)); grid.scrollTop = grid.scrollHeight;
+        setTimeout(next, full ? T * .42 : T);
+      };
+      if (!full) { show(); return; }
+      ball.className = 'lsBall'; ball.textContent = 'No.' + s.no; void ball.offsetWidth; ball.className = 'lsBall go'; ball.style.animationDuration = (T * .55 / 1000) + 's'; nm.innerHTML = '';
+      var bat = document.querySelector('#lsStage .lmBat'); setTimeout(function () { if (bat) { bat.classList.remove('sw'); void bat.getBoundingClientRect(); bat.classList.add('sw'); } sfx(1); }, T * .26);
+      setTimeout(show, T * .58);
+    }
+    next();
+  }
+  function lotLadderDraw(ld, res, animate, tok, done) {
+    var m = ld.cols.length, rows = ld.rows, cw = Math.max(54, Math.min(88, Math.floor(620 / m))), W = 40 + m * cw, top = 46, rh = 24, H = top + rows * rh + 70;
+    var xs = function (c) { return 30 + c * cw + cw / 2 - 10; };
+    var s = '<svg viewBox="0 0 ' + W + ' ' + H + '" style="width:100%;max-height:60vh">';
+    ld.cols.forEach(function (c, i) { s += '<path d="M' + xs(i) + ' ' + top + 'V' + (top + rows * rh) + '" stroke="#e8d9a8" stroke-width="4" stroke-linecap="round"/><text x="' + xs(i) + '" y="' + (top - 14) + '" font-size="' + (cw < 60 ? 11 : 13) + '" font-weight="900" fill="' + (c.id === myMid ? '#ffe27a' : '#fff') + '" text-anchor="middle" font-family="sans-serif">' + esc(String(c.n).slice(0, 5)) + '</text><text x="' + xs(i) + '" y="' + (top - 30) + '" font-size="10" fill="#bcd" text-anchor="middle" font-family="sans-serif">No.' + c.no + '</text>'; });
+    ld.rungs.forEach(function (p) { var y = top + (p[0] + .5) * rh; s += '<path d="M' + xs(p[1]) + ' ' + y + 'H' + xs(p[1] + 1) + '" stroke="#e8d9a8" stroke-width="4" stroke-linecap="round"/>'; });
+    for (var i = 0; i < m; i++) s += '<g id="lbm' + i + '"><rect x="' + (xs(i) - 16) + '" y="' + (top + rows * rh + 12) + '" width="32" height="30" rx="8" fill="#2a1a3a" stroke="#d9b24c" stroke-width="2"/><text x="' + xs(i) + '" y="' + (top + rows * rh + 33) + '" font-size="18" text-anchor="middle" fill="#fff">？</text></g>';
+    s += '<g id="lpaths"></g></svg>'; $('lsLad').innerHTML = s;
+    if (!res) return;
+    var paths = res.paths || {}, order = ld.cols.map(function (c) { return c.id; }), per = animate ? Math.max(500, Math.min(1500, 13000 / m)) : 0, win = {}; res.winners.forEach(function (w) { win[w.id] = 1; });
+    var pg = $('lpaths'), k = 0;
+    function pts(id) { var p = paths[id] || [], o = [xs(p[0]) + ',' + top]; for (var r = 0; r < rows; r++) { var y = top + (r + .5) * rh; o.push(xs(p[r]) + ',' + y); o.push(xs(p[r + 1]) + ',' + y); } o.push(xs(p[rows]) + ',' + (top + rows * rh)); return o.join(' '); }
+    function mark() {
+      res.bottom.forEach(function (b, c) { var g = $('lbm' + c); if (!g) return; var t = g.querySelector('text'); t.textContent = b === 'W' ? '🎁' : '×'; g.querySelector('rect').setAttribute('fill', b === 'W' ? '#d9b24c' : '#3a2a4a'); });
+    }
+    function step() {
+      if (tok !== LT.animTok) return;
+      if (k >= order.length) { mark(); if (done) setTimeout(function () { if (tok === LT.animTok) { LT.busy = false; done(); } }, animate ? 900 : 0); return; }
+      var id = order[k++], w = !!win[id];
+      pg.insertAdjacentHTML('beforeend', '<polyline points="' + pts(id) + '" fill="none" stroke="' + (w ? '#ffd23a' : (id === myMid ? '#7dd6ff' : 'rgba(255,255,255,.35)')) + '" stroke-width="' + (w ? 7 : 4) + '" stroke-linejoin="round" stroke-linecap="round" class="lpath"/>');
+      var pl = pg.lastChild; if (animate) { var len = pl.getTotalLength ? pl.getTotalLength() : 600; pl.style.strokeDasharray = len; pl.style.strokeDashoffset = len; void pl.getBoundingClientRect(); pl.style.transition = 'stroke-dashoffset ' + (per * .9 / 1000) + 's linear'; pl.style.strokeDashoffset = 0; sfx(0); setTimeout(step, per); } else step();
+    }
+    step();
+  }
+  /* ----- くす玉 ----- */
+  function lotCelebrate(winners, animate) {
+    var fx = $('lotFx'); fx.classList.add('on'); var mineWin = winners.some(function (w) { return w.id === myMid; });
+    var conf = ''; var cs = ['#ff5a7a', '#ffd23a', '#5ad2ff', '#7dff9a', '#c79bff', '#ff9f5a'];
+    for (var i = 0; i < 90; i++) conf += '<i class="cf" style="left:' + Math.round(Math.random() * 100) + '%;background:' + cs[i % 6] + ';animation-delay:' + (Math.random() * 1.6).toFixed(2) + 's;animation-duration:' + (2.6 + Math.random() * 2.4).toFixed(2) + 's;transform:rotate(' + Math.round(Math.random() * 360) + 'deg)"></i>';
+    var list = winners.map(function (w) { return '<div class="fxW' + (w.id === myMid ? ' me' : '') + '">🏆 ' + esc(w.n) + '<small>No.' + w.no + '</small></div>'; }).join('');
+    fx.innerHTML = '<div class="fxK"><svg viewBox="0 0 200 200" class="fxBall"><g class="fxL"><path d="M100 20A80 80 0 0 0 20 100H100Z" fill="#ff4d6d" stroke="#fff" stroke-width="4"/><path d="M60 40A60 60 0 0 0 40 100" stroke="rgba(255,255,255,.4)" stroke-width="6" fill="none"/></g><g class="fxR"><path d="M100 20A80 80 0 0 1 180 100H100Z" fill="#ffd23a" stroke="#fff" stroke-width="4"/></g><path d="M20 100H180" stroke="#fff" stroke-width="4"/><path d="M100 20V-30" stroke="#d9b24c" stroke-width="5"/></svg><div class="fxBan">🎉 当選おめでとう！ 🎉</div></div>' + conf + '<div class="fxList">' + (mineWin ? '<div class="fxMe">✨ あなたが当選しました！ ✨</div>' : '') + list + '<div class="tiny" style="margin-top:12px;color:#fff">（タップで閉じる）</div></div>';
+    sfx(3); vib([60, 40, 60, 40, 120]);
+    if (!animate) fx.classList.add('still');
+    else { fx.classList.remove('still'); }
+  }
+  /* ----- 入退場 ----- */
+  function openLot() {
+    inTown = true; inCafe = true; inPost = false; inArcRoom = false; inLib = false; inLot = true; shared = false; curMine = null; hero.cup = ''; hero.cupS = -1; hero.lastSeat = null; hero.order = null; cafeBusy = false;
+    rtStop(); $('field').classList.remove('chat'); $('field').classList.add('town'); $('field').classList.add('lot'); $('fTtl').textContent = '抽選会場'; fz = zoomT = .55;
+    buildLot(); show('field'); closeSheets(); digUI(false); BGM.set('town'); gearUi(); zoomT = .55;
+    $('fhud').innerHTML = ''; $('tlog').innerHTML = '';
+    lotUiBuild(); LT = null; rtOn = true; lotPoll(); clearInterval(lotTimer); lotTimer = setInterval(lotPoll, 2500);
+    $('lotMsgs').innerHTML = '';
+  }
+  function lotStop() {
+    inLot = false; clearInterval(lotTimer); lotTimer = 0; $('field').classList.remove('lot'); var u = $('lotUI'); if (u) { $('lotShow').classList.remove('on'); $('lotModal').classList.remove('on'); $('lotOp').classList.remove('on'); $('lotFx').classList.remove('on'); }
+    if (LT) LT.animTok = (LT.animTok || 0) + 1; LT = null; lotUp = 0;
+  }
+
   /* ---------- ギルド（Lv10から。申請→運営が承認→みんなが入れる。最大30人） ---------- */
   function gmsg(t) { var e = $('gBody'); if (e) { var m = document.createElement('p'); m.className = 'tiny'; m.style.color = '#ffd36a'; m.textContent = t; e.prepend(m); setTimeout(function () { m.remove(); }, 4000); } }
   function openGuild() { $('gld').classList.add('on'); $('gBody').innerHTML = '<p class="tiny">しらべてるよ…</p>'; BGM.duck(false); loadGuild(); }
@@ -4028,8 +4509,9 @@ var TB = {
     RT.join('cafe', me, { onMsg: rtMsg, onPeers: rtPeers }, function (ok) { if (ok) { rtOn = true; rtLast = 0; rtSend(posMsg()); } else toast('つながりませんでした。カフェには一人だけですよ'); });
   }
   function leaveCafe() {
+    var wasLot = inLot; if (inLot) lotStop();
     var wasArc = inArcRoom, wasPost = inPost, wasLib = inLib; inArcRoom = false; inPost = false; inLib = false; arcClose();
-    standUp(); setCup(''); hero.order = null; inCafe = false; cafeBusy = false; rtStop(); openTown(); var tdk = TD[wasLib ? 'lib' : (wasPost ? 'post' : (wasArc ? 'arcade' : 'cafe'))] || { x: 1200, y: 1450 }; hero.x = tdk.x; hero.y = tdk.y + 70; hero.dir = 1; ftarget = null; updHero(); camX = hero.x - 300; camY = hero.y - 400;
+    standUp(); setCup(''); hero.order = null; inCafe = false; cafeBusy = false; rtStop(); openTown(); var tdk = TD[wasLot ? 'lottery' : (wasLib ? 'lib' : (wasPost ? 'post' : (wasArc ? 'arcade' : 'cafe')))] || { x: 1200, y: 1450 }; hero.x = tdk.x; hero.y = tdk.y + 70; hero.dir = 1; ftarget = null; updHero(); camX = hero.x - 300; camY = hero.y - 400;
   }
   /* ---------- 📮 郵便局（〒マークの赤い建物／中は受付カウンター） ---------- */
   function postMark(cx, cy, s, c) {
@@ -4513,7 +4995,7 @@ var TB = {
     { c: '戦い', ic: '👹', t: 'モンスターとボス', d: '鉱山には、モンスターが出ます。タップで攻撃！ 倒すと、経験値とコインがもらえて、まれに装備を落とします。\nボスは、パーティー（2〜5人）で挑む強い敵です。倒すと、経験値とコインが、パーティーの全員に満額でもらえます。1日にもらえる回数には、上限があります。' },
     { c: '戦い', ic: '💫', t: '倒れたら？（復活のしくみ）', d: 'HPが0になると倒れます。パーティーの仲間が、倒れた人を10回タップすると、HP30%で復活します。\n仲間と協力して、ボスに挑もう。' },
     { c: '戦い', ic: '🔮', t: 'スキル', d: '「スキルの館」で、スキルを買って使えます。ボタンを押すと発動して、そのあとは、しばらく待つと使えるようになります（クールタイム）。\n武器にも、その種類に合わせた特別な技がついているものがあります。くわしくはスキルの本棚へ。' },
-    { c: '街', ic: '🏘', t: '街の建物', d: '・ショップ：武器・防具・服などを買う\n・ギルド：ギルド（仲間のグループ）を作る・入る\n・病院：HPを全回復\n・取引所：プレイヤー同士で、アイテムを売り買い\n・闘技場：プレイヤー同士で戦える（報酬なし）\n・ゲームセンター：スロット、もぐらたたき、ブラックジャック、ポーカー、ビンゴ、UNO、FPS、コイン受け取り機（毎日もらえる）など\n・カフェ：飲み物を飲みながら、友達とおしゃべり\n・スキルの館：スキルを買う\n・郵便局：運営に手紙を送る\n・図書館：このゲームのあらゆることを調べられる' },
+    { c: '街', ic: '🏘', t: '街の建物', d: '・ショップ：武器・防具・服などを買う\n・ギルド：ギルド（仲間のグループ）を作る・入る（町の右下の小さな建物）\n・プレゼント抽選会場：運営が開く、プレゼント抽選会に参加できる（受付→サバイバル抽選→あみだ）\n・病院：HPを全回復\n・取引所：プレイヤー同士で、アイテムを売り買い\n・闘技場：プレイヤー同士で戦える（報酬なし）\n・ゲームセンター：スロット、もぐらたたき、ブラックジャック、ポーカー、ビンゴ、UNO、FPS、コイン受け取り機（毎日もらえる）など\n・カフェ：飲み物を飲みながら、友達とおしゃべり\n・スキルの館：スキルを買う\n・郵便局：運営に手紙を送る\n・図書館：このゲームのあらゆることを調べられる' },
     { c: '街', ic: '☕', t: 'カフェ・ゲームセンター', d: 'カフェでは、ドリンクが全部無料。椅子に座っておしゃべりできます。\nゲームセンターには、スロット、もぐらたたき、ブラックジャック、ポーカー、ビンゴ、UNO、FPSなどがあります。\n「コイン受け取り機」では、1回500コインを1日10回まで受け取れます（持ってるコインが5,000になるまで）。' },
     { c: '街', ic: '🏟', t: '闘技場', d: '観客席から降りた闘技場の中では、近くにいる誰からでも攻撃されます（誰でも攻撃できます）。1対1の決闘もできます。\n報酬は出ず、持ち物も減りません。腕試しに遊ぼう。' },
     { c: '街', ic: '📮', t: '郵便局', d: '運営への手紙（要望・不具合・質問など）を送れます。1通600文字まで、1日10通までです。' },
@@ -4969,7 +5451,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 171;
+  var GV = 172;
   (function () {
     var last = Date.now();
     function chk() {
@@ -5029,7 +5511,7 @@ var TB = {
         { q: 'ゲームコイン', k: ['マネー', 'お金', 'コイン', '稼', '貯め', 'ためる', '通貨'], a: 'ゲームコインは、石を掘ったり、敵を倒したり、ゲームセンターで遊んだりでたまるよ。どこで貯めたコインも、おなじ財布だよ。本物のお金では買えません、遊んで貯めるものです。ショップで装備を買ったり、石や装備を売ったりできる。' },
         { q: 'ショップと取引所', k: ['ショップ', '買', '売', '取引', '交換', '手数料', '値段'], a: 'ショップは、装備や道具をゲームコインで買う所です。取引所は、プレイヤー同士で、装備やスペシャルチケットをゲームコインで売り買いする所で、手数料は5％ですよ。建物をタップしたら入れる。' },
         { q: '装備の付けかえ', k: ['装備', '付け', '着替', 'リュック', '持ち物', '持物', 'もちもの'], a: '画面の右上の「装備・持物」ボタンで、持ってる装備の付けかえができるよ。持ち物の確認もそこです。' },
-        { q: 'ギルド', k: ['ギルド', '仲間', 'チーム', '入る', '申請'], a: 'ギルドはレベル10から。町のギルドの建物で、🪙10,000を払えば、承認なしですぐ作れるよ。最大30人まで入れます。' },
+        { q: 'ギルド', k: ['ギルド', '仲間', 'チーム', '入る', '申請'], a: 'ギルドはレベル10から。町の右下にある小さなギルドの建物で、🪙10,000を払えば、承認なしですぐ作れるよ。最大30人まで入れます。' },
         { q: '仲間と協力', k: ['協力', 'パーティ', '待合', '招待', 'みんな', '一緒', 'ボス', '複数'], a: 'マップの下の「パーティーの待合室」で、最大5人まで仲間を集められるよ。同じ鉱山に入ったら協力プレイです。人数が多いほど、掘るのが早くなる。2人以上だと、ボスのごほうびも出るよ。' },
         { q: 'スペシャルチケット', k: ['チケット', '券', '割引', 'スペシャル', '当た'], a: '掘ってると、まれに当たることがあるよ。確率は、石を1回掘るごとに、レア1/3,600・超レア1/10,000・激レア1/60,000。レベルや装備、人数では変わりません。細かい使い方は、決まったらお知らせします。' },
         { q: '闘技場って？', k: ['闘技', '対戦', 'バトル', '決闘', 'pvp', '勝負'], a: '町の左下にあるよ。観客席は安全な場所。闘技場内に入ると、相手をタップするだけで攻撃できる（攻撃もされる）。観客席の人をタップして「戦いを挑む」を押して、相手が受けたら、1対1の決闘です。負けても持ち物は減りませんから安心してください。' },
@@ -5062,7 +5544,7 @@ var TB = {
       placeEl(e, n.x, n.y); $('world').appendChild(e);
     });
   }
-  function npcAt(wx, wy) { var r = null, bd = 62; var wh = inPlaza ? 'plaza' : (inLib ? 'lib' : (inPost ? 'post' : (inCafe ? 'cafe' : 'town'))); Object.keys(NPCS).forEach(function (k) { var n = NPCS[k]; if ((n.where || 'town') !== wh) return; var d = Math.hypot(wx - n.x, wy - (n.y - 32)); if (d < bd) { bd = d; r = k; } }); return r; }
+  function npcAt(wx, wy) { var r = null, bd = 62; var wh = inLot ? 'lot' : inPlaza ? 'plaza' : (inLib ? 'lib' : (inPost ? 'post' : (inCafe ? 'cafe' : 'town'))); Object.keys(NPCS).forEach(function (k) { var n = NPCS[k]; if ((n.where || 'town') !== wh) return; var d = Math.hypot(wx - n.x, wy - (n.y - 32)); if (d < bd) { bd = d; r = k; } }); return r; }
   var npcCur = null;
   function npcSay(t) { $('npcSay').textContent = t; }
   function openNpc(k) {
@@ -8452,6 +8934,7 @@ var TB = {
       if (d <= step) { hero.x = ftarget.x; hero.y = ftarget.y; var sp = ftarget.spot, dk = ftarget.door, rv = ftarget.rev; ftarget = null; if (hh) hh.classList.remove('walk'); updHero(); if (sp && !sp.used) { startDig(sp); } else if (dk) openDoor(dk); else if (rv) doRevive(rv); }
       else { hero.x += dx / d * step; hero.y += dy / d * step; if (Math.abs(dx) > 3) hero.dir = dx > 0 ? 1 : -1; moved = true; if (hh) hh.classList.add('walk'); updHero(); }
     }
+    if (inLot) lotClamp();
     ghostsTick(dt, moved); foesTick(dt); handUi();
     var fv = $('fview'), vw = fv.clientWidth, vh = fv.clientHeight;
     fz += (zoomT - fz) * Math.min(1, dt * 6);
@@ -8503,7 +8986,7 @@ var TB = {
     spots.forEach(function (s) { if (s.used || (s.by && s.by !== myMid)) return; var d = Math.hypot(wx - s.x, wy - (s.y - 12)); if (d < best) { best = d; hit = s; } });
     var pg = document.createElement('i'); pg.className = 'ping'; pg.style.left = wx + 'px'; pg.style.top = wy + 'px'; $('world').appendChild(pg); setTimeout(function () { pg.remove(); }, 520);
     if (hit) ftarget = { x: hit.x - 58, y: hit.y + 26, spot: hit };
-    else ftarget = { x: clamp(wx, 30, WW - 30), y: clamp(wy, inCafe ? (inLib ? 396 : (inPost ? 296 : 276)) : (inTown ? 260 : topY()), WH - 40), spot: null };
+    else ftarget = { x: clamp(wx, 30, WW - 30), y: clamp(wy, inCafe ? (inLot ? 400 : inLib ? 396 : (inPost ? 296 : 276)) : (inTown ? 260 : topY()), WH - 40), spot: null };
     $('ftip').style.opacity = 0;
   });
   function digUI(on) {
