@@ -1301,6 +1301,15 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function LSget(k) { try { return localStorage.getItem(k); } catch (e) { return null; } }
   function LSset(k, v) { try { localStorage.setItem(k, v); } catch (e) {} }
   try { if (LSget('opa_is_master') === '1' && LSget('opa_fix1110') !== '1') { LSset('opa_gm_off', '0'); if ((LSget('opa_gen_name') || '').trim() === 'たかお') localStorage.removeItem('opa_gen_name'); LSset('opa_fix1110', '1'); } } catch (e) {} /* マスター端末：「たかお」の一般モードから、マスターに戻す（一度だけ） */
+  /* リンクでログイン：…/game.html?mk=引き継ぎコード を開くと、そのアカウントの鍵をこの端末に入れる（コードは1回きり） */
+  try { var mkq = (location.search.match(/[?&]mk=([A-Za-z0-9-]+)/) || [])[1]; if (mkq) {
+    fetch('https://fxkahiastkklxduecrhq.supabase.co/functions/v1/opa-room', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'join', code: mkq }) })
+      .then(function (r) { return r.json(); }).then(function (j) {
+        if (j && j.token) { if (LSget('opa_is_master') === '1') { LSset('opa_token_gen', j.token); LSset('opa_gm_off', '1'); } else { LSset('opa_token', j.token); } alert((j.nickname || 'アカウント') + 'で入れたで'); }
+        else alert((j && j.message) || 'このリンクは使えへんかった（使用済みか期限切れ）');
+        location.replace(location.pathname);
+      }).catch(function () { alert('つながらへんかった。もう一回リンクを開いてな'); });
+  } } catch (e) {}
   var MTOK = LSget('opa_token'), GTOK = LSget('opa_token_gen'), token = MTOK;
   var player = null, nick = '';
   var taps = 0, busy = false;
@@ -4960,7 +4969,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 169;
+  var GV = 171;
   (function () {
     var last = Date.now();
     function chk() {
@@ -7776,7 +7785,6 @@ var TB = {
   /* --- テキサスホールデム（最大8人・NPC1人が常駐。ゲーム用コイン・景品なし） --- */
   var PK = null, PKCAT = ['ハイカード', 'ワンペア', 'ツーペア', 'スリーカード', 'ストレート', 'フラッシュ', 'フルハウス', 'フォーカード', 'ストレートフラッシュ'], PKRK = ['', '', '2', '3', '4', '5', '6', '7', '8', '9', '10', 'J', 'Q', 'K', 'A'];
   var PKSB = 10, PKBB = 20, PKBUY = 1000, OPALP = .2; /* オパールカードが出る確率（1ゲームにつき） */
-  try { if (LSget('opa_is_master') === '1' && localStorage.getItem('opa_fix1108b') !== '1') { localStorage.removeItem('opa_pk_set'); localStorage.setItem('opa_fix1108b', '1'); } } catch (e) {} /* マスターの端末だけ：ポーカーの成績記録（たかお）を一度だけリセット */
   var PKS = (function () { var d = { hint: 0, lv: 1, h: 0, w: 0, net: 0, big: 0, hist: [] }; try { var o = JSON.parse(localStorage.getItem('opa_pk_set') || 'null'); if (o) for (var k in o) d[k] = o[k]; } catch (e) {} return d; })();
   function pkSave() { try { localStorage.setItem('opa_pk_set', JSON.stringify(PKS)); } catch (e) {} }
   function pkDeck() { var d = [], s, r, i; for (s = 0; s < 4; s++) for (r = 2; r <= 14; r++) d.push({ r: r, s: s }); for (i = d.length - 1; i > 0; i--) { var j = Math.floor(Math.random() * (i + 1)), t = d[i]; d[i] = d[j]; d[j] = t; } return d; }
@@ -7962,7 +7970,7 @@ var TB = {
       PK.pos[s.id] = p; var mine = i === me, sh = T.res && T.res.shown.indexOf(i) >= 0, face = mine || sh, inH = T.hand > 0 && T.st !== 'wait' && s.hole.length === 2 && !(s.f && T.st !== 'show'), dx = (50 - p[0]) / 100 * W, dy = (10 - p[1]) / 100 * H, bb = PK.bub[s.id];
       h += '<div class="pkSeat' + (mine ? ' me' : '') + (i === T.turn ? ' turn' : '') + (s.f ? ' fold' : '') + (T.res && T.res.won[i] ? ' win' : '') + '" style="left:' + p[0] + '%;top:' + p[1] + '%">' + (bb && bb.exp > now ? '<div class="tvBub">' + esc(bb.x) + '</div>' : '') + '<div class="pkCs">' +
         (inH ? s.hole.map(function (c, k) { return tvCard(cdTxt(PKRK[c.r], c), c.s === 1 || c.s === 2, !face, 'sm', 'h' + T.hand + '_' + i + '_' + k, X, dx, dy); }).join('') : '') + '</div><div class="pkNm">' + (i === T.btn ? '<i class="pkD">D</i>' : '') + esc(s.nm) + (s.npc ? ' 🤖' : '') + (s.so ? ' ☕' : '') + '</div><div class="pkSt">🪙 ' + cfmt(s.stack) + '</div>' +
-        (T.res && T.res.won[i] ? '<div class="pkW">+' + T.res.cfmt(won[i]) + (T.res.desc[i] ? ' ' + T.res.desc[i] : '') + '</div>' : (mine && rk && T.st !== 'show' ? '<div class="pkRk' + (PK.rkUp && now - PK.rkUp < 1500 ? ' up' : '') + '">現在：' + rk.t + '</div>' : '')) + '</div>';
+        (T.res && T.res.won[i] ? '<div class="pkW">+' + cfmt(T.res.won[i]) + (T.res.desc[i] ? ' ' + T.res.desc[i] : '') + '</div>' : (mine && rk && T.st !== 'show' ? '<div class="pkRk' + (PK.rkUp && now - PK.rkUp < 1500 ? ' up' : '') + '">現在：' + rk.t + '</div>' : '')) + '</div>';
       if (s.bet > 0) h += '<div class="pkBet" style="left:' + (p[0] + (50 - p[0]) * .34) + '%;top:' + (p[1] + (57 - p[1]) * .34) + '%">🪙' + cfmt(s.bet) + '</div>';
     });
     A.innerHTML = h; tvPlay(X);
