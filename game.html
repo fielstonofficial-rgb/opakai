@@ -3953,11 +3953,6 @@ var TB = {
       '<radialGradient id="ltL" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="rgba(255,236,170,.55)"/><stop offset="1" stop-color="rgba(255,220,120,0)"/></radialGradient></defs>';
     o += '<rect width="' + W + '" height="' + H + '" fill="url(#ltF)"/>';
     o += '<rect width="' + W + '" height="345" fill="url(#ltW)"/>';
-    // 2階（左右のギャラリー）：床を一段高く、手すり付き
-    o += '<rect x="0" y="345" width="220" height="' + (H - 345) + '" fill="url(#ltB)"/><rect x="' + (W - 220) + '" y="345" width="220" height="' + (H - 345) + '" fill="url(#ltB)"/>';
-    o += '<rect x="212" y="345" width="40" height="' + (H - 345) + '" fill="url(#ltS)"/><rect x="' + (W - 252) + '" y="345" width="40" height="' + (H - 345) + '" fill="url(#ltSR)"/>';
-    o += '<rect x="214" y="345" width="10" height="' + (H - 345) + '" fill="#d9b24c"/><rect x="' + (W - 224) + '" y="345" width="10" height="' + (H - 345) + '" fill="#d9b24c"/>';
-    for (var by = 360; by < H - 20; by += 26) o += '<rect x="217" y="' + by + '" width="4" height="18" rx="2" fill="#f1d684"/><rect x="' + (W - 221) + '" y="' + by + '" width="4" height="18" rx="2" fill="#f1d684"/>';
     // 中央の赤じゅうたん
     o += '<rect x="900" y="380" width="200" height="' + (H - 380) + '" fill="#a8142c"/><rect x="900" y="380" width="200" height="' + (H - 380) + '" fill="none" stroke="#d9b24c" stroke-width="6"/><rect x="916" y="380" width="168" height="' + (H - 380) + '" fill="none" stroke="#e6c15a" stroke-width="2" stroke-dasharray="14 8"/>';
     [700, 1000, 1300].forEach(function (y) { o += '<ellipse cx="1000" cy="' + y + '" rx="320" ry="170" fill="url(#ltL)"/>'; });
@@ -4000,25 +3995,18 @@ var TB = {
     // 椅子
     SEATS.forEach(function (sa) { dc(lotChairSVG(), sa.x, sa.y - 2, 50, 44, sa.y - 1); dc(lotPadSVG(), sa.x, sa.y + 8, 56, 26, sa.y + 1); });
     // 階段（左右）
-    dc(lotStairSVG(0), 330, H - 60, 130, 130, H - 60); dc(lotStairSVG(1), W - 330, H - 60, 130, 130, H - 60);
-    lb('⬆ 2階へ', 330, H - 232); lb('⬆ 2階へ', W - 330, H - 232);
-    dc(lotStairSVG(0), 110, H - 50, 110, 110, H - 50); dc(lotStairSVG(1), W - 110, H - 50, 110, 110, H - 50);
-    lb('⬇ 1階へ', 110, H - 112); lb('⬇ 1階へ', W - 110, H - 112);
     lb('🚪 出口', 1000, H - 112);
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
     DOORS = [
-      { k: 'lotout', x: 1000, y: H - 20, w: 200, h: 90 }, { k: 'lot:entry', x: 525, y: 352, w: 190, h: 150 },
-      { k: 'lot:upL', x: 390, y: H - 70, w: 120, h: 100 }, { k: 'lot:upR', x: W - 390, y: H - 70, w: 120, h: 100 },
-      { k: 'lot:dnL', x: 110, y: H - 70, w: 120, h: 100 }, { k: 'lot:dnR', x: W - 110, y: H - 70, w: 120, h: 100 }
+      { k: 'lotout', x: 1000, y: H - 20, w: 200, h: 90 }, { k: 'lot:entry', x: 525, y: 352, w: 190, h: 150 }
     ];
     hero.x = 1000; hero.y = H - 130; hero.dir = 1; hero.sit = null; ftarget = null; fz = zoomT = .55; lotUp = 0;
     $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi();
   }
   function lotClamp() {
     var ox = hero.x, oy = hero.y;
-    if (lotUp) { var left = hero.x < LOT_W / 2; hero.x = left ? clamp(hero.x, 30, 205) : clamp(hero.x, LOT_W - 205, LOT_W - 30); hero.y = clamp(hero.y, 400, LOT_H - 50); }
-    else { hero.x = clamp(hero.x, 258, LOT_W - 258); hero.y = clamp(hero.y, 400, LOT_H - 24); }
+    hero.x = clamp(hero.x, 30, LOT_W - 30); hero.y = clamp(hero.y, 400, LOT_H - 24);
     if (hero.x !== ox || hero.y !== oy) { ftarget = null; var hh = $('hero2'); if (hh) hh.classList.remove('walk'); updHero(); }
   }
   function lotStair(k) {
@@ -5451,7 +5439,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 176;
+  var GV = 177;
   (function () {
     var last = Date.now();
     function chk() {
