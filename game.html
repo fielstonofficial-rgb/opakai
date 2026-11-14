@@ -3782,7 +3782,7 @@ var TB = {
   var TOWN = { W: 2400, H: 2340, cx: 1200, cy: 1170, rx: 860, ry: 540 };
   var TD = {};
   var TSLOTS = [
-    { k: 'lottery', s: 'hall', a: 270, w: 330, nm: '🎮 ゲーム会館' },
+    { k: 'lottery', s: 'hall', a: 270, w: 330, nm: '🎁 プレゼント抽選会場' },
     { k: 'shop', s: 'shop', a: 238, w: 250, nm: 'ショップ' },
     { k: 'exch', s: 'exch', a: 302, w: 290, nm: '取引所' },
     { k: 'skill', s: 'skill', a: 206, w: 240, nm: '🔮 スキルの館' },
@@ -4322,7 +4322,7 @@ var TB = {
   function jkKey() { var s = jkStatus(); return s.p + '|' + (JK ? JK.entered + '|' + JK.isOp + '|' + JK.epoch : ''); }
   function jkRefresh() {
     var st = jkStatus(), b = $('lbBoard');
-    if (b) b.innerHTML = '<div class="lbBt">🎮 本日のゲーム</div><div class="lbBg">' + esc((JK && JK.title) || 'じゃんけんバトルロワイヤル') + '</div><div class="lbBs ' + st.p + '">' + st.big + '</div>' + (JK && JK.startAt ? '<div class="lbBc">受付 ' + (JK.count || 0) + '人</div>' : '');
+    if (b) b.innerHTML = '<div class="lbBt">🎮 本日のゲーム：' + esc((JK && JK.title) || 'じゃんけんバトルロワイヤル') + (JK && JK.startAt ? '（受付 ' + (JK.count || 0) + '人）' : '') + '</div><div class="lbBs ' + st.p + '">' + st.big + '</div>';
     var dk = $('jkDesk'), dr = $('jkDoor'), s2 = jkStatus(), tx = ((JK && JK.title) || 'じゃんけんバトルロワイヤル');
     if (dk && dk.classList.contains('on') && jkView === 'desk') { if (jkFull) jkDeskRender(); else { var q = dk.querySelector('.jkS'); if (q) q.innerHTML = esc(tx) + '<br>' + s2.t; } }
     if (dr && dr.classList.contains('on')) { if (jkFull) jkDoorRender(); else { var q2 = dr.querySelector('.jkS'); if (q2 && dr.dataset.kind !== 'piko') q2.innerHTML = s2.t; } }
@@ -4335,16 +4335,16 @@ var TB = {
   function lbCss() {
     if ($('lbCss')) return; var s = document.createElement('style'); s.id = 'lbCss';
     s.textContent = '.lbSign{position:absolute;transform:translateX(-50%);z-index:90001;padding:6px 14px;border-radius:12px;background:linear-gradient(#5a1020,#3a0a16);border:3px solid #d9b24c;color:#ffe9a8;font-weight:900;font-size:22px;white-space:nowrap;text-shadow:0 2px 0 #000;box-shadow:0 4px 14px rgba(0,0,0,.45);pointer-events:none}' +
-      '.lbBoard{position:absolute;transform:translateX(-50%);z-index:90002;min-width:360px;text-align:center;padding:8px 18px;border-radius:14px;background:linear-gradient(#10222e,#0a1620);border:4px solid #d9b24c;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.5);pointer-events:none}' +
-      '.lbBt{font-size:15px;color:#ffd36a;font-weight:800}.lbBg{font-size:22px;font-weight:900;margin:2px 0}.lbBs{font-size:26px;font-weight:900;color:#9fe8ff}.lbBs.entry{color:#7dff9a}.lbBs.countdown{color:#ffb347}.lbBs.play{color:#ff6b6b}.lbBc{font-size:14px;color:#cfe}' +
+      '.lbBoard{position:absolute;transform:translateX(-50%);z-index:600;min-width:340px;text-align:center;padding:4px 16px;border-radius:14px;background:linear-gradient(#10222e,#0a1620);border:4px solid #d9b24c;color:#fff;box-shadow:0 6px 18px rgba(0,0,0,.5);pointer-events:none}' +
+      '.lbBt{font-size:14px;color:#ffd36a;font-weight:800}.lbBs{font-size:24px;font-weight:900;color:#9fe8ff}.lbBs.entry{color:#7dff9a}.lbBs.countdown{color:#ffb347}.lbBs.play{color:#ff6b6b}.lbBc{font-size:14px;color:#cfe}' +
       '.jkM{position:fixed;inset:0;background:rgba(0,0,0,.62);display:none;align-items:center;justify-content:center;z-index:100000;padding:12px}.jkM.on{display:flex}' +
       '.jkB{background:linear-gradient(#3a0f20,#240a14);border:3px solid #d9b24c;border-radius:18px;padding:16px 16px 14px;width:min(420px,94vw);max-height:90vh;overflow:auto;color:#fff;box-shadow:0 10px 40px rgba(0,0,0,.6)}' +
       '.jkB h3{margin:0 0 8px;font-size:20px;color:#ffe9a8;text-align:center}.jkB .jkS{margin:8px 0;padding:10px;border-radius:12px;background:rgba(0,0,0,.35);font-size:16px;font-weight:800;text-align:center;line-height:1.5}' +
       '.jkB p{margin:8px 0;font-size:14px;line-height:1.65;color:#f3e6d0}.jkB .jkBtn{display:block;width:100%;margin:8px 0 0;padding:13px 10px;border:0;border-radius:12px;font-size:17px;font-weight:900;color:#241;background:linear-gradient(#ffe08a,#e3b341);box-shadow:0 3px 0 #8a6a1a}' +
       '.jkB .jkBtn.g{background:linear-gradient(#7dff9a,#2fbf5c);box-shadow:0 3px 0 #1a7a3a}.jkB .jkBtn.s{background:linear-gradient(#6a5acd,#3b2f8f);color:#fff;box-shadow:0 3px 0 #1d1650}.jkB .jkBtn:disabled{opacity:.45}' +
       '.jkB input[type=datetime-local]{width:100%;padding:9px;border-radius:10px;border:2px solid #d9b24c;font-size:16px;margin-top:6px;box-sizing:border-box}.jkB .jkOp{margin-top:12px;padding:10px;border:2px dashed #d9b24c;border-radius:12px}' +
-      '.jkHands{display:flex;gap:10px;margin:12px 0}.jkHands button{flex:1;font-size:38px;padding:14px 0;border-radius:14px;border:3px solid #d9b24c;background:#4a1428;color:#fff}.jkHands button:active{transform:scale(.94)}' +
-      '.jkLife{font-size:24px;text-align:center;letter-spacing:4px}.jkRes{min-height:74px;text-align:center;font-size:20px;font-weight:900;line-height:1.5}';
+      '.jkHands{display:flex;gap:10px;margin:12px 0}.jkHands button{flex:1;font-size:84px;line-height:1.1;padding:18px 0;border-radius:14px;border:3px solid #d9b24c;background:#4a1428;color:#fff}.jkHands button:active{transform:scale(.94)}' +
+      '.jkLife{font-size:24px;text-align:center;letter-spacing:4px}.jkRes{min-height:130px;text-align:center;font-size:22px;font-weight:900;line-height:1.5}';
     document.head.appendChild(s);
     var d = document.createElement('div');
     d.innerHTML = '<div class="jkM" id="jkDesk"><div class="jkB" id="jkDeskB"></div></div><div class="jkM" id="jkDoor"><div class="jkB" id="jkDoorB"></div></div><div class="jkM" id="jkPrac"><div class="jkB" id="jkPracB"></div></div>';
@@ -4373,7 +4373,7 @@ var TB = {
     return o + '</svg>';
   }
   function lbRecepAv(nm, hair, hc, outfit, oc, bc) { return { name: nm, gender: 1, skin: 1, face: 2, hair: hair, hairColor: hc, outfit: outfit, outfitColor: oc, pattern: 0, patColor: 6, bottom: 1, bottomColor: bc, acc: 0 }; }
-  var LB_HI = 'いらっしゃいませ〜！ ゲーム会館の受付です。本日のゲームの受付、ゲームの説明、練習ができますよ。下のボタンをどうぞ。';
+  var LB_HI = 'いらっしゃいませ〜！ ゲーム受付です。本日のゲームの受付、ゲームの説明、練習ができますよ。下のボタンをどうぞ。';
   var LB_FAQ = [
     { q: 'どうやってゲームに参加するの？', k: ['参加', '受付', 'どうやって', '入る'], a: '受付時間の間に、ここで「今日のゲームを受付する」を押してください。受付が終わると、スタートの5分前から、闘技場でカウントダウンがはじまります。' },
     { q: '観戦だけしたいときは？', k: ['観戦', '見る', '見たい', '見学'], a: '受付をしなくても、左の扉から入って「観戦する」を選べば、外周の観客席で見られます。' },
@@ -4391,9 +4391,9 @@ var TB = {
     var dc = function (svg, x, y, wd, ht, z) { html += '<div class="dc" style="left:' + x + 'px;top:' + y + 'px;width:' + wd + 'px;height:' + ht + 'px;z-index:' + Math.round(z == null ? y : z) + '">' + svg + '</div>'; };
     var em = function (t, x, y, fs, z) { html += '<div class="cfe" style="left:' + x + 'px;top:' + y + 'px;font-size:' + fs + 'px;z-index:' + Math.round(z == null ? y : z) + '">' + t + '</div>'; };
     var sign = function (t, x, y) { html += '<div class="lbSign" style="left:' + x + 'px;top:' + y + 'px">' + t + '</div>'; };
-    html += '<div class="lbBoard" id="lbBoard" style="left:' + (W / 2) + 'px;top:10px"></div>';
-    sign('✊✌️✋ じゃんけん<br>バトルロワイヤル', 200, 96); sign('🛋️ 休憩室', 550, 96); sign('🔨 ピコピコハンマー<br>バトルロワイヤル', 900, 96);
-    dc(lbDoorSVG('#7d1226', '#4a0f20', '✊'), 200, 340, 190, 230, 340); dc(lbDoorSVG('#2d5a7d', '#1a3550', '🛋️'), 550, 340, 190, 230, 340); dc(lbDoorSVG('#2d7d4a', '#1a5030', '🔨'), 900, 340, 190, 230, 340);
+    html += '<div class="lbBoard" id="lbBoard" style="left:' + (W / 2) + 'px;top:556px"></div>';
+    sign('✊✌️✋ じゃんけん<br>バトルロワイヤル', 200, 88); sign('🛋️ 休憩室', 550, 88); sign('🔨 ピコピコハンマー<br>バトルロワイヤル', 900, 88);
+    dc(lbDoorSVG('#7d1226', '#4a0f20', '✊'), 200, 340, 150, 184, 340); dc(lbDoorSVG('#2d5a7d', '#1a3550', '🛋️'), 550, 340, 150, 184, 340); dc(lbDoorSVG('#2d7d4a', '#1a5030', '🔨'), 900, 340, 150, 184, 340);
     [[195, 270], [550, 260], [905, 270]].forEach(function (c) { dc(lbCounterSVG(), c[0], 520, c[1], 92, 520); });
     em('🪴', 60, 380, 56, 380); em('🪴', 1040, 380, 56, 380); em('🌴', 400, 380, 52, 380); em('🌴', 700, 380, 52, 380);
     [[300, 330], [800, 330]].forEach(function (p) { html += '<div class="dc lotCh" style="left:' + p[0] + 'px;top:' + (p[1] + 30) + 'px;width:130px;height:154px;z-index:90000">' + lotChandSVG() + '</div>'; });
@@ -4401,14 +4401,14 @@ var TB = {
     html += '<div class="tlbl" style="left:' + (W / 2) + 'px;top:' + (H - 70) + 'px">🚪 出口</div>';
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
-    DOORS = [{ k: 'jk:go', x: 200, y: 330, w: 190, h: 230 }, { k: 'jk:rest', x: 550, y: 330, w: 190, h: 230 }, { k: 'jk:piko', x: 900, y: 330, w: 190, h: 230 }, { k: 'lobout', x: W / 2, y: H - 20, w: 140, h: 70 }];
+    DOORS = [{ k: 'jk:go', x: 200, y: 330, w: 170, h: 190 }, { k: 'jk:rest', x: 550, y: 330, w: 170, h: 190 }, { k: 'jk:piko', x: 900, y: 330, w: 170, h: 190 }, { k: 'lobout', x: W / 2, y: H - 20, w: 140, h: 70 }];
     hero.x = W / 2; hero.y = H - 120; hero.dir = 1; hero.sit = null; ftarget = null; fz = zoomT;
     $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi(); addNpcs('lobby');
   }
   function openLobby() {
     lbCss(); lbNpcs();
     inTown = true; inCafe = true; inPost = false; inArcRoom = false; inLib = false; inLot = false; inRest = false; inLobby = true; shared = false; curMine = null; hero.cup = ''; hero.cupS = -1; hero.lastSeat = null; hero.order = null; cafeBusy = false;
-    rtStop(); $('field').classList.remove('chat'); $('field').classList.add('town'); $('fTtl').textContent = 'ゲーム会館'; fz = zoomT = .8;
+    rtStop(); $('field').classList.remove('chat'); $('field').classList.add('town'); $('fTtl').textContent = '受付会場'; fz = zoomT = .8;
     buildLobby(); show('field'); closeSheets(); digUI(false); BGM.set('town'); gearUi();
     $('fhud').innerHTML = ''; $('tlog').innerHTML = '';
     var by = document.querySelector('.gh.npc[data-npc="lb3"]'); if (by) setTimeout(function () { bubble(by, 'いらっしゃいませ〜！'); }, 500);
@@ -4434,7 +4434,7 @@ var TB = {
     dc(townSVG('fount'), W / 2, 560, 200, 170, 560);
     em('🌴', 70, 420, 60, 420); em('🌴', 1030, 420, 60, 420); em('🪴', 520, 440, 44, 440); em('🪴', 640, 440, 44, 440); em('🌺', 300, 900, 40, 900); em('🌺', 800, 900, 40, 900); em('🪴', 70, 940, 56, 940); em('🪴', 1030, 940, 56, 940);
     SEATS.forEach(function (sa) { dc(lotChairSVG(), sa.x, sa.y - 2, 50, 44, sa.y - 1); dc(lotPadSVG(), sa.x, sa.y + 8, 56, 26, sa.y + 1); });
-    html += '<div class="tlbl" style="left:' + (W / 2) + 'px;top:' + (H - 70) + 'px">🚪 ゲーム会館へ</div>';
+    html += '<div class="tlbl" style="left:' + (W / 2) + 'px;top:' + (H - 70) + 'px">🚪 受付会場へ</div>';
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
     DOORS = [{ k: 'restout', x: W / 2, y: H - 20, w: 140, h: 70 }];
@@ -4454,7 +4454,7 @@ var TB = {
   /* ----- 受付カウンター（NPCの「受付する」画面） ----- */
   function jkDeskOpen() { lbCss(); jkView = 'desk'; $('jkDesk').classList.add('on'); jkDeskRender(); jkPoll(); }
   function jkDeskRender() {
-    var st = jkStatus(), h = '<h3>🎮 ゲーム会館 受付</h3><div class="jkS">' + esc((JK && JK.title) || 'じゃんけんバトルロワイヤル') + '<br>' + st.t + '</div>';
+    var st = jkStatus(), h = '<h3>🎮 ゲーム受付</h3><div class="jkS">' + esc((JK && JK.title) || 'じゃんけんバトルロワイヤル') + '<br>' + st.t + '</div>';
     if (JK && JK.entered) h += '<p style="text-align:center;color:#7dff9a;font-weight:800">✅ 受付ずみです（' + (JK.count || 0) + '人が受付）</p>';
     else if (st.p === 'entry') h += '<button type="button" class="jkBtn g" id="jkEnterBtn">🎟 今日のゲームを受付する</button>';
     else if (st.p === 'countdown' || st.p === 'play') h += '<p style="text-align:center">受付は終了しました。左の扉から、観戦はできますよ。</p>';
@@ -4465,6 +4465,7 @@ var TB = {
       var dv = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
       h += '<div class="jkOp"><b style="color:#ffd36a">⚙ 運営：開催の設定</b><p style="margin:6px 0">スタート日時を入れてください。受付は「いますぐ」はじまり、スタートの5分前に締め切ります（6分以上あとの時刻）。</p><input type="datetime-local" id="jkStartIn" value="' + ((JK && JK.__dv) || dv) + '"><button type="button" class="jkBtn g" id="jkSetBtn">この時刻で、受付をはじめる</button><button type="button" class="jkBtn s" id="jkClearBtn">開催をやめる（受付を消す）</button></div>';
     }
+    if ((JK && JK.isOp) || (player && player.gm)) h += '<button type="button" class="jkBtn s" id="jkLotGo">🎁 旧・抽選会場へ（運営専用）</button>';
     h += '<button type="button" class="jkBtn s" id="jkDeskClose">とじる</button>';
     var keep = $('jkStartIn') ? $('jkStartIn').value : null; $('jkDeskB').innerHTML = h; if (keep && $('jkStartIn')) { $('jkStartIn').value = keep; }
   }
@@ -4486,6 +4487,7 @@ var TB = {
     else if (t.id === 'jkClearBtn') { if (confirm('開催をやめて、受付をぜんぶ消す？')) jkApi({ action: 'jk_clear' }).then(function (j) { if (j && j.ok) { JK = j; toast('消したで'); } jkPoll(); }); }
     else if (t.id === 'jkPracBtn') { $('jkDesk').classList.remove('on'); jkPracOpen(); }
     else if (t.id === 'jkDoorGo') { $('jkDoor').classList.remove('on'); toast('じゃんけんの闘技場は、いま工事中。もうすぐオープンするで'); }
+    else if (t.id === 'jkLotGo') { $('jkDesk').classList.remove('on'); jkTimersOff(); lbLeave(); sfx(2); openLot(); }
     else if (t.id === 'jkDoorNo') $('jkDoor').classList.remove('on');
     else if (t.id === 'jkDoorDesk') { $('jkDoor').classList.remove('on'); toast('カウンターの受付のお姉さんに話しかけてな'); }
   });
@@ -4494,7 +4496,7 @@ var TB = {
     if (kind === 'piko') h = '<h3>🔨 ピコピコハンマー<br>バトルロワイヤル</h3><div class="jkS">近日オープン！<br>いまは準備中です</div><button type="button" class="jkBtn s" id="jkDoorNo">もどる</button>';
     else {
       h = '<h3>✊✌️✋ じゃんけん<br>バトルロワイヤル会場</h3><div class="jkS">' + st.t + '</div><p style="text-align:center;font-weight:800;color:#ffe9a8">観戦しますか？</p><p>外周の観客席から、闘技場を見られます。<br><b style="color:#ffd36a">ゲームに参加する際は、受付でゲーム参加受付をしてください。</b></p>' +
-        '<button type="button" class="jkBtn g" id="jkDoorGo">👀 観戦する（観客席に入る）</button>' + ((JK && JK.entered) ? '<button type="button" class="jkBtn" id="jkDoorGo">⚔ 受付ずみ：闘技場に入る</button>' : '<button type="button" class="jkBtn" id="jkDoorDesk">🎟 受付はカウンターで</button>') + '<button type="button" class="jkBtn s" id="jkDoorNo">やめる</button>';
+        '<button type="button" class="jkBtn g" id="jkDoorGo">👀 観戦する（観客席に入る）</button>' + ((JK && JK.isOp) || (player && player.gm) ? '<button type="button" class="jkBtn" id="jkDoorGo">🛠 運営として入る（いつでも入れる）</button>' : '') + ((JK && JK.entered) ? '<button type="button" class="jkBtn" id="jkDoorGo">⚔ 受付ずみ：闘技場に入る</button>' : '<button type="button" class="jkBtn" id="jkDoorDesk">🎟 受付はカウンターで</button>') + '<button type="button" class="jkBtn s" id="jkDoorNo">やめる</button>';
     }
     $('jkDoorB').innerHTML = h;
   }
@@ -4517,9 +4519,9 @@ var TB = {
     if (b.id === 'jkPracAgain') { PR = { life: 3, win: 0, lose: 0, draw: 0, msg: 'どれを出す？' }; jkPracRender(); return; }
     if (b.dataset.h == null) return;
     var me = +b.dataset.h, cp = Math.floor(Math.random() * 3), hn = ['✊', '✌️', '✋'], r = (me - cp + 3) % 3;
-    if (r === 0) { PR.draw++; PR.msg = hn[me] + ' vs ' + hn[cp] + '<br>あいこ！'; }
-    else if (r === 2) { PR.win++; PR.msg = hn[me] + ' vs ' + hn[cp] + '<br>🎉 勝ち！'; sfx(3); }
-    else { PR.lose++; PR.life--; PR.msg = hn[me] + ' vs ' + hn[cp] + '<br>😢 負け…' + (PR.life <= 0 ? '<br>ライフがなくなった！' : ''); vib(); }
+    if (r === 0) { PR.draw++; PR.msg = '<span style="font-size:64px">' + hn[me] + ' ' + hn[cp] + '</span><br>あいこ！'; }
+    else if (r === 2) { PR.win++; PR.msg = '<span style="font-size:64px">' + hn[me] + ' ' + hn[cp] + '</span><br>🎉 勝ち！'; sfx(3); }
+    else { PR.lose++; PR.life--; PR.msg = '<span style="font-size:64px">' + hn[me] + ' ' + hn[cp] + '</span><br>😢 負け…' + (PR.life <= 0 ? '<br>ライフがなくなった！' : ''); vib(); }
     jkPracRender();
   });
 
@@ -5687,7 +5689,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 179;
+  var GV = 180;
   (function () {
     var last = Date.now();
     function chk() {
