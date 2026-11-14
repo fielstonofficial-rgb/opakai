@@ -1390,7 +1390,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   try { var mkq = (location.search.match(/[?&]mk=([A-Za-z0-9-]+)/) || [])[1]; if (mkq) {
     fetch('https://fxkahiastkklxduecrhq.supabase.co/functions/v1/opa-room', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'join', code: mkq }) })
       .then(function (r) { return r.json(); }).then(function (j) {
-        if (j && j.token) { if (LSget('opa_is_master') === '1') { LSset('opa_token_gen', j.token); LSset('opa_gm_off', '1'); } else { LSset('opa_token', j.token); } alert((j.nickname || 'アカウント') + 'で入れたで'); }
+        if (j && j.token) { LSset('opa_mk', mkq); if (LSget('opa_is_master') === '1') { LSset('opa_token_gen', j.token); LSset('opa_gm_off', '1'); } else { LSset('opa_token', j.token); } alert((j.nickname || 'アカウント') + 'で入れたで'); }
         else alert((j && j.message) || 'このリンクは使えへんかった（使用済みか期限切れ）');
         location.replace(location.pathname);
       }).catch(function () { alert('つながらへんかった。もう一回リンクを開いてな'); });
@@ -5451,7 +5451,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 174;
+  var GV = 176;
   (function () {
     var last = Date.now();
     function chk() {
@@ -9186,7 +9186,8 @@ var TB = {
   function boot() {
     if (!token) { $('loadMsg').textContent = '先にオパ会に入ってから、ゲームを開いてください'; document.querySelector('#load .spin').style.display = 'none'; return; }
     api({ action: 'game_load' }).then(function (j) {
-      if (j._s === 401) { $('loadMsg').textContent = 'オパ会の入り直しが必要みたい。チャットに入ってから開いてください'; document.querySelector('#load .spin').style.display = 'none'; return; }
+      if (j._s === 401 && LSget('opa_mk') && !sessionStorage.getItem('opa_mk_try')) { try { sessionStorage.setItem('opa_mk_try', '1'); } catch (e) {} $('loadMsg').textContent = '入り直しとる…'; fetch('https://fxkahiastkklxduecrhq.supabase.co/functions/v1/opa-room', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'join', code: LSget('opa_mk') }) }).then(function (r) { return r.json(); }).then(function (jj) { if (jj && jj.token) { if (LSget('opa_is_master') === '1') { LSset('opa_token_gen', jj.token); LSset('opa_gm_off', '1'); } else { LSset('opa_token', jj.token); } location.reload(); } else { $('loadMsg').textContent = 'リンクが使えへんかった。もう一回リンクを開いてな'; } }).catch(function () { $('loadMsg').textContent = 'つながらへんかった。もう一回開いてな'; }); return; }
+      if (j._s === 401) { $('loadMsg').innerHTML = 'オパ会の入り直しが必要みたい。チャットに入ってから開いてください<br><small style="opacity:.6">診断 v' + GV + ' 本鍵:' + (MTOK ? 'あり' : 'なし') + ' 一般鍵:' + (GTOK ? 'あり' : 'なし') + ' master:' + (LSget('opa_is_master') || '-') + ' 一般モード:' + (genMode ? 'ON' : 'OFF') + ' 使用:' + (token === GTOK ? '一般' : '本') + '</small>'; document.querySelector('#load .spin').style.display = 'none'; return; }
       nick = j.nickname || ''; myMid = j.me || ''; myMidG = myMid;
       if (j.player) { player = j.player; tickets = j.tickets || []; }
       playOpening();
