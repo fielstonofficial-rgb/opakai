@@ -3257,6 +3257,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function rtFree(sp) { sp.by = null; sp.el.classList.remove('taken'); var b = sp.el.querySelector('.by'); if (b) b.remove(); }
   function rtMsg(m) {
     if (!m || m.f === myMid) return;
+    if (m.t === 'ph') { phRecv(m); return; }
     if (m.t === 'jk') { jkRecv(m); return; }
     if (m.t === 'pk') { pkRecv(m); return; }
     if (m.t === 'bj') { bjRecv(m); return; }
@@ -3292,7 +3293,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   function ghostsTick(dt, moved) {
     if (!rtOn) return;
     var now = performance.now();
-    if ((moved && now - rtLast > 110) || (!moved && rtWas) || now - rtLast > 1500) { rtLast = now; rtSend(posMsg()); }
+    if ((moved && now - rtLast > (inPiko ? 200 : 110)) || (!moved && rtWas) || now - rtLast > 1500) { rtLast = now; rtSend(posMsg()); }
     rtWas = moved;
     var k = Math.min(1, dt * (inLot ? 2.2 : 10));
     Object.keys(peers).forEach(function (id) {
@@ -3890,6 +3891,8 @@ var TB = {
     else if (k === 'postout') { sfx(2); leaveCafe(); }
     else if (k === 'arc:slot') { sfx(2); openSlot(); }
     else if (k === 'arc:mole') { sfx(2); openMole(); }
+    else if (k === 'arc:piko') { sfx(2); openPiko(); }
+    else if (k === 'pkout') { sfx(2); openArcRoom(); }
     else if (k === 'arc:bj') { sfx(2); openBJ(); }
     else if (k === 'arc:bi') { sfx(2); tgOpen('bi'); }
     else if (k === 'arc:un') { sfx(2); tgOpen('un'); }
@@ -4417,7 +4420,7 @@ var TB = {
     RT.join('lobby', me, { onMsg: rtMsg, onPeers: rtPeers }, function (ok) { if (ok) { rtOn = true; rtLast = 0; rtSend(posMsg()); } });
     jkTimersOn();
   }
-  function lbLeave() { var was = inLobby || inRest; jkTimersOff(); jkaStop(); inLobby = false; inRest = false; return was; }
+  function lbLeave() { var was = inLobby || inRest; jkTimersOff(); jkaStop(); phStop(); inLobby = false; inRest = false; return was; }
 
   /* ----- 休憩室（椅子だけ。旧・抽選会場の3分の1の広さ） ----- */
   function restSeats() {
@@ -4733,6 +4736,144 @@ var TB = {
     else if (t.id === 'npcPrac') { $('npc').classList.remove('on'); jkPracOpen(); }
   });
   document.addEventListener('input', function (e) { if (e.target && e.target.id === 'jaQ') jkaListRender(); });
+
+
+  /* ----- ピコピコハンマー対戦場（ゲームセンター内・最大10人）v182 ----- */
+  var inPiko = false, PK_W = 1000, PK_H = 800, PH = { on: false, live: false, lives: 3, down: false, helmUntil: 0, stunUntil: 0, dashUntil: 0, cd: { sw: 0, dash: 0, warp: 0, helm: 0 }, alive: {}, lv: {}, over: false, seen: false, tk: 0, cnt: 0 };
+  var PH_CD = { sw: 600, dash: 4000, warp: 7000, helm: 5000 };
+  function phCss() {
+    if ($('phCss')) return; var s = document.createElement('style'); s.id = 'phCss';
+    s.textContent = '#phHud{position:fixed;top:84px;left:8px;right:8px;z-index:8000;display:none;pointer-events:none;text-align:center}#phHud .p1{display:inline-block;padding:6px 14px;border-radius:14px;background:rgba(20,8,14,.84);border:2px solid #ffd84a;color:#fff;font-size:16px;font-weight:900}#phHud button{pointer-events:auto;margin-top:6px;padding:9px 16px;border:0;border-radius:12px;font-weight:900;font-size:15px;color:#241;background:linear-gradient(#7dff9a,#2fbf5c);box-shadow:0 2px 0 #1a7a3a}' +
+      '#phBtns{position:fixed;right:8px;bottom:96px;z-index:8000;display:none;flex-direction:column;gap:8px}#phBtns button{width:66px;height:66px;border-radius:50%;border:3px solid #ffd84a;font-size:28px;background:radial-gradient(#e2434f,#8a1020);color:#fff;font-weight:900;box-shadow:0 3px 8px rgba(0,0,0,.5);position:relative;line-height:1}#phBtns button small{display:block;font-size:10px;margin-top:2px}#phBtns button.cd{opacity:.4}#phBtns button.sw{width:84px;height:84px;font-size:38px;align-self:flex-end;background:radial-gradient(#ffe45a,#e08a00);color:#5a2a00}' +
+      '#phBig{position:fixed;left:0;right:0;top:34%;text-align:center;z-index:9000;font-size:84px;font-weight:900;color:#ffe45a;text-shadow:0 4px 0 #8a1020,0 0 20px #000;pointer-events:none;display:none}' +
+      '.phHm{position:absolute;transform:translate(-50%,-100%);z-index:99999;pointer-events:none;transform-origin:50% 100%;animation:phSw .3s ease-in forwards}@keyframes phSw{0%{transform:translate(-50%,-100%) rotate(-80deg)}60%{transform:translate(-50%,-100%) rotate(35deg)}100%{transform:translate(-50%,-100%) rotate(28deg);opacity:.0}}' +
+      '.phFx{position:absolute;transform:translate(-50%,-100%);z-index:99999;pointer-events:none;font-size:34px;font-weight:900;animation:phUp .9s ease-out forwards}@keyframes phUp{0%{opacity:1;margin-top:0}100%{opacity:0;margin-top:-50px}}.phHelmet{position:absolute;transform:translate(-50%,-100%);z-index:99998;font-size:34px;pointer-events:none}';
+    document.head.appendChild(s);
+    var d = document.createElement('div');
+    d.innerHTML = '<div id="phHud"><div class="p1" id="phT"></div><br><button type="button" id="phGo">🎮 対戦スタート</button></div><div id="phBig"></div><div id="phBtns"><button type="button" class="sw" id="phSw">🔨<small>たたく</small></button><button type="button" id="phHe">🛡<small>ヘルメット</small></button><button type="button" id="phDa">⚡<small>ダッシュ</small></button><button type="button" id="phWa">🌀<small>ワープ</small></button></div>';
+    while (d.firstChild) document.body.appendChild(d.firstChild);
+  }
+  function phHammerSVG(w) {
+    return '<svg width="' + w + '" height="' + (w * 1.4) + '" viewBox="0 0 70 98"><rect x="30" y="38" width="10" height="56" rx="4" fill="#ffd21f" stroke="#a37a00" stroke-width="2"/><rect x="4" y="4" width="62" height="36" rx="14" fill="#e8283a" stroke="#7a0f1a" stroke-width="2.5"/><rect x="4" y="4" width="14" height="36" rx="7" fill="#ffd21f" stroke="#a37a00" stroke-width="2"/><rect x="52" y="4" width="14" height="36" rx="7" fill="#ffd21f" stroke="#a37a00" stroke-width="2"/><rect x="22" y="9" width="26" height="7" rx="3" fill="rgba(255,255,255,.45)"/></svg>';
+  }
+  function phCabSVG() {
+    return '<svg viewBox="0 0 140 150"><ellipse cx="70" cy="144" rx="62" ry="6" fill="rgba(0,0,0,.45)"/><path d="M16 140L22 52L118 52L124 140Z" fill="#2a63d8" stroke="#0e2a70" stroke-width="2.5"/><path d="M12 20Q12 4 70 4Q128 4 128 20L118 52L22 52Z" fill="#e8283a" stroke="#ffd84a" stroke-width="3"/><rect x="28" y="12" width="84" height="28" rx="7" fill="#1a0606" stroke="#ffe27a" stroke-width="2"/><text x="70" y="32" font-size="13" text-anchor="middle" fill="#ffe27a" font-weight="900">ピコピコハンマー</text><g transform="translate(46 60) scale(.55)">' + phHammerSVG(70).replace(/^<svg[^>]*>/, '').replace(/<\/svg>$/, '') + '</g><text x="96" y="100" font-size="30">🛡</text><rect x="26" y="112" width="88" height="20" rx="5" fill="#ffd84a"/><text x="70" y="127" font-size="12" text-anchor="middle" fill="#5a2a00" font-weight="900">最大10人 対戦</text></svg>';
+  }
+  function phGround(W, H) {
+    var o = '<svg width="' + W + '" height="' + H + '" style="position:absolute;left:0;top:0;pointer-events:none;z-index:0"><defs><pattern id="phF" width="100" height="100" patternUnits="userSpaceOnUse"><rect width="100" height="100" fill="#ffe9a8"/><rect width="50" height="50" fill="#ffc9d6"/><rect x="50" y="50" width="50" height="50" fill="#ffc9d6"/></pattern><pattern id="phW" width="60" height="60" patternUnits="userSpaceOnUse"><rect width="60" height="60" fill="#d92b3f"/><circle cx="30" cy="30" r="10" fill="#ffd84a"/></pattern></defs>';
+    o += '<rect width="' + W + '" height="' + H + '" fill="url(#phF)"/><rect width="' + W + '" height="200" fill="url(#phW)"/><rect y="196" width="' + W + '" height="12" fill="#2a63d8"/>';
+    o += '<rect x="14" y="224" width="' + (W - 28) + '" height="' + (H - 258) + '" rx="30" fill="none" stroke="#2a63d8" stroke-width="12" stroke-dasharray="26 16"/>';
+    return o + '</svg>';
+  }
+  function buildPiko() {
+    var w = $('world'), html = '', W = PK_W, H = PK_H; setWorld(W, H); w.classList.remove('cave'); w.style.background = '#ffe9a8'; SEATS = [];
+    html += phGround(W, H);
+    html += '<div class="lbSign" style="left:' + (W / 2) + 'px;top:60px;font-size:30px">🔨 ピコピコハンマー 対戦場</div><div class="lbSign" style="left:' + (W / 2) + 'px;top:128px;font-size:16px">最大10人 ／ 3回叩かれたら負け ／ 最後の1人が勝ち</div>';
+    html += '<div class="tlbl" style="left:' + (W / 2) + 'px;top:' + (H - 70) + 'px">🚪 ゲームセンターへ</div>';
+    html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
+    w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
+    DOORS = [{ k: 'pkout', x: W / 2, y: H - 20, w: 140, h: 70 }];
+    hero.x = W / 2; hero.y = H - 140; hero.dir = 1; hero.sit = null; ftarget = null; fz = zoomT;
+    $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi();
+  }
+  function openPiko() {
+    phCss(); lbLeave();
+    inTown = true; inCafe = true; inPost = false; inArcRoom = false; inLib = false; inLot = false; inLobby = false; inRest = true; inJkA = false; inPiko = true; shared = false; curMine = null; hero.cup = ''; hero.cupS = -1; hero.lastSeat = null; hero.order = null; cafeBusy = false;
+    rtStop(); $('field').classList.remove('chat'); $('field').classList.add('town'); $('fTtl').textContent = 'ピコピコハンマー'; fz = zoomT = .8;
+    buildPiko(); show('field'); closeSheets(); digUI(false); BGM.set('town'); gearUi();
+    $('fhud').innerHTML = ''; $('tlog').innerHTML = '';
+    PH.on = true; PH.live = false; PH.over = false; PH.seen = false; PH.lives = 3; PH.down = false; PH.alive = {}; PH.lv = {};
+    $('phHud').style.display = 'block'; $('phBtns').style.display = 'none'; phHud();
+    var me = { id: myMid, n: (player.avatar && player.avatar.name) || '', av: player.avatar };
+    RT.join('piko', me, { onMsg: rtMsg, onPeers: phPeers }, function (ok) { if (ok) { rtOn = true; rtLast = 0; rtSend(posMsg()); } else toast('つながらへんかった。ひとりで練習になるで'); });
+    clearInterval(PH.tk); PH.tk = setInterval(phTick, 200);
+  }
+  function phStop() { PH.on = false; PH.live = false; clearInterval(PH.tk); inPiko = false; var a = $('phHud'); if (a) a.style.display = 'none'; a = $('phBtns'); if (a) a.style.display = 'none'; a = $('phBig'); if (a) a.style.display = 'none'; var h = $('hero2'); if (h) h.classList.remove('dn'); }
+  function phPeers(list) {
+    if (!PH.seen) { PH.seen = true; if (list.length >= 10) { toast('満員（10人）やった。また後でな'); setTimeout(function () { openArcRoom(); }, 300); return; } }
+    rtPeers(list);
+    if (PH.live) Object.keys(PH.alive).forEach(function (id) { if (id !== myMid && !peers[id]) { delete PH.alive[id]; } }); phCheckEnd(); phHud();
+  }
+  function phCount() { return Object.keys(peers).length + 1; }
+  function phHud() {
+    var t = $('phT'), g = $('phGo'); if (!t) return;
+    if (PH.live) { var h = ''; for (var i = 0; i < 3; i++) h += i < PH.lives ? '❤️' : '🖤'; t.textContent = h + '　残り ' + Object.keys(PH.alive).length + '人' + (PH.down ? '　（倒れた。チャットはできるで）' : ''); g.style.display = 'none'; }
+    else { t.textContent = '待機中　' + phCount() + '/10人'; g.style.display = (phCount() >= 2 && !PH.cnt) ? '' : 'none'; }
+  }
+  function phBig(txt, ms) { var e = $('phBig'); e.textContent = txt; e.style.display = 'block'; clearTimeout(e._t); e._t = setTimeout(function () { e.style.display = 'none'; }, ms || 900); }
+  function phBeep(f1, f2, ms, type, vol) {
+    try { var A = window.AudioContext || window.webkitAudioContext; if (!A) return; PH.ac = PH.ac || new A(); var c = PH.ac, o = c.createOscillator(), g = c.createGain(); o.type = type || 'square'; o.frequency.setValueAtTime(f1, c.currentTime); o.frequency.exponentialRampToValueAtTime(f2, c.currentTime + ms / 1000); g.gain.setValueAtTime(vol || .22, c.currentTime); g.gain.exponentialRampToValueAtTime(.001, c.currentTime + ms / 1000 + .02); o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime + ms / 1000 + .05); } catch (e) {}
+  }
+  function phPico() { phBeep(1300, 520, 90, 'square', .26); }
+  function phElOf(id) { return id === myMid ? $('hero2') : (peers[id] && peers[id].el); }
+  function phPosOf(id) { return id === myMid ? { x: hero.x, y: hero.y } : (peers[id] ? { x: peers[id].x, y: peers[id].y } : null); }
+  function phFx(id, txt) { var p = phPosOf(id); if (!p) return; var e = document.createElement('div'); e.className = 'phFx'; e.textContent = txt; e.style.left = p.x + 'px'; e.style.top = (p.y - 70) + 'px'; $('world').appendChild(e); setTimeout(function () { e.remove(); }, 950); }
+  function phSwingFx(att, to) {
+    var a = phPosOf(att), v = phPosOf(to); if (!a) return; var dir = v ? (v.x >= a.x ? 1 : -1) : (att === myMid ? hero.dir : 1);
+    var e = document.createElement('div'); e.className = 'phHm'; e.style.left = (a.x + dir * 26) + 'px'; e.style.top = (a.y - 40) + 'px'; e.style.transform = 'translate(-50%,-100%)' + (dir < 0 ? ' scaleX(-1)' : ''); e.innerHTML = phHammerSVG(54); $('world').appendChild(e); setTimeout(function () { e.remove(); }, 340);
+  }
+  function phNearest(maxD) {
+    var best = null, bd = maxD; Object.keys(peers).forEach(function (id) { var p = peers[id]; if (!PH.alive[id]) return; var d = Math.hypot(p.x - hero.x, p.y - hero.y); if (d < bd) { bd = d; best = id; } }); return best;
+  }
+  function phReady(k) { return Date.now() >= PH.cd[k]; }
+  function phUse(k) { PH.cd[k] = Date.now() + PH_CD[k]; }
+  function phCanAct() { return PH.live && !PH.down && Date.now() >= PH.stunUntil; }
+  function phSwing() {
+    if (!phCanAct() || !phReady('sw')) return; phUse('sw'); var to = phNearest(120);
+    if (to) { var p = peers[to]; hero.dir = p.x >= hero.x ? 1 : -1; updHero(); }
+    phSwingFx(myMid, to); rtSend({ t: 'ph', k: 'sw', to: to || '' });
+  }
+  function phHelmet() { if (!phCanAct() || !phReady('helm')) return; phUse('helm'); PH.helmUntil = Date.now() + 2000; phHelmShow(myMid, 2000); rtSend({ t: 'ph', k: 'hm' }); }
+  function phHelmShow(id, ms) { var p = phPosOf(id); if (!p) return; var e = document.createElement('div'); e.className = 'phHelmet'; e.textContent = '⛑️'; e.style.left = p.x + 'px'; e.style.top = (p.y - 62) + 'px'; $('world').appendChild(e); var iv = setInterval(function () { var q = phPosOf(id); if (q) { e.style.left = q.x + 'px'; e.style.top = (q.y - 62) + 'px'; } }, 60); setTimeout(function () { clearInterval(iv); e.remove(); }, ms); }
+  function phDash() { if (!phCanAct() || !phReady('dash')) return; phUse('dash'); PH.dashUntil = performance.now() + 600; phFx(myMid, '💨'); phBeep(300, 900, 140, 'sawtooth', .12); }
+  function phWarp() {
+    if (!phCanAct() || !phReady('warp')) return; var to = phNearest(340); phUse('warp'); phFx(myMid, '🌀');
+    if (to) { var p = peers[to]; hero.x = clamp(p.x + (p.x >= hero.x ? -1 : 1) * 70, 40, WW - 40); hero.y = clamp(p.y, 230, WH - 40); } else { hero.x = clamp(hero.x + hero.dir * 220, 40, WW - 40); }
+    ftarget = null; updHero(); rtLast = 0; phBeep(1200, 300, 160, 'sine', .18);
+  }
+  function phMul() { if (!inPiko || !PH.live) return 1; if (PH.down || Date.now() < PH.stunUntil) return 0; return performance.now() < PH.dashUntil ? 2.8 : 1; }
+  function phStart(spawnIdx) {
+    var ids = Object.keys(peers).concat([myMid]).sort(), n = ids.length, i = ids.indexOf(myMid), ang = (i / n) * Math.PI * 2 - Math.PI / 2;
+    PH.alive = {}; PH.lv = {}; ids.forEach(function (id) { PH.alive[id] = 1; PH.lv[id] = 3; });
+    PH.lives = 3; PH.down = false; PH.over = false; PH.stunUntil = 0; PH.helmUntil = 0; PH.cd = { sw: 0, dash: 0, warp: 0, helm: 0 };
+    hero.x = Math.round(500 + Math.cos(ang) * 300); hero.y = Math.round(520 + Math.sin(ang) * 170); ftarget = null; updHero(); rtLast = 0; var h = $('hero2'); if (h) h.classList.remove('dn');
+    PH.cnt = 3; phHud(); phBig('3', 900); phBeep(600, 600, 120, 'square', .2);
+    var c = 3, iv = setInterval(function () { c--; if (c > 0) { phBig(String(c), 900); phBeep(600, 600, 120, 'square', .2); } else { clearInterval(iv); PH.cnt = 0; PH.live = true; phBig('スタート！🔨', 1100); phBeep(500, 1400, 260, 'square', .25); $('phBtns').style.display = 'flex'; phHud(); } }, 1000);
+  }
+  function phCheckEnd() {
+    if (!PH.live || PH.over) return; var ids = Object.keys(PH.alive); if (ids.length > 1) return; PH.over = true; PH.live = false;
+    var wid = ids[0], nm = wid === myMid ? (player.avatar && player.avatar.name) || 'あなた' : ((peers[wid] && peers[wid].n) || '誰か');
+    phBig(wid === myMid ? '🏆 優勝！' : (PH.down ? '🏁 終了' : '🏁 終了'), 2600); if (wid === myMid) sfx(3); tlogAdd('🔨 結果　', nm + ' の勝ち！');
+    setTimeout(function () { $('phBtns').style.display = 'none'; PH.down = false; var h = $('hero2'); if (h) h.classList.remove('dn'); PH.alive = {}; PH.lv = {}; phHud(); rtLast = 0; }, 3200);
+  }
+  function phRecv(m) {
+    if (!PH.on) return;
+    if (m.k === 'go') { if (!PH.live && !PH.cnt) phStart(); return; }
+    if (m.k === 'sw') {
+      phSwingFx(m.f, m.to || '');
+      if (m.to === myMid && PH.live && !PH.down && !PH.over) {
+        var a = peers[m.f]; if (!a || Math.hypot(a.x - hero.x, a.y - hero.y) > 170) return;
+        if (Date.now() < PH.helmUntil) { phBeep(220, 180, 120, 'triangle', .3); phFx(myMid, 'ガキン！'); rtSend({ t: 'ph', k: 'blk', to: myMid }); return; }
+        PH.lives--; PH.stunUntil = Date.now() + 350; phPico(); phFx(myMid, 'ピコ！'); vib();
+        if (PH.lives <= 0) { PH.down = true; PH.lives = 0; delete PH.alive[myMid]; var h = $('hero2'); if (h) h.classList.add('dn'); ftarget = null; bubble($('hero2'), 'やられた…'); }
+        rtSend({ t: 'ph', k: 'hit', to: myMid, l: PH.lives }); rtLast = 0; phHud(); phCheckEnd();
+      }
+      return;
+    }
+    if (m.k === 'hit') { PH.lv[m.to] = m.l; phPico(); phFx(m.to, 'ピコ！'); if (m.l <= 0) { delete PH.alive[m.to]; phCheckEnd(); } phHud(); return; }
+    if (m.k === 'blk') { phBeep(220, 180, 120, 'triangle', .3); phFx(m.to, 'ガキン！'); return; }
+    if (m.k === 'hm') { phHelmShow(m.f, 2000); return; }
+  }
+  function phTick() {
+    if (!PH.on) return; var now = Date.now();
+    [['phSw', 'sw'], ['phHe', 'helm'], ['phDa', 'dash'], ['phWa', 'warp']].forEach(function (a) { var b = $(a[0]); if (!b) return; var left = PH.cd[a[1]] - now, on = left > 0; b.classList.toggle('cd', on); var sm = b.querySelector('small'); if (sm && a[0] !== 'phSw') sm.textContent = on ? Math.ceil(left / 1000) + '秒' : { phHe: 'ヘルメット', phDa: 'ダッシュ', phWa: 'ワープ' }[a[0]]; });
+    Object.keys(peers).forEach(function (id) { var pr = peers[id]; if (!pr.el) return; var g = pr.el.querySelector('.gname'); if (!g) return; var l = PH.live ? (PH.lv[id] == null ? 3 : PH.lv[id]) : -1; var tx = (pr.n || '') + (l >= 0 ? ' ' + '❤'.repeat(Math.max(0, l)) : ''); if (g.textContent !== tx) g.textContent = tx; });
+  }
+  document.addEventListener('click', function (e) {
+    var t = e.target && e.target.closest ? e.target.closest('button') : null; if (!t || !inPiko) return;
+    if (t.id === 'phGo') { if (phCount() < 2) { toast('2人以上で、はじめられるで'); return; } rtSend({ t: 'ph', k: 'go' }); phStart(); }
+    else if (t.id === 'phSw') phSwing(); else if (t.id === 'phHe') phHelmet(); else if (t.id === 'phDa') phDash(); else if (t.id === 'phWa') phWarp();
+  });
 
   /* ---------- ギルド（Lv10から。申請→運営が承認→みんなが入れる。最大30人） ---------- */
   function gmsg(t) { var e = $('gBody'); if (e) { var m = document.createElement('p'); m.className = 'tiny'; m.style.color = '#ffd36a'; m.textContent = t; e.prepend(m); setTimeout(function () { m.remove(); }, 4000); } }
@@ -5552,6 +5693,7 @@ var TB = {
     SEATS.forEach(function (sa) { if (sa.stool) dc(arcStoolSVG(), sa.x, sa.y + 8, 40, 52, sa.y - 1); else { dc(arcChairSVG(), sa.x, sa.y - 2, 31, 28, sa.y - 1); dc(arcSeatSVG(), sa.x, sa.y + 5, 34, 17, sa.y + 1); } });
     lb("🛋️ ラウンジ", 500, 436);
     dc(arcMoleSVG(), 200, 846, 200, 190, 846);
+    dc(phCabSVG(), 640, 846, 130, 140, 846); lb('🔨 ピコピコハンマー', 640, 716);
 
     dc(arcTableSVG('ph'), 186, 616, 265, 133, 545); lb('♠ テキサスオパールホールデム', 186, 436);
     dc(arcTableSVG('bi'), 828, 607, 234, 117, 545); lb('🎱 オパールビンゴ', 828, 462);
@@ -5559,11 +5701,12 @@ var TB = {
     html += '<div class="tlbl" style="left:500px;top:766px">🚪 出口</div>';
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
-    DOORS = [{ k: 'arc:fps', x: 500, y: 330, w: 200, h: 160 }, { k: 'arc:holdem', x: 186, y: 616, w: 250, h: 105 }, { k: 'arc:bi', x: 828, y: 607, w: 210, h: 92 }, { k: 'arc:un', x: 828, y: 797, w: 210, h: 92 }, { k: 'arcout', x: 500, y: 800, w: 120, h: 70 }, { k: 'arc:rank', x: 800, y: 215, w: 160, h: 110 }, { k: 'arc:dis', x: 880, y: 352, w: 74, h: 80 }, { k: 'arc:prize', x: 700, y: 352, w: 74, h: 80 }, { k: 'arc:mole', x: 200, y: 846, w: 200, h: 170 }];
+    DOORS = [{ k: 'arc:fps', x: 500, y: 330, w: 200, h: 160 }, { k: 'arc:holdem', x: 186, y: 616, w: 250, h: 105 }, { k: 'arc:bi', x: 828, y: 607, w: 210, h: 92 }, { k: 'arc:un', x: 828, y: 797, w: 210, h: 92 }, { k: 'arcout', x: 500, y: 800, w: 120, h: 70 }, { k: 'arc:rank', x: 800, y: 215, w: 160, h: 110 }, { k: 'arc:dis', x: 880, y: 352, w: 74, h: 80 }, { k: 'arc:prize', x: 700, y: 352, w: 74, h: 80 }, { k: 'arc:mole', x: 200, y: 846, w: 200, h: 170 }, { k: 'arc:piko', x: 640, y: 846, w: 130, h: 130 }];
     hero.x = 500; hero.y = 760; hero.dir = 1; hero.sit = null; ftarget = null; fz = zoomT;
     $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi(); addNpcs('arcade');
   }
   function openArcRoom() {
+    inRest = false; inLobby = false; inJkA = false; inPiko = false; phStop();
     inTown = true; inCafe = true; inArcRoom = true; shared = false; curMine = null; hero.cup = ''; hero.cupS = -1; hero.lastSeat = null; hero.order = null; cafeBusy = false;
     rtStop(); $('field').classList.remove('chat'); $('field').classList.add('town'); $('fTtl').textContent = 'ゲームセンター'; fz = zoomT = .8;
     buildArcRoom(); show('field'); closeSheets(); digUI(false); BGM.set('jazz'); gearUi();
@@ -5898,7 +6041,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 181;
+  var GV = 182;
   (function () {
     var last = Date.now();
     function chk() {
@@ -6939,7 +7082,7 @@ var TB = {
     var hh = $('hero2'); if (hh) { var b = hh.querySelector('.hhp'); if (b) { b.classList.toggle('on', r < 1); b.firstChild.style.width = (r * 100) + '%'; b.firstChild.style.background = r <= .3 ? '#ff5a5a' : '#4fd68a'; } hh.classList.toggle('down', hp.down); }
   }
   function floatTxt(x, y, t, c) { var e = document.createElement('div'); e.className = 'ftxt' + (c ? ' ' + c : ''); e.textContent = t; e.style.left = x + 'px'; e.style.top = y + 'px'; $('world').appendChild(e); setTimeout(function () { e.remove(); }, 850); }
-  function posMsg() { return { t: 'pos', x: Math.round(hero.x), y: Math.round(hero.y), d: hero.dir, h: Math.round(hp.cur / Math.max(1, hp.max) * 100), dn: hp.down ? 1 : 0, md: (arena && arena.m && !arena.m.over) ? arena.m.mid : 0, gm: isGM() ? 1 : 0, st: (hero.sit != null && hero.sit >= 0) ? hero.sit + 1 : 0, dk: hero.cup || '', ds: hero.cup ? hero.cupS : -1, lv: (player && player.lv) || 1, eq: EQSL.map(function (sl) { var q = eqItem(sl); return q ? q.id : ''; }).join(',') }; }
+  function posMsg() { return { t: 'pos', x: Math.round(hero.x), y: Math.round(hero.y), d: hero.dir, h: (inPiko && PH.live) ? Math.round(PH.lives / 3 * 100) : Math.round(hp.cur / Math.max(1, hp.max) * 100), dn: (inPiko && PH.live) ? (PH.down ? 1 : 0) : (hp.down ? 1 : 0), md: (arena && arena.m && !arena.m.over) ? arena.m.mid : 0, gm: isGM() ? 1 : 0, st: (hero.sit != null && hero.sit >= 0) ? hero.sit + 1 : 0, dk: hero.cup || '', ds: hero.cup ? hero.cupS : -1, lv: (player && player.lv) || 1, eq: EQSL.map(function (sl) { var q = eqItem(sl); return q ? q.id : ''; }).join(',') }; }
   var EQSL = ['weapon', 'shield', 'armor', 'outfit', 'tool', 'helm'];
   function rtHp() { if (rtOn) { rtLast = 0; } }
 
@@ -9377,7 +9520,7 @@ var TB = {
       } else if (kWalk) { kWalk = false; if (hh && !ftarget) hh.classList.remove('walk'); }
     } else if (kWalk) { kWalk = false; if (hh && !ftarget) hh.classList.remove('walk'); }
     if (ftarget) {
-      if (hero.sit != null) standUp(); var dx = ftarget.x - hero.x, dy = ftarget.y - hero.y, d = Math.hypot(dx, dy), step = SPEED * dt * (performance.now() < skHasteUntil ? 1.5 : 1) * (1 + ((eqItem('outfit') || {}).bspd || 0) / 100);
+      if (hero.sit != null) standUp(); var dx = ftarget.x - hero.x, dy = ftarget.y - hero.y, d = Math.hypot(dx, dy), step = SPEED * dt * phMul() * (performance.now() < skHasteUntil ? 1.5 : 1) * (1 + ((eqItem('outfit') || {}).bspd || 0) / 100);
       if (d <= step) { hero.x = ftarget.x; hero.y = ftarget.y; var sp = ftarget.spot, dk = ftarget.door, rv = ftarget.rev; ftarget = null; if (hh) hh.classList.remove('walk'); updHero(); if (sp && !sp.used) { startDig(sp); } else if (dk) openDoor(dk); else if (rv) doRevive(rv); }
       else { hero.x += dx / d * step; hero.y += dy / d * step; if (Math.abs(dx) > 3) hero.dir = dx > 0 ? 1 : -1; moved = true; if (hh) hh.classList.add('walk'); updHero(); }
     }
