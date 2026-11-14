@@ -4739,7 +4739,7 @@ var TB = {
 
 
   /* ----- ピコピコハンマー対戦場（ゲームセンター内・最大10人）v182 ----- */
-  var inPiko = false, PK_W = 1000, PK_H = 800, PH = { on: false, live: false, lives: 3, down: false, helmUntil: 0, stunUntil: 0, dashUntil: 0, cd: { sw: 0, dash: 0, warp: 0, helm: 0 }, alive: {}, lv: {}, over: false, seen: false, tk: 0, cnt: 0 };
+  var inPiko = false, PK_W = 1000, PK_H = 800, PH = { on: false, live: false, lives: 3, down: false, helmUntil: 0, stunUntil: 0, dashUntil: 0, cd: { sw: 0, dash: 0, warp: 0, helm: 0 }, alive: {}, lv: {}, over: false, seen: false, tk: 0, cnt: 0, can: false, cans: {}, holds: {}, hv: 0 };
   var PH_CD = { sw: 600, dash: 4000, warp: 7000, helm: 5000 };
   function phCss() {
     if ($('phCss')) return; var s = document.createElement('style'); s.id = 'phCss';
@@ -4747,10 +4747,10 @@ var TB = {
       '#phBtns{position:fixed;right:8px;bottom:96px;z-index:8000;display:none;flex-direction:column;gap:8px}#phBtns button{width:66px;height:66px;border-radius:50%;border:3px solid #ffd84a;font-size:28px;background:radial-gradient(#e2434f,#8a1020);color:#fff;font-weight:900;box-shadow:0 3px 8px rgba(0,0,0,.5);position:relative;line-height:1}#phBtns button small{display:block;font-size:10px;margin-top:2px}#phBtns button.cd{opacity:.4}#phBtns button.sw{width:84px;height:84px;font-size:38px;align-self:flex-end;background:radial-gradient(#ffe45a,#e08a00);color:#5a2a00}' +
       '#phBig{position:fixed;left:0;right:0;top:34%;text-align:center;z-index:9000;font-size:84px;font-weight:900;color:#ffe45a;text-shadow:0 4px 0 #8a1020,0 0 20px #000;pointer-events:none;display:none}' +
       '.phHm{position:absolute;transform:translate(-50%,-100%);z-index:99999;pointer-events:none;transform-origin:50% 100%;animation:phSw .3s ease-in forwards}@keyframes phSw{0%{transform:translate(-50%,-100%) rotate(-80deg)}60%{transform:translate(-50%,-100%) rotate(35deg)}100%{transform:translate(-50%,-100%) rotate(28deg);opacity:.0}}' +
-      '.phFx{position:absolute;transform:translate(-50%,-100%);z-index:99999;pointer-events:none;font-size:34px;font-weight:900;animation:phUp .9s ease-out forwards}@keyframes phUp{0%{opacity:1;margin-top:0}100%{opacity:0;margin-top:-50px}}.phHelmet{position:absolute;transform:translate(-50%,-100%);z-index:99998;font-size:34px;pointer-events:none}';
+      '.phFx{position:absolute;transform:translate(-50%,-100%);z-index:99999;pointer-events:none;font-size:34px;font-weight:900;animation:phUp .9s ease-out forwards}@keyframes phUp{0%{opacity:1;margin-top:0}100%{opacity:0;margin-top:-50px}}.phCan{position:absolute;transform:translate(-50%,-100%);font-size:30px;z-index:50;pointer-events:none}.phHold{position:absolute;pointer-events:none;transform-origin:50% 100%}#phBtns2{position:fixed;left:8px;bottom:96px;z-index:8000;display:none;flex-direction:column;gap:8px}#phBtns2 button{width:58px;height:58px;border-radius:50%;border:3px solid #fff;font-size:24px;background:radial-gradient(#5a8cff,#1f3fa0);color:#fff;font-weight:900;box-shadow:0 3px 8px rgba(0,0,0,.5);line-height:1}#phBtns2 button small{display:block;font-size:9px;margin-top:2px}#phQ{position:fixed;left:76px;bottom:96px;z-index:8001;display:none;grid-template-columns:1fr 1fr;gap:6px;width:200px}#phQ button{padding:10px 6px;border:0;border-radius:10px;font-weight:900;font-size:14px;background:#fff;color:#1f3fa0;box-shadow:0 2px 0 #7a8fd0}.phHelmet{position:absolute;transform:translate(-50%,-100%);z-index:99998;font-size:34px;pointer-events:none}';
     document.head.appendChild(s);
     var d = document.createElement('div');
-    d.innerHTML = '<div id="phHud"><div class="p1" id="phT"></div><br><button type="button" id="phGo">🎮 対戦スタート</button></div><div id="phBig"></div><div id="phBtns"><button type="button" class="sw" id="phSw">🔨<small>たたく</small></button><button type="button" id="phHe">🛡<small>ヘルメット</small></button><button type="button" id="phDa">⚡<small>ダッシュ</small></button><button type="button" id="phWa">🌀<small>ワープ</small></button></div>';
+    d.innerHTML = '<div id="phHud"><div class="p1" id="phT"></div><br><button type="button" id="phGo">🎮 対戦スタート</button></div><div id="phBig"></div><div id="phBtns2"><button type="button" id="phTa">🎭<small>挑発</small></button><button type="button" id="phQc">💬<small>ひとこと</small></button></div><div id="phQ"><button type="button" data-q="いくぞ！">いくぞ！</button><button type="button" data-q="覚悟！">覚悟！</button><button type="button" data-q="ナイス！">ナイス！</button><button type="button" data-q="待って〜">待って〜</button><button type="button" data-q="まいった！">まいった！</button><button type="button" data-q="ドンマイ">ドンマイ</button></div><div id="phBtns"><button type="button" id="phTh" style="display:none">🥫<small>投げる</small></button><button type="button" class="sw" id="phSw">🔨<small>たたく</small></button><button type="button" id="phHe">🛡<small>ヘルメット</small></button><button type="button" id="phDa">⚡<small>ダッシュ</small></button><button type="button" id="phWa">🌀<small>ワープ</small></button></div>';
     while (d.firstChild) document.body.appendChild(d.firstChild);
   }
   function phHammerSVG(w) {
@@ -4783,17 +4783,48 @@ var TB = {
     buildPiko(); show('field'); closeSheets(); digUI(false); BGM.set('town'); gearUi();
     $('fhud').innerHTML = ''; $('tlog').innerHTML = '';
     PH.on = true; PH.live = false; PH.over = false; PH.seen = false; PH.lives = 3; PH.down = false; PH.alive = {}; PH.lv = {};
-    $('phHud').style.display = 'block'; $('phBtns').style.display = 'none'; phHud();
+    $('phHud').style.display = 'block'; $('phBtns').style.display = 'none'; $('phBtns2').style.display = 'flex'; phHud();
     var me = { id: myMid, n: (player.avatar && player.avatar.name) || '', av: player.avatar };
     RT.join('piko', me, { onMsg: rtMsg, onPeers: phPeers }, function (ok) { if (ok) { rtOn = true; rtLast = 0; rtSend(posMsg()); } else toast('つながらへんかった。ひとりで練習になるで'); });
     clearInterval(PH.tk); PH.tk = setInterval(phTick, 200);
   }
-  function phStop() { PH.on = false; PH.live = false; clearInterval(PH.tk); inPiko = false; var a = $('phHud'); if (a) a.style.display = 'none'; a = $('phBtns'); if (a) a.style.display = 'none'; a = $('phBig'); if (a) a.style.display = 'none'; var h = $('hero2'); if (h) h.classList.remove('dn'); }
+  function phStop() { PH.on = false; PH.live = false; clearInterval(PH.tk); inPiko = false; phCansClear(); var q0 = $('phBtns2'); if (q0) q0.style.display = 'none'; q0 = $('phQ'); if (q0) q0.style.display = 'none'; var a = $('phHud'); if (a) a.style.display = 'none'; a = $('phBtns'); if (a) a.style.display = 'none'; a = $('phBig'); if (a) a.style.display = 'none'; var h = $('hero2'); if (h) h.classList.remove('dn'); }
   function phPeers(list) {
     if (!PH.seen) { PH.seen = true; if (list.length >= 10) { toast('満員（10人）やった。また後でな'); setTimeout(function () { openArcRoom(); }, 300); return; } }
     rtPeers(list);
     if (PH.live) Object.keys(PH.alive).forEach(function (id) { if (id !== myMid && !peers[id]) { delete PH.alive[id]; } }); phCheckEnd(); phHud();
   }
+
+  function phRng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
+  function phCanAdd(id, x, y) { if (PH.cans[id]) return; var e = document.createElement('div'); e.className = 'phCan'; e.textContent = '🥫'; e.style.left = x + 'px'; e.style.top = y + 'px'; e.style.zIndex = Math.round(y); $('world').appendChild(e); PH.cans[id] = { x: x, y: y, el: e }; }
+  function phCanDel(id) { var c = PH.cans[id]; if (c) { c.el.remove(); delete PH.cans[id]; } }
+  function phCansClear() { Object.keys(PH.cans).forEach(phCanDel); Object.keys(PH.holds).forEach(function (k) { PH.holds[k].remove(); }); PH.holds = {}; clearInterval(PH.hv); PH.can = false; var t = $('phTh'); if (t) t.style.display = 'none'; }
+  function phHoldsStart() {
+    clearInterval(PH.hv);
+    PH.hv = setInterval(function () {
+      Object.keys(PH.alive).forEach(function (id) {
+        var p = phPosOf(id); if (!p) return; var e = PH.holds[id]; if (!e) { e = document.createElement('div'); e.className = 'phHold'; e.innerHTML = phHammerSVG(30); $('world').appendChild(e); PH.holds[id] = e; }
+        var dir = id === myMid ? hero.dir : (peers[id] ? peers[id].dir : 1); e.style.left = (p.x + dir * 22) + 'px'; e.style.top = (p.y - 26) + 'px'; e.style.zIndex = Math.round(p.y) + 1; e.style.transform = 'translate(-50%,-100%) rotate(' + (dir * 20) + 'deg)';
+      });
+      Object.keys(PH.holds).forEach(function (id) { if (!PH.alive[id]) { PH.holds[id].remove(); delete PH.holds[id]; } });
+    }, 70);
+  }
+  function phPickCheck() {
+    if (!PH.live || PH.down || PH.can) return;
+    Object.keys(PH.cans).forEach(function (id) { var c = PH.cans[id]; if (PH.can || !c) return; if (Math.hypot(c.x - hero.x, c.y - hero.y) < 46) { PH.can = true; phCanDel(id); rtSend({ t: 'ph', k: 'cp', i: id }); $('phTh').style.display = ''; phFx(myMid, '🥫ゲット'); phBeep(700, 1000, 80, 'sine', .15); } });
+  }
+  function phThrowFx(x0, y0, x1, y1, id) {
+    var e = document.createElement('div'); e.className = 'phCan'; e.textContent = '🥫'; e.style.left = x0 + 'px'; e.style.top = (y0 - 40) + 'px'; e.style.zIndex = 99999; e.style.transition = 'left .4s linear, top .4s ease-in'; $('world').appendChild(e);
+    setTimeout(function () { e.style.left = x1 + 'px'; e.style.top = y1 + 'px'; }, 20); setTimeout(function () { e.remove(); if (PH.on) phCanAdd(id, x1, y1); }, 440);
+  }
+  function phThrow() {
+    if (!phCanAct() || !PH.can) return; PH.can = false; $('phTh').style.display = 'none'; var to = phNearest(150), x1, y1;
+    if (to) { x1 = peers[to].x; y1 = peers[to].y; } else { x1 = hero.x + hero.dir * 150; y1 = hero.y; }
+    var dx = x1 - hero.x, dy = y1 - hero.y, L = Math.hypot(dx, dy) || 1; if (L > 150) { x1 = hero.x + dx / L * 150; y1 = hero.y + dy / L * 150; }
+    x1 = clamp(x1, 40, WW - 40); y1 = clamp(y1, 230, WH - 40); var id = 't' + myMid + Date.now();
+    phThrowFx(hero.x, hero.y, x1, y1, id); rtSend({ t: 'ph', k: 'th', x0: Math.round(hero.x), y0: Math.round(hero.y), x1: Math.round(x1), y1: Math.round(y1), i: id });
+  }
+  function phTaunt() { var em = ['😎', '🤪', '👋', '💃', '🙌', '😜'][Math.floor(Math.random() * 6)]; phFx(myMid, em + ' かかってこい！'); rtSend({ t: 'ph', k: 'ta', e: em }); phBeep(500, 900, 120, 'triangle', .15); }
   function phCount() { return Object.keys(peers).length + 1; }
   function phHud() {
     var t = $('phT'), g = $('phGo'); if (!t) return;
@@ -4832,11 +4863,12 @@ var TB = {
     ftarget = null; updHero(); rtLast = 0; phBeep(1200, 300, 160, 'sine', .18);
   }
   function phMul() { if (!inPiko || !PH.live) return 1; if (PH.down || Date.now() < PH.stunUntil) return 0; return performance.now() < PH.dashUntil ? 2.8 : 1; }
-  function phStart(spawnIdx) {
+  function phStart(seed) {
     var ids = Object.keys(peers).concat([myMid]).sort(), n = ids.length, i = ids.indexOf(myMid), ang = (i / n) * Math.PI * 2 - Math.PI / 2;
     PH.alive = {}; PH.lv = {}; ids.forEach(function (id) { PH.alive[id] = 1; PH.lv[id] = 3; });
     PH.lives = 3; PH.down = false; PH.over = false; PH.stunUntil = 0; PH.helmUntil = 0; PH.cd = { sw: 0, dash: 0, warp: 0, helm: 0 };
     hero.x = Math.round(500 + Math.cos(ang) * 300); hero.y = Math.round(520 + Math.sin(ang) * 170); ftarget = null; updHero(); rtLast = 0; var h = $('hero2'); if (h) h.classList.remove('dn');
+    phCansClear(); var rnd = phRng(seed || 1); for (var q = 0; q < 6; q++) phCanAdd('c' + q, Math.round(120 + rnd() * 760), Math.round(300 + rnd() * 380)); phHoldsStart();
     PH.cnt = 3; phHud(); phBig('3', 900); phBeep(600, 600, 120, 'square', .2);
     var c = 3, iv = setInterval(function () { c--; if (c > 0) { phBig(String(c), 900); phBeep(600, 600, 120, 'square', .2); } else { clearInterval(iv); PH.cnt = 0; PH.live = true; phBig('スタート！🔨', 1100); phBeep(500, 1400, 260, 'square', .25); $('phBtns').style.display = 'flex'; phHud(); } }, 1000);
   }
@@ -4844,11 +4876,15 @@ var TB = {
     if (!PH.live || PH.over) return; var ids = Object.keys(PH.alive); if (ids.length > 1) return; PH.over = true; PH.live = false;
     var wid = ids[0], nm = wid === myMid ? (player.avatar && player.avatar.name) || 'あなた' : ((peers[wid] && peers[wid].n) || '誰か');
     phBig(wid === myMid ? '🏆 優勝！' : (PH.down ? '🏁 終了' : '🏁 終了'), 2600); if (wid === myMid) sfx(3); tlogAdd('🔨 結果　', nm + ' の勝ち！');
-    setTimeout(function () { $('phBtns').style.display = 'none'; PH.down = false; var h = $('hero2'); if (h) h.classList.remove('dn'); PH.alive = {}; PH.lv = {}; phHud(); rtLast = 0; }, 3200);
+    setTimeout(function () { phCansClear(); $('phBtns').style.display = 'none'; PH.down = false; var h = $('hero2'); if (h) h.classList.remove('dn'); PH.alive = {}; PH.lv = {}; phHud(); rtLast = 0; }, 3200);
   }
   function phRecv(m) {
     if (!PH.on) return;
-    if (m.k === 'go') { if (!PH.live && !PH.cnt) phStart(); return; }
+    if (m.k === 'go') { if (!PH.live && !PH.cnt) phStart(m.s); return; }
+    if (m.k === 'cp') { phCanDel(m.i); return; }
+    if (m.k === 'th') { phThrowFx(m.x0, m.y0, m.x1, m.y1, m.i); setTimeout(function () { if (PH.live && !PH.down && Math.hypot(hero.x - m.x1, hero.y - m.y1) < 50) { PH.stunUntil = Date.now() + 1500; ftarget = null; phBeep(180, 90, 160, 'sawtooth', .3); phFx(myMid, 'ゴン！'); rtSend({ t: 'ph', k: 'st', to: myMid }); } }, 430); return; }
+    if (m.k === 'st') { phBeep(180, 90, 160, 'sawtooth', .3); phFx(m.to, 'ゴン！'); return; }
+    if (m.k === 'ta') { phFx(m.f, m.e + ' かかってこい！'); return; }
     if (m.k === 'sw') {
       phSwingFx(m.f, m.to || '');
       if (m.to === myMid && PH.live && !PH.down && !PH.over) {
@@ -4865,13 +4901,15 @@ var TB = {
     if (m.k === 'hm') { phHelmShow(m.f, 2000); return; }
   }
   function phTick() {
-    if (!PH.on) return; var now = Date.now();
+    if (!PH.on) return; var now = Date.now(); phPickCheck();
     [['phSw', 'sw'], ['phHe', 'helm'], ['phDa', 'dash'], ['phWa', 'warp']].forEach(function (a) { var b = $(a[0]); if (!b) return; var left = PH.cd[a[1]] - now, on = left > 0; b.classList.toggle('cd', on); var sm = b.querySelector('small'); if (sm && a[0] !== 'phSw') sm.textContent = on ? Math.ceil(left / 1000) + '秒' : { phHe: 'ヘルメット', phDa: 'ダッシュ', phWa: 'ワープ' }[a[0]]; });
     Object.keys(peers).forEach(function (id) { var pr = peers[id]; if (!pr.el) return; var g = pr.el.querySelector('.gname'); if (!g) return; var l = PH.live ? (PH.lv[id] == null ? 3 : PH.lv[id]) : -1; var tx = (pr.n || '') + (l >= 0 ? ' ' + '❤'.repeat(Math.max(0, l)) : ''); if (g.textContent !== tx) g.textContent = tx; });
   }
   document.addEventListener('click', function (e) {
     var t = e.target && e.target.closest ? e.target.closest('button') : null; if (!t || !inPiko) return;
-    if (t.id === 'phGo') { if (phCount() < 2) { toast('2人以上で、はじめられるで'); return; } rtSend({ t: 'ph', k: 'go' }); phStart(); }
+    if (t.id === 'phGo') { if (phCount() < 2) { toast('2人以上で、はじめられるで'); return; } var sd = Date.now() % 100000; rtSend({ t: 'ph', k: 'go', s: sd }); phStart(sd); }
+    else if (t.id === 'phTh') phThrow(); else if (t.id === 'phTa') phTaunt(); else if (t.id === 'phQc') { var qq = $('phQ'); qq.style.display = qq.style.display === 'grid' ? 'none' : 'grid'; }
+    else if (t.dataset && t.dataset.q) { var tx = t.dataset.q; $('phQ').style.display = 'none'; bubble($('hero2'), tx); tlogAdd((player.avatar && player.avatar.name) || '', tx); rtSend({ t: 'chat', x: tx }); }
     else if (t.id === 'phSw') phSwing(); else if (t.id === 'phHe') phHelmet(); else if (t.id === 'phDa') phDash(); else if (t.id === 'phWa') phWarp();
   });
 
@@ -6041,7 +6079,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 182;
+  var GV = 183;
   (function () {
     var last = Date.now();
     function chk() {
