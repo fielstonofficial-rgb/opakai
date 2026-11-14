@@ -3872,6 +3872,7 @@ var TB = {
     else if (k === 'jk:rest') { sfx(2); openRest(); }
     else if (k === 'jk:piko') { sfx(2); jkDoorOpen('piko'); }
     else if (k === 'restout') { sfx(2); openLobby(); }
+    else if (k === 'jkaout') { sfx(2); openLobby(); }
     else if (k === 'lotout') { sfx(2); leaveCafe(); }
     else if (k === 'lot:entry') { sfx(2); lotEntryOpen(); }
     else if (/^lot:(up|dn)[LR]$/.test(k)) lotStair(k);
@@ -4407,7 +4408,7 @@ var TB = {
   }
   function openLobby() {
     lbCss(); lbNpcs();
-    inTown = true; inCafe = true; inPost = false; inArcRoom = false; inLib = false; inLot = false; inRest = false; inLobby = true; shared = false; curMine = null; hero.cup = ''; hero.cupS = -1; hero.lastSeat = null; hero.order = null; cafeBusy = false;
+    inTown = true; inCafe = true; inPost = false; inArcRoom = false; inLib = false; inLot = false; inRest = false; inLobby = true; inJkA = false; jkaStop(); shared = false; curMine = null; hero.cup = ''; hero.cupS = -1; hero.lastSeat = null; hero.order = null; cafeBusy = false;
     rtStop(); $('field').classList.remove('chat'); $('field').classList.add('town'); $('fTtl').textContent = '受付会場'; fz = zoomT = .8;
     buildLobby(); show('field'); closeSheets(); digUI(false); BGM.set('town'); gearUi();
     $('fhud').innerHTML = ''; $('tlog').innerHTML = '';
@@ -4416,7 +4417,7 @@ var TB = {
     RT.join('lobby', me, { onMsg: rtMsg, onPeers: rtPeers }, function (ok) { if (ok) { rtOn = true; rtLast = 0; rtSend(posMsg()); } });
     jkTimersOn();
   }
-  function lbLeave() { var was = inLobby || inRest; jkTimersOff(); inLobby = false; inRest = false; return was; }
+  function lbLeave() { var was = inLobby || inRest; jkTimersOff(); jkaStop(); inLobby = false; inRest = false; return was; }
 
   /* ----- 休憩室（椅子だけ。旧・抽選会場の3分の1の広さ） ----- */
   function restSeats() {
@@ -4443,7 +4444,7 @@ var TB = {
   }
   function openRest() {
     lbCss(); jkTimersOff();
-    inTown = true; inCafe = true; inPost = false; inArcRoom = false; inLib = false; inLot = false; inLobby = false; inRest = true; shared = false; curMine = null; hero.cup = ''; hero.cupS = -1; hero.lastSeat = null; hero.order = null; cafeBusy = false;
+    inTown = true; inCafe = true; inPost = false; inArcRoom = false; inLib = false; inLot = false; inLobby = false; inRest = true; inJkA = false; jkaStop(); shared = false; curMine = null; hero.cup = ''; hero.cupS = -1; hero.lastSeat = null; hero.order = null; cafeBusy = false;
     rtStop(); $('field').classList.remove('chat'); $('field').classList.add('town'); $('fTtl').textContent = '休憩室'; fz = zoomT = .8;
     buildRest(); show('field'); closeSheets(); digUI(false); BGM.set('town'); gearUi();
     $('fhud').innerHTML = ''; $('tlog').innerHTML = '';
@@ -4463,7 +4464,7 @@ var TB = {
     if (JK && JK.isOp) {
       var d = new Date(Date.now() + 30 * 60000); d.setSeconds(0, 0); var pad = function (n) { return ('0' + n).slice(-2); };
       var dv = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
-      h += '<div class="jkOp"><b style="color:#ffd36a">⚙ 運営：開催の設定</b><p style="margin:6px 0">スタート日時を入れてください。受付は「いますぐ」はじまり、スタートの5分前に締め切ります（6分以上あとの時刻）。</p><input type="datetime-local" id="jkStartIn" value="' + ((JK && JK.__dv) || dv) + '"><button type="button" class="jkBtn g" id="jkSetBtn">この時刻で、受付をはじめる</button><button type="button" class="jkBtn s" id="jkClearBtn">開催をやめる（受付を消す）</button></div>';
+      h += '<div class="jkOp"><b style="color:#ffd36a">⚙ 運営：開催の設定</b><p style="margin:6px 0">スタート日時を入れてください。受付は「いますぐ」はじまり、スタートの5分前に締め切ります（6分以上あとの時刻）。</p><input type="datetime-local" id="jkStartIn" value="' + ((JK && JK.__dv) || dv) + '"><label style="display:block;margin:8px 0;font-size:14px"><input type="checkbox" id="jkTestIn"> テスト進行（1ラウンド1分・受付は締切20秒前まで）</label><button type="button" class="jkBtn g" id="jkSetBtn">この時刻で、受付をはじめる</button><button type="button" class="jkBtn s" id="jkBotsBtn">🤖 ダミー30人を入れる（受付中だけ）</button><button type="button" class="jkBtn s" id="jkClearBtn">開催をやめる（受付を消す）</button></div>';
     }
     if ((JK && JK.isOp) || (player && player.gm)) h += '<button type="button" class="jkBtn s" id="jkLotGo">🎁 旧・抽選会場へ（運営専用）</button>';
     h += '<button type="button" class="jkBtn s" id="jkDeskClose">とじる</button>';
@@ -4482,11 +4483,12 @@ var TB = {
     else if (t.id === 'jkLeaveBtn') { jkApi({ action: 'jk_leave' }).then(function (j) { if (j && j.ok) { JK = j; toast('受付を取り消したで'); } else toast((j && j.message) || 'つながらへんかった'); jkPoll(); }); }
     else if (t.id === 'jkSetBtn') {
       var v = $('jkStartIn').value; if (!v) { toast('日時を入れてな'); return; }
-      jkApi({ action: 'jk_set', start_at: new Date(v).toISOString() }).then(function (j) { if (j && j.ok) { JK = j; jkOff = j.now - Date.now(); toast('受付をはじめたで'); sfx(3); } else toast((j && j.message) || '設定できへんかった'); jkPoll(); });
+      jkApi({ action: 'jk_set', start_at: new Date(v).toISOString(), test: !!($('jkTestIn') && $('jkTestIn').checked) }).then(function (j) { if (j && j.ok) { JK = j; jkOff = j.now - Date.now(); toast('受付をはじめたで'); sfx(3); } else toast((j && j.message) || '設定できへんかった'); jkPoll(); });
     }
     else if (t.id === 'jkClearBtn') { if (confirm('開催をやめて、受付をぜんぶ消す？')) jkApi({ action: 'jk_clear' }).then(function (j) { if (j && j.ok) { JK = j; toast('消したで'); } jkPoll(); }); }
+    else if (t.id === 'jkBotsBtn') { t.disabled = true; jkApi({ action: 'jk_bots', n: 30 }).then(function (j) { if (j && j.ok) { JK = j; toast('ダミーを30人入れたで（いま合計 ' + (j.count || 0) + '人）'); } else toast((j && j.message) || 'できへんかった'); jkPoll(); }); }
     else if (t.id === 'jkPracBtn') { $('jkDesk').classList.remove('on'); jkPracOpen(); }
-    else if (t.id === 'jkDoorGo') { $('jkDoor').classList.remove('on'); toast('じゃんけんの闘技場は、いま工事中。もうすぐオープンするで'); }
+    else if (t.id === 'jkDoorGo') { $('jkDoor').classList.remove('on'); sfx(2); openJkA(); }
     else if (t.id === 'jkLotGo') { $('jkDesk').classList.remove('on'); jkTimersOff(); lbLeave(); sfx(2); openLot(); }
     else if (t.id === 'jkDoorNo') $('jkDoor').classList.remove('on');
     else if (t.id === 'jkDoorDesk') { $('jkDoor').classList.remove('on'); toast('カウンターの受付のお姉さんに話しかけてな'); }
@@ -4524,6 +4526,213 @@ var TB = {
     else { PR.lose++; PR.life--; PR.msg = '<span style="font-size:64px">' + hn[me] + ' ' + hn[cp] + '</span><br>😢 負け…' + (PR.life <= 0 ? '<br>ライフがなくなった！' : ''); vib(); }
     jkPracRender();
   });
+
+
+  /* ----- 闘技場（じゃんけんバトルロワイヤル本番）v181 ----- */
+  var JA_W = 1200, JA_H = 1000, inJkA = false, jaT = 0, jaClk = 0;
+  var JA = { on: false, log: 0, players: [], me: null, ch: null, phase: 'idle', rd: -1, roundMs: 300000, startAt: 0, q: null, qT: 0, qu: [], n: 0, busy: false, again: false, first: true, sig: '', seen: '', prev: null, conf: null, count: 0, isOp: false, bsig: '' };
+  var JA_HN = ['✊', '✌️', '✋'];
+  function jkaCss() {
+    if ($('jaCss')) return; var s = document.createElement('style'); s.id = 'jaCss';
+    s.textContent = '#jkaHud{position:fixed;top:84px;left:8px;right:8px;z-index:8000;display:none;pointer-events:none;text-align:center}' +
+      '#jkaHud .jaR1{display:inline-block;max-width:100%;padding:6px 14px;border-radius:14px;background:rgba(20,8,14,.82);border:2px solid #d9b24c;color:#fff;font-size:15px;font-weight:900;box-shadow:0 3px 10px rgba(0,0,0,.4)}' +
+      '#jkaHud .jaR2{margin-top:6px;display:flex;gap:6px;justify-content:center;pointer-events:auto}#jkaHud .jaR2 button{padding:8px 12px;border:0;border-radius:12px;font-weight:900;font-size:14px;color:#241;background:linear-gradient(#ffe08a,#e3b341);box-shadow:0 2px 0 #8a6a1a}#jkaHud .jaR2 button.g{background:linear-gradient(#7dff9a,#2fbf5c);box-shadow:0 2px 0 #1a7a3a}' +
+      '.jaB{width:600px;min-width:0!important;padding:8px 18px!important}.jaB .lbBt{font-size:20px}.jaB .lbBs{font-size:26px}.jaCols{display:flex;gap:14px;text-align:left;margin-top:4px}.jaCols>div{flex:1;font-size:17px;line-height:1.4;color:#e8f6ff}.jaCols h4{margin:0 0 2px;font-size:15px;color:#ffd36a}.jaCols .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
+      '.jkChip{position:absolute;width:56px;height:34px;box-sizing:border-box;border-radius:8px;background:#fff8e6;border:2px solid #d9b24c;text-align:center;overflow:hidden;pointer-events:auto;z-index:2;cursor:pointer;line-height:1.15}.jkChip b{display:block;font-size:11px;color:#3a0f20;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:2px 2px 0}.jkChip i{font-style:normal;font-size:10px;color:#7d1226;font-weight:800}.jkChip.me{background:#ffe08a;border-color:#ff6b6b}.jkChip.dead{opacity:.45}' +
+      '#jkaRing{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:2}' +
+      '.jaRow{display:flex;align-items:center;gap:8px;padding:7px 4px;border-bottom:1px solid rgba(255,255,255,.12);font-size:15px}.jaRow .no{width:30px;text-align:right;color:#ffd36a;font-weight:900}.jaRow .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:800}.jaRow button{padding:7px 12px;border:0;border-radius:10px;font-weight:900;background:linear-gradient(#ffe08a,#e3b341);color:#241}.jaRow button:disabled{opacity:.35}.jaRow.me{background:rgba(255,224,138,.15)}' +
+      '.jkB input[type=text].jaQ{width:100%;padding:9px;border-radius:10px;border:2px solid #d9b24c;font-size:16px;box-sizing:border-box;margin:6px 0}';
+    document.head.appendChild(s);
+    var d = document.createElement('div');
+    d.innerHTML = '<div id="jkaHud"><div class="jaR1" id="jaR1"></div><div class="jaR2"><button type="button" class="g" id="jaCh">⚔ 挑戦する</button><button type="button" id="jaLs">📋 順位</button><button type="button" id="jaOp" style="display:none">🛠 運営</button></div></div>' +
+      '<div class="jkM" id="jkaDuel"><div class="jkB" id="jkaDuelB"></div></div><div class="jkM" id="jkaList"><div class="jkB" id="jkaListB"></div></div>';
+    while (d.firstChild) document.body.appendChild(d.firstChild);
+    $('jkaList').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('on'); });
+  }
+  function jkaNpcs() {
+    if (NPCS.jka_an) return;
+    NPCS.jka_an = { nm: '実況 レイナ', where: 'jka', x: 560, y: 360, av: lbRecepAv('レイナ', 2, 6, 5, 7, 7), hi: 'こんにちは、実況のレイナです！ 試合がはじまったら、勝負の様子をここでお伝えします。気になることがあれば、下のボタンから聞いてくださいね。',
+      faq: [
+        { q: 'どうやって戦うの？', k: ['戦', '挑戦', '勝負', 'やり方'], a: '試合がはじまったら、上の「⚔ 挑戦する」を押して、相手を選びます。相手が「戦う」を選んだら、グー・チョキ・パーを出して勝負です。勝ったら相手のバッジを1つ奪えます。' },
+        { q: 'ライフとバッジって？', k: ['ライフ', 'バッジ', '負け'], a: 'ライフは負けるたびに1つ減って、0になるとそのラウンドは観戦です（決勝は4つ）。バッジは順位を決める点数で、勝つと相手から1つ奪えます。バッジが多い人が勝ち抜けます。' },
+        { q: '何人まで残るの？', k: ['何人', '予選', '通過', '勝ち抜け', '決勝'], a: '1回5分を3回。第1ラウンドのあと30人、第2ラウンドのあと5人に絞られて、決勝で1位から5位まで決まります。' },
+        { q: '観戦するには？', k: ['観戦', '見る', '席'], a: '周りの観客席に座れば、観戦できます。椅子をタップしてくださいね。' }
+      ] };
+    NPCS.jka_pr = { nm: '練習係 ジャン', where: 'jka', x: 1000, y: 880, prac: true, av: lbRecepAv('ジャン', 1, 2, 1, 4, 3), hi: 'ジャンです！ 本番の前に、ここで練習していってください。コンピューター相手で、ライフ3つ。何回でもできますよ。',
+      faq: [{ q: '練習ってどんなの？', k: ['練習', 'れんしゅう'], a: '本番と同じ、ライフ3つのじゃんけんです。コンピューターが相手なので、バッジは減りません。安心して試してください。' }] };
+  }
+  function jkaSeats() {
+    SEATS = []; var r, c;
+    for (c = 0; c < 3; c++) for (r = 0; r < 7; r++) { SEATS.push({ x: 50 + c * 55, y: 420 + r * 70, d: 1 }); SEATS.push({ x: JA_W - 50 - c * 55, y: 420 + r * 70, d: 1 }); }
+    for (c = 0; c < 6; c++) { SEATS.push({ x: 250 + c * 52, y: 900, d: 1 }); SEATS.push({ x: JA_W - 250 - c * 52, y: 900, d: 1 }); }
+  }
+  function buildJkA() {
+    var w = $('world'), html = '', W = JA_W, H = JA_H; setWorld(W, H); w.classList.remove('cave'); w.style.background = '#f4efe6'; jkaSeats();
+    html += lbGround(W, H).replace('height="340" fill="url(#lbW)"', 'height="300" fill="url(#lbW)"');
+    var dc = function (svg, x, y, wd, ht, z) { html += '<div class="dc" style="left:' + x + 'px;top:' + y + 'px;width:' + wd + 'px;height:' + ht + 'px;z-index:' + Math.round(z == null ? y : z) + '">' + svg + '</div>'; };
+    var em = function (t, x, y, fs, z) { html += '<div class="cfe" style="left:' + x + 'px;top:' + y + 'px;font-size:' + fs + 'px;z-index:' + Math.round(z == null ? y : z) + '">' + t + '</div>'; };
+    html += '<svg width="' + W + '" height="' + H + '" style="position:absolute;left:0;top:0;pointer-events:none;z-index:1"><defs><radialGradient id="jaR" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#9a2038"/><stop offset=".8" stop-color="#6a1428"/><stop offset="1" stop-color="#4a0f20"/></radialGradient></defs>' +
+      '<ellipse cx="600" cy="590" rx="412" ry="272" fill="#d9b24c"/><ellipse cx="600" cy="590" rx="400" ry="260" fill="url(#jaR)"/><ellipse cx="600" cy="590" rx="320" ry="190" fill="none" stroke="rgba(255,225,150,.3)" stroke-width="3" stroke-dasharray="14 10"/>' +
+      '<text x="600" y="640" text-anchor="middle" font-size="130" fill="rgba(255,225,150,.10)">✊✌️✋</text></svg>';
+    html += '<div class="lbBoard jaB" id="jkaBoard" style="left:' + (W / 2) + 'px;top:18px"></div>';
+    [[120, 150], [1080, 150]].forEach(function (p) { html += '<div class="dc lotCh" style="left:' + p[0] + 'px;top:' + p[1] + 'px;width:130px;height:154px;z-index:90000">' + lotChandSVG() + '</div>'; });
+    em('🌴', 40, 380, 56, 380); em('🌴', W - 40, 380, 56, 380); em('🪴', 40, 960, 52, 960); em('🪴', W - 40, 960, 52, 960); em('🌷', 460, 930, 30, 930); em('🌷', 740, 930, 30, 930);
+    SEATS.forEach(function (sa) { dc(lotChairSVG(), sa.x, sa.y - 2, 50, 44, sa.y - 1); dc(lotPadSVG(), sa.x, sa.y + 8, 56, 26, sa.y + 1); });
+    html += '<div class="tlbl" style="left:' + (W / 2) + 'px;top:' + (H - 70) + 'px">🚪 受付会場へ</div>';
+    html += '<div id="jkaRing"></div>';
+    html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
+    w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
+    DOORS = [{ k: 'jkaout', x: W / 2, y: H - 20, w: 140, h: 70 }];
+    hero.x = W / 2; hero.y = H - 120; hero.dir = 1; hero.sit = null; ftarget = null; fz = zoomT;
+    $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi(); addNpcs('jka');
+  }
+  function openJkA() {
+    lbCss(); jkaCss(); jkaNpcs(); jkTimersOff();
+    inTown = true; inCafe = true; inPost = false; inArcRoom = false; inLib = false; inLot = false; inLobby = false; inRest = true; inJkA = true; shared = false; curMine = null; hero.cup = ''; hero.cupS = -1; hero.lastSeat = null; hero.order = null; cafeBusy = false;
+    rtStop(); $('field').classList.remove('chat'); $('field').classList.add('town'); $('fTtl').textContent = '闘技場'; fz = zoomT = .7;
+    buildJkA(); show('field'); closeSheets(); digUI(false); BGM.set('town'); gearUi();
+    $('fhud').innerHTML = ''; $('tlog').innerHTML = '';
+    jkaStart();
+  }
+  function jkaStart() {
+    jkaStop(); inJkA = true; JA.on = true; JA.log = 0; JA.players = []; JA.ch = null; JA.n = 0; JA.first = true; JA.sig = ''; JA.seen = ''; JA.prev = null; JA.conf = null; JA.qu = []; JA.me = null; JA.phase = 'idle'; JA.bsig = '';
+    $('jkaHud').style.display = 'block'; jkaHud(); jkaBoard();
+    jkaSync(); jaClk = setInterval(jkaClock, 1000);
+  }
+  function jkaStop() {
+    JA.on = false; clearTimeout(jaT); clearInterval(jaClk); jaT = 0; jaClk = 0; inJkA = false;
+    var h = $('jkaHud'); if (h) h.style.display = 'none'; ['jkaDuel', 'jkaList'].forEach(function (k) { var e = $(k); if (e) e.classList.remove('on'); });
+  }
+  function jkaSync() {
+    if (!JA.on) return;
+    if (JA.busy) { JA.again = true; return; }
+    JA.busy = true; var full = (JA.n++ % 3 === 0);
+    jkApi({ action: 'jk_sync', since: JA.log, full: full }).then(function (j) {
+      JA.busy = false; if (!JA.on) return;
+      if (j && j.now) { jkOff = j.now - Date.now(); jkaApply(j); }
+      else if (j && j._s === 401 && JA.n < 3) toast('ログインが切れてるかも。入り直してな');
+      clearTimeout(jaT);
+      if (JA.again) { JA.again = false; jkaSync(); return; }
+      jaT = setTimeout(jkaSync, (JA.me && JA.me.rd >= 0 && JA.phase === 'play') ? 1100 : 3000);
+    });
+  }
+  function jkaPoke() { if (!JA.on) return; clearTimeout(jaT); JA.n = 0; jkaSync(); }
+  function jkaSay(t, big) {
+    t = String(t).replace(/^📣\s*/, ''); tlogAdd('📣 実況　', t);
+    if (!JA.first) { var an = document.querySelector('.gh.npc[data-npc="jka_an"]'); if (an) bubble(an, t.slice(0, 46)); }
+    if (big) sfx(3);
+  }
+  function jkaApply(j) {
+    JA.phase = j.phase; JA.rd = j.rd; JA.roundMs = j.roundMs || 300000; JA.startAt = j.startAt || 0; JA.me = j.me || null; JA.isOp = !!j.isOp; JA.title = j.title; var qs = JSON.stringify(j.qual);
+    $('jaOp').style.display = JA.isOp || (player && player.gm) ? '' : 'none';
+    (j.log || []).forEach(function (l) { if (l.id > JA.log) JA.log = l.id; if (JA.first) jkaSay(l.txt, false); else if (l.kind === 'big') jkaSay(l.txt, true); else JA.qu.push(l.txt); });
+    if (JA.qu.length > 6) JA.qu = JA.qu.slice(-6);
+    JA.first = false;
+    if (j.players) { JA.players = j.players; JA.count = j.count; jkaRing(); if ($('jkaList').classList.contains('on')) jkaListRender(); }
+    var sg = qs + '|' + j.phase + '|' + (j.players ? JSON.stringify(j.players.slice(0, 8)) : '');
+    JA.q = j.qual; if (sg !== JA.bsig) { JA.bsig = sg; jkaBoard(); }
+    var pv = JA.prev; JA.ch = j.ch || null;
+    if (pv && pv.st === 'pending' && !JA.ch) toast(pv.mine === 'a' ? (pv.foeN + ' は回避した（か、返事がなかった）') : '時間切れで、回避になったで');
+    JA.prev = JA.ch;
+    jkaDuel(); jkaHud();
+  }
+  function jkaTimeTxt() {
+    var n = jkNow(), s = JA.startAt;
+    if (JA.phase === 'idle') return '本日のゲームは、まだ準備中やで';
+    if (JA.phase === 'soon') return '受付まで もうすぐ';
+    if (JA.phase === 'entry') return '🟢 受付中（スタート ' + jkClock(s) + '）';
+    if (JA.phase === 'countdown') return '⏳ スタートまで あと ' + jkFmt(s - n);
+    if (JA.phase === 'done') return '🏁 ゲーム終了';
+    var end = s + (JA.rd + 1) * JA.roundMs; return '🔥 第' + (JA.rd + 1) + 'ラウンド　残り ' + jkFmt(end - n);
+  }
+  function jkaHud() {
+    var m = JA.me, h = jkaTimeTxt();
+    if (m && m.rd >= 0) h += '　❤️×' + m.lives + '　🏅' + m.badges + (m.rank ? '　👑' + m.rank + '位' : ''); else if (m) h += '　敗退（観戦中）'; else h += '　👀 観戦中';
+    $('jaR1').textContent = h;
+  }
+  function jkaClock() {
+    if (!JA.on) return; jkaHud();
+    if (JA.qu.length && Date.now() - JA.qT > 2600) { JA.qT = Date.now(); jkaSay(JA.qu.shift(), false); }
+    var c = JA.ch, e = $('jaCd'); if (c && c.until && e) e.textContent = '残り ' + Math.max(0, Math.ceil((c.until - jkNow()) / 1000)) + '秒';
+  }
+  function jkaBoard() {
+    var b = $('jkaBoard'); if (!b) return; var q = JA.q, L = JA.players, h = '<div class="lbBt">🏟 じゃんけん バトルロワイヤル</div><div class="lbBs ' + (JA.phase === 'play' ? 'play' : JA.phase === 'entry' ? 'entry' : '') + '">' + esc(jkaTimeTxt()) + '</div>';
+    if (q && q.final && q.final.length) {
+      h += '<div class="jaCols"><div style="flex:1"><h4>🏆 最終順位</h4>' + q.final.map(function (x) { return '<div class="nm">' + x.rank + '位　' + esc(x.name) + '　🏅' + x.badges + '</div>'; }).join('') + '</div></div>';
+    } else {
+      var top = L.slice(0, 7).map(function (x, i) { return '<div class="nm">' + (i + 1) + ' ' + esc(x.n) + '　🏅' + x.b + '</div>'; }).join('') || '<div class="nm">（まだいません）</div>';
+      var ql = q && q.k >= 1 ? '<h4>✅ 第' + q.k + 'ラウンド通過（' + q.n + '人）</h4><div style="font-size:14px">' + esc(q.names.slice(0, 14).join('、')) + (q.names.length > 14 ? ' ほか' : '') + '</div>' : '<h4>✅ 勝ち抜け</h4><div style="font-size:14px">第1ラウンド後に30人、第2ラウンド後に5人</div>';
+      h += '<div class="jaCols"><div><h4>🏅 バッジ上位</h4>' + top + '</div><div>' + ql + '</div></div>';
+    }
+    b.innerHTML = h;
+  }
+  function jkaRing() {
+    var r = $('jkaRing'); if (!r) return;
+    var L = JA.players.slice().sort(function (a, b) { return a.id < b.id ? -1 : 1; }), n = L.length, rows = Math.max(1, Math.ceil(n / 10)), pitch = Math.min(38, 380 / rows), y0 = 590 - (rows - 1) * pitch / 2 - 17, h = '', i;
+    for (i = 0; i < n; i++) {
+      var x = L[i], col = i % 10, row = Math.floor(i / 10), mine = (x.id === myMid);
+      h += '<div class="jkChip' + (mine ? ' me' : '') + (x.l <= 0 ? ' dead' : '') + '" data-id="' + x.id + '" style="left:' + (300 + col * 60) + 'px;top:' + Math.round(y0 + row * pitch) + 'px"><b>' + (x.k ? '👑' : '') + esc(x.n) + '</b><i>🏅' + x.b + ' ❤' + x.l + '</i></div>';
+    }
+    r.innerHTML = h;
+  }
+  function jkaCanPlay() { return JA.phase === 'play' && JA.me && JA.me.rd >= 0 && JA.me.lives > 0; }
+  function jkaListRender() {
+    var q = ($('jaQ') && $('jaQ').value || '').trim(), L = JA.players.filter(function (x) { return !q || x.n.indexOf(q) >= 0; }), can = jkaCanPlay(), keep = $('jaQ') ? $('jaQ').value : '';
+    var h = '<h3>📋 参加者（バッジ順）</h3><div class="jkS" style="font-size:14px">' + esc(jkaTimeTxt()) + '<br>' + (can ? '相手を選んで「挑戦」！' : (JA.me ? (JA.phase === 'play' ? '今は戦えないで（ライフ0か、敗退）' : '試合がはじまったら、挑戦できるで') : '観戦中は、挑戦できへんで')) + '</div><input type="text" class="jaQ" id="jaQ" placeholder="名前でさがす" value="' + esc(keep) + '">';
+    L.forEach(function (x, i) {
+      var me = x.id === myMid, ok = can && !me && x.l > 0 && x.b >= 1;
+      h += '<div class="jaRow' + (me ? ' me' : '') + '"><span class="no">' + (x.k ? '👑' + x.k : (JA.players.indexOf(x) + 1)) + '</span><span class="nm">' + esc(x.n) + (me ? '（自分）' : '') + '</span><span>🏅' + x.b + ' ❤' + x.l + '</span><button type="button" data-jch="' + x.id + '"' + (ok ? '' : ' disabled') + '>⚔</button></div>';
+    });
+    if (!L.length) h += '<p style="text-align:center">まだ誰もいません</p>';
+    h += '<button type="button" class="jkBtn s" id="jaListClose">とじる</button>';
+    $('jkaListB').innerHTML = h; var inp = $('jaQ'); if (inp && keep) { inp.focus(); inp.setSelectionRange(keep.length, keep.length); }
+  }
+  function jkaConfirm(id) {
+    var x = null; JA.players.forEach(function (p) { if (p.id === id) x = p; }); if (!x) return;
+    if (!jkaCanPlay()) { toast(JA.me ? '今は戦えないで' : '観戦中は挑戦できへんで'); return; }
+    JA.conf = id; $('jkaList').classList.remove('on');
+    $('jkaDuelB').innerHTML = '<h3>⚔ 挑戦する？</h3><div class="jkS"><b>' + esc(x.n) + '</b><br>🏅' + x.b + '　❤️×' + x.l + '</div><button type="button" class="jkBtn g" id="jaGo">挑戦する！</button><button type="button" class="jkBtn s" id="jaNo">やめる</button>';
+    $('jkaDuel').classList.add('on');
+  }
+  function jkaDuel() {
+    var c = JA.ch, el = $('jkaDuel'), b = $('jkaDuelB'); if (JA.conf) { if (c && c.st !== 'done') { JA.conf = null; } else return; }
+    if (!c) { el.classList.remove('on'); JA.sig = ''; return; }
+    if (c.st === 'done' && JA.seen === c.id) { el.classList.remove('on'); return; }
+    var sig = [c.id, c.st, c.mine, c.mh, c.draws, c.win].join('|'); if (sig === JA.sig && el.classList.contains('on')) return; var firstDone = c.st === 'done' && JA.sig.indexOf(c.id + '|done') !== 0; JA.sig = sig;
+    var h = '', i;
+    if (c.st === 'pending' && c.mine === 'b') h = '<h3>⚔ 挑戦された！</h3><div class="jkS"><b>' + esc(c.foeN) + '</b> から挑戦！<br>戦う？ 回避する？<br><span id="jaCd"></span></div><button type="button" class="jkBtn g" id="jaAcc">戦う！</button><button type="button" class="jkBtn s" id="jaAvd">回避する</button>';
+    else if (c.st === 'pending') h = '<h3>⚔ 挑戦中</h3><div class="jkS"><b>' + esc(c.foeN) + '</b> の返事を待ってるで…<br><span id="jaCd"></span></div><button type="button" class="jkBtn s" id="jaCan">取り消す</button>';
+    else if (c.st === 'accepted') {
+      h = '<h3>✊✌️✋ 勝負！</h3><div class="jkS">vs <b>' + esc(c.foeN) + '</b>' + (c.draws ? '<br>あいこ！ もう一回！' : '') + '<br><span id="jaCd"></span></div>';
+      if (c.mh == null) { h += '<div class="jkHands">'; for (i = 0; i < 3; i++) h += '<button type="button" data-jh="' + i + '">' + JA_HN[i] + '</button>'; h += '</div>'; }
+      else h += '<div class="jkRes">出した：<span style="font-size:64px">' + JA_HN[c.mh] + '</span><br>相手を待ってるで…</div>';
+    } else if (c.st === 'done') {
+      h = '<h3>⚔ 勝負の結果</h3><div class="jkRes"><span style="font-size:64px">' + JA_HN[c.mh] + ' ' + JA_HN[c.oh] + '</span><br>' + (c.win ? '🎉 勝ち！ バッジを1つ奪った🏅' : '😢 負け… ライフ-1、バッジ-1') + '</div><button type="button" class="jkBtn g" id="jaDone">OK</button>';
+      if (firstDone) { if (c.win) sfx(3); else vib(); }
+    }
+    b.innerHTML = h; el.classList.add('on'); jkaClock();
+  }
+  function jkaCall(body, after) { jkApi(body).then(function (j) { if (j && j.error && j.message) toast(j.message); else if (j && j.error === 'net') toast('つながらへんかった'); if (after) after(j); jkaPoke(); }); }
+  document.addEventListener('click', function (e) {
+    var t = e.target && e.target.closest ? e.target.closest('button,.jkChip') : null; if (!t) return;
+    if (t.classList.contains('jkChip')) { if (inJkA) jkaConfirm(t.dataset.id); return; }
+    if (!inJkA && t.id !== 'npcPrac') return;
+    var c = JA.ch;
+    if (t.id === 'jaCh') { $('jkaList').classList.add('on'); jkaListRender(); }
+    else if (t.id === 'jaLs') { $('jkaList').classList.add('on'); jkaListRender(); }
+    else if (t.id === 'jaOp') { jkDeskOpen(); }
+    else if (t.id === 'jaListClose') $('jkaList').classList.remove('on');
+    else if (t.dataset && t.dataset.jch) { if (!t.disabled) jkaConfirm(t.dataset.jch); }
+    else if (t.id === 'jaNo') { JA.conf = null; $('jkaDuel').classList.remove('on'); }
+    else if (t.id === 'jaGo') { var to = JA.conf; t.disabled = true; jkaCall({ action: 'jk_ch', to: to }, function (j) { JA.conf = null; if (!(j && j.ok)) $('jkaDuel').classList.remove('on'); else sfx(2); }); }
+    else if (t.id === 'jaAcc' && c) { t.disabled = true; jkaCall({ action: 'jk_resp', id: c.id, ok: true }); }
+    else if (t.id === 'jaAvd' && c) { t.disabled = true; jkaCall({ action: 'jk_resp', id: c.id, ok: false }); }
+    else if (t.id === 'jaCan' && c) { t.disabled = true; jkaCall({ action: 'jk_cancel', id: c.id }); }
+    else if (t.id === 'jaDone' && c) { JA.seen = c.id; $('jkaDuel').classList.remove('on'); }
+    else if (t.dataset && t.dataset.jh != null && c) { var hh = +t.dataset.jh; c.mh = hh; JA.sig = ''; jkaDuel(); jkaCall({ action: 'jk_hand', id: c.id, h: hh }); }
+    else if (t.id === 'npcPrac') { $('npc').classList.remove('on'); jkPracOpen(); }
+  });
+  document.addEventListener('input', function (e) { if (e.target && e.target.id === 'jaQ') jkaListRender(); });
 
   /* ---------- ギルド（Lv10から。申請→運営が承認→みんなが入れる。最大30人） ---------- */
   function gmsg(t) { var e = $('gBody'); if (e) { var m = document.createElement('p'); m.className = 'tiny'; m.style.color = '#ffd36a'; m.textContent = t; e.prepend(m); setTimeout(function () { m.remove(); }, 4000); } }
@@ -5689,7 +5898,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 180;
+  var GV = 181;
   (function () {
     var last = Date.now();
     function chk() {
@@ -5782,14 +5991,14 @@ var TB = {
       placeEl(e, n.x, n.y); $('world').appendChild(e);
     });
   }
-  function npcAt(wx, wy) { var r = null, bd = 62; var wh = inLobby ? 'lobby' : inLot ? 'lot' : inPlaza ? 'plaza' : (inLib ? 'lib' : (inPost ? 'post' : (inCafe ? 'cafe' : 'town'))); Object.keys(NPCS).forEach(function (k) { var n = NPCS[k]; if ((n.where || 'town') !== wh) return; var d = Math.hypot(wx - n.x, wy - (n.y - 32)); if (d < bd) { bd = d; r = k; } }); return r; }
+  function npcAt(wx, wy) { var r = null, bd = 62; var wh = inJkA ? 'jka' : inLobby ? 'lobby' : inLot ? 'lot' : inPlaza ? 'plaza' : (inLib ? 'lib' : (inPost ? 'post' : (inCafe ? 'cafe' : 'town'))); Object.keys(NPCS).forEach(function (k) { var n = NPCS[k]; if ((n.where || 'town') !== wh) return; var d = Math.hypot(wx - n.x, wy - (n.y - 32)); if (d < bd) { bd = d; r = k; } }); return r; }
   var npcCur = null;
   function npcSay(t) { $('npcSay').textContent = t; }
   function openNpc(k) {
     var n = NPCS[k]; if (!n) return; npcCur = k; sfx(2);
     $('npcN').textContent = n.nm; npcSay(n.hi); $('npcIn').value = '';
     $('npcQs').innerHTML = n.faq.map(function (f, i) { return '<button type="button" data-i="' + i + '">' + esc(f.q) + '</button>'; }).join('');
-    $('npcAct').innerHTML = n.desk ? '<button type="button" class="abtn" id="npcDesk" style="width:100%;margin-top:10px">🎟 受付・ゲームの説明・練習</button>' : n.lib ? '<button type="button" class="abtn" id="npcLib" style="width:100%;margin-top:10px">📚 本棚をひらいて しらべる</button>' : n.enter ? '<button type="button" class="abtn" id="npcEnter" style="width:100%;margin-top:10px">⚔ 闘技場に入る</button>' : (n.post ? '<button type="button" class="abtn" id="npcMail" style="width:100%;margin-top:10px">✉️ 手紙を書く</button>' : n.spar ? sparUI() : (n.drinks ? drinkUI() : (k === 'guide' ? '<button type="button" class="abtn" id="npcTut" style="width:100%;margin-top:10px">🎓 チュートリアルをもう一度（ごほうびなし）</button>' : '')));
+    $('npcAct').innerHTML = n.prac ? '<button type="button" class="abtn" id="npcPrac" style="width:100%;margin-top:10px">🎮 練習する（コンピューター相手）</button>' : n.desk ? '<button type="button" class="abtn" id="npcDesk" style="width:100%;margin-top:10px">🎟 受付・ゲームの説明・練習</button>' : n.lib ? '<button type="button" class="abtn" id="npcLib" style="width:100%;margin-top:10px">📚 本棚をひらいて しらべる</button>' : n.enter ? '<button type="button" class="abtn" id="npcEnter" style="width:100%;margin-top:10px">⚔ 闘技場に入る</button>' : (n.post ? '<button type="button" class="abtn" id="npcMail" style="width:100%;margin-top:10px">✉️ 手紙を書く</button>' : n.spar ? sparUI() : (n.drinks ? drinkUI() : (k === 'guide' ? '<button type="button" class="abtn" id="npcTut" style="width:100%;margin-top:10px">🎓 チュートリアルをもう一度（ごほうびなし）</button>' : '')));
     if (n.spar) sparInfo();
     $('npc').classList.add('on');
   }
