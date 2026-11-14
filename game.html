@@ -1390,7 +1390,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
   try { var mkq = (location.search.match(/[?&]mk=([A-Za-z0-9-]+)/) || [])[1]; if (mkq) {
     fetch('https://fxkahiastkklxduecrhq.supabase.co/functions/v1/opa-room', { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'join', code: mkq }) })
       .then(function (r) { return r.json(); }).then(function (j) {
-        if (j && j.token) { LSset('opa_token', j.token); if (LSget('opa_is_master') === '1') { LSset('opa_token_gen', j.token); LSset('opa_gm_off', '1'); } alert((j.nickname || 'アカウント') + 'で入れたで'); }
+        if (j && j.token) { if (LSget('opa_is_master') === '1') { LSset('opa_token_gen', j.token); LSset('opa_gm_off', '1'); } else { LSset('opa_token', j.token); } alert((j.nickname || 'アカウント') + 'で入れたで'); }
         else alert((j && j.message) || 'このリンクは使えへんかった（使用済みか期限切れ）');
         location.replace(location.pathname);
       }).catch(function () { alert('つながらへんかった。もう一回リンクを開いてな'); });
@@ -5451,7 +5451,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 173;
+  var GV = 174;
   (function () {
     var last = Date.now();
     function chk() {
