@@ -3907,7 +3907,6 @@ var TB = {
     SEATS = [];
     var r, c;
     for (r = 0; r < 10; r++) for (c = 0; c < 8; c++) { SEATS.push({ x: 300 + c * 80, y: 560 + r * 80, d: 1 }); SEATS.push({ x: 1140 + c * 80, y: 560 + r * 80, d: 1 }); }
-    for (r = 0; r < 11; r++) { SEATS.push({ x: 70, y: 500 + r * 80, d: 1 }, { x: 150, y: 500 + r * 80, d: 1 }, { x: LOT_W - 150, y: 500 + r * 80, d: 1 }, { x: LOT_W - 70, y: 500 + r * 80, d: 1 }); }
   }
   function lotChairSVG() {
     return '<svg viewBox="0 0 50 44"><path d="M5 42V14Q5 4 25 4T45 14V42Z" fill="#8c1b2c" stroke="#d9b24c" stroke-width="2.4"/><path d="M13 38V16Q13 11 25 11T37 16V38Z" fill="#b8263d"/></svg>';
@@ -3992,6 +3991,13 @@ var TB = {
     dc(lotRecepSVG(), 525, 346, 170, 130, 346); lb('🎟 受付機', 525, 214);
     html += '<div class="dc" id="lotMach" style="left:1330px;top:352px;width:420px;height:190px;z-index:352">' + lotMachSVG() + '</div>'; lb('🎰 抽選機', 1330, 150);
     em('🌹', 860, 336, 44, 337); em('🌹', 1140, 336, 44, 337); em('🏆', 1620, 330, 40, 331); em('🪴', 1700, 520, 54, 520); em('🪴', 300, 420, 54, 420);
+    // 両サイド：噴水・植物・花・街灯で飾る（元の2階席のあと）
+    [110, W - 110].forEach(function (cx, side) {
+      [[640, 170, 145], [1040, 190, 162], [1440, 170, 145]].forEach(function (f) { dc(townSVG('fount'), cx, f[0] + 90, f[1], f[2], f[0] + 90); });
+      [520, 860, 1240, 1600].forEach(function (y, i) { em(['🌴', '🌺', '🪴', '🌴'][i], cx - (side ? -52 : 52), y, 52, y); em(['🪴', '🌷', '🌴', '🌺'][i], cx + (side ? -52 : 52), y + 24, 46, y + 24); });
+      [450, 800, 1180, 1520].forEach(function (y) { html += '<div class="dc" style="left:' + cx + 'px;top:' + y + 'px;width:210px;height:90px;z-index:' + y + ';pointer-events:none"><svg viewBox="0 0 210 90"><ellipse cx="105" cy="50" rx="100" ry="30" fill="rgba(60,150,90,.35)"/><ellipse cx="105" cy="50" rx="78" ry="20" fill="rgba(255,236,170,.18)"/></svg></div>'; });
+      em('✨', cx, 590, 34, 591); em('✨', cx, 940, 34, 941); em('✨', cx, 1320, 34, 1321); em('🌸', cx - 70, 1100, 34, 1101); em('🌸', cx + 70, 700, 34, 701);
+    });
     // 椅子
     SEATS.forEach(function (sa) { dc(lotChairSVG(), sa.x, sa.y - 2, 50, 44, sa.y - 1); dc(lotPadSVG(), sa.x, sa.y + 8, 56, 26, sa.y + 1); });
     // 階段（左右）
@@ -4006,7 +4012,9 @@ var TB = {
   }
   function lotClamp() {
     var ox = hero.x, oy = hero.y;
-    hero.x = clamp(hero.x, 30, LOT_W - 30); hero.y = clamp(hero.y, 400, LOT_H - 24);
+    var canStage = !!((LT && LT.isOp) || (player && player.gm));
+    hero.y = clamp(hero.y, canStage ? 222 : 400, LOT_H - 24);
+    hero.x = hero.y < 392 ? clamp(hero.x, 262, LOT_W - 262) : clamp(hero.x, 30, LOT_W - 30);
     if (hero.x !== ox || hero.y !== oy) { ftarget = null; var hh = $('hero2'); if (hh) hh.classList.remove('walk'); updHero(); }
   }
   function lotStair(k) {
@@ -5439,7 +5447,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 177;
+  var GV = 178;
   (function () {
     var last = Date.now();
     function chk() {
