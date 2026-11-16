@@ -744,6 +744,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 .foe.big .fhp,.foe.boss .fhp{height:11px!important;top:-12px!important}
 #hero2.down .hb svg,.gh.dn .hb svg{transform:rotate(90deg);transform-origin:50% 88%;filter:grayscale(.75) brightness(.8)}
 #hero2.down .hb,.gh.dn .hb{animation:none !important}
+body.inPk .gh.dn::after{content:"💫 ダウン";background:rgba(90,90,110,.9)}
 .gh.dn::after{content:"💫 たすけて！タップ";position:absolute;left:50%;top:60%;transform:translateX(-50%);white-space:nowrap;font-size:12px;font-weight:800;color:#fff;background:rgba(200,40,70,.9);border-radius:10px;padding:3px 9px}
 .ftxt{position:absolute;z-index:99998;font-weight:900;font-size:22px;color:#ff5a5a;text-shadow:0 2px 3px #000,0 0 6px #000;pointer-events:none;animation:ftx .8s ease-out forwards;transform:translate(-50%,-100%)}
 .ftxt.g{color:#7dffb0}.ftxt.y{color:#ffe27a}
@@ -4467,7 +4468,7 @@ var TB = {
     if (JK && JK.isOp) {
       var d = new Date(Date.now() + 30 * 60000); d.setSeconds(0, 0); var pad = function (n) { return ('0' + n).slice(-2); };
       var dv = d.getFullYear() + '-' + pad(d.getMonth() + 1) + '-' + pad(d.getDate()) + 'T' + pad(d.getHours()) + ':' + pad(d.getMinutes());
-      h += '<div class="jkOp"><b style="color:#ffd36a">⚙ 運営：開催の設定</b><p style="margin:6px 0">スタート日時を入れてください。受付は「いますぐ」はじまり、スタートの5分前に締め切ります（6分以上あとの時刻）。</p><input type="datetime-local" id="jkStartIn" value="' + ((JK && JK.__dv) || dv) + '"><label style="display:block;margin:8px 0;font-size:14px"><input type="checkbox" id="jkTestIn"> テスト進行（1ラウンド1分・受付は締切20秒前まで）</label><button type="button" class="jkBtn g" id="jkSetBtn">この時刻で、受付をはじめる</button><button type="button" class="jkBtn s" id="jkBotsBtn">🤖 ダミー30人を入れる（受付中だけ）</button><button type="button" class="jkBtn s" id="jkClearBtn">開催をやめる（受付を消す）</button></div>';
+      h += '<div class="jkOp"><b style="color:#ffd36a">⚙ 運営：開催の設定</b><p style="margin:6px 0">スタート日時を入れてください。受付は「いますぐ」はじまり、スタートの5分前に締め切ります（6分以上あとの時刻）。</p><input type="datetime-local" id="jkStartIn" value="' + ((JK && JK.__dv) || dv) + '"><label style="display:block;margin:8px 0;font-size:14px"><input type="checkbox" id="jkTestIn"> テスト進行（1ラウンド1分・受付は締切20秒前まで）</label><button type="button" class="jkBtn g" id="jkSetBtn">この時刻で、受付をはじめる</button><button type="button" class="jkBtn g" id="jkQuickBtn">⚡ いますぐテスト開始（ダミー30人＋自分／55秒後スタート）</button><button type="button" class="jkBtn s" id="jkBotsBtn">🤖 ダミー30人を入れる（受付中だけ）</button><button type="button" class="jkBtn s" id="jkClearBtn">開催をやめる（受付を消す）</button></div>';
     }
     if ((JK && JK.isOp) || (player && player.gm)) h += '<button type="button" class="jkBtn s" id="jkLotGo">🎁 旧・抽選会場へ（運営専用）</button>';
     h += '<button type="button" class="jkBtn s" id="jkDeskClose">とじる</button>';
@@ -4490,6 +4491,15 @@ var TB = {
     }
     else if (t.id === 'jkClearBtn') { if (confirm('開催をやめて、受付をぜんぶ消す？')) jkApi({ action: 'jk_clear' }).then(function (j) { if (j && j.ok) { JK = j; toast('消したで'); } jkPoll(); }); }
     else if (t.id === 'jkBotsBtn') { t.disabled = true; jkApi({ action: 'jk_bots', n: 30 }).then(function (j) { if (j && j.ok) { JK = j; toast('ダミーを30人入れたで（いま合計 ' + (j.count || 0) + '人）'); } else toast((j && j.message) || 'できへんかった'); jkPoll(); }); }
+    else if (t.id === 'jkQuickBtn') {
+      t.disabled = true; toast('テスト開催を作ってる…');
+      jkApi({ action: 'jk_set', start_at: new Date(jkNow() + 55000).toISOString(), test: true }).then(function (j) {
+        if (!(j && j.ok)) { toast((j && j.message) || '設定できへんかった'); t.disabled = false; return; }
+        return jkApi({ action: 'jk_bots', n: 30 }).then(function () { return jkApi({ action: 'jk_enter', n: (player.avatar && player.avatar.name) || '', av: player.avatar }); }).then(function (j2) {
+          if (j2 && j2.ok) { JK = j2; jkOff = j2.now - Date.now(); toast('55秒後にスタート！「🏟 闘技場へ」で入ってな'); sfx(3); } else toast((j2 && j2.message) || '受付できへんかった'); jkPoll(); t.disabled = false;
+        });
+      });
+    }
     else if (t.id === 'jkPracBtn') { $('jkDesk').classList.remove('on'); jkPracOpen(); }
     else if (t.id === 'jkDoorGo') { $('jkDoor').classList.remove('on'); sfx(2); openJkA(); }
     else if (t.id === 'jkLotGo') { $('jkDesk').classList.remove('on'); jkTimersOff(); lbLeave(); sfx(2); openLot(); }
@@ -4539,7 +4549,7 @@ var TB = {
     if ($('jaCss')) return; var s = document.createElement('style'); s.id = 'jaCss';
     s.textContent = '#jkaHud{position:fixed;top:84px;left:8px;right:8px;z-index:8000;display:none;pointer-events:none;text-align:center}' +
       '#jkaHud .jaR1{display:inline-block;max-width:100%;padding:6px 14px;border-radius:14px;background:rgba(20,8,14,.82);border:2px solid #d9b24c;color:#fff;font-size:15px;font-weight:900;box-shadow:0 3px 10px rgba(0,0,0,.4)}' +
-      '#jkaHud .jaR2{margin-top:6px;display:flex;gap:6px;justify-content:center;pointer-events:auto}#jkaHud .jaR2 button{padding:8px 12px;border:0;border-radius:12px;font-weight:900;font-size:14px;color:#241;background:linear-gradient(#ffe08a,#e3b341);box-shadow:0 2px 0 #8a6a1a}#jkaHud .jaR2 button.g{background:linear-gradient(#7dff9a,#2fbf5c);box-shadow:0 2px 0 #1a7a3a}' +
+      '#jkaHud .jaR2{margin-top:6px;display:flex;gap:6px;justify-content:center;pointer-events:auto}#jkaHud .jaR2 button{padding:8px 12px;border:0;border-radius:12px;font-weight:900;font-size:14px;color:#241;background:linear-gradient(#ffe08a,#e3b341);box-shadow:0 2px 0 #8a6a1a}#jkaHud .jaR2 button.y{background:linear-gradient(#9fc2ff,#4a7fe0);color:#fff;box-shadow:0 2px 0 #1f3fa0}#jkaHud .jaR2 button.g{background:linear-gradient(#7dff9a,#2fbf5c);box-shadow:0 2px 0 #1a7a3a}' +
       '.jaB{width:600px;min-width:0!important;padding:8px 18px!important}.jaB .lbBt{font-size:20px}.jaB .lbBs{font-size:26px}.jaCols{display:flex;gap:14px;text-align:left;margin-top:4px}.jaCols>div{flex:1;font-size:17px;line-height:1.4;color:#e8f6ff}.jaCols h4{margin:0 0 2px;font-size:15px;color:#ffd36a}.jaCols .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
       '.jkChip{position:absolute;width:56px;height:34px;box-sizing:border-box;border-radius:8px;background:#fff8e6;border:2px solid #d9b24c;text-align:center;overflow:hidden;pointer-events:auto;z-index:2;cursor:pointer;line-height:1.15}.jkChip b{display:block;font-size:11px;color:#3a0f20;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:2px 2px 0}.jkChip i{font-style:normal;font-size:10px;color:#7d1226;font-weight:800}.jkChip.me{background:#ffe08a;border-color:#ff6b6b}.jkChip.dead{opacity:.45}' +
       '#jkaRing{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:2}' +
@@ -4547,7 +4557,7 @@ var TB = {
       '.jkB input[type=text].jaQ{width:100%;padding:9px;border-radius:10px;border:2px solid #d9b24c;font-size:16px;box-sizing:border-box;margin:6px 0}';
     document.head.appendChild(s);
     var d = document.createElement('div');
-    d.innerHTML = '<div id="jkaHud"><div class="jaR1" id="jaR1"></div><div class="jaR2"><button type="button" class="g" id="jaCh">⚔ 挑戦する</button><button type="button" id="jaLs">📋 順位</button><button type="button" id="jaOp" style="display:none">🛠 運営</button></div></div>' +
+    d.innerHTML = '<div id="jkaHud"><div class="jaR1" id="jaR1"></div><div class="jaR2"><button type="button" class="g" id="jaCh">⚔ 挑戦する</button><button type="button" id="jaPr" class="y">🎮 練習する</button><button type="button" id="jaLs">📋 順位</button><button type="button" id="jaOp" style="display:none">🛠 運営</button></div></div>' +
       '<div class="jkM" id="jkaDuel"><div class="jkB" id="jkaDuelB"></div></div><div class="jkM" id="jkaList"><div class="jkB" id="jkaListB"></div></div>';
     while (d.firstChild) document.body.appendChild(d.firstChild);
     $('jkaList').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('on'); });
@@ -4577,7 +4587,7 @@ var TB = {
     html += '<svg width="' + W + '" height="' + H + '" style="position:absolute;left:0;top:0;pointer-events:none;z-index:1"><defs><radialGradient id="jaR" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#9a2038"/><stop offset=".8" stop-color="#6a1428"/><stop offset="1" stop-color="#4a0f20"/></radialGradient></defs>' +
       '<ellipse cx="600" cy="590" rx="412" ry="272" fill="#d9b24c"/><ellipse cx="600" cy="590" rx="400" ry="260" fill="url(#jaR)"/><ellipse cx="600" cy="590" rx="320" ry="190" fill="none" stroke="rgba(255,225,150,.3)" stroke-width="3" stroke-dasharray="14 10"/>' +
       '<text x="600" y="640" text-anchor="middle" font-size="130" fill="rgba(255,225,150,.10)">✊✌️✋</text></svg>';
-    html += '<div class="lbBoard jaB" id="jkaBoard" style="left:' + (W / 2) + 'px;top:18px"></div>';
+    html += '<div class="lbBoard jaB" id="jkaBoard" style="left:' + (W / 2) + 'px;top:196px"></div>';
     [[120, 150], [1080, 150]].forEach(function (p) { html += '<div class="dc lotCh" style="left:' + p[0] + 'px;top:' + p[1] + 'px;width:130px;height:154px;z-index:90000">' + lotChandSVG() + '</div>'; });
     em('🌴', 40, 380, 56, 380); em('🌴', W - 40, 380, 56, 380); em('🪴', 40, 960, 52, 960); em('🪴', W - 40, 960, 52, 960); em('🌷', 460, 930, 30, 930); em('🌷', 740, 930, 30, 930);
     SEATS.forEach(function (sa) { dc(lotChairSVG(), sa.x, sa.y - 2, 50, 44, sa.y - 1); dc(lotPadSVG(), sa.x, sa.y + 8, 56, 26, sa.y + 1); });
@@ -4592,7 +4602,7 @@ var TB = {
   function openJkA() {
     lbCss(); jkaCss(); jkaNpcs(); jkTimersOff();
     inTown = true; inCafe = true; inPost = false; inArcRoom = false; inLib = false; inLot = false; inLobby = false; inRest = true; inJkA = true; shared = false; curMine = null; hero.cup = ''; hero.cupS = -1; hero.lastSeat = null; hero.order = null; cafeBusy = false;
-    rtStop(); $('field').classList.remove('chat'); $('field').classList.add('town'); $('fTtl').textContent = '闘技場'; fz = zoomT = .7;
+    rtStop(); $('field').classList.remove('chat'); $('field').classList.add('town'); $('fTtl').textContent = '闘技場 v' + GV; fz = zoomT = .7;
     buildJkA(); show('field'); closeSheets(); digUI(false); BGM.set('town'); gearUi();
     $('fhud').innerHTML = ''; $('tlog').innerHTML = '';
     jkaStart();
@@ -4722,6 +4732,7 @@ var TB = {
     if (!inJkA && t.id !== 'npcPrac') return;
     var c = JA.ch;
     if (t.id === 'jaCh') { $('jkaList').classList.add('on'); jkaListRender(); }
+    else if (t.id === 'jaPr') jkPracOpen();
     else if (t.id === 'jaLs') { $('jkaList').classList.add('on'); jkaListRender(); }
     else if (t.id === 'jaOp') { jkDeskOpen(); }
     else if (t.id === 'jaListClose') $('jkaList').classList.remove('on');
@@ -4739,18 +4750,18 @@ var TB = {
 
 
   /* ----- ピコピコハンマー対戦場（ゲームセンター内・最大10人）v182 ----- */
-  var inPiko = false, PK_W = 1000, PK_H = 800, PH = { on: false, live: false, lives: 3, down: false, helmUntil: 0, stunUntil: 0, dashUntil: 0, cd: { sw: 0, dash: 0, warp: 0, helm: 0 }, alive: {}, lv: {}, over: false, seen: false, tk: 0, cnt: 0, can: false, cans: {}, holds: {}, hv: 0 };
+  var inPiko = false, PK_W = 1000, PK_H = 800, PH = { on: false, live: false, lives: 3, down: false, helmUntil: 0, stunUntil: 0, dashUntil: 0, cd: { sw: 0, dash: 0, warp: 0, helm: 0 }, alive: {}, lv: {}, over: false, seen: false, tk: 0, cnt: 0, can: false, cans: {}, holds: {}, hv: 0, prac: false, lvl: 2, bt: 0, lastSw: 0 };
   var PH_CD = { sw: 600, dash: 4000, warp: 7000, helm: 5000 };
   function phCss() {
     if ($('phCss')) return; var s = document.createElement('style'); s.id = 'phCss';
     s.textContent = '#phHud{position:fixed;top:84px;left:8px;right:8px;z-index:8000;display:none;pointer-events:none;text-align:center}#phHud .p1{display:inline-block;padding:6px 14px;border-radius:14px;background:rgba(20,8,14,.84);border:2px solid #ffd84a;color:#fff;font-size:16px;font-weight:900}#phHud button{pointer-events:auto;margin-top:6px;padding:9px 16px;border:0;border-radius:12px;font-weight:900;font-size:15px;color:#241;background:linear-gradient(#7dff9a,#2fbf5c);box-shadow:0 2px 0 #1a7a3a}' +
-      '#phBtns{position:fixed;right:8px;bottom:96px;z-index:8000;display:none;flex-direction:column;gap:8px}#phBtns button{width:66px;height:66px;border-radius:50%;border:3px solid #ffd84a;font-size:28px;background:radial-gradient(#e2434f,#8a1020);color:#fff;font-weight:900;box-shadow:0 3px 8px rgba(0,0,0,.5);position:relative;line-height:1}#phBtns button small{display:block;font-size:10px;margin-top:2px}#phBtns button.cd{opacity:.4}#phBtns button.sw{width:84px;height:84px;font-size:38px;align-self:flex-end;background:radial-gradient(#ffe45a,#e08a00);color:#5a2a00}' +
+      '#phPrBox{pointer-events:none}#phPrBox button{pointer-events:auto}#phHud button.y{background:linear-gradient(#ffe08a,#e3b341);box-shadow:0 2px 0 #8a6a1a}#phHud button.b{background:linear-gradient(#9fc2ff,#4a7fe0);box-shadow:0 2px 0 #1f3fa0}.phLvs{margin-top:6px}#phHud .phLv{margin:0 3px;padding:7px 14px;background:#fff;color:#333;box-shadow:0 2px 0 #aaa}#phHud .phLv.on{background:linear-gradient(#ff9f9f,#e0444a);color:#fff;box-shadow:0 2px 0 #8a1020}#phBtns{position:fixed;right:8px;bottom:96px;z-index:8000;display:none;flex-direction:column;gap:8px}#phBtns button{width:66px;height:66px;border-radius:50%;border:3px solid #ffd84a;font-size:28px;background:radial-gradient(#e2434f,#8a1020);color:#fff;font-weight:900;box-shadow:0 3px 8px rgba(0,0,0,.5);position:relative;line-height:1}#phBtns button small{display:block;font-size:10px;margin-top:2px}#phBtns button.cd{opacity:.4}#phBtns button.sw{width:84px;height:84px;font-size:38px;align-self:flex-end;background:radial-gradient(#ffe45a,#e08a00);color:#5a2a00}' +
       '#phBig{position:fixed;left:0;right:0;top:34%;text-align:center;z-index:9000;font-size:84px;font-weight:900;color:#ffe45a;text-shadow:0 4px 0 #8a1020,0 0 20px #000;pointer-events:none;display:none}' +
       '.phHm{position:absolute;transform:translate(-50%,-100%);z-index:99999;pointer-events:none;transform-origin:50% 100%;animation:phSw .3s ease-in forwards}@keyframes phSw{0%{transform:translate(-50%,-100%) rotate(-80deg)}60%{transform:translate(-50%,-100%) rotate(35deg)}100%{transform:translate(-50%,-100%) rotate(28deg);opacity:.0}}' +
       '.phFx{position:absolute;transform:translate(-50%,-100%);z-index:99999;pointer-events:none;font-size:34px;font-weight:900;animation:phUp .9s ease-out forwards}@keyframes phUp{0%{opacity:1;margin-top:0}100%{opacity:0;margin-top:-50px}}.phCan{position:absolute;transform:translate(-50%,-100%);font-size:30px;z-index:50;pointer-events:none}.phHold{position:absolute;pointer-events:none;transform-origin:50% 100%}#phBtns2{position:fixed;left:8px;bottom:96px;z-index:8000;display:none;flex-direction:column;gap:8px}#phBtns2 button{width:58px;height:58px;border-radius:50%;border:3px solid #fff;font-size:24px;background:radial-gradient(#5a8cff,#1f3fa0);color:#fff;font-weight:900;box-shadow:0 3px 8px rgba(0,0,0,.5);line-height:1}#phBtns2 button small{display:block;font-size:9px;margin-top:2px}#phQ{position:fixed;left:76px;bottom:96px;z-index:8001;display:none;grid-template-columns:1fr 1fr;gap:6px;width:200px}#phQ button{padding:10px 6px;border:0;border-radius:10px;font-weight:900;font-size:14px;background:#fff;color:#1f3fa0;box-shadow:0 2px 0 #7a8fd0}.phHelmet{position:absolute;transform:translate(-50%,-100%);z-index:99998;font-size:34px;pointer-events:none}';
     document.head.appendChild(s);
     var d = document.createElement('div');
-    d.innerHTML = '<div id="phHud"><div class="p1" id="phT"></div><br><button type="button" id="phGo">🎮 対戦スタート</button></div><div id="phBig"></div><div id="phBtns2"><button type="button" id="phTa">🎭<small>挑発</small></button><button type="button" id="phQc">💬<small>ひとこと</small></button></div><div id="phQ"><button type="button" data-q="いくぞ！">いくぞ！</button><button type="button" data-q="覚悟！">覚悟！</button><button type="button" data-q="ナイス！">ナイス！</button><button type="button" data-q="待って〜">待って〜</button><button type="button" data-q="まいった！">まいった！</button><button type="button" data-q="ドンマイ">ドンマイ</button></div><div id="phBtns"><button type="button" id="phTh" style="display:none">🥫<small>投げる</small></button><button type="button" class="sw" id="phSw">🔨<small>たたく</small></button><button type="button" id="phHe">🛡<small>ヘルメット</small></button><button type="button" id="phDa">⚡<small>ダッシュ</small></button><button type="button" id="phWa">🌀<small>ワープ</small></button></div>';
+    d.innerHTML = '<div id="phHud"><div class="p1" id="phT"></div><br><button type="button" id="phGo">🎮 みんなで対戦スタート</button><div id="phPrBox"><div class="phLvs"><button type="button" class="phLv" data-lv="1">弱い</button><button type="button" class="phLv on" data-lv="2">普通</button><button type="button" class="phLv" data-lv="3">強い</button></div><button type="button" id="phPrGo" class="y">🤖 NPC9人と練習</button><button type="button" id="phBack" class="b">👥 みんなの部屋にもどる</button></div></div><div id="phBig"></div><div id="phBtns2"><button type="button" id="phTa">🎭<small>挑発</small></button><button type="button" id="phQc">💬<small>ひとこと</small></button></div><div id="phQ"><button type="button" data-q="いくぞ！">いくぞ！</button><button type="button" data-q="覚悟！">覚悟！</button><button type="button" data-q="ナイス！">ナイス！</button><button type="button" data-q="待って〜">待って〜</button><button type="button" data-q="まいった！">まいった！</button><button type="button" data-q="ドンマイ">ドンマイ</button></div><div id="phBtns"><button type="button" id="phTh" style="display:none">🥫<small>投げる</small></button><button type="button" class="sw" id="phSw">🔨<small>たたく</small></button><button type="button" id="phHe">🛡<small>ヘルメット</small></button><button type="button" id="phDa">⚡<small>ダッシュ</small></button><button type="button" id="phWa">🌀<small>ワープ</small></button></div>';
     while (d.firstChild) document.body.appendChild(d.firstChild);
   }
   function phHammerSVG(w) {
@@ -4779,22 +4790,95 @@ var TB = {
   function openPiko() {
     phCss(); lbLeave();
     inTown = true; inCafe = true; inPost = false; inArcRoom = false; inLib = false; inLot = false; inLobby = false; inRest = true; inJkA = false; inPiko = true; shared = false; curMine = null; hero.cup = ''; hero.cupS = -1; hero.lastSeat = null; hero.order = null; cafeBusy = false;
-    rtStop(); $('field').classList.remove('chat'); $('field').classList.add('town'); $('fTtl').textContent = 'ピコピコハンマー'; fz = zoomT = .8;
+    rtStop(); $('field').classList.remove('chat'); $('field').classList.add('town'); $('fTtl').textContent = 'ピコピコハンマー'; fz = zoomT = .8; $('fTtl').textContent = 'ピコピコハンマー v' + GV;
     buildPiko(); show('field'); closeSheets(); digUI(false); BGM.set('town'); gearUi();
     $('fhud').innerHTML = ''; $('tlog').innerHTML = '';
     PH.on = true; PH.live = false; PH.over = false; PH.seen = false; PH.lives = 3; PH.down = false; PH.alive = {}; PH.lv = {};
     $('phHud').style.display = 'block'; $('phBtns').style.display = 'none'; $('phBtns2').style.display = 'flex'; phHud();
-    var me = { id: myMid, n: (player.avatar && player.avatar.name) || '', av: player.avatar };
-    RT.join('piko', me, { onMsg: rtMsg, onPeers: phPeers }, function (ok) { if (ok) { rtOn = true; rtLast = 0; rtSend(posMsg()); } else toast('つながらへんかった。ひとりで練習になるで'); });
-    clearInterval(PH.tk); PH.tk = setInterval(phTick, 200);
+    document.body.classList.add('inPk'); PH.prac = false; phJoin();
+    clearInterval(PH.tk); PH.tk = setInterval(phTick, 200); toast('NPCと練習するなら「🤖 NPC9人と練習」を押してな（' + GV + '）');
   }
-  function phStop() { PH.on = false; PH.live = false; clearInterval(PH.tk); inPiko = false; phCansClear(); var q0 = $('phBtns2'); if (q0) q0.style.display = 'none'; q0 = $('phQ'); if (q0) q0.style.display = 'none'; var a = $('phHud'); if (a) a.style.display = 'none'; a = $('phBtns'); if (a) a.style.display = 'none'; a = $('phBig'); if (a) a.style.display = 'none'; var h = $('hero2'); if (h) h.classList.remove('dn'); }
+  function phStop() { document.body.classList.remove('inPk'); PH.on = false; PH.live = false; clearInterval(PH.tk); clearInterval(PH.bt); PH.prac = false; inPiko = false; phCansClear(); var q0 = $('phBtns2'); if (q0) q0.style.display = 'none'; q0 = $('phQ'); if (q0) q0.style.display = 'none'; var a = $('phHud'); if (a) a.style.display = 'none'; a = $('phBtns'); if (a) a.style.display = 'none'; a = $('phBig'); if (a) a.style.display = 'none'; var h = $('hero2'); if (h) h.classList.remove('dn'); }
   function phPeers(list) {
     if (!PH.seen) { PH.seen = true; if (list.length >= 10) { toast('満員（10人）やった。また後でな'); setTimeout(function () { openArcRoom(); }, 300); return; } }
     rtPeers(list);
     if (PH.live) Object.keys(PH.alive).forEach(function (id) { if (id !== myMid && !peers[id]) { delete PH.alive[id]; } }); phCheckEnd(); phHud();
   }
 
+
+  function phJoin() {
+    var me = { id: myMid, n: (player.avatar && player.avatar.name) || '', av: player.avatar }; PH.seen = false;
+    RT.join('piko', me, { onMsg: rtMsg, onPeers: phPeers }, function (ok) { if (ok) { rtOn = true; rtLast = 0; rtSend(posMsg()); } else toast('つながらへんかった。NPC練習はできるで'); });
+  }
+  function phHitMe(from) {
+    if (!(PH.live && !PH.down && !PH.over)) return; var a = peers[from]; if (!a || Math.hypot(a.x - hero.x, a.y - hero.y) > 170) return;
+    if (Date.now() < PH.helmUntil) { phBeep(220, 180, 120, 'triangle', .3); phFx(myMid, 'ガキン！'); rtSend({ t: 'ph', k: 'blk', to: myMid }); return; }
+    PH.lives--; PH.stunUntil = Date.now() + 350; phPico(); phFx(myMid, 'ピコ！'); vib();
+    if (PH.lives <= 0) { PH.down = true; PH.lives = 0; delete PH.alive[myMid]; var h = $('hero2'); if (h) h.classList.add('dn'); ftarget = null; bubble($('hero2'), 'やられた…'); }
+    rtSend({ t: 'ph', k: 'hit', to: myMid, l: PH.lives }); rtLast = 0; phHud(); phCheckEnd();
+  }
+  /* ---- NPC練習（弱い・普通・強い） ---- */
+  var PH_BL = { 1: { spd: .55, think: 750, swcd: 1600, aim: .6, react: 0, dash: 0, warp: 0, can: 0 }, 2: { spd: .82, think: 380, swcd: 1050, aim: .85, react: .3, dash: .35, warp: 0, can: .6 }, 3: { spd: 1.05, think: 130, swcd: 640, aim: 1, react: .92, dash: 1, warp: 1, can: 1 } };
+  var PH_NM = ['タロウ', 'ハナ', 'ケン', 'ミキ', 'ソウ', 'リナ', 'ダイ', 'ユキ', 'レン'];
+  function phPracStart() {
+    var lv = PH.lvl; PH.prac = true; clearInterval(PH.bt); rtStop(); rtOn = true;
+    for (var i = 0; i < 9; i++) {
+      var id = 'bot' + i, av = lbRecepAv(PH_NM[i], 1 + (i % 3), 1 + ((i * 3) % 7), 1 + ((i * 2) % 7), 1 + ((i * 5) % 7), 1 + ((i * 4) % 7));
+      var pr = peers[id] = { id: id, n: PH_NM[i], av: av, x: 500, y: 520, tx: 500, ty: 520, dir: 1, got: true, h: 100, dn: 0, st: 0, bot: true, bt: { lives: 3, cd: { sw: 0, dash: 0, warp: 0, helm: 0 }, helmUntil: 0, stunUntil: 0, dashUntil: 0, can: false, nextAt: 0 } };
+      ghostEl(pr);
+    }
+    phStart(Date.now() % 100000);
+    Object.keys(peers).forEach(function (id) { var p = peers[id]; if (p.bot) { var q = phSpawnPos(id); p.x = p.tx = q.x; p.y = p.ty = q.y; p.bt.nextAt = Date.now() + 4500; } });
+    PH.bt = setInterval(phBotTick, 100);
+  }
+  function phSpawnPos(id) { var ids = Object.keys(peers).concat([myMid]).sort(), n = ids.length, i = ids.indexOf(id), ang = (i / n) * Math.PI * 2 - Math.PI / 2; return { x: Math.round(500 + Math.cos(ang) * 300), y: Math.round(520 + Math.sin(ang) * 170) }; }
+  function phPracStop() {
+    clearInterval(PH.bt); PH.bt = 0; PH.prac = false; PH.live = false; PH.cnt = 0; phCansClear(); PH.alive = {}; PH.lv = {}; rtStop(); $('phBtns').style.display = 'none'; var h = $('hero2'); if (h) h.classList.remove('dn'); PH.down = false; phJoin(); phHud();
+  }
+  function phBotHit(id, fromId) {
+    var p = peers[id]; if (!p || !PH.alive[id]) return; var b = p.bt;
+    if (Date.now() < b.helmUntil) { phBeep(220, 180, 120, 'triangle', .3); phFx(id, 'ガキン！'); return; }
+    b.lives--; b.stunUntil = Date.now() + 350; PH.lv[id] = b.lives; p.h = Math.round(b.lives / 3 * 100); phPico(); phFx(id, 'ピコ！');
+    if (b.lives <= 0) { p.dn = 1; p.h = 0; delete PH.alive[id]; phHud(); phCheckEnd(); } phHud();
+  }
+  function phBotSwing(id, tid) {
+    var p = peers[id], b = p.bt, L = PH_BL[PH.lvl]; b.cd.sw = Date.now() + L.swcd; var t = tid === myMid ? { x: hero.x, y: hero.y } : peers[tid]; p.dir = t.x >= p.x ? 1 : -1; phSwingFx(id, tid);
+    setTimeout(function () {
+      if (!PH.live || !PH.alive[id]) return; var tt = tid === myMid ? { x: hero.x, y: hero.y } : peers[tid]; if (!tt || Math.hypot(tt.x - p.x, tt.y - p.y) > 120) return;
+      if (tid === myMid) phHitMe(id); else phBotHit(tid, id);
+    }, 140);
+  }
+  function phBotThrow(id, tid) {
+    var p = peers[id], b = p.bt; b.can = false; var t = tid === myMid ? { x: hero.x, y: hero.y } : peers[tid], dx = t.x - p.x, dy = t.y - p.y, L = Math.hypot(dx, dy) || 1, x1 = t.x, y1 = t.y; if (L > 150) { x1 = p.x + dx / L * 150; y1 = p.y + dy / L * 150; }
+    phThrowFx(p.x, p.y, x1, y1, 't' + id + Date.now());
+    setTimeout(function () {
+      if (!PH.live) return; if (Math.hypot(hero.x - x1, hero.y - y1) < 50 && !PH.down) { PH.stunUntil = Date.now() + 1500; ftarget = null; phBeep(180, 90, 160, 'sawtooth', .3); phFx(myMid, 'ゴン！'); }
+      Object.keys(peers).forEach(function (k) { var q = peers[k]; if (q.bot && k !== id && PH.alive[k] && Math.hypot(q.x - x1, q.y - y1) < 50) { q.bt.stunUntil = Date.now() + 1500; phFx(k, 'ゴン！'); } });
+    }, 430);
+  }
+  function phBotTick() {
+    if (!PH.live || !PH.prac) return; var now = Date.now(), L = PH_BL[PH.lvl], dt = .1;
+    Object.keys(peers).forEach(function (id) {
+      var p = peers[id]; if (!p.bot || !PH.alive[id]) return; var b = p.bt; if (now < b.nextAt || now < b.stunUntil) return;
+      // 缶を拾う
+      if (!b.can && L.can && Math.random() < L.can) Object.keys(PH.cans).forEach(function (cid) { var c = PH.cans[cid]; if (c && !b.can && Math.hypot(c.x - p.x, c.y - p.y) < 46) { b.can = true; phCanDel(cid); } });
+      // ターゲット
+      var best = null, bd = 1e9, cand = Object.keys(PH.alive); cand.forEach(function (k) { if (k === id) return; var q = k === myMid ? { x: hero.x, y: hero.y } : peers[k]; if (!q) return; var d = Math.hypot(q.x - p.x, q.y - p.y); if (PH.lvl === 3 && k === myMid) d *= .6; if (d < bd) { bd = d; best = k; } });
+      if (!best) return; var tg = best === myMid ? { x: hero.x, y: hero.y } : peers[best], d = Math.hypot(tg.x - p.x, tg.y - p.y);
+      // ヘルメット（叩かれそうな時）
+      if (L.react && now >= b.cd.helm && now - PH.lastSw < 520 && Math.hypot(hero.x - p.x, hero.y - p.y) < 130 && Math.random() < L.react) { b.cd.helm = now + 5000; b.helmUntil = now + 2000; phHelmShow(id, 2000); }
+      if (PH.lvl === 3 && now >= b.cd.helm && bd < 150 && Math.random() < .08) { b.cd.helm = now + 5000; b.helmUntil = now + 2000; phHelmShow(id, 2000); }
+      // 缶を投げる
+      if (b.can && d < 150 && d > 60 && Math.random() < .5) { phBotThrow(id, best); return; }
+      // ワープ・ダッシュ
+      if (L.warp && d > 280 && now >= b.cd.warp) { b.cd.warp = now + 7000; phFx(id, '🌀'); p.x = p.tx = tg.x + (tg.x > p.x ? -70 : 70); p.y = p.ty = tg.y; return; }
+      if (L.dash && d > 140 && now >= b.cd.dash && Math.random() < L.dash) { b.cd.dash = now + 4000; b.dashUntil = now + 600; phFx(id, '💨'); }
+      // 移動
+      if (d > 62) { var sp = SPEED * dt * L.spd * (now < b.dashUntil ? 2.8 : 1), nx = p.x + (tg.x - p.x) / d * sp, ny = p.y + (tg.y - p.y) / d * sp; p.x = p.tx = clamp(nx, 40, WW - 40); p.y = p.ty = clamp(ny, 240, WH - 40); p.dir = tg.x >= p.x ? 1 : -1; }
+      // 叩く
+      if (d <= 88 && now >= b.cd.sw && Math.random() < L.aim) phBotSwing(id, best);
+    });
+  }
   function phRng(seed) { return function () { seed |= 0; seed = seed + 0x6D2B79F5 | 0; var t = Math.imul(seed ^ seed >>> 15, 1 | seed); t = t + Math.imul(t ^ t >>> 7, 61 | t) ^ t; return ((t ^ t >>> 14) >>> 0) / 4294967296; }; }
   function phCanAdd(id, x, y) { if (PH.cans[id]) return; var e = document.createElement('div'); e.className = 'phCan'; e.textContent = '🥫'; e.style.left = x + 'px'; e.style.top = y + 'px'; e.style.zIndex = Math.round(y); $('world').appendChild(e); PH.cans[id] = { x: x, y: y, el: e }; }
   function phCanDel(id) { var c = PH.cans[id]; if (c) { c.el.remove(); delete PH.cans[id]; } }
@@ -4822,14 +4906,19 @@ var TB = {
     if (to) { x1 = peers[to].x; y1 = peers[to].y; } else { x1 = hero.x + hero.dir * 150; y1 = hero.y; }
     var dx = x1 - hero.x, dy = y1 - hero.y, L = Math.hypot(dx, dy) || 1; if (L > 150) { x1 = hero.x + dx / L * 150; y1 = hero.y + dy / L * 150; }
     x1 = clamp(x1, 40, WW - 40); y1 = clamp(y1, 230, WH - 40); var id = 't' + myMid + Date.now();
+    if (PH.prac) setTimeout(function () { Object.keys(peers).forEach(function (k) { var q = peers[k]; if (q.bot && PH.alive[k] && Math.hypot(q.x - x1, q.y - y1) < 50) { q.bt.stunUntil = Date.now() + 1500; phFx(k, 'ゴン！'); phBeep(180, 90, 160, 'sawtooth', .3); } }); }, 430);
     phThrowFx(hero.x, hero.y, x1, y1, id); rtSend({ t: 'ph', k: 'th', x0: Math.round(hero.x), y0: Math.round(hero.y), x1: Math.round(x1), y1: Math.round(y1), i: id });
   }
   function phTaunt() { var em = ['😎', '🤪', '👋', '💃', '🙌', '😜'][Math.floor(Math.random() * 6)]; phFx(myMid, em + ' かかってこい！'); rtSend({ t: 'ph', k: 'ta', e: em }); phBeep(500, 900, 120, 'triangle', .15); }
   function phCount() { return Object.keys(peers).length + 1; }
   function phHud() {
-    var t = $('phT'), g = $('phGo'); if (!t) return;
-    if (PH.live) { var h = ''; for (var i = 0; i < 3; i++) h += i < PH.lives ? '❤️' : '🖤'; t.textContent = h + '　残り ' + Object.keys(PH.alive).length + '人' + (PH.down ? '　（倒れた。チャットはできるで）' : ''); g.style.display = 'none'; }
-    else { t.textContent = '待機中　' + phCount() + '/10人'; g.style.display = (phCount() >= 2 && !PH.cnt) ? '' : 'none'; }
+    var t = $('phT'), g = $('phGo'); if (!t) return; var box = $('phPrBox'), nm = ['', '弱い', '普通', '強い'][PH.lvl];
+    if (PH.live) { var h = ''; for (var i = 0; i < 3; i++) h += i < PH.lives ? '❤️' : '🖤'; t.textContent = h + '　残り ' + Object.keys(PH.alive).length + '人' + (PH.prac ? '（NPC練習・' + nm + '）' : '') + (PH.down ? '　（倒れた。チャットはできるで）' : ''); g.style.display = 'none'; box.style.display = PH.down && PH.prac ? 'block' : 'none'; if (PH.down && PH.prac) { box.querySelector('.phLvs').style.display = 'none'; $('phPrGo').style.display = 'none'; $('phBack').style.display = ''; } }
+    else {
+      var busy = !!PH.cnt; t.textContent = PH.prac ? ('🤖 NPC練習　レベル：' + nm) : ('待機中　' + phCount() + '/10人'); g.style.display = (!PH.prac && phCount() >= 2 && !busy) ? '' : 'none';
+      box.style.display = busy ? 'none' : 'block'; box.querySelector('.phLvs').style.display = ''; $('phPrGo').style.display = ''; $('phPrGo').textContent = PH.prac ? '🤖 もう一回（NPC9人）' : '🤖 NPC9人と練習'; $('phBack').style.display = PH.prac ? '' : 'none';
+      [].forEach.call(box.querySelectorAll('.phLv'), function (b) { b.classList.toggle('on', +b.dataset.lv === PH.lvl); });
+    }
   }
   function phBig(txt, ms) { var e = $('phBig'); e.textContent = txt; e.style.display = 'block'; clearTimeout(e._t); e._t = setTimeout(function () { e.style.display = 'none'; }, ms || 900); }
   function phBeep(f1, f2, ms, type, vol) {
@@ -4852,7 +4941,8 @@ var TB = {
   function phSwing() {
     if (!phCanAct() || !phReady('sw')) return; phUse('sw'); var to = phNearest(120);
     if (to) { var p = peers[to]; hero.dir = p.x >= hero.x ? 1 : -1; updHero(); }
-    phSwingFx(myMid, to); rtSend({ t: 'ph', k: 'sw', to: to || '' });
+    PH.lastSw = Date.now(); phSwingFx(myMid, to); rtSend({ t: 'ph', k: 'sw', to: to || '' });
+    if (to && peers[to] && peers[to].bot) setTimeout(function () { phBotHit(to, myMid); }, 140);
   }
   function phHelmet() { if (!phCanAct() || !phReady('helm')) return; phUse('helm'); PH.helmUntil = Date.now() + 2000; phHelmShow(myMid, 2000); rtSend({ t: 'ph', k: 'hm' }); }
   function phHelmShow(id, ms) { var p = phPosOf(id); if (!p) return; var e = document.createElement('div'); e.className = 'phHelmet'; e.textContent = '⛑️'; e.style.left = p.x + 'px'; e.style.top = (p.y - 62) + 'px'; $('world').appendChild(e); var iv = setInterval(function () { var q = phPosOf(id); if (q) { e.style.left = q.x + 'px'; e.style.top = (q.y - 62) + 'px'; } }, 60); setTimeout(function () { clearInterval(iv); e.remove(); }, ms); }
@@ -4887,13 +4977,7 @@ var TB = {
     if (m.k === 'ta') { phFx(m.f, m.e + ' かかってこい！'); return; }
     if (m.k === 'sw') {
       phSwingFx(m.f, m.to || '');
-      if (m.to === myMid && PH.live && !PH.down && !PH.over) {
-        var a = peers[m.f]; if (!a || Math.hypot(a.x - hero.x, a.y - hero.y) > 170) return;
-        if (Date.now() < PH.helmUntil) { phBeep(220, 180, 120, 'triangle', .3); phFx(myMid, 'ガキン！'); rtSend({ t: 'ph', k: 'blk', to: myMid }); return; }
-        PH.lives--; PH.stunUntil = Date.now() + 350; phPico(); phFx(myMid, 'ピコ！'); vib();
-        if (PH.lives <= 0) { PH.down = true; PH.lives = 0; delete PH.alive[myMid]; var h = $('hero2'); if (h) h.classList.add('dn'); ftarget = null; bubble($('hero2'), 'やられた…'); }
-        rtSend({ t: 'ph', k: 'hit', to: myMid, l: PH.lives }); rtLast = 0; phHud(); phCheckEnd();
-      }
+      if (m.to === myMid) phHitMe(m.f);
       return;
     }
     if (m.k === 'hit') { PH.lv[m.to] = m.l; phPico(); phFx(m.to, 'ピコ！'); if (m.l <= 0) { delete PH.alive[m.to]; phCheckEnd(); } phHud(); return; }
@@ -4908,6 +4992,7 @@ var TB = {
   document.addEventListener('click', function (e) {
     var t = e.target && e.target.closest ? e.target.closest('button') : null; if (!t || !inPiko) return;
     if (t.id === 'phGo') { if (phCount() < 2) { toast('2人以上で、はじめられるで'); return; } var sd = Date.now() % 100000; rtSend({ t: 'ph', k: 'go', s: sd }); phStart(sd); }
+    else if (t.id === 'phPrGo') phPracStart(); else if (t.id === 'phBack') phPracStop(); else if (t.dataset && t.dataset.lv) { PH.lvl = +t.dataset.lv; phHud(); }
     else if (t.id === 'phTh') phThrow(); else if (t.id === 'phTa') phTaunt(); else if (t.id === 'phQc') { var qq = $('phQ'); qq.style.display = qq.style.display === 'grid' ? 'none' : 'grid'; }
     else if (t.dataset && t.dataset.q) { var tx = t.dataset.q; $('phQ').style.display = 'none'; bubble($('hero2'), tx); tlogAdd((player.avatar && player.avatar.name) || '', tx); rtSend({ t: 'chat', x: tx }); }
     else if (t.id === 'phSw') phSwing(); else if (t.id === 'phHe') phHelmet(); else if (t.id === 'phDa') phDash(); else if (t.id === 'phWa') phWarp();
@@ -6079,7 +6164,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 183;
+  var GV = 184;
   (function () {
     var last = Date.now();
     function chk() {
