@@ -1143,6 +1143,28 @@ body.admin-on .tools .adminbtn{display:inline-flex}
   #helpBtn svg text { font-size: 17px !important; }
 }
 @media (max-width: 370px) { #lineBtn span { font-size: 0 !important; } #lineBtn .lx { font-size: 9px !important; } }
+
+.trmini{display:block;margin:2px 0 0 6px;border:0;background:transparent;color:inherit;opacity:.6;font-size:11px;padding:2px 6px;border-radius:999px;cursor:pointer}
+.trmini:hover{opacity:1;background:var(--surface-2)}
+#trBtn{height:26px!important;min-width:0;padding:0 7px!important;font-size:13px}
+@media (max-width:520px){.chat-head{gap:3px!important;padding:6px 6px!important}.chat-head .fsbtn.linebtn{height:26px!important;padding:0 7px 0 4px!important;font-size:11px;gap:3px}.chat-head .chat-title{display:none}.head-actions{gap:3px!important}.head-actions .fsbtn{height:26px!important;padding:0 7px!important;font-size:11px}.head-actions .fsbtn span{display:none}.head-actions .fsbtn svg{width:13px;height:13px}}
+@media (max-width:420px){.chat-head .songbtn span{display:none}.chat-head .songbtn{padding:0 5px!important}.head-actions .fsbtn{padding:0 5px!important}.head-actions{gap:2px!important}#fsBtn{display:none!important}}
+
+.uilbar{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin:0 0 10px;position:relative;z-index:3}
+.uilbar button,.uilbar select{border:1px solid var(--line);background:var(--surface-2);color:var(--fg);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer;min-height:28px}
+.uilbar button.on{border-color:var(--gold,#c9a24a);background:color-mix(in srgb,var(--gold,#c9a24a) 22%,var(--surface-2));font-weight:700}
+#splash .uilbar{position:absolute;left:0;right:0;bottom:44px;margin:0;padding:0 12px}
+#splash .uilbar button,#splash .uilbar select{background:rgba(255,255,255,.1);color:#fff;border-color:rgba(255,255,255,.35)}
+#splash .uilbar button.on{background:rgba(255,255,255,.3)}
+#splash .uilbar select option{color:#000}
+
+.trmini{text-align:left;width:fit-content}
+html:not([lang="ja"]) .topic .theme .q::before{content:"Topic \25BE"}
+html:not([lang="ja"]) .topic.open .theme .q::before{content:"Topic \25B4"}
+html[lang="zh-CN"] .topic .theme .q::before{content:"话题 \25BE"}html[lang="zh-CN"] .topic.open .theme .q::before{content:"话题 \25B4"}
+html[lang="zh-TW"] .topic .theme .q::before{content:"話題 \25BE"}html[lang="zh-TW"] .topic.open .theme .q::before{content:"話題 \25B4"}
+html[lang="de"] .topic .theme .q::before{content:"Thema \25BE"}html[lang="de"] .topic.open .theme .q::before{content:"Thema \25B4"}
+html[lang="ko"] .topic .theme .q::before{content:"주제 \25BE"}html[lang="ko"] .topic.open .theme .q::before{content:"주제 \25B4"}
 </style>
 </head>
 <body>
@@ -1277,8 +1299,8 @@ body.admin-on .tools .adminbtn{display:inline-flex}
 <div id="trPop" hidden style="position:fixed;top:56px;right:10px;z-index:60;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:0 8px 28px rgba(0,0,0,.25);max-width:270px;font-size:13px">
   <div style="font-weight:700;margin-bottom:8px">🌐 翻訳 / Translation</div>
   <select id="trLang" style="width:100%;padding:7px;border-radius:8px;font-size:14px"></select>
-  <button class="chip" type="button" id="trTg" style="margin-top:8px">自動翻訳：ON</button>
-  <p class="fine" style="margin-top:8px">他の人の発言を、選んだ言語に訳して下に出します。Messages are translated into the language you pick. Text is sent to Google Gemini for translation.</p>
+  <button class="chip" type="button" id="trTg" style="margin-top:8px"></button>
+  <p class="fine" style="margin-top:8px">Tap “🌐 Translate” under a message to translate it into the language you pick. Turn auto-translate ON to translate everything. Text is sent to Google Gemini.<br>メッセージ下の「🌐 Translate」を押すと、選んだ言語に訳します。</p>
 </div>
 <div class="overlay" id="welcome" role="dialog" aria-modal="true" aria-labelledby="wTitle" hidden>
   <form class="welcome frame-vivid" id="welcomeForm" autocomplete="off">
@@ -1504,18 +1526,21 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
   var TR = { lang: 'ja', on: true, mem: {}, pend: {} };
   var TR_LANGS = [['ja', '日本語'], ['en', 'English'], ['zh-CN', '中文（简体）'], ['zh-TW', '中文（繁體）'], ['ko', '한국어'], ['de', 'Deutsch'], ['fr', 'Français'], ['it', 'Italiano'], ['es', 'Español'], ['pt', 'Português'], ['hi', 'हिन्दी'], ['ar', 'العربية'], ['ms', 'Bahasa Melayu'], ['ta', 'தமிழ்'], ['th', 'ไทย'], ['vi', 'Tiếng Việt'], ['id', 'Bahasa Indonesia'], ['tl', 'Filipino']];
   (function () {
-    var sv = LS.get('opa_lang'); TR.on = LS.get('opa_tr') !== '0';
+    var sv = LS.get('opa_lang'); TR.on = LS.get('opa_tr') === '1';
     if (sv) TR.lang = sv; else { var lo = String(navigator.language || 'ja').toLowerCase(), g = 'ja'; if (lo.indexOf('zh-tw') === 0 || lo.indexOf('zh-hk') === 0) g = 'zh-TW'; else if (lo.indexOf('zh') === 0) g = 'zh-CN'; else TR_LANGS.forEach(function (x) { if (lo.slice(0, 2) === x[0].slice(0, 2)) g = x[0]; }); TR.lang = g; }
   })();
   function trNeed(t) {
-    t = String(t || ''); if (!TR.on || !token || t.length < 2) return false;
+    t = String(t || ''); if (!token || t.length < 2) return false;
     if (!/[A-Za-z\u00C0-\u024F\u0370-\u1FFF\u3040-\u30FF\u3400-\u9FFF\uAC00-\uD7AF\u0600-\u06FF\u0900-\u097F\u0E00-\u0E7F]/.test(t)) return false;
     if (TR.lang === 'ja') return !/[\u3040-\u30FF]/.test(t);
     if (TR.lang === 'en') return /[^\x00-\x7F\u00C0-\u024F\u2000-\u2BFF\uD800-\uDFFF\uFE0F]/.test(t);
     return true;
   }
   function trApply(t, cb) {
-    if (!trNeed(t)) return; var k = TR.lang + '|' + t;
+    if (!trNeed(t)) return; trGo(t, cb);
+  }
+  function trGo(t, cb) {
+    var k = TR.lang + '|' + t;
     if (k in TR.mem) { if (TR.mem[k]) cb(TR.mem[k]); return; }
     if (TR.pend[k]) return; TR.pend[k] = 1;
     fetch(API.replace(/opa-room$/, 'opa-tr'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: token, to: TR.lang, text: t }) })
@@ -1525,13 +1550,80 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
   (function () {
     var sel = $('trLang'), tg = $('trTg'), pop = $('trPop');
     sel.innerHTML = TR_LANGS.map(function (x) { return '<option value="' + x[0] + '">' + x[1] + '</option>'; }).join(''); sel.value = TR.lang;
-    function lab() { tg.textContent = TR.on ? '自動翻訳：ON' : '自動翻訳：OFF'; } lab();
+    function lab() { tg.textContent = TR.on ? 'Auto-translate: ON / 自動翻訳：ON' : 'Auto-translate: OFF / 自動翻訳：OFF'; } lab();
     $('trBtn').addEventListener('click', function (e) { e.stopPropagation(); pop.hidden = !pop.hidden; });
     pop.addEventListener('click', function (e) { e.stopPropagation(); });
     document.addEventListener('click', function () { pop.hidden = true; });
-    sel.addEventListener('change', function () { TR.lang = sel.value; TR.mem = {}; LS.set('opa_lang', TR.lang); toast('Language: ' + sel.options[sel.selectedIndex].text); });
+    sel.addEventListener('change', function () { setLang(sel.value); toast('Language: ' + sel.options[sel.selectedIndex].text); });
     tg.addEventListener('click', function () { TR.on = !TR.on; LS.set('opa_tr', TR.on ? '1' : '0'); lab(); });
   })();
+  /* ---- 🌐 画面の言語：日本語が元。English/中文/Deutsch/한국어 は画面の文字を入れ替える。それ以外は英語表示＋チャット翻訳先だけ変わる ---- */
+  var I18N = {"オパール会議室": ["Opal Room", "蛋白石会议室", "蛋白石會議室", "Opal-Raum", "오팔 회의실"], "（オパ会）": ["(Opa-kai)", "（蛋白石会）", "（蛋白石會）", "(Opa-kai)", "(오파카이)"], "フランとアロンのいる、おしゃべりの部屋": ["A chat room with Furan and Aron", "有Furan和Aron在的聊天室", "有Furan和Aron在的聊天室", "Ein Chatraum mit Furan und Aron", "후란과 아론이 있는 수다방"], "わからん": ["Unsure", "不知道", "不知道", "Unklar", "모르겠어"], "ニックネーム": ["Nickname", "昵称", "暱稱", "Spitzname", "닉네임"], "設定": ["Settings", "设置", "設定", "Einstellungen", "설정"], "本日のテーマ": ["Today's topic", "今日话题", "今日話題", "Thema des Tages", "오늘의 주제"], "アンケート": ["Poll", "投票", "投票", "Umfrage", "설문"], "あそびかた": ["How to play", "玩法", "玩法", "Anleitung", "이용 방법"], "2人とも呼ぶと、ケンカしながら答えるよ": ["Call both and they will answer while bickering", "同时叫两只猫，它们会一边吵架一边回答", "同時叫兩隻貓，牠們會一邊吵架一邊回答", "Ruft ihr beide, antworten sie zankend", "둘 다 부르면 티격태격하며 대답해요"], "「オパールの種類」も、聞いたら教えてくれるよ": ["Ask them about \"types of opal\" too", "也可以问它们“蛋白石的种类”", "也可以問牠們「蛋白石的種類」", "Fragt auch nach „Opalarten“", "“오팔 종류”도 물어보면 알려줘요"], "名前を呼ばなければ、お客さん同士の会話になるよ": ["If you don't call a name, it's a chat between guests", "不叫名字的话，就是客人之间的对话", "不叫名字的話，就是客人之間的對話", "Ohne Namen ist es ein Gespräch unter Gästen", "이름을 부르지 않으면 손님끼리의 대화예요"], "詳細": ["Details", "详情", "詳情", "Details", "상세"], "公式": ["Official", "官方", "官方", "Offiziell", "공식"], "音楽": ["Music", "音乐", "音樂", "Musik", "음악"], "ゲーム": ["Game", "游戏", "遊戲", "Spiel", "게임"], "AMON オパ会": ["AMON Opal Club", "AMON 蛋白石会", "AMON 蛋白石會", "AMON Opal-Club", "AMON 오팔 모임"], "全画面": ["Full screen", "全屏", "全螢幕", "Vollbild", "전체 화면"], "いま、部屋にいる人": ["People in the room now", "当前在房间里的人", "目前在房間裡的人", "Gerade im Raum", "지금 방에 있는 사람"], "いま、部屋にいる人です（90秒以内に動きがあった人）。": ["People active within the last 90 seconds.", "最近90秒内有动作的人。", "最近90秒內有動作的人。", "Personen, die in den letzten 90 Sekunden aktiv waren.", "최근 90초 이내에 활동한 사람입니다."], "ライブ配信中": ["Live now", "直播中", "直播中", "Live", "라이브 방송 중"], "映像を閉じる": ["Close video", "关闭视频", "關閉影片", "Video schließen", "영상 닫기"], "音が出ないときは、映像の🔊をタップしてな。": ["No sound? Tap 🔊 on the video.", "没有声音的话，请点视频上的🔊。", "沒有聲音的話，請點影片上的🔊。", "Kein Ton? Tippe auf 🔊 im Video.", "소리가 안 나면 영상의 🔊를 눌러주세요."], "ログインしていません：みんなの会話を、見るだけ": ["Not logged in: view-only", "未登录：只能查看大家的对话", "未登入：僅能查看大家的對話", "Nicht angemeldet: nur lesen", "로그인 안 됨: 보기만 가능"], "ログインする": ["Log in", "登录", "登入", "Anmelden", "로그인"], "送る": ["Send", "发送", "發送", "Senden", "보내기"], "お金や住所などの個人情報は、書かないでね。": ["Please don't write personal information such as money or your address.", "请不要写金钱或住址等个人信息。", "請不要寫金錢或住址等個人資訊。", "Bitte keine persönlichen Daten wie Geld- oder Adressangaben schreiben.", "돈이나 주소 같은 개인정보는 적지 말아 주세요."], "オパール好きが集まる、小さな会議室": ["A small room for opal lovers", "蛋白石爱好者聚集的小会议室", "蛋白石愛好者聚集的小會議室", "Ein kleiner Raum für Opal-Liebhaber", "오팔을 좋아하는 사람들이 모이는 작은 회의실"], "会議室ログイン画面へ": ["To the login screen", "前往登录页面", "前往登入頁面", "Zur Anmeldung", "로그인 화면으로"], "オパール会議室へ、ようこそ": ["Welcome to the Opal Room", "欢迎来到蛋白石会议室", "歡迎來到蛋白石會議室", "Willkommen im Opal-Raum", "오팔 회의실에 오신 것을 환영합니다"], "招待コードとニックネームを入れたら、すぐ入れます。LINEの名前は出ません。": ["Enter an invite code and a nickname to join right away. Your LINE name is not shown.", "输入邀请码和昵称就能马上进入。不会显示LINE名称。", "輸入邀請碼和暱稱就能馬上進入。不會顯示LINE名稱。", "Mit Einladungscode und Spitzname sofort dabei. Dein LINE-Name wird nicht angezeigt.", "초대 코드와 닉네임을 입력하면 바로 입장할 수 있어요. LINE 이름은 표시되지 않아요."], "招待コード": ["Invite code", "邀请码", "邀請碼", "Einladungscode", "초대 코드"], "アイコン": ["Icon", "头像", "頭像", "Symbol", "아이콘"], "吹き出しの色": ["Bubble color", "气泡颜色", "氣泡顏色", "Blasenfarbe", "말풍선 색"], "ひとこと（なくてもOK）": ["A short note (optional)", "一句话（可不填）", "一句話（可不填）", "Kurzer Satz (optional)", "한마디 (선택)"], "入室する": ["Enter the room", "进入房间", "進入房間", "Raum betreten", "입장하기"], "戻る": ["Back", "返回", "返回", "Zurück", "뒤로"], "招待コードがない方は": ["No invite code?", "没有邀请码的话", "沒有邀請碼的話", "Kein Einladungscode?", "초대 코드가 없다면"], "👤 ゲストで入る": ["👤 Join as a guest", "👤 以访客身份进入", "👤 以訪客身分進入", "👤 Als Gast beitreten", "👤 게스트로 입장"], "機種変更のときは、「引き継ぎコード」を招待コードの欄に入れてな（ニックネームは空でOK）。": ["If you changed devices, enter your \"transfer code\" in the invite code field (leave the nickname empty).", "更换设备时，请在邀请码栏输入“转移码”（昵称可留空）。", "更換裝置時，請在邀請碼欄輸入「轉移碼」（暱稱可留空）。", "Bei Gerätewechsel den „Übertragungscode“ ins Feld für den Einladungscode eingeben (Spitzname leer lassen).", "기기를 바꿨다면 초대 코드란에 “이전 코드”를 입력하세요 (닉네임은 비워도 돼요)."], "🔑 店主ログイン（番号）": ["🔑 Owner login (PIN)", "🔑 店主登录（号码）", "🔑 店主登入（號碼）", "🔑 Inhaber-Login (PIN)", "🔑 주인 로그인 (번호)"], "店主ログイン": ["Owner login", "店主登录", "店主登入", "Inhaber-Login", "주인 로그인"], "店主の番号（6〜10桁）を入れてな。": ["Enter the owner's PIN (6–10 digits).", "请输入店主号码（6〜10位）。", "請輸入店主號碼（6〜10位）。", "Bitte die Inhaber-PIN (6–10 Ziffern) eingeben.", "주인 번호(6~10자리)를 입력하세요."], "入る": ["Enter", "进入", "進入", "Eintreten", "입장"], "いまは、この部屋に入れません😺": ["You cannot enter this room right now 😺", "现在无法进入这个房间😺", "現在無法進入這個房間😺", "Du kannst diesen Raum gerade nicht betreten 😺", "지금은 이 방에 들어갈 수 없어요 😺"], "またの機会に、お待ちしています。": ["We look forward to seeing you another time.", "期待下次再见。", "期待下次再見。", "Wir freuen uns auf ein andermal.", "다음 기회에 기다리고 있을게요."], "新作のご案内": ["New arrivals", "新品介绍", "新品介紹", "Neuheiten", "신작 안내"], "閉じる": ["Close", "关闭", "關閉", "Schließen", "닫기"], "ご注文（銀行振込）": ["Order (bank transfer)", "订购（银行转账）", "訂購（銀行轉帳）", "Bestellung (Banküberweisung)", "주문 (은행 송금)"], "この会議室の使い方": ["How to use this room", "本会议室的使用方法", "本會議室的使用方法", "So funktioniert dieser Raum", "이 회의실 사용법"], "💬 話す": ["💬 Chatting", "💬 聊天", "💬 聊天", "💬 Chatten", "💬 대화하기"], "下の入力欄に書いて、「送る」を押すと、みんなに届きます。": ["Type in the box below and press \"Send\" to reach everyone.", "在下方输入栏写好后按“发送”，大家就能看到。", "在下方輸入欄寫好後按「發送」，大家就能看到。", "Unten tippen und „Senden“ drücken – alle sehen es.", "아래 입력란에 쓰고 “보내기”를 누르면 모두에게 전달돼요."], "「📷」を押すと、写真を送れます（ライブ中などは、ゲストの写真をお休みすることがあります）。": ["Press \"📷\" to send a photo (guest photos may be paused, e.g. during live streams).", "按“📷”可以发送照片（直播期间等，访客的照片功能可能会暂停）。", "按「📷」可以傳送照片（直播期間等，訪客的照片功能可能會暫停）。", "Mit „📷“ kannst du Fotos senden (Gast-Fotos können z. B. während Live-Streams pausiert sein).", "“📷”를 누르면 사진을 보낼 수 있어요 (라이브 중에는 게스트 사진이 일시 중지될 수 있어요)."], "🐱 猫に話しかける": ["🐱 Talking to the cats", "🐱 和猫咪说话", "🐱 和貓咪說話", "🐱 Mit den Katzen sprechen", "🐱 고양이에게 말 걸기"], "メッセージに「アロン」か「フラン」と入れると、その猫が答えます。例：「アロン、おすすめのオパールは？」": ["Include \"Aron\" or \"Furan\" in your message and that cat will answer. Example: \"Aron, which opal do you recommend?\" (the cats reply in Japanese)", "在消息里写上“アロン(Aron)”或“フラン(Furan)”，那只猫就会回答。例如：“アロン、おすすめのオパールは？”（猫咪用日语回答）", "在訊息裡寫上「アロン(Aron)」或「フラン(Furan)」，那隻貓就會回答。例如：「アロン、おすすめのオパールは？」（貓咪用日語回答）", "Schreibe „アロン (Aron)“ oder „フラン (Furan)“ in die Nachricht, dann antwortet die Katze. Beispiel: „アロン、おすすめのオパールは？“ (die Katzen antworten auf Japanisch)", "메시지에 “アロン(아론)” 또는 “フラン(후란)”을 넣으면 그 고양이가 대답해요. 예: “アロン、おすすめのオパールは？” (고양이는 일본어로 대답해요)"], "猫にわからんことは、ご主人（店主）に聞いておきます。": ["If the cats don't know something, we'll ask the owner.", "猫咪不知道的事，会去问主人（店主）。", "貓咪不知道的事，會去問主人（店主）。", "Was die Katzen nicht wissen, fragen wir den Inhaber.", "고양이가 모르는 것은 주인(점주)에게 물어볼게요."], "話しすぎると、猫が眠くなって、少しお休みします。": ["If you talk too much, the cats get sleepy and take a short rest.", "说太多的话，猫咪会犯困，稍微休息一下。", "說太多的話，貓咪會想睡，稍微休息一下。", "Wer zu viel redet, macht die Katzen müde – sie ruhen sich kurz aus.", "너무 많이 말하면 고양이가 졸려서 잠시 쉬어요."], "📊 アンケート・今日のテーマ": ["📊 Poll & today's topic", "📊 投票・今日话题", "📊 投票・今日話題", "📊 Umfrage & Thema des Tages", "📊 설문・오늘의 주제"], "上の「アンケート」で、投票できます。投票すると、みんなの結果が見られます。": ["Vote with \"Poll\" at the top. After voting you can see everyone's results.", "可以在上方“投票”中投票。投票后可以看到大家的结果。", "可以在上方「投票」中投票。投票後可以看到大家的結果。", "Oben unter „Umfrage“ abstimmen. Danach siehst du die Ergebnisse aller.", "위의 “설문”에서 투표할 수 있어요. 투표하면 모두의 결과를 볼 수 있어요."], "「本日のテーマ」は、いまの話題です。": ["\"Today's topic\" is what we are talking about now.", "“今日话题”是现在的话题。", "「今日話題」是現在的話題。", "„Thema des Tages“ ist das aktuelle Gesprächsthema.", "“오늘의 주제”는 지금의 화제예요."], "🔘 上のボタン": ["🔘 Buttons at the top", "🔘 上方按钮", "🔘 上方按鈕", "🔘 Schaltflächen oben", "🔘 상단 버튼"], "「○人」：いま、部屋にいる人の一覧です。": ["\"○ people\": the list of people in the room now.", "“○人”：目前在房间里的人的列表。", "「○人」：目前在房間裡的人的列表。", "„○ Personen“: Liste der Personen im Raum.", "“○명”: 지금 방에 있는 사람 목록이에요."], "「公式LINE」：友だち追加のページが開きます。": ["\"Official LINE\": opens the add-friend page.", "“官方LINE”：打开添加好友页面。", "「官方LINE」：開啟加好友頁面。", "„Offizielles LINE“: öffnet die Seite zum Hinzufügen.", "“공식 LINE”: 친구 추가 페이지가 열려요."], "「▶」：YouTubeチャンネルの登録ページが開きます。": ["\"▶\": opens the YouTube channel subscription page.", "“▶”：打开YouTube频道订阅页面。", "「▶」：開啟YouTube頻道訂閱頁面。", "„▶“: öffnet die YouTube-Kanalseite zum Abonnieren.", "“▶”: YouTube 채널 구독 페이지가 열려요."], "「音楽」：オパールの歌が聴けます。": ["\"Music\": listen to the opal song.", "“音乐”：可以听蛋白石之歌。", "「音樂」：可以聽蛋白石之歌。", "„Musik“: das Opal-Lied anhören.", "“음악”: 오팔 노래를 들을 수 있어요."], "「！」：新作の商品のご案内です。気になるものは、そこから購入を希望できます（お支払いは銀行振込です）。": ["\"!\": new product information. You can request to purchase items you like there (payment is by bank transfer).", "“！”：新品介绍。看中的商品可以在那里申请购买（付款方式为银行转账）。", "「！」：新品介紹。看中的商品可以在那裡申請購買（付款方式為銀行轉帳）。", "„!“: Neuheiten. Dort kannst du Interesse am Kauf anmelden (Zahlung per Banküberweisung).", "“！”: 신상품 안내예요. 마음에 드는 것은 거기서 구매를 희망할 수 있어요 (결제는 은행 송금)."], "「設定」：名前の横のアイコンや色を変えられます。": ["\"Settings\": change the icon and color next to your name.", "“设置”：可以更改名字旁边的头像和颜色。", "「設定」：可以更改名字旁邊的頭像和顏色。", "„Einstellungen“: Symbol und Farbe neben deinem Namen ändern.", "“설정”: 이름 옆의 아이콘과 색을 바꿀 수 있어요."], "「全画面」：チャットを大きく表示します。もう一度押すと戻ります。": ["\"Full screen\": shows the chat larger. Press again to go back.", "“全屏”：放大显示聊天。再按一次即可恢复。", "「全螢幕」：放大顯示聊天。再按一次即可恢復。", "„Vollbild“: zeigt den Chat größer. Nochmals drücken zum Zurückkehren.", "“전체 화면”: 채팅을 크게 표시해요. 한 번 더 누르면 돌아가요."], "🔴 ライブ": ["🔴 Live", "🔴 直播", "🔴 直播", "🔴 Live", "🔴 라이브"], "📢 YouTubeのチャンネル登録者が50人になったら、ライブ配信を始める予定です。上の「▶」ボタンから、チャンネル登録をよろしくお願いします！": ["📢 We plan to start live streaming when the YouTube channel reaches 50 subscribers. Please subscribe with the \"▶\" button above!", "📢 YouTube频道订阅者达到50人后，计划开始直播。请通过上方的“▶”按钮订阅频道！", "📢 YouTube頻道訂閱者達到50人後，計畫開始直播。請透過上方的「▶」按鈕訂閱頻道！", "📢 Sobald der YouTube-Kanal 50 Abonnenten hat, starten wir Live-Streams. Bitte abonniere über „▶“ oben!", "📢 YouTube 채널 구독자가 50명이 되면 라이브 방송을 시작할 예정이에요. 위의 “▶” 버튼으로 구독해 주세요!"], "ライブ中は、チャットの上に映像が出ます。音が出ないときは、映像の🔊を押してください。": ["During a live stream, the video appears above the chat. If there is no sound, press 🔊 on the video.", "直播时，视频会显示在聊天上方。没有声音时，请按视频上的🔊。", "直播時，影片會顯示在聊天上方。沒有聲音時，請按影片上的🔊。", "Während des Livestreams erscheint das Video über dem Chat. Kein Ton? Drücke 🔊 im Video.", "라이브 중에는 채팅 위에 영상이 나와요. 소리가 안 나면 영상의 🔊를 눌러주세요."], "映像が邪魔なときは、「映像を閉じる」で隠せます。": ["If the video is in the way, hide it with \"Close video\".", "视频碍事时，可以用“关闭视频”隐藏。", "影片礙事時，可以用「關閉影片」隱藏。", "Wenn das Video stört, mit „Video schließen“ ausblenden.", "영상이 방해되면 “영상 닫기”로 숨길 수 있어요."], "🙏 お願い": ["🙏 Requests", "🙏 请求", "🙏 請求", "🙏 Bitte beachten", "🙏 부탁"], "個人情報などは、極力書かないでください。": ["Please avoid writing personal information.", "请尽量不要写个人信息等。", "請盡量不要寫個人資訊等。", "Bitte schreibe möglichst keine persönlichen Daten.", "개인정보 등은 가능한 한 적지 말아 주세요."], "ゲストで入った場合、入れる時間は6時間までです。": ["Guests can stay for up to 6 hours.", "以访客身份进入时，最长可停留6小时。", "以訪客身分進入時，最長可停留6小時。", "Als Gast kannst du bis zu 6 Stunden bleiben.", "게스트로 입장하면 최대 6시간까지 있을 수 있어요."], "オパールの歌": ["The Opal Song", "蛋白石之歌", "蛋白石之歌", "Das Opal-Lied", "오팔의 노래"], "うまく流れへんときは、「YouTubeで開く」を押してな。閉じると、曲は止まります。": ["If it doesn't play well, press \"Open in YouTube\". Closing stops the song.", "播放不顺畅时，请按“在YouTube打开”。关闭后歌曲会停止。", "播放不順暢時，請按「在YouTube開啟」。關閉後歌曲會停止。", "Wenn es nicht läuft, „In YouTube öffnen“ drücken. Beim Schließen stoppt das Lied.", "잘 재생되지 않으면 “YouTube에서 열기”를 눌러주세요. 닫으면 노래가 멈춰요."], "チャット入力画面": ["Type a message", "输入聊天内容", "輸入聊天內容", "Nachricht eingeben", "채팅 입력"], "例：オパ好きのタカ": ["e.g. OpalFanTaka", "例：爱蛋白石的小高", "例：愛蛋白石的小高", "z. B. OpalFreundTaka", "예: 오팔 좋아하는 타카"], "例：ブラックオパール集めてます": ["e.g. I collect black opals", "例：我在收集黑蛋白石", "例：我在收集黑蛋白石", "z. B. Ich sammle Schwarzopale", "예: 블랙 오팔 모으는 중"], "写真を送る": ["Send a photo", "发送照片", "傳送照片", "Foto senden", "사진 보내기"], "使い方": ["How to use", "使用方法", "使用方法", "Anleitung", "사용법"], "公式LINE（友だち追加）": ["Official LINE (add friend)", "官方LINE（添加好友）", "官方LINE（加好友）", "Offizielles LINE (hinzufügen)", "공식 LINE (친구 추가)"], "YouTubeチャンネル登録": ["Subscribe on YouTube", "订阅YouTube频道", "訂閱YouTube頻道", "YouTube abonnieren", "YouTube 구독"], "オパールの歌（音楽）": ["Opal song (music)", "蛋白石之歌（音乐）", "蛋白石之歌（音樂）", "Opal-Lied (Musik)", "오팔 노래 (음악)"], "オパール採掘ゲーム": ["Opal mining game", "蛋白石挖掘游戏", "蛋白石挖掘遊戲", "Opal-Bergbau-Spiel", "오팔 채굴 게임"], "ログインしていません": ["Not logged in", "未登录", "未登入", "Nicht angemeldet", "로그인 안 됨"], "つながらへんかった。電波を確認してもう一回な": ["Could not connect. Check your signal and try again.", "连接失败。请检查网络后再试一次。", "連線失敗。請檢查網路後再試一次。", "Verbindung fehlgeschlagen. Prüfe dein Netz und versuche es erneut.", "연결되지 않았어요. 신호를 확인하고 다시 해주세요."], "招待コードを入れてな": ["Please enter the invite code.", "请输入邀请码。", "請輸入邀請碼。", "Bitte Einladungscode eingeben.", "초대 코드를 입력해 주세요."], "ニックネームを入れてな": ["Please enter a nickname.", "请输入昵称。", "請輸入暱稱。", "Bitte Spitzname eingeben.", "닉네임을 입력해 주세요."], "入室できませんでした": ["Could not enter the room.", "无法进入房间。", "無法進入房間。", "Betreten fehlgeschlagen.", "입장하지 못했어요."], "入れませんでした": ["Could not enter.", "无法进入。", "無法進入。", "Beitritt fehlgeschlagen.", "입장하지 못했어요."], "アイコン、色、ひとことを変えられます。ニックネームは変えられません。": ["You can change your icon, color and note. The nickname cannot be changed.", "可以更改头像、颜色和一句话。昵称不可更改。", "可以更改頭像、顏色和一句話。暱稱不可更改。", "Symbol, Farbe und Satz sind änderbar. Der Spitzname nicht.", "아이콘, 색, 한마디를 바꿀 수 있어요. 닉네임은 바꿀 수 없어요."], "ゲストの時間（6時間）が終わりました。ゲスト入場が開いていれば、もう一度入れます。": ["Your guest time (6 hours) has ended. If guest entry is open, you can join again.", "访客时间（6小时）已结束。如果访客入场开放，可以再次进入。", "訪客時間（6小時）已結束。如果訪客入場開放，可以再次進入。", "Deine Gastzeit (6 Stunden) ist abgelaufen. Wenn der Gastzugang offen ist, kannst du erneut beitreten.", "게스트 시간(6시간)이 끝났어요. 게스트 입장이 열려 있으면 다시 들어올 수 있어요."], "（まだ決まってないで）":["(Not decided yet)","（尚未决定）","（尚未決定）","(Noch nicht festgelegt)","(아직 정해지지 않았어요)"],"ちょっと待ってな": ["Please wait a moment", "请稍等一下", "請稍等一下", "Bitte einen Moment warten", "잠시만 기다려 주세요"], "送れへんかった。もう一回な": ["Could not send. Please try again.", "发送失败。请再试一次。", "發送失敗。請再試一次。", "Senden fehlgeschlagen. Bitte erneut versuchen.", "보내지 못했어요. 다시 해주세요."], "ログインしたら、話せるで（上のカギのマーク）": ["Log in to chat (key icon at the top)", "登录后才能发言（上方的钥匙图标）", "登入後才能發言（上方的鑰匙圖示）", "Zum Chatten anmelden (Schlüsselsymbol oben)", "로그인하면 대화할 수 있어요 (위의 열쇠 아이콘)"]};
+  var I18N_H = ["Guest · no code needed · nickname only · {n} hours of access", "访客・无需邀请码・只需昵称・可进入{n}小时", "訪客・無需邀請碼・只需暱稱・可進入{n}小時", "Ohne Code · nur Spitzname · {n} Stunden Zugang", "코드 불필요 · 닉네임만 · {n}시간 입장 가능"];
+  var UI_IDX = { 'en': 0, 'zh-CN': 1, 'zh-TW': 2, 'de': 3, 'ko': 4 };
+  var UI_BAR = [['ja', '日本語'], ['en', 'English'], ['zh-CN', '简体中文'], ['zh-TW', '繁體中文'], ['de', 'Deutsch'], ['ko', '한국어']];
+  var JPRE = /[぀-鿿]/;
+  function uiL() { return TR.lang === 'ja' ? 'ja' : (UI_IDX[TR.lang] != null ? TR.lang : 'en'); }
+  function uiStr(ja) {
+    var L = uiL(); if (L === 'ja') return null; var i = UI_IDX[L], k = ja.trim();
+    if (I18N[k]) return I18N[k][i];
+    var m = /^コード不要・ニックネームだけ・(\d+)時間入れます$/.exec(k); if (m) return I18N_H[i].replace('{n}', m[1]);
+    return null;
+  }
+  function uiText(n) {
+    var cur = n.nodeValue;
+    if (n.__v !== undefined && cur !== n.__v) { n.__o = undefined; n.__v = undefined; }
+    if (n.__o === undefined) { if (!JPRE.test(cur) || uiL() === 'ja' || uiStr(cur) == null) return; n.__o = cur; }
+    var o = n.__o, tr = uiL() === 'ja' ? null : uiStr(o), out = tr == null ? o : o.replace(o.trim(), tr);
+    if (out !== cur) n.nodeValue = out; n.__v = out;
+  }
+  var UI_ATTR = ['placeholder', 'title', 'aria-label'];
+  function uiAttr(e) {
+    if (!e.getAttribute) return; e.__ao = e.__ao || {}; e.__av = e.__av || {};
+    UI_ATTR.forEach(function (a) {
+      var cur = e.getAttribute(a); if (cur == null) return;
+      if (e.__av[a] !== undefined && cur !== e.__av[a]) { delete e.__ao[a]; delete e.__av[a]; }
+      if (e.__ao[a] === undefined) { if (!JPRE.test(cur) || uiL() === 'ja' || uiStr(cur) == null) return; e.__ao[a] = cur; }
+      var o = e.__ao[a], tr = uiL() === 'ja' ? null : uiStr(o), out = tr == null ? o : tr;
+      if (out !== cur) e.setAttribute(a, out); e.__av[a] = out;
+    });
+  }
+  function uiWalk(root) {
+    if (!root) return;
+    if (root.nodeType === 3) { if (!/SCRIPT|STYLE/.test((root.parentNode && root.parentNode.tagName) || '')) uiText(root); return; }
+    if (root.nodeType !== 1 || /SCRIPT|STYLE/.test(root.tagName)) return;
+    uiAttr(root);
+    var w = document.createTreeWalker(root, NodeFilter.SHOW_ALL, null), n;
+    while ((n = w.nextNode())) { if (n.nodeType === 3) { if (!/SCRIPT|STYLE/.test(n.parentNode.tagName)) uiText(n); } else if (n.nodeType === 1) uiAttr(n); }
+  }
+  var uiMo = new MutationObserver(function (list) {
+    list.forEach(function (r) {
+      if (r.type === 'characterData') uiText(r.target);
+      else if (r.type === 'attributes') uiAttr(r.target);
+      else r.addedNodes.forEach(function (n) { uiWalk(n); });
+    });
+  });
+  function uiBarMark(bar) {
+    Array.prototype.forEach.call(bar.querySelectorAll('button'), function (b) { b.classList.toggle('on', b.getAttribute('data-l') === TR.lang); });
+    var sel = bar.querySelector('select'); if (sel) sel.value = UI_BAR.some(function (x) { return x[0] === TR.lang; }) ? '' : (Array.prototype.some.call(sel.options, function (o) { return o.value === TR.lang; }) ? TR.lang : '');
+  }
+  function setLang(code) {
+    TR.lang = code; TR.mem = {}; LS.set('opa_lang', code);
+    try { document.documentElement.lang = code; } catch (e) {}
+    uiWalk(document.body);
+    Array.prototype.forEach.call(document.querySelectorAll('.uilbar'), uiBarMark);
+    var ts = $('trLang'); if (ts) ts.value = code;
+  }
+  function uiBar(host, before) {
+    var bar = el('div', 'uilbar'); bar.setAttribute('role', 'group'); bar.setAttribute('aria-label', 'Language');
+    UI_BAR.forEach(function (x) { var b = el('button', null, x[1]); b.type = 'button'; b.setAttribute('data-l', x[0]); b.addEventListener('click', function (e) { e.preventDefault(); e.stopPropagation(); setLang(x[0]); }); bar.appendChild(b); });
+    var sel = document.createElement('select'); sel.setAttribute('aria-label', 'Other languages');
+    sel.innerHTML = '<option value="">Other… 🌐</option>' + TR_LANGS.filter(function (x) { return !UI_BAR.some(function (y) { return y[0] === x[0]; }); }).map(function (x) { return '<option value="' + x[0] + '">' + x[1] + '</option>'; }).join('');
+    sel.addEventListener('change', function (e) { e.stopPropagation(); if (sel.value) setLang(sel.value); });
+    bar.appendChild(sel); bar.addEventListener('click', function (e) { e.stopPropagation(); });
+    if (before) host.insertBefore(bar, before); else host.appendChild(bar);
+    uiBarMark(bar); return bar;
+  }
   function isAdmin() { return !!(me && me.isAdmin); }
   /* ---- 店主のステルス：ログインしてない間は、みんなには見えへん ---- */
   var online = false;
@@ -1619,7 +1711,13 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     tm.appendChild(el('span', 'nm', who)); tm.appendChild(el('time', null, fmt(m.t)));
     if (kind === 'furan' || kind === 'aron' || kind === 'me') { line.appendChild(tm); line.appendChild(bub); } else { line.appendChild(bub); line.appendChild(tm); }
     col.appendChild(line); row.appendChild(col);
-    if (kind !== 'me' && !m.img && m.body) trApply(m.body, function (o) { col.appendChild(trSpan(o)); });
+    if (kind !== 'me' && !m.img && m.body && trNeed(m.body)) {
+      var tb = el('button', 'trmini', '🌐 Translate'); tb.type = 'button'; tb.title = '翻訳 / Translate';
+      var tdone = function (o) { tb.remove(); col.appendChild(trSpan(o)); };
+      tb.addEventListener('click', function () { tb.textContent = '…'; trGo(m.body, tdone); setTimeout(function () { if (tb.parentNode) tb.textContent = '🌐 Translate'; }, 6000); });
+      col.appendChild(tb);
+      if (TR.on) trGo(m.body, tdone);
+    }
     lastRow = row;
     return row;
   }
@@ -2756,6 +2854,15 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
   });
   $('unkClear').hidden = true;
   document.addEventListener('click', function (ev) { var p = $('unkPop'); if (!p.hidden && !p.contains(ev.target)) p.hidden = true; });
+
+  /* ---- 言語バー（入口の画面・ログイン画面） ---- */
+  (function () {
+    var sp = $('splash'), wf = $('welcomeForm');
+    if (sp) uiBar(sp, $('splashGo'));
+    if (wf) uiBar(wf, wf.firstElementChild);
+    uiMo.observe(document.body, { childList: true, subtree: true, characterData: true, attributes: true, attributeFilter: UI_ATTR });
+    setLang(TR.lang);
+  })();
 
   /* ---- 起動 ---- */
   showSplash();
