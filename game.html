@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:151-->
+<!--GV:197-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -4886,6 +4886,7 @@ var TB = {
   function amRungs(epoch, P, N) {
     var cand = [], gaps = Math.max(0, N - 1);
     P.forEach(function (p) { (p.rungs || []).forEach(function (q) { if (gaps < 1) return; cand.push({ g: Math.min(gaps - 1, Math.max(0, Math.floor(+q[0] * gaps))), r: Math.min(AM_R - 1, Math.max(0, Math.floor(+q[1] * AM_R))), s: 'p', o: p.id }); }); });
+    for (var k0 = 0; k0 < gaps; k0++) { var hs = amSha('slide:' + epoch + ':' + k0), c0 = k0, dr = parseInt(hs.substr(4, 2), 16) % 2, ln = Math.min(10 + parseInt(hs.substr(0, 4), 16) % 30, dr ? gaps - c0 : c0 + 1), r0 = 2 + parseInt(hs.substr(8, 6), 16) % (AM_R - ln - 3); if (ln < 3) continue; for (var i0 = 0; i0 < ln; i0++) cand.push({ g: dr ? c0 + i0 : c0 - i0, r: r0 + i0, s: 'w' }); }
     for (var g0 = 0; g0 < gaps; g0++) { var hb = amSha('base:' + epoch + ':' + g0) + amSha('base2:' + epoch + ':' + g0); for (var j0 = 0; j0 < 39; j0++) cand.push({ g: g0, r: j0 * 8 + parseInt(hb.substr(j0 * 3, 3), 16) % 6, s: 's' }); }
     cand = cand.map(function (c, i) { c.i = i; return c; }).sort(function (a, b) { return a.r - b.r || a.i - b.i; });
     var rungs = [], used = {}, rowMap = {};
@@ -4916,7 +4917,7 @@ var TB = {
   function amCss() {
     if ($('amCss')) return; var s = document.createElement('style'); s.id = 'amCss';
     s.textContent = '#amRoom{position:fixed;inset:0;z-index:9500;background:linear-gradient(#2a1450,#150a2e);color:#fff;overflow-y:auto;display:none;font-family:inherit;-webkit-overflow-scrolling:touch}#amRoom.on{display:block}' +
-      '#amWinTop{flex:0 0 100%;text-align:center}#amWinTop:empty{display:none}#amWinTop div{margin:3px 0;padding:5px 10px;border-radius:10px;background:linear-gradient(#ffe45a,#e3a81a);color:#4a1030;font-size:19px;font-weight:900;line-height:1.25;box-shadow:0 0 12px rgba(255,216,74,.7)}#amWinTop small{font-size:12px;font-weight:800;margin-left:6px}#amBig{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);z-index:9600;display:none;text-align:center;padding:18px 26px;border-radius:22px;background:rgba(30,8,50,.95);border:3px solid #ffd84a;color:#ffe45a;font-size:20px;font-weight:900;box-shadow:0 0 40px #ffd84a;width:max-content;max-width:92vw;pointer-events:none}#amBig .n{font-size:40px;color:#fff;line-height:1.25;margin:6px 0;word-break:break-all}#amTop{position:sticky;top:0;z-index:3;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;background:rgba(20,8,40,.94);border-bottom:2px solid #ffd36a}#amTop b{flex:1;font-size:17px;color:#ffe9a8}#amTop button{padding:7px 12px;border:0;border-radius:10px;font-weight:900;font-size:13px;background:#ffd36a;color:#3a2a08}' +
+      '#amEnd{position:fixed;inset:0;z-index:9700;display:none;overflow:hidden;background:radial-gradient(circle at 50% 35%,rgba(120,40,140,.96),rgba(14,4,30,.97));text-align:center}#amEnd.on{display:block}#amEnd .bx{position:absolute;inset:0;overflow-y:auto;padding:26px 14px 30px;z-index:2}#amEnd .t{font-size:34px;font-weight:900;color:#ffe45a;text-shadow:0 3px 0 #8a1020,0 0 24px #ffb300;animation:amPop .7s ease-out}#amEnd .tt{margin:6px 0 14px;font-size:16px;font-weight:800;color:#ffd9f2}#amEnd .c{margin:14px auto;max-width:460px;padding:16px 12px;border-radius:22px;background:linear-gradient(#fff7c8,#ffd24a);border:4px solid #fff;box-shadow:0 0 34px #ffd84a;color:#4a1030;animation:amPop .8s ease-out both}#amEnd .pz{font-size:20px;font-weight:900}#amEnd .nm{font-size:38px;font-weight:900;line-height:1.25;margin:6px 0;word-break:break-all}#amEnd .ok{display:inline-block;padding:4px 22px;border-radius:999px;background:#e0243a;color:#fff;font-size:26px;font-weight:900;letter-spacing:.2em;animation:amBlink 1s ease-in-out infinite}#amEnd button{margin-top:16px;padding:12px 30px;border:0;border-radius:14px;font-size:17px;font-weight:900;background:#fff;color:#4a1030}#amEnd i{position:absolute;top:-30px;z-index:1;font-style:normal;animation:amFall linear infinite;pointer-events:none}@keyframes amFall{to{transform:translateY(110vh) rotate(720deg)}}@keyframes amPop{0%{transform:scale(.2);opacity:0}70%{transform:scale(1.12)}100%{transform:scale(1);opacity:1}}@keyframes amBlink{50%{transform:scale(1.12);background:#ff7a1a}}#amWinTop{flex:0 0 100%;text-align:center}#amWinTop:empty{display:none}#amWinTop div{margin:3px 0;padding:5px 10px;border-radius:10px;background:linear-gradient(#ffe45a,#e3a81a);color:#4a1030;font-size:19px;font-weight:900;line-height:1.25;box-shadow:0 0 12px rgba(255,216,74,.7)}#amWinTop small{font-size:12px;font-weight:800;margin-left:6px}#amBig{position:fixed;left:50%;top:40%;transform:translate(-50%,-50%);z-index:9600;display:none;text-align:center;padding:18px 26px;border-radius:22px;background:rgba(30,8,50,.95);border:3px solid #ffd84a;color:#ffe45a;font-size:20px;font-weight:900;box-shadow:0 0 40px #ffd84a;width:max-content;max-width:92vw;pointer-events:none}#amBig .n{font-size:40px;color:#fff;line-height:1.25;margin:6px 0;word-break:break-all}#amTop{position:sticky;top:0;z-index:3;display:flex;flex-wrap:wrap;align-items:center;gap:8px;padding:10px 12px;background:rgba(20,8,40,.94);border-bottom:2px solid #ffd36a}#amTop b{flex:1;font-size:17px;color:#ffe9a8}#amTop button{padding:7px 12px;border:0;border-radius:10px;font-weight:900;font-size:13px;background:#ffd36a;color:#3a2a08}' +
       '#amInfo{padding:10px 14px;text-align:center;font-size:15px;line-height:1.6}#amInfo .big{font-size:22px;font-weight:900;color:#ffe45a}#amInfo .pz{display:inline-block;margin:3px;padding:3px 10px;border-radius:999px;background:#7a1a4a;border:1.5px solid #ffd36a;font-weight:800;font-size:13px}' +
       '#amWrap{margin:0 6px;overflow-x:auto;border-radius:12px;background:rgba(0,0,0,.35);border:2px solid #6a3aa0}#amCv{display:block}#amCap{text-align:center;font-size:19px;font-weight:900;color:#ffe45a;min-height:30px;padding:6px;text-shadow:0 2px 0 #7a1a4a}' +
       '#amBar{padding:8px 12px;text-align:center}#amBar button,#amOp button,#amRes button{margin:3px;padding:9px 14px;border:0;border-radius:12px;font-weight:900;font-size:14px;color:#241;background:linear-gradient(#ffe08a,#e3b341);box-shadow:0 2px 0 #8a6a1a}#amBar button.g,#amOp button.g,#amRes button.g{background:linear-gradient(#7dff9a,#2fbf5c);box-shadow:0 2px 0 #1a7a3a}#amBar button.s,#amOp button.s{background:#e7dff5;box-shadow:0 2px 0 #8a7aa8}' +
@@ -4927,7 +4928,7 @@ var TB = {
   }
   function amBuild() {
     amCss(); if ($('amRoom')) return; var d = document.createElement('div'); d.id = 'amRoom';
-    d.innerHTML = '<div id="amTop"><b id="amTtl">🎲 あみだくじ会場</b><button type="button" id="amSnd">🔊</button><button type="button" id="amX">✕ 出る</button><div id="amWinTop"></div></div><div id="amBig"></div><div id="amInfo"></div><div id="amCap"></div><div id="amWrap"><canvas id="amCv"></canvas></div><div id="amBar"></div><div id="amRes"></div><div id="amOp"></div><div id="amConf"></div>';
+    d.innerHTML = '<div id="amTop"><b id="amTtl">🎲 あみだくじ会場</b><button type="button" id="amSnd">🔊</button><button type="button" id="amX">✕ 出る</button><div id="amWinTop"></div></div><div id="amBig"></div><div id="amEnd"></div><div id="amInfo"></div><div id="amCap"></div><div id="amWrap"><canvas id="amCv"></canvas></div><div id="amBar"></div><div id="amRes"></div><div id="amOp"></div><div id="amConf"></div>';
     document.body.appendChild(d);
   }
   function amOpen() {
@@ -4945,11 +4946,12 @@ var TB = {
     var every = v.phase === 'wait' ? 1 : v.phase === 'open' ? (v.closeAt - amNow() < 30000 ? 2 : 4) : 6; AM.n = (AM.n || 0) + 1; if (AM.n % every === 0) amSync(); amInfo();
   }
   function amApply(v) {
-    var ep = AM.v && AM.v.epoch; AM.v = v; if (ep !== v.epoch) { AM.mine = []; AM.doneEp = -1; AM.anim = null; $('amRes').innerHTML = ''; AM.ver = null; }
+    if (v.rows && v.rows !== AM_R) { AM.v = null; $('amInfo').innerHTML = '<div class="big">ゲームが新しくなってるで</div>下のボタンで更新してな<br><button type="button" id="amUpd" style="margin-top:8px;padding:10px 18px;border:0;border-radius:12px;font-weight:900;font-size:15px;background:#ffd36a">🔄 更新する</button>'; return; }
+    var ep = AM.v && AM.v.epoch; AM.v = v; if (ep !== v.epoch) { amEndHide(); AM.mine = []; AM.doneEp = -1; AM.anim = null; $('amRes').innerHTML = ''; AM.ver = null; }
     if (v.me && v.me.entered && !AM.sendT && !AM.sending) AM.mine = (v.me.rungs || []).map(function (q) { return [+q[0], +q[1]]; });
     if (v.phase === 'done' && v.result && AM.doneEp !== v.epoch) {
       AM.doneEp = v.epoch; var el = amNow() - (v.result.at + 1800);
-      if (el > 180000) amFinal(); else { AM.anim = { t0: Date.now(), dur: 14000 + 5000 * Math.max(1, (v.result.winners || []).length), arrN: 0 }; amSongStart(); cancelAnimationFrame(AM.raf); amLoop(); }
+      if (el > 180000) amFinal(1); else { AM.anim = { t0: Date.now(), dur: 14000 + 5000 * Math.max(1, (v.result.winners || []).length), arrN: 0 }; amSongStart(); cancelAnimationFrame(AM.raf); amLoop(); }
     }
     amInfo(); amBar(); amOpPanel(); if (!AM.anim) amDraw(1, true);
   }
@@ -4999,7 +5001,7 @@ var TB = {
   function amPathsGet(R, G) { var k = R.seed + '|' + R.at + '|' + R.N + '|' + R.rungs.length + '|' + G.W + '|' + G.sp + '|' + G.H; if (!AM.paths || AM.pk !== k) { AM.paths = amPaths(R, G); AM.pk = k; } return AM.paths; }
   function amPaths(R, G) {
     var rowMap = {}, rows = []; R.rungs.forEach(function (c) { (rowMap[c.r] = rowMap[c.r] || []).push(c.g); }); rows = Object.keys(rowMap).map(Number).sort(function (a, b) { return a - b; });
-    var P = []; for (var s = 0; s < G.N; s++) { var p = s, pts = [[G.pad + p * G.sp, G.y0]]; rows.forEach(function (r) { var y = G.y0 + (r + .5) / AM_R * G.H, m = rowMap[r], np = p; if (m.indexOf(p) >= 0) np = p + 1; else if (m.indexOf(p - 1) >= 0) np = p - 1; if (np !== p) { pts.push([G.pad + p * G.sp, y], [G.pad + np * G.sp, y]); p = np; } }); pts.push([G.pad + p * G.sp, G.y0 + G.H]); P.push(pts); }
+    var P = []; for (var s = 0; s < G.N; s++) { var p = s, pts = [[G.pad + p * G.sp, G.y0]]; rows.forEach(function (r) { var y = G.y0 + (r + .5) / (R.rows || AM_R) * G.H, m = rowMap[r], np = p; if (m.indexOf(p) >= 0) np = p + 1; else if (m.indexOf(p - 1) >= 0) np = p - 1; if (np !== p) { pts.push([G.pad + p * G.sp, y], [G.pad + np * G.sp, y]); p = np; } }); pts.push([G.pad + p * G.sp, G.y0 + G.H]); P.push(pts); }
     return P;
   }
   function amDraw(P, still) {
@@ -5011,8 +5013,8 @@ var TB = {
     // 縦線
     for (var i = 0; i < G.N; i++) { c.strokeStyle = 'rgba(200,180,255,.45)'; c.lineWidth = 2; c.beginPath(); c.moveTo(X(i), G.y0); c.lineTo(X(i), G.y0 + G.H); c.stroke(); }
     // 横線
-    if (done) R.rungs.forEach(function (q) { var y = G.y0 + (q.r + .5) / AM_R * G.H, mine = q.o && q.o === me; c.strokeStyle = mine ? '#6af0ff' : q.s === 'p' ? 'rgba(255,200,90,.75)' : 'rgba(150,170,255,.5)'; c.lineWidth = mine ? 4 : 2.4; c.beginPath(); c.moveTo(X(q.g), y); c.lineTo(X(q.g + 1), y); c.stroke(); });
-    else if (v.phase === 'open' || v.phase === 'wait') { var PL = (v.players || []).map(function (pl) { return { id: pl.id, rungs: pl.id === me ? AM.mine : (pl.rungs || []) }; }).sort(function (a, b) { return a.id < b.id ? -1 : 1; }); amRungs(v.epoch, PL, G.N).rungs.forEach(function (q) { if (q.s !== 's') return; var y = G.y0 + (q.r + .5) / AM_R * G.H; c.strokeStyle = 'rgba(150,170,255,.5)'; c.lineWidth = 2.4; c.beginPath(); c.moveTo(X(q.g), y); c.lineTo(X(q.g + 1), y); c.stroke(); }); }
+    if (done) R.rungs.forEach(function (q) { var y = G.y0 + (q.r + .5) / (R.rows || AM_R) * G.H, mine = q.o && q.o === me; c.strokeStyle = mine ? '#6af0ff' : q.s === 'p' ? 'rgba(255,200,90,.75)' : q.s === 'w' ? 'rgba(255,120,215,.9)' : 'rgba(150,170,255,.5)'; c.lineWidth = mine ? 4 : 2.4; c.beginPath(); c.moveTo(X(q.g), y); c.lineTo(X(q.g + 1), y); c.stroke(); });
+    else if (v.phase === 'open' || v.phase === 'wait') { var PL = (v.players || []).map(function (pl) { return { id: pl.id, rungs: pl.id === me ? AM.mine : (pl.rungs || []) }; }).sort(function (a, b) { return a.id < b.id ? -1 : 1; }); amRungs(v.epoch, PL, G.N).rungs.forEach(function (q) { if (q.s === 'p') return; var y = G.y0 + (q.r + .5) / AM_R * G.H; c.strokeStyle = q.s === 'w' ? 'rgba(255,120,215,.9)' : 'rgba(150,170,255,.5)'; c.lineWidth = 2.4; c.beginPath(); c.moveTo(X(q.g), y); c.lineTo(X(q.g + 1), y); c.stroke(); }); }
     if (!done) (v.players || []).forEach(function (pl) { (pl.rungs || []).forEach(function (q) { var g = Math.min(G.N - 2, Math.floor(+q[0] * (G.N - 1))), y = G.y0 + (+q[1]) * G.H, mine = pl.id === me; if (mine) return; c.strokeStyle = 'rgba(255,200,90,.6)'; c.lineWidth = 2.4; c.beginPath(); c.moveTo(X(g), y); c.lineTo(X(g + 1), y); c.stroke(); }); });
     if (!done) AM.mine.forEach(function (q, k) { var g = Math.min(G.N - 2, Math.floor(q[0] * (G.N - 1))), y = G.y0 + q[1] * G.H; c.strokeStyle = '#6af0ff'; c.lineWidth = 4.5; c.shadowColor = '#6af0ff'; c.shadowBlur = 8; c.beginPath(); c.moveTo(X(g), y); c.lineTo(X(g + 1), y); c.stroke(); c.shadowBlur = 0; c.fillStyle = '#fff'; c.font = '700 11px sans-serif'; c.textAlign = 'center'; c.fillText(String(k + 1), (X(g) + X(g + 1)) / 2, y - 6); });
     // 上の名前
@@ -5058,14 +5060,26 @@ var TB = {
     var arrNow = Math.floor(Math.max(0, (P2 - .12) / .88) * R.winners.length + 1e-9); if (arrNow > a.arrN) { var wz = R.winners[arrNow - 1], bg = $('amBig'); if (wz && bg) { bg.innerHTML = '🎉 当選 🎉<div class="n">' + esc(wz.n || '') + ' さん</div>🎁 ' + esc(wz.prize || ''); bg.style.display = 'block'; clearTimeout(AM.bigT); AM.bigT = setTimeout(function () { bg.style.display = 'none'; }, 3500); } a.arrN = arrNow; if (AM.sound && amCtx()) { var tt = amAC.currentTime; [0, 4, 7, 12].forEach(function (n, i) { amNote(523.25 * Math.pow(2, n / 12), tt + i * .07, .4, 'triangle', .1); }); } vib(); }
     amInfo(); if (P >= 1) { amFinal(); return; } AM.raf = requestAnimationFrame(amLoop);
   }
-  function amFinal() {
-    AM.anim = null; amSongStop(); cancelAnimationFrame(AM.raf); var v = AM.v, R = v.result; AM.paths = null; amDraw(1, true); amInfo(); amBar();
+  function amEndHide() { var e = $('amEnd'); if (e) { e.classList.remove('on'); e.innerHTML = ''; } }
+  function amEndShow() {
+    var v = AM.v, R = v && v.result, e = $('amEnd'); if (!e || !R || !R.winners.length) return; var me = amMe();
+    var h = '<div class="bx"><div class="t">🎊 当選おめでとう！ 🎊</div><div class="tt">' + esc(v.title || 'あみだくじ') + '　当選者発表</div>';
+    R.winners.forEach(function (w, k) { h += '<div class="c" style="animation-delay:' + (.5 + k * .7) + 's"><div class="pz">🎁 ' + esc(w.prize || '') + '</div><div class="nm">👑 ' + esc(w.n || '') + ' さん</div><div class="ok">当選！</div>' + (w.id === me ? '<div style="font-weight:900;margin-top:6px">🎉 あなたです！ 運営から連絡があるで</div>' : '') + '</div>'; });
+    h += '<button type="button" id="amEndX">とじる</button></div>'; var em = ['🎉', '🎊', '✨', '💎', '🌟', '🎁', '🥳'];
+    for (var i = 0; i < 46; i++) h += '<i style="left:' + (Math.random() * 100).toFixed(1) + '%;font-size:' + (16 + Math.random() * 22).toFixed(0) + 'px;animation-duration:' + (2.6 + Math.random() * 3.4).toFixed(2) + 's;animation-delay:-' + (Math.random() * 5).toFixed(2) + 's">' + em[i % em.length] + '</i>';
+    e.innerHTML = h; e.classList.add('on'); vib();
+    if (AM.sound && amCtx()) { var t = amAC.currentTime + .05, M = [0, 0, 0, 4, 7, 7, 4, 7, 12, 12, 16, 12, 19]; M.forEach(function (n, i) { amNote(523.25 * Math.pow(2, n / 12), t + i * .16, .32, 'square', .07); amNote(261.63 * Math.pow(2, n / 12), t + i * .16, .32, 'triangle', .1); }); [0, 4, 7, 12, 16].forEach(function (n) { amNote(523.25 * Math.pow(2, n / 12), t + 13 * .16, 1.6, 'triangle', .09); });
+      try { var ss = window.speechSynthesis; if (ss) { var u = new SpeechSynthesisUtterance('当選、おめでとうございます！ ' + R.winners.map(function (w) { return (w.n || '') + 'さん'; }).join('、')); u.lang = 'ja-JP'; u.rate = 1.05; u.pitch = 1.5; setTimeout(function () { try { ss.speak(u); } catch (e2) {} }, 2400); } } catch (e1) {} }
+  }
+  function amFinal(quiet) {
+    var wasAnim = !!AM.anim; AM.anim = null; amSongStop(); cancelAnimationFrame(AM.raf); var v = AM.v, R = v.result; AM.paths = null; amDraw(1, true); amInfo(); amBar();
     var me = amMe(), mine = null, h = '<h3 style="text-align:center;color:#ffe45a">🏆 当選者</h3>';
     R.winners.forEach(function (w) { var m = w.id === me; if (m) mine = w; h += '<div class="w' + (m ? ' me' : '') + '">🎁 ' + esc(w.prize || '') + '<br>→ <b>' + esc(w.n || '') + '</b> さん' + (m ? '　🎉 あなた！' : '') + '</div>'; });
     if (!R.winners.length) h += '<div class="w">参加者がいなかったで</div>';
     h += '<div style="text-align:center;margin-top:6px;font-size:14px">' + (mine ? '🎉🎉 おめでとう！ 当選や！ 運営から連絡があるで' : (R.order.indexOf(me) >= 0 ? '残念…またの機会に！' : '')) + '</div><div id="amVerOut"></div><div style="text-align:center;margin-top:8px"><button type="button" id="amRe" class="s">▶ もう一度見る</button></div>';
     $('amRes').innerHTML = h; amFan(mine); if (mine) { var cf = $('amConf'); cf.textContent = '🎉 当選！ 🎉'; cf.style.display = 'block'; setTimeout(function () { cf.style.display = 'none'; }, 3500); vib(); }
     var w = $('amWrap'); if (w && R.order.indexOf(me) >= 0) w.scrollLeft = Math.max(0, amGeom().pad + R.order.indexOf(me) * amGeom().sp - w.clientWidth / 2);
+    if (!quiet && wasAnim) setTimeout(function () { if (AM.on && AM.v === v && !AM.anim) amEndShow(); }, 900);
   }
   function amVerify() {
     var R = AM.v.result, o = $('amVerOut') || $('amRes'), out = '<div class="w" style="font-size:13px;font-weight:600">🔍 検算中…</div>'; if (!$('amVerOut')) $('amRes').insertAdjacentHTML('beforeend', '<div id="amVerOut"></div>'); o = $('amVerOut'); o.innerHTML = out;
@@ -5102,7 +5116,9 @@ var TB = {
   function amFan(win) { if (!AM.sound || !amCtx()) return; var t = amAC.currentTime + .05; [0, 4, 7, 12, 16, 19].forEach(function (n, i) { amNote(261.63 * Math.pow(2, n / 12), t + i * .11, .5, 'triangle', win ? .16 : .09); }); }
   function amSendRungs() { clearTimeout(AM.sendT); AM.sendT = setTimeout(function () { AM.sendT = 0; AM.sending = 1; amApi({ action: 'am_rungs', rungs: AM.mine }).then(function (j) { AM.sending = 0; if (AM.sendT) return; if (j && j.ok) amApply(j); else if (j && j.message) toast(j.message); }); }, 500); }
   document.addEventListener('click', function (e) {
-    var t = e.target; if (!t) return; if (t.id === 'amRe' && AM.v && AM.v.result) { $('amRes').innerHTML = ''; AM.paths = null; AM.anim = { t0: Date.now(), dur: 14000 + 5000 * Math.max(1, AM.v.result.winners.length), arrN: 0 }; amSongStart(); cancelAnimationFrame(AM.raf); amLoop(); return; }
+    var t = e.target; if (!t) return; if (t.id === 'amRe' && AM.v && AM.v.result) { amEndHide(); $('amRes').innerHTML = ''; AM.paths = null; AM.anim = { t0: Date.now(), dur: 14000 + 5000 * Math.max(1, AM.v.result.winners.length), arrN: 0 }; amSongStart(); cancelAnimationFrame(AM.raf); amLoop(); return; }
+    if (t.id === 'amUpd') { location.href = location.pathname + '?v=' + Date.now(); return; }
+    if (t.id === 'amEndX') { amEndHide(); return; }
     if (t.id === 'amGo') { $('jkDoor').classList.remove('on'); sfx(2); amOpen(); return; }
     if (!AM.on) return; var b = t.closest ? t.closest('button') : null, v = AM.v;
     if (t.id === 'amCv' && v && v.phase === 'open' && v.me && v.me.entered && !AM.anim) {
@@ -6580,7 +6596,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 196;
+  var GV = 197;
   (function () {
     var last = Date.now();
     function chk() {
