@@ -1711,8 +1711,8 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     tm.appendChild(el('span', 'nm', who)); tm.appendChild(el('time', null, fmt(m.t)));
     if (kind === 'furan' || kind === 'aron' || kind === 'me') { line.appendChild(tm); line.appendChild(bub); } else { line.appendChild(bub); line.appendChild(tm); }
     col.appendChild(line); row.appendChild(col);
-    if (kind !== 'me' && !m.img && m.body && trNeed(m.body)) {
-      var tb = el('button', 'trmini', '🌐 Translate'); tb.type = 'button'; tb.title = '翻訳 / Translate';
+    if (!m.img && m.body && trNeed(m.body)) {
+      var tb = el('button', 'trmini', '🌐 Translate'); if (kind === 'me') tb.style.marginLeft = 'auto'; tb.type = 'button'; tb.title = '翻訳 / Translate';
       var tdone = function (o) { tb.remove(); col.appendChild(trSpan(o)); };
       tb.addEventListener('click', function () { tb.textContent = '…'; trGo(m.body, tdone); setTimeout(function () { if (tb.parentNode) tb.textContent = '🌐 Translate'; }, 6000); });
       col.appendChild(tb);
