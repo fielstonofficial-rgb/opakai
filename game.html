@@ -1301,6 +1301,10 @@ body.inPk .gh.dn::after{content:"💫 ダウン";background:rgba(90,90,110,.9)}
         <div class="sec">キャラクター</div>
         <div class="row"><span id="setName"></span><button class="opt" id="editAvatar" type="button">キャラを変える</button></div>
         <div class="row"><span>ぜんぶ消して最初から</span><button class="opt" id="resetAll" type="button">やり直す</button></div>
+        <div class="sec">🌐 言語・自動翻訳</div>
+        <div class="row"><span>翻訳する言語（自分が読む言語）</span><select id="setLang" style="max-width:55%;padding:6px;border-radius:8px"></select></div>
+        <div class="row"><span>チャットの自動翻訳</span><button class="opt" id="tgTr" type="button">ON</button></div>
+        <p class="tiny">他の人の発言を、選んだ言語に訳して下に表示します。ゲームの画面そのものは、ブラウザの翻訳（Chrome・Safari）でも訳せます。</p>
         <div class="sec">音と振動</div>
         <div class="row"><span>BGM（音楽）</span><button class="tg" id="tgBgm" type="button" aria-label="BGM"><i></i></button></div>
         <div class="row"><span>効果音</span><button class="tg" id="tgSound" type="button" aria-label="効果音"><i></i></button></div>
@@ -3273,7 +3277,7 @@ body.inPk .gh.dn::after{content:"💫 ダウン";background:rgba(90,90,110,.9)}
     if (m.t === 'gmhit') { if (m.to === myMid && isGM()) { var gd = Math.max(1, Math.min(9999, Math.round(m.d || 1))); floatTxt(hero.x, hero.y - 74, '-' + gd, 'y'); var now2 = Date.now(); if (now2 - gmTalkAt > 2500) { gmTalkAt = now2; var gl = ['いてっ！', '効かないね😎', 'いいパンチですよ！', 'もっとこい！', 'それで全力か〜？', 'ナイス攻撃！']; bubble($('hero2'), gl[Math.floor(Math.random() * gl.length)]); } var hb2 = $('hb'); if (hb2) { hb2.classList.remove('hurt'); void hb2.offsetWidth; hb2.classList.add('hurt'); } } return; }
     if (m.t === 'dmg') { if (m.to === myMid) hurtMe(m.d || 1); return; }
     if (m.t === 'bk') { if (!amFoeHost()) claimBoss(); return; }
-    if (m.t === 'chat') { var cn = (pr && pr.n) || '仲間'; if (tMuted[m.f]) return; var tx = String(m.x || '').slice(0, 40); tlogAdd(cn, tx); if (pr && pr.el) bubble(pr.el, tx); if (m.q && !inTown) { toast(cn + '：' + tx); if (/たすけ|ヘルプ/.test(tx)) { sfx(1); vib([40, 30, 40]); } } return; }
+    if (m.t === 'chat') { var cn = (pr && pr.n) || '仲間'; if (tMuted[m.f]) return; var tx = String(m.x || '').slice(0, 40); var ld = tlogAdd(cn, tx); if (pr && pr.el) bubble(pr.el, tx); trApply(tx, function (o) { if (ld) ld.appendChild(trSpan(o)); if (pr && pr.el) bubble(pr.el, o); }); if (m.q && !inTown) { toast(cn + '：' + tx); if (/たすけ|ヘルプ/.test(tx)) { sfx(1); vib([40, 30, 40]); } } return; }
     var sp = findSpot(m.i, m.g || 0);
     if (m.t === 'claim' && sp && !sp.used) { if (curSpot === sp) return; sp.by = m.f; sp.el.classList.add('taken'); if (!sp.el.querySelector('.by')) { var b = document.createElement('div'); b.className = 'by'; b.textContent = ((pr && pr.n) || '仲間') + ' が掘り中'; sp.el.appendChild(b); } }
     else if (m.t === 'free' && sp && sp.by === m.f) rtFree(sp);
@@ -4152,7 +4156,7 @@ var TB = {
     msgs.forEach(function (m) {
       if (m.id <= LT.chatSince) return; LT.chatSince = Math.max(LT.chatSince, m.id);
       var d = document.createElement('div'); d.className = 'lm ' + (m.k || 'say');
-      if (m.k === 'say') { var b = document.createElement('b'); b.textContent = m.n; d.appendChild(b); d.appendChild(document.createTextNode(' ' + m.t)); }
+      if (m.k === 'say') { var b = document.createElement('b'); b.textContent = m.n; d.appendChild(b); d.appendChild(document.createTextNode(' ' + m.t)); if (!LT.first && !(player && player.avatar && player.avatar.name === m.n)) trApply(m.t, function (o) { d.appendChild(trSpan(o)); }); }
       else d.textContent = m.t;
       box.appendChild(d); while (box.children.length > 120) box.removeChild(box.firstChild);
       if (m.k === 'say' && !LT.first) { var pr = null; Object.keys(peers).forEach(function (id) { if (peers[id].n === m.n) pr = peers[id]; }); if (pr && pr.el && Date.now() - m.ts < 8000) bubble(pr.el, m.t.slice(0, 40)); }
@@ -4543,7 +4547,7 @@ var TB = {
 
   /* ----- 闘技場（じゃんけんバトルロワイヤル本番）v181 ----- */
   var JA_W = 1200, JA_H = 1000, inJkA = false, jaT = 0, jaClk = 0;
-  var JA = { on: false, log: 0, players: [], me: null, ch: null, phase: 'idle', rd: -1, roundMs: 300000, startAt: 0, q: null, qT: 0, qu: [], n: 0, busy: false, again: false, first: true, sig: '', seen: '', prev: null, conf: null, count: 0, isOp: false, bsig: '' };
+  var JA = { on: false, log: 0, players: [], me: null, ch: null, phase: 'idle', rd: -1, roundMs: 300000, startAt: 0, q: null, qT: 0, qu: [], n: 0, busy: false, again: false, first: true, sig: '', seen: '', prev: null, conf: null, count: 0, isOp: false, bsig: '', hs: {}, zone: -1 };
   var JA_HN = ['✊', '✌️', '✋'];
   function jkaCss() {
     if ($('jaCss')) return; var s = document.createElement('style'); s.id = 'jaCss';
@@ -4551,20 +4555,22 @@ var TB = {
       '#jkaHud .jaR1{display:inline-block;max-width:100%;padding:6px 14px;border-radius:14px;background:rgba(20,8,14,.82);border:2px solid #d9b24c;color:#fff;font-size:15px;font-weight:900;box-shadow:0 3px 10px rgba(0,0,0,.4)}' +
       '#jkaHud .jaR2{position:fixed;left:8px;bottom:8px;width:112px;display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-start;pointer-events:auto;z-index:8001}body:has(#field.chat) #jkaHud .jaR2{display:none}#jkaHud .jaR2 button{flex:0 0 54px;padding:6px 0;border:0;border-radius:10px;font-weight:900;font-size:11px;color:#241;background:linear-gradient(#ffe08a,#e3b341);box-shadow:0 2px 0 #8a6a1a}#jkaHud .jaR2 button.y{background:linear-gradient(#9fc2ff,#4a7fe0);color:#fff;box-shadow:0 2px 0 #1f3fa0}#jkaHud .jaR2 button.g{background:linear-gradient(#7dff9a,#2fbf5c);box-shadow:0 2px 0 #1a7a3a}' +
       '.jaB{width:600px;min-width:0!important;padding:8px 18px!important}.jaB .lbBt{font-size:20px}.jaB .lbBs{font-size:26px}.jaCols{display:flex;gap:14px;text-align:left;margin-top:4px}.jaCols>div{flex:1;font-size:17px;line-height:1.4;color:#e8f6ff}.jaCols h4{margin:0 0 2px;font-size:15px;color:#ffd36a}.jaCols .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
-      '.gh.jkPl{pointer-events:auto;cursor:pointer}.gh.jkPl .gname{font-size:9px;white-space:nowrap}.gh.jkPl.me .hs{box-shadow:0 0 14px 6px rgba(255,225,90,.9)}.gh.jkPl.dead{opacity:.55}.gh.jkPl.dead .hb svg{transform:rotate(90deg);transform-origin:50% 88%;filter:grayscale(.8)}.jkChip{position:absolute;width:56px;height:34px;box-sizing:border-box;border-radius:8px;background:#fff8e6;border:2px solid #d9b24c;text-align:center;overflow:hidden;pointer-events:auto;z-index:2;cursor:pointer;line-height:1.15}.jkChip b{display:block;font-size:11px;color:#3a0f20;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:2px 2px 0}.jkChip i{font-style:normal;font-size:10px;color:#7d1226;font-weight:800}.jkChip.me{background:#ffe08a;border-color:#ff6b6b}.jkChip.dead{opacity:.45}' +
+      '.gh.jkPl{pointer-events:auto;cursor:pointer}.gh.jkPl .gname{font-size:9px;white-space:nowrap}.gh.jkPl.me .hs{box-shadow:0 0 14px 6px rgba(255,225,90,.9)}.gh.jkPl.dead{opacity:.8}.gh.jkPl.dead .hb svg{filter:grayscale(.85)}.jkChip{position:absolute;width:56px;height:34px;box-sizing:border-box;border-radius:8px;background:#fff8e6;border:2px solid #d9b24c;text-align:center;overflow:hidden;pointer-events:auto;z-index:2;cursor:pointer;line-height:1.15}.jkChip b{display:block;font-size:11px;color:#3a0f20;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:2px 2px 0}.jkChip i{font-style:normal;font-size:10px;color:#7d1226;font-weight:800}.jkChip.me{background:#ffe08a;border-color:#ff6b6b}.jkChip.dead{opacity:.45}' +
       '#jkaRing{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:2}' +
+      '#jkaHud .jaMe{position:fixed;left:50%;bottom:74px;transform:translateX(-50%);z-index:8002;display:block;width:max-content;max-width:94%;padding:6px 16px;border-radius:14px;font-size:19px;font-weight:900;color:#fff;border:2px solid #fff;box-shadow:0 3px 10px rgba(0,0,0,.4)}#jkaHud .jaMe.ok{background:#1f8a4a}#jkaHud .jaMe.lose{background:#b3202f}#jkaHud .jaMe.watch{background:#4a5a78}#jkaHud .jaMe.win{background:#c88a00}' +
+      '#jkaBan{position:fixed;left:0;right:0;top:34%;z-index:8100;text-align:center;pointer-events:none;display:none}#jkaBan b{display:inline-block;max-width:92%;padding:16px 26px;border-radius:18px;background:rgba(150,20,35,.94);border:3px solid #fff;color:#fff;font-size:28px;font-weight:900;line-height:1.3;box-shadow:0 6px 20px rgba(0,0,0,.5);animation:jaBan .4s}@keyframes jaBan{from{transform:scale(.4);opacity:0}to{transform:scale(1);opacity:1}}' +
       '.jaRow{display:flex;align-items:center;gap:8px;padding:7px 4px;border-bottom:1px solid rgba(255,255,255,.12);font-size:15px}.jaRow .no{width:30px;text-align:right;color:#ffd36a;font-weight:900}.jaRow .nm{flex:1;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;font-weight:800}.jaRow button{padding:7px 12px;border:0;border-radius:10px;font-weight:900;background:linear-gradient(#ffe08a,#e3b341);color:#241}.jaRow button:disabled{opacity:.35}.jaRow.me{background:rgba(255,224,138,.15)}' +
       '.jkB input[type=text].jaQ{width:100%;padding:9px;border-radius:10px;border:2px solid #d9b24c;font-size:16px;box-sizing:border-box;margin:6px 0}';
     document.head.appendChild(s);
     var d = document.createElement('div');
-    d.innerHTML = '<div id="jkaHud"><div class="jaR1" id="jaR1"></div><div class="jaR2"><button type="button" class="g" id="jaCh">⚔ 挑戦</button><button type="button" id="jaPr" class="y">🎮 練習</button><button type="button" id="jaLs">📋 順位</button><button type="button" id="jaOp" style="display:none">🛠 運営</button></div></div>' +
-      '<div class="jkM" id="jkaDuel"><div class="jkB" id="jkaDuelB"></div></div><div class="jkM" id="jkaList"><div class="jkB" id="jkaListB"></div></div>';
+    d.innerHTML = '<div id="jkaHud"><div class="jaR1" id="jaR1"></div><div class="jaMe watch" id="jaMe"></div><div class="jaR2"><button type="button" class="g" id="jaCh">⚔ 挑戦</button><button type="button" id="jaPr" class="y">🎮 練習</button><button type="button" id="jaLs">📋 順位</button><button type="button" id="jaOp" style="display:none">🛠 運営</button></div></div>' +
+      '<div id="jkaBan"></div><div class="jkM" id="jkaDuel"><div class="jkB" id="jkaDuelB"></div></div><div class="jkM" id="jkaList"><div class="jkB" id="jkaListB"></div></div>';
     while (d.firstChild) document.body.appendChild(d.firstChild);
     $('jkaList').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('on'); });
   }
   function jkaNpcs() {
     if (NPCS.jka_an) return;
-    NPCS.jka_an = { nm: '実況 レイナ', where: 'jka', x: 560, y: 360, av: lbRecepAv('レイナ', 2, 6, 5, 7, 7), hi: 'こんにちは、実況のレイナです！ 試合がはじまったら、勝負の様子をここでお伝えします。気になることがあれば、下のボタンから聞いてくださいね。',
+    NPCS.jka_an = { nm: '実況 レイナ', where: 'jka', x: 440, y: 440, av: lbRecepAv('レイナ', 2, 6, 5, 7, 7), hi: 'こんにちは、実況のレイナです！ 試合がはじまったら、勝負の様子をここでお伝えします。気になることがあれば、下のボタンから聞いてくださいね。',
       faq: [
         { q: 'どうやって戦うの？', k: ['戦', '挑戦', '勝負', 'やり方'], a: '試合がはじまったら、上の「⚔ 挑戦する」を押して、相手を選びます。相手が「戦う」を選んだら、グー・チョキ・パーを出して勝負です。勝ったら相手のバッジを1つ奪えます。' },
         { q: 'ライフとバッジって？', k: ['ライフ', 'バッジ', '負け'], a: 'ライフは負けるたびに1つ減って、0になるとそのラウンドは観戦です（決勝は4つ）。バッジは順位を決める点数で、勝つと相手から1つ奪えます。バッジが多い人が勝ち抜けます。' },
@@ -4573,6 +4579,24 @@ var TB = {
       ] };
     NPCS.jka_pr = { nm: '練習係 ジャン', where: 'jka', x: 1000, y: 880, prac: true, av: lbRecepAv('ジャン', 1, 2, 1, 4, 3), hi: 'ジャンです！ 本番の前に、ここで練習していってください。コンピューター相手で、ライフ3つ。何回でもできますよ。',
       faq: [{ q: '練習ってどんなの？', k: ['練習', 'れんしゅう'], a: '本番と同じ、ライフ3つのじゃんけんです。コンピューターが相手なので、バッジは減りません。安心して試してください。' }] };
+  }
+  /* ---- 円の中と外：戦っている人だけが円の中。敗退したら外周へ。間には壁（行き来できない） ---- */
+  function jkaIn() { if (JP.on) return !JP.over && !!JP.me && JP.me.l > 0; var m = JA.me; return !!(m && m.rd >= 0 && m.lives > 0 && JA.phase !== 'done'); }
+  function jkaOuter(i) { var ring = Math.floor(i / 26), k = i % 26, t = (k + .5) / 26 * Math.PI, rx = 478 + ring * 46, ry = 330 + ring * 28; return { x: Math.round(600 - rx * Math.cos(t)), y: Math.min(960, Math.round(590 + ry * Math.sin(t))) }; }
+  function jkaBanner(txt) {
+    var e = $('jkaBan'); if (!e) return; e.innerHTML = '<b></b>'; e.firstChild.style.whiteSpace = 'pre-line'; e.firstChild.textContent = txt; e.style.display = 'block'; sfx(2); vib([60, 40, 60]);
+    clearTimeout(JA.banT); JA.banT = setTimeout(function () { e.style.display = 'none'; }, 3600);
+  }
+  function jkaClamp() {
+    var z = jkaIn() ? 1 : 0, dx = hero.x - 600, dy = hero.y - 590, k;
+    if (JA.zone !== z) {
+      JA.zone = z; k = (dx / 405) * (dx / 405) + (dy / 265) * (dy / 265);
+      if (z === 1 && k > 1) { hero.x = 600; hero.y = 650; ftarget = null; updHero(); }
+      else if (z === 0 && k <= 1) { var o = jkaOuter(jkaSrc().filter(function (x) { return x.id !== myMid && x.l <= 0; }).length); hero.x = o.x; hero.y = o.y; ftarget = null; updHero(); }
+      return;
+    }
+    if (z) { k = (dx / 385) * (dx / 385) + (dy / 245) * (dy / 245); if (k > 1) { var s1 = 1 / Math.sqrt(k); hero.x = 600 + dx * s1; hero.y = 590 + dy * s1; if (ftarget) { ftarget = null; if (Date.now() - (JA.wt || 0) > 3000) { JA.wt = Date.now(); toast('戦ってる間は、円の外には出られへんで'); } } updHero(); } }
+    else { k = (dx / 422) * (dx / 422) + (dy / 282) * (dy / 282); if (k < 1) { if (k < 1e-6) { dx = 1; k = 1 / 422 / 422; } var s2 = 1 / Math.sqrt(k); hero.x = 600 + dx * s2; hero.y = 590 + dy * s2; if (ftarget) { ftarget = null; if (Date.now() - (JA.wt || 0) > 3000) { JA.wt = Date.now(); toast('円の中は、戦ってる人だけやで'); } } updHero(); } }
   }
   function jkaSeats() {
     SEATS = []; var r, c;
@@ -4587,7 +4611,7 @@ var TB = {
     html += '<svg width="' + W + '" height="' + H + '" style="position:absolute;left:0;top:0;pointer-events:none;z-index:1"><defs><radialGradient id="jaR" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#9a2038"/><stop offset=".8" stop-color="#6a1428"/><stop offset="1" stop-color="#4a0f20"/></radialGradient></defs>' +
       '<ellipse cx="600" cy="590" rx="412" ry="272" fill="#d9b24c"/><ellipse cx="600" cy="590" rx="400" ry="260" fill="url(#jaR)"/><ellipse cx="600" cy="590" rx="320" ry="190" fill="none" stroke="rgba(255,225,150,.3)" stroke-width="3" stroke-dasharray="14 10"/>' +
       '<text x="600" y="640" text-anchor="middle" font-size="130" fill="rgba(255,225,150,.10)">✊✌️✋</text></svg>';
-    html += '<div class="lbBoard jaB" id="jkaBoard" style="left:' + (W / 2) + 'px;top:196px"></div>';
+    html += '<div class="lbBoard jaB" id="jkaBoard" style="left:' + (W / 2) + 'px;top:96px"></div>';
     [[120, 150], [1080, 150]].forEach(function (p) { html += '<div class="dc lotCh" style="left:' + p[0] + 'px;top:' + p[1] + 'px;width:130px;height:154px;z-index:90000">' + lotChandSVG() + '</div>'; });
     em('🌴', 40, 380, 56, 380); em('🌴', W - 40, 380, 56, 380); em('🪴', 40, 960, 52, 960); em('🪴', W - 40, 960, 52, 960); em('🌷', 460, 930, 30, 930); em('🌷', 740, 930, 30, 930);
     SEATS.forEach(function (sa) { dc(lotChairSVG(), sa.x, sa.y - 2, 50, 44, sa.y - 1); dc(lotPadSVG(), sa.x, sa.y + 8, 56, 26, sa.y + 1); });
@@ -4608,7 +4632,7 @@ var TB = {
     jkaStart();
   }
   function jkaStart() {
-    jkaStop(); inJkA = true; JA.on = true; JA.log = 0; JA.players = []; JA.ch = null; JA.n = 0; JA.first = true; JA.sig = ''; JA.seen = ''; JA.prev = null; JA.conf = null; JA.qu = []; JA.me = null; JA.phase = 'idle'; JA.bsig = '';
+    jkaStop(); inJkA = true; JA.on = true; JA.log = 0; JA.players = []; JA.ch = null; JA.n = 0; JA.first = true; JA.sig = ''; JA.seen = ''; JA.prev = null; JA.conf = null; JA.qu = []; JA.me = null; JA.phase = 'idle'; JA.bsig = ''; JA.zone = -1; JA.wasDead = undefined; JA.hs = {};
     $('jkaHud').style.display = 'block'; jkaHud(); jkaBoard();
     jkaSync(); jaClk = setInterval(jkaClock, 1000);
   }
@@ -4626,7 +4650,7 @@ var TB = {
       else if (j && j._s === 401 && JA.n < 3) toast('ログインが切れてるかも。入り直してな');
       clearTimeout(jaT);
       if (JA.again) { JA.again = false; jkaSync(); return; }
-      jaT = setTimeout(jkaSync, JA.phase === 'play' ? ((JA.me && JA.me.rd >= 0) ? 800 : 2500) : (JA.phase === 'countdown' && jkNow() > JA.startAt - 30000) ? 1500 : 3000);
+      jaT = setTimeout(jkaSync, (JA.ch && (JA.ch.st === 'pending' || JA.ch.st === 'accepted')) ? 450 : JA.phase === 'play' ? ((JA.me && JA.me.rd >= 0) ? 800 : 2500) : (JA.phase === 'countdown' && jkNow() > JA.startAt - 30000) ? 1500 : 3000);
     });
   }
   function jkaPoke() { if (!JA.on) return; clearTimeout(jaT); JA.n = 0; jkaSync(); }
@@ -4658,17 +4682,41 @@ var TB = {
     if (JA.phase === 'done') return '🏁 ゲーム終了';
     var end = s + (JA.rd + 1) * JA.roundMs; return '🔥 第' + (JA.rd + 1) + 'ラウンド　残り ' + jkFmt(end - n);
   }
+  function jkaMeSt() {
+    var e = $('jaMe'); if (!e) return; var t = '', c = 'watch';
+    if (JP.on) {
+      if (JP.over) { t = '🏁 練習おわり'; c = 'watch'; }
+      else if (JP.me.l > 0) { t = '⚔ 練習中　❤️×' + JP.me.l + '　🏅' + JP.me.b; c = 'ok'; }
+      else { t = '💀 敗退！ 円の外で観戦中'; c = 'lose'; }
+    } else {
+      var m = JA.me;
+      if (JA.phase === 'done') {
+        if (m && m.rank) { t = '🏆 ゲーム終了　あなたは ' + m.rank + '位！'; c = 'win'; }
+        else if (m && m.rd >= 0 && m.lives > 0) { t = '🎉 ゲーム終了　最後まで勝ち残り！'; c = 'win'; }
+        else if (m) { t = '🏁 ゲーム終了　あなたは敗退でした'; c = 'lose'; }
+        else { t = '🏁 ゲーム終了（あなたは観戦でした）'; c = 'watch'; }
+      } else if (!m) { t = '👀 観戦中（参加していません）'; c = 'watch'; }
+      else if (m.rd >= 0 && m.lives > 0) { t = (JA.phase === 'play' ? '⚔ 戦闘中' : '✅ 参加OK') + '　❤️×' + m.lives + '　🏅' + m.badges + (m.rank ? '　👑' + m.rank + '位' : ''); c = 'ok'; }
+      else if (m.rd >= 0) { t = '💀 ライフ0で敗退！ 円の外で観戦中'; c = 'lose'; }
+      else { t = '💀 勝ち抜けならず…敗退！ 円の外で観戦中'; c = 'lose'; }
+    }
+    if (e.textContent !== t) e.textContent = t; if (e.dataset.c !== c) { e.dataset.c = c; e.className = 'jaMe ' + c; }
+    var dead = JP.on ? (!JP.over && JP.me.l <= 0) : !!(JA.me && JA.phase === 'play' && (JA.me.lives <= 0 || JA.me.rd < 0));
+    if (JA.wasDead === undefined) JA.wasDead = dead;
+    else if (dead && !JA.wasDead) jkaBanner(JP.on || (JA.me && JA.me.lives <= 0) ? '💀 ライフ0… 敗退！\n円の外に出たで' : '💀 勝ち抜けならず…\n円の外に出たで');
+    JA.wasDead = dead;
+  }
   function jkaHud() {
-    if (JP.on) { $('jaR1').textContent = JP.over ? '🏁 練習おわり' : '🎮 練習　残り ' + jkFmt(JP.end - Date.now()) + (JP.me.l > 0 ? '　❤️×' + JP.me.l + '　🏅' + JP.me.b : '　敗退（観戦中）'); return; }
-    var m = JA.me, h = jkaTimeTxt();
-    if (JA.rtt) h += '　📶' + JA.rtt + 'ms';
-    if (m && m.rd >= 0) h += '　❤️×' + m.lives + '　🏅' + m.badges + (m.rank ? '　👑' + m.rank + '位' : ''); else if (m) h += '　敗退（観戦中）'; else h += '　👀 観戦中';
+    jkaMeSt();
+    if (JP.on) { $('jaR1').textContent = JP.over ? '🏁 練習おわり' : '🎮 練習　残り ' + jkFmt(JP.end - Date.now()); return; }
+    var h = jkaTimeTxt(); if (JA.rtt) h += '　📶' + JA.rtt + 'ms';
     $('jaR1').textContent = h;
   }
   function jkaClock() {
     if (!JA.on) return; jkaHud();
     if (JA.qu.length && Date.now() - JA.qT > 2600) { JA.qT = Date.now(); jkaSay(JA.qu.shift(), false); }
     var c = JA.ch, e = $('jaCd'); if (c && c.until && e) e.textContent = '残り ' + Math.max(0, Math.ceil((c.until - jkNow()) / 1000)) + '秒';
+    var wt = $('jaWt'); if (wt && JA.hT) wt.textContent = '（' + Math.max(0, Math.round((Date.now() - JA.hT) / 1000)) + '秒）';
   }
   function jkaBoard() {
     var b = $('jkaBoard'); if (!b) return; var q = JA.q, L = JA.players, h = '<div class="lbBt">🏟 じゃんけん バトルロワイヤル</div><div class="lbBs ' + (JA.phase === 'play' ? 'play' : JA.phase === 'entry' ? 'entry' : '') + '">' + esc(jkaTimeTxt()) + '</div>';
@@ -4690,14 +4738,16 @@ var TB = {
     var r = $('jkaRing'); if (!r) return;
     var L = jkaSrc().filter(function (x) { return x.id !== myMid; }).sort(function (a, b) { return a.id < b.id ? -1 : 1; }), n = L.length, sg = L.map(function (x) { return x.id + x.b + x.l + (x.k || 0); }).join(',') + (JP.on ? 'P' : '');
     if (r.dataset.sg === sg) return; r.dataset.sg = sg;
-    var cols = n <= 27 ? 9 : n <= 60 ? 12 : 15, rows = Math.max(1, Math.ceil(n / cols)), sp = Math.min(84, 760 / cols), pitch = Math.min(60, 330 / rows), y0 = 660 - (rows - 1) * pitch / 2, h = '', i, short = n > 20;
+    var dead = L.filter(function (x) { return x.l <= 0; }), L2 = L.filter(function (x) { return x.l > 0; }); L = L2.concat(dead); var na = L2.length; n = L.length;
+    var cols = na <= 27 ? 9 : na <= 60 ? 12 : 15, rows = Math.max(1, Math.ceil(na / cols)), sp = Math.min(84, 760 / cols), pitch = Math.min(60, 330 / rows), y0 = 660 - (rows - 1) * pitch / 2, h = '', i, short = n > 20;
     r.innerHTML = '';
     for (i = 0; i < n; i++) {
       var x = L[i], col = i % cols, row = Math.floor(i / cols), mine = (x.id === myMid), e = document.createElement('div');
       e.className = 'gh jkPl' + (mine ? ' me' : '') + (x.l <= 0 ? ' dead' : ''); e.dataset.id = x.id;
       e.innerHTML = '<div class="hs"></div><div class="hb">' + (mine ? heroHTML() : (function () { var av = jkaAv(x.id, x.n); return charHTML(dress(av, { lk: av.lk })); })()) + '</div><div class="gname"></div>';
       e.querySelector('.gname').textContent = (x.k ? '👑' : '') + (short ? x.n.slice(0, n > 40 ? 3 : 4) : x.n) + (x.l <= 0 ? '💤' : '');
-      r.appendChild(e); placeEl(e, Math.round(600 + (col - (cols - 1) / 2) * sp), Math.round(y0 + row * pitch));
+      r.appendChild(e);
+      if (x.l <= 0) { var o2 = jkaOuter(i - na); placeEl(e, o2.x, o2.y); } else placeEl(e, Math.round(600 + (col - (cols - 1) / 2) * sp), Math.round(y0 + row * pitch));
     }
   }
   function jkaCanPlay() { if (JP.on) return !JP.over && JP.me.l > 0; return JA.phase === 'play' && JA.me && JA.me.rd >= 0 && JA.me.lives > 0; }
@@ -4724,16 +4774,16 @@ var TB = {
     if (JP.on) return; var c = JA.ch, el = $('jkaDuel'), b = $('jkaDuelB'); if (JA.conf) { if (c && c.st !== 'done') { JA.conf = null; } else return; }
     if (!c) { el.classList.remove('on'); JA.sig = ''; return; }
     if (c.st === 'done' && JA.seen === c.id) { el.classList.remove('on'); return; }
-    var sig = [c.id, c.st, c.mine, c.mh, c.draws, c.win].join('|'); if (sig === JA.sig && el.classList.contains('on')) return; var firstDone = c.st === 'done' && JA.sig.indexOf(c.id + '|done') !== 0; JA.sig = sig;
+    var sig = [c.id, c.st, c.mine, c.mh, c.draws, c.win, JA.hs[c.id]].join('|'); if (sig === JA.sig && el.classList.contains('on')) return; var firstDone = c.st === 'done' && JA.sig.indexOf(c.id + '|done') !== 0; JA.sig = sig;
     var h = '', i;
     if (c.st === 'pending' && c.mine === 'b') h = '<h3>⚔ 挑戦された！</h3><div class="jkS"><b>' + esc(c.foeN) + '</b> から挑戦！<br>戦う？ 回避する？<br><span id="jaCd"></span></div><button type="button" class="jkBtn g" id="jaAcc">戦う！</button><button type="button" class="jkBtn s" id="jaAvd">回避する</button>';
     else if (c.st === 'pending') h = '<h3>⚔ 挑戦中</h3><div class="jkS"><b>' + esc(c.foeN) + '</b> の返事を待ってるで…<br><span id="jaCd"></span></div><button type="button" class="jkBtn s" id="jaCan">取り消す</button>';
     else if (c.st === 'accepted') {
       h = '<h3>✊✌️✋ 勝負！</h3><div class="jkS">vs <b>' + esc(c.foeN) + '</b>' + (c.draws ? '<br>あいこ！ もう一回！' : '') + '<br><span id="jaCd"></span></div>';
       if (c.mh == null) { h += '<div class="jkHands">'; for (i = 0; i < 3; i++) h += '<button type="button" data-jh="' + i + '">' + JA_HN[i] + '</button>'; h += '</div>'; }
-      else h += '<div class="jkRes">出した：<span style="font-size:64px">' + JA_HN[c.mh] + '</span><br>相手を待ってるで…</div>';
+      else h += '<div class="jkRes">出した：<span style="font-size:64px">' + JA_HN[c.mh] + '</span><br>' + (JA.hs[c.id] === 0 ? '⏳ 送信中…（通信がおそいと、数秒かかるで）' : '✅ 送れたで！ 相手の手を待ってるで… <span id="jaWt"></span>') + '</div>';
     } else if (c.st === 'done') {
-      h = '<h3>⚔ 勝負の結果</h3><div class="jkRes"><span style="font-size:64px">' + JA_HN[c.mh] + ' ' + JA_HN[c.oh] + '</span><br>' + (c.win ? '🎉 勝ち！ バッジを1つ奪った🏅' : '😢 負け… ライフ-1、バッジ-1') + '</div><button type="button" class="jkBtn g" id="jaDone">OK</button>';
+      h = '<h3>⚔ 勝負の結果</h3><div class="jkRes"><span style="font-size:64px">' + JA_HN[c.mh] + ' ' + JA_HN[c.oh] + '</span><br>' + (c.win ? '🎉 勝ち！ バッジを1つ奪った🏅' : '😢 負け… ライフ-1、バッジ-1') + (JA.me ? '<br><span style="font-size:15px">いまの状態：❤️×' + JA.me.lives + '　🏅' + JA.me.badges + (JA.me.lives <= 0 ? '<br>💀 ライフ0… 円の外で観戦や' : '') + '</span>' : '') + '</div><button type="button" class="jkBtn g" id="jaDone">OK</button>';
       if (firstDone) { if (c.win) sfx(3); else vib(); }
     }
     b.innerHTML = h; el.classList.add('on'); jkaClock();
@@ -4744,13 +4794,13 @@ var TB = {
   var JP_NM = ['タロウ', 'ハナ', 'ケン', 'ミキ', 'ソウ', 'リナ', 'ダイ', 'ユキ', 'レン', 'サキ', 'ゴウ'];
   function jpDlg(h) { $('jkaDuelB').innerHTML = h; $('jkaDuel').classList.add('on'); }
   function jpStart() {
-    JP.on = true; JP.over = false; JP.n = 0; JP.end = Date.now() + 180000; JP.me = { id: myMid, n: (player.avatar && player.avatar.name) || 'あなた', b: 3, l: 3, k: 0 };
+    JA.wasDead = false; JP.on = true; JP.over = false; JP.n = 0; JP.end = Date.now() + 180000; JP.me = { id: myMid, n: (player.avatar && player.avatar.name) || 'あなた', b: 3, l: 3, k: 0 };
     JP.players = [JP.me]; JP_NM.forEach(function (n, i) { JP.players.push({ id: 'pb' + i, n: n, b: 3, l: 3, k: 0 }); });
     $('jaPr').textContent = '🛑 やめる'; $('jkaDuel').classList.remove('on'); jkaRing(); jkaHud(); clearInterval(JP.tk); JP.tk = setInterval(jpTick, 1400);
     toast('練習スタート！ キャラをタップして挑戦（3分・バッジ3つ・ライフ3）'); sfx(3);
   }
   function jpStop(quiet) {
-    if (!JP.on) return; clearInterval(JP.tk); JP.on = false; JP.over = false; var b = $('jaPr'); if (b) b.textContent = '🎮 練習'; var d = $('jkaDuel'); if (d) d.classList.remove('on');
+    if (!JP.on) return; JA.wasDead = undefined; clearInterval(JP.tk); JP.on = false; JP.over = false; var b = $('jaPr'); if (b) b.textContent = '🎮 練習'; var d = $('jkaDuel'); if (d) d.classList.remove('on');
     var r = $('jkaRing'); if (r) r.dataset.sg = ''; if (!quiet) { jkaRing(); jkaHud(); }
   }
   function jpAlive() { return JP.players.filter(function (x) { return x.l > 0; }); }
@@ -4801,12 +4851,12 @@ var TB = {
     else if (t.id === 'jaListClose') $('jkaList').classList.remove('on');
     else if (t.dataset && t.dataset.jch) { if (!t.disabled) jkaConfirm(t.dataset.jch); }
     else if (t.id === 'jaNo') { JA.conf = null; $('jkaDuel').classList.remove('on'); }
-    else if (t.id === 'jaGo') { var to = JA.conf; t.disabled = true; jkaCall({ action: 'jk_ch', to: to }, function (j) { JA.conf = null; if (!(j && j.ok)) $('jkaDuel').classList.remove('on'); else sfx(2); }); }
-    else if (t.id === 'jaAcc' && c) { t.disabled = true; jkaCall({ action: 'jk_resp', id: c.id, ok: true }); }
-    else if (t.id === 'jaAvd' && c) { t.disabled = true; jkaCall({ action: 'jk_resp', id: c.id, ok: false }); }
+    else if (t.id === 'jaGo') { var to = JA.conf; t.disabled = true; $('jkaDuelB').innerHTML = '<h3>⚔ 挑戦を送信中…</h3><div class="jkS">⏳ 相手に届けてるで（通信がおそいと数秒かかるで）</div>'; jkaCall({ action: 'jk_ch', to: to }, function (j) { JA.conf = null; if (!(j && j.ok)) $('jkaDuel').classList.remove('on'); else sfx(2); }); }
+    else if (t.id === 'jaAcc' && c) { t.disabled = true; $('jkaDuelB').innerHTML = '<h3>⚔ 送信中…</h3><div class="jkS">⏳ 「戦う」を送ってるで…</div>'; jkaCall({ action: 'jk_resp', id: c.id, ok: true }); }
+    else if (t.id === 'jaAvd' && c) { t.disabled = true; $('jkaDuelB').innerHTML = '<h3>送信中…</h3><div class="jkS">⏳ 回避を送ってるで…</div>'; jkaCall({ action: 'jk_resp', id: c.id, ok: false }); }
     else if (t.id === 'jaCan' && c) { t.disabled = true; jkaCall({ action: 'jk_cancel', id: c.id }); }
     else if (t.id === 'jaDone' && c) { JA.seen = c.id; $('jkaDuel').classList.remove('on'); }
-    else if (t.dataset && t.dataset.jh != null && c) { var hh = +t.dataset.jh; c.mh = hh; JA.sig = ''; jkaDuel(); jkaCall({ action: 'jk_hand', id: c.id, h: hh }); }
+    else if (t.dataset && t.dataset.jh != null && c) { var hh = +t.dataset.jh, cid = c.id; c.mh = hh; JA.hs[cid] = 0; JA.hT = Date.now(); JA.sig = ''; jkaDuel(); sfx(0); jkaCall({ action: 'jk_hand', id: cid, h: hh }, function () { JA.hs[cid] = 1; JA.sig = ''; jkaDuel(); }); }
     else if (t.id === 'npcPrac') { $('npc').classList.remove('on'); jkPracOpen(); }
   });
   document.addEventListener('input', function (e) { if (e.target && e.target.id === 'jaQ') jkaListRender(); });
@@ -4814,7 +4864,7 @@ var TB = {
 
   /* ---------- 🎲 あみだくじ会場（景品あみだ）v186。結果は締切後の公開乱数(drand)で確定し、誰でも検算できる ---------- */
   var AM = { on: false, v: null, tk: 0, mine: [], sound: true, anim: null, raf: 0, doneEp: -1, off: 0, busy: false, sendT: 0, cap: '', ver: null, w: 0 };
-  var AM_R = 120, AM_CAPS = ['♪ あみだ あみだ どこへ行く', '♪ ぐるっとまわって まっしぐら', '♪ 当たりはだれだ ドキドキ！', '♪ 運命の線を すーっと下りて', '♪ 光るのは キミかもね！'];
+  var AM_R = 120, AM_CAPS = ['♪ あみだ あみだ どこへ行く', '♪ ぐるっとまわって まっしぐら', '♪ 当たりはだれだ ドキドキ！', '♪ 運命の線を すーっと下りて', '♪ 光るのは キミかもね！', '♪ あみだくじ あみだくじ！'];
   function amSha(str) {
     var u = unescape(encodeURIComponent(str)), n = u.length, i, j, w = [], H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
     var K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
@@ -4922,7 +4972,7 @@ var TB = {
     if (v.phase === 'open' || v.phase === 'wait') h += '<div style="font-size:13px;margin-bottom:6px">開催中：' + esc(v.title) + '</div><button type="button" class="g" id="amBots">🤖 ダミー30人を入れる（テスト）</button><button type="button" class="s" id="amClear">取りやめる（くじを消す）</button>';
     else {
       var dv = new Date(Date.now() + 10 * 60000 - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
-      h += '<div style="font-size:13px">くじの名前</div><input id="amTi" value="プレゼントあみだくじ" maxlength="30"><div style="font-size:13px">当たり人数（1〜5人・景品ごとに1人）</div><select id="amWn"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select><div id="amPzs"></div>' +
+      h += '<div style="font-size:13px">くじの名前</div><input id="amTi" value="プレゼントあみだくじ" maxlength="30"><div style="font-size:13px">当たり人数（1〜5人・景品ごとに1人）</div><select id="amWn"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select><div style="font-size:11px;color:#aaa">※景品名は12文字まで（くじの枠に収まる長さ）</div><div id="amPzs"></div>' +
         '<div style="font-size:13px">受付の締切</div><input id="amDt" type="datetime-local" value="' + dv + '"><div><button type="button" class="s" data-amq="1">+3分</button><button type="button" class="s" data-amq="10">+10分</button><button type="button" class="s" data-amq="60">+1時間</button><button type="button" class="s" data-amq="0.7">テスト(40秒後)</button></div>' +
         '<div style="font-size:13px">定員（最大150）</div><input id="amCapIn" type="number" value="100" min="2" max="150"><button type="button" class="g" id="amSet">🚀 受付をはじめる</button>';
       if (v.phase === 'done') h += '<button type="button" class="s" id="amClear">結果を消して、最初に戻す</button>';
@@ -4931,13 +4981,13 @@ var TB = {
   }
   function amPzRender() {
     var n = $('amWn'), b = $('amPzs'); if (!n || !b) return; var k = +n.value, keep = [].map.call(b.querySelectorAll('input'), function (x) { return x.value; }), h = '';
-    for (var i = 0; i < k; i++) h += '<input class="amPz" placeholder="商品名 ' + (i + 1) + '（例：オパールのルース 1ct）" maxlength="30" value="' + esc(keep[i] || '') + '">'; b.innerHTML = h;
+    for (var i = 0; i < k; i++) h += '<input class="amPz" placeholder="景品名 ' + (i + 1) + '（12文字まで）" maxlength="12" value="' + esc(keep[i] || '') + '">'; b.innerHTML = h;
   }
   /* ---- 描画 ---- */
   function amGeom() {
     var v = AM.v, R = v && v.result, N = R ? R.N : Math.max(2, (v && v.count) || 2); if (N < 2) N = 2;
     var sp = N <= 8 ? 58 : N <= 20 ? 42 : 32, pad = 30, vw = Math.max(260, (window.innerWidth || 400) - 24), W = Math.max(vw, pad * 2 + (N - 1) * sp); if (W > vw) sp = Math.max(sp, (W - pad * 2) / (N - 1)); else sp = (W - pad * 2) / (N - 1);
-    return { N: N, sp: sp, pad: pad, W: W, y0: 92, H: 300, Hc: 92 + 300 + 96 };
+    return { N: N, sp: sp, pad: pad, W: W, y0: 92, H: 300, Hc: 92 + 300 + 132 };
   }
   function amPaths(R, G) {
     var rowMap = {}, rows = []; R.rungs.forEach(function (c) { (rowMap[c.r] = rowMap[c.r] || []).push(c.g); }); rows = Object.keys(rowMap).map(Number).sort(function (a, b) { return a - b; });
@@ -4957,24 +5007,31 @@ var TB = {
     else (v.players || []).forEach(function (pl) { (pl.rungs || []).forEach(function (q) { var g = Math.min(G.N - 2, Math.floor(+q[0] * (G.N - 1))), y = G.y0 + (+q[1]) * G.H, mine = pl.id === me; if (mine) return; c.strokeStyle = 'rgba(255,200,90,.6)'; c.lineWidth = 2.4; c.beginPath(); c.moveTo(X(g), y); c.lineTo(X(g + 1), y); c.stroke(); }); });
     if (!done) AM.mine.forEach(function (q, k) { var g = Math.min(G.N - 2, Math.floor(q[0] * (G.N - 1))), y = G.y0 + q[1] * G.H; c.strokeStyle = '#6af0ff'; c.lineWidth = 4.5; c.shadowColor = '#6af0ff'; c.shadowBlur = 8; c.beginPath(); c.moveTo(X(g), y); c.lineTo(X(g + 1), y); c.stroke(); c.shadowBlur = 0; c.fillStyle = '#fff'; c.font = '700 11px sans-serif'; c.textAlign = 'center'; c.fillText(String(k + 1), (X(g) + X(g + 1)) / 2, y - 6); });
     // 上の名前
-    c.font = '700 11px sans-serif'; c.textAlign = 'left';
-    for (i = 0; i < G.N; i++) { var nm = done ? ((R.names[R.order[i]] || '?')) : '？'; c.save(); c.translate(X(i) + 4, G.y0 - 8); c.rotate(-Math.PI / 2); c.fillStyle = (done && i === myLine) ? '#6af0ff' : '#ffe9a8'; c.fillText(nm.slice(0, 7), 0, 0); c.restore(); }
+    c.font = '700 11px sans-serif'; c.textAlign = 'left'; var winMap = {}; if (done) R.winners.forEach(function (w) { winMap[w.line] = 1; });
+    for (i = 0; i < G.N; i++) { var nm = done ? ((R.names[R.order[i]] || '?')) : '？'; c.save(); c.translate(X(i) + 4, G.y0 - 8); c.rotate(-Math.PI / 2); c.fillStyle = (done && i === myLine) ? '#6af0ff' : (done && winMap[i] && (still || (P != null && P >= .98))) ? '#ffd84a' : '#ffe9a8'; c.fillText(nm.slice(0, 7), 0, 0); c.restore(); }
     // アニメ
     if (done && !still && P != null) {
-      var paths = AM.paths || (AM.paths = amPaths(R, G)), yc = G.y0 + P * G.H;
-      for (var s = 0; s < G.N; s++) { if (s === myLine) continue; amPart(c, paths[s], yc, 'hsla(' + Math.round(360 * s / G.N) + ',90%,65%,.75)', 2.6, 0); }
-      if (myLine >= 0) amPart(c, paths[myLine], yc, '#ffffff', 5, 12);
+      // 当たり位置を先に見せる(0〜20%) → 景品の枠から上のプレイヤーへ向かって線を伸ばす
+      var paths = AM.paths || (AM.paths = amPaths(R, G)), Q = Math.max(0, (P - .2) / .8), yc = G.y0 + G.H - Q * G.H;
+      if (myLine >= 0 && !winMap[myLine]) amPart(c, paths[myLine], 1e9, 'rgba(255,255,255,.35)', 3, 0);
+      if (Q > 0) R.winners.forEach(function (w) { amPartUp(c, paths[w.line], yc, '#ffd84a', 5, 14); });
     } else if (done && P === 1) {
-      var ps = AM.paths || (AM.paths = amPaths(R, G)), win = {}; R.winners.forEach(function (w) { win[w.line] = 1; });
-      for (var s2 = 0; s2 < G.N; s2++) { if (win[s2] || s2 === myLine) continue; amPart(c, ps[s2], 1e9, 'rgba(180,170,220,.18)', 1.6, 0); }
-      if (myLine >= 0 && !win[myLine]) amPart(c, ps[myLine], 1e9, '#ffffff', 4, 8);
-      R.winners.forEach(function (w) { amPart(c, ps[w.line], 1e9, '#ffd84a', 5, 14); });
+      var ps = AM.paths || (AM.paths = amPaths(R, G));
+      if (myLine >= 0 && !winMap[myLine]) amPart(c, ps[myLine], 1e9, 'rgba(255,255,255,.5)', 3, 0);
+      R.winners.forEach(function (w) { amPartUp(c, ps[w.line], -1e9, '#ffd84a', 5, 14); });
     }
     // 下の景品
-    var reveal = done && (P == null || P >= 0.97 || still); for (i = 0; i < G.N; i++) {
-      var wi = done ? R.slots.indexOf(i) : -1, x = X(i), y = G.y0 + G.H + 6; c.fillStyle = (reveal && wi >= 0) ? '#ffd84a' : 'rgba(255,255,255,.12)'; c.fillRect(x - 12, y, 24, 82);
-      c.save(); c.translate(x + 4, y + 78); c.rotate(-Math.PI / 2); c.font = '800 11px sans-serif'; c.fillStyle = (reveal && wi >= 0) ? '#5a1030' : '#aaa'; c.textAlign = 'left'; c.fillText(reveal ? (wi >= 0 ? '🎁' + (R.prizes[wi] || '').slice(0, 7) : 'はずれ') : '？', 0, 0); c.restore();
+    var reveal = !!done; for (i = 0; i < G.N; i++) {
+      var wi = done ? R.slots.indexOf(i) : -1, x = X(i), y = G.y0 + G.H + 6, hit = reveal && wi >= 0, pu = (hit && !still && P != null && P < .2) ? (.55 + .45 * Math.sin(P * 130)) : 1;
+      c.globalAlpha = pu; c.fillStyle = hit ? '#ffd84a' : 'rgba(255,255,255,.12)'; if (hit) { c.shadowColor = '#ffd84a'; c.shadowBlur = 10; } c.fillRect(x - 12, y, 24, 122); c.shadowBlur = 0; c.globalAlpha = 1;
+      var lab = !reveal ? '？' : hit ? (R.prizes[wi] || '') : 'はずれ', fs = 12; c.font = '800 ' + fs + 'px sans-serif'; var wd = c.measureText(lab).width; if (wd > 112) { fs = Math.max(7, fs * 112 / wd); c.font = '800 ' + fs + 'px sans-serif'; }
+      c.save(); c.translate(x + 4, y + 118); c.rotate(-Math.PI / 2); c.fillStyle = hit ? '#5a1030' : '#aaa'; c.textAlign = 'left'; c.fillText(lab, 0, 0); c.restore();
     }
+  }
+  function amPartUp(c, pts, yc, col, w, blur) {
+    var r = pts.slice().reverse(); c.strokeStyle = col; c.lineWidth = w; if (blur) { c.shadowColor = col; c.shadowBlur = blur; } c.beginPath(); c.moveTo(r[0][0], r[0][1]);
+    for (var i = 1; i < r.length; i++) { var a = r[i - 1], b = r[i]; if (b[1] >= yc) c.lineTo(b[0], b[1]); else { var t = (a[1] - yc) / ((a[1] - b[1]) || 1); if (t > 0) c.lineTo(a[0] + (b[0] - a[0]) * t, yc); break; } }
+    c.stroke(); c.shadowBlur = 0;
   }
   function amPart(c, pts, yc, col, w, blur) {
     c.strokeStyle = col; c.lineWidth = w; if (blur) { c.shadowColor = col; c.shadowBlur = blur; } c.beginPath(); c.moveTo(pts[0][0], pts[0][1]);
@@ -5010,12 +5067,23 @@ var TB = {
   var amAC = null, amST = 0;
   function amCtx() { try { if (!amAC) amAC = new (window.AudioContext || window.webkitAudioContext)(); if (amAC.state === 'suspended') amAC.resume(); } catch (e) { return null; } return amAC; }
   function amNote(f, t, d, ty, v) { var c = amAC, o = c.createOscillator(), g = c.createGain(); o.type = ty || 'triangle'; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v || .1, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + d + .03); }
-  var AM_MEL = [0, 2, 4, 7, 9, 7, 4, 2, 0, 4, 7, 12, 9, 7, 4, 2, 5, 7, 9, 12, 9, 7, 5, 4, 2, 4, 7, 9, 7, 4, 2, 0];
+  var AM_HOOK = [7, 7, 9, 7, 4, -99, -99, -99, 7, 7, 9, 7, 12, -99, 9, 7, 5, 5, 7, 5, 2, -99, -99, -99, 4, 4, 7, 9, 12, -99, 9, 7], AM_BASS = [0, 0, 5, 7];
+  function amSay() { try { var ss = window.speechSynthesis; if (!ss) return; ss.cancel(); var u = new SpeechSynthesisUtterance('あみだくじ、あみだくじ！'); u.lang = 'ja-JP'; u.rate = 1.15; u.pitch = 1.7; u.volume = 1; var vs = ss.getVoices() || [], jv = vs.filter(function (v) { return /^ja/i.test(v.lang); })[0]; if (jv) u.voice = jv; ss.speak(u); } catch (e) {} }
   function amSongStart() {
-    amSongStop(); if (!AM.sound || !amCtx()) return; var step = 0, dt = 60 / 150 / 2, nx = amAC.currentTime + .05;
-    amST = setInterval(function () { while (nx < amAC.currentTime + .4) { var s = step % AM_MEL.length, f = 261.63 * Math.pow(2, AM_MEL[s] / 12); amNote(f, nx, dt * .9, 'triangle', .1); if (s % 2 === 0) amNote(f / 2, nx, dt * 1.7, 'sine', .08); if (s % 4 === 0) amNote(90, nx, .1, 'square', .04); if (s % 8 === 7) amNote(f * 2, nx, dt * .5, 'sine', .05); nx += dt; step++; } }, 100);
+    amSongStop(); if (!AM.sound || !amCtx()) return; var step = 0, dt = 60 / 140 / 2, nx = amAC.currentTime + .05;
+    amST = setInterval(function () {
+      while (nx < amAC.currentTime + .4) {
+        var s = step % 32, bar = Math.floor(s / 8), m = AM_HOOK[s], bf = 130.81 * Math.pow(2, AM_BASS[bar] / 12);
+        if (m > -50) amNote(261.63 * Math.pow(2, m / 12), nx, dt * .8, 'square', .05);
+        if (s % 2 === 0) amNote(s % 4 === 0 ? bf : bf * 1.5, nx, dt * .9, 'triangle', .13);
+        if (s % 4 === 0) amNote(70, nx, .12, 'sine', .22); else if (s % 4 === 2) amNote(2400, nx, .04, 'square', .025);
+        if (s % 2 === 1) amNote(5000, nx, .02, 'square', .012);
+        if (s % 16 === 0) { var dl = Math.max(0, (nx - amAC.currentTime) * 1000 - 120); setTimeout(function () { if (amST) amSay(); }, dl); }
+        nx += dt; step++;
+      }
+    }, 100);
   }
-  function amSongStop() { clearInterval(amST); amST = 0; }
+  function amSongStop() { clearInterval(amST); amST = 0; try { if (window.speechSynthesis) window.speechSynthesis.cancel(); } catch (e) {} }
   function amFan(win) { if (!AM.sound || !amCtx()) return; var t = amAC.currentTime + .05; [0, 4, 7, 12, 16, 19].forEach(function (n, i) { amNote(261.63 * Math.pow(2, n / 12), t + i * .11, .5, 'triangle', win ? .16 : .09); }); }
   function amSendRungs() { clearTimeout(AM.sendT); AM.sendT = setTimeout(function () { AM.sendT = 0; AM.sending = 1; amApi({ action: 'am_rungs', rungs: AM.mine }).then(function (j) { AM.sending = 0; if (AM.sendT) return; if (j && j.ok) amApply(j); else if (j && j.message) toast(j.message); }); }, 500); }
   document.addEventListener('click', function (e) {
@@ -5360,10 +5428,39 @@ var TB = {
     else if (t.dataset.j) { t.disabled = true; api({ action: 'guild_join', guild: t.dataset.j }).then(function (j) { if (j.error) { t.disabled = false; gmsg(j.message || 'うまくいかんかった'); } else renderGuild(j); }); }
     else if (t.id === 'gLeave') { if (t.classList.contains('dim') && /最後/.test(t.textContent)) return; if (!t.dataset.arm) { t.dataset.arm = 1; t.textContent = '本当に？もう1回タップ'; return; } api({ action: 'guild_leave' }).then(function (j) { if (j.error) gmsg(j.message || 'うまくいかんかった'); else renderGuild(j); }); }
   });
+  /* ---------- 🌐 チャット自動翻訳（v188）。他の人の発言を、自分の言語に訳して下に出す ---------- */
+  var TR = { lang: 'ja', on: true, mem: {} };
+  var TR_LANGS = [['ja', '日本語'], ['en', 'English'], ['zh-CN', '中文（简体）'], ['zh-TW', '中文（繁體）'], ['ko', '한국어'], ['de', 'Deutsch'], ['fr', 'Français'], ['it', 'Italiano'], ['es', 'Español'], ['pt', 'Português'], ['hi', 'हिन्दी（ヒンディー語）'], ['ar', 'العربية（アラビア語）'], ['ms', 'Bahasa Melayu'], ['ta', 'தமிழ்（タミル語）'], ['th', 'ไทย'], ['vi', 'Tiếng Việt'], ['id', 'Bahasa Indonesia'], ['tl', 'Filipino']];
+  (function () {
+    try {
+      var sv = localStorage.getItem('opa_lang'); TR.on = localStorage.getItem('opa_tr') !== '0';
+      if (sv) TR.lang = sv; else { var nl = String(navigator.language || 'ja'), lo = nl.toLowerCase(), g = 'ja'; if (lo.indexOf('zh-tw') === 0 || lo.indexOf('zh-hk') === 0) g = 'zh-TW'; else if (lo.indexOf('zh') === 0) g = 'zh-CN'; else TR_LANGS.forEach(function (x) { if (lo.slice(0, 2) === x[0].slice(0, 2)) g = x[0]; }); TR.lang = g; }
+    } catch (e) {}
+  })();
+  function trNeed(t) {
+    t = String(t || ''); if (!TR.on || !token || t.length < 2) return false; if (!/[A-Za-zÀ-ɏͰ-῿぀-ヿ㐀-鿿가-힯؀-ۿऀ-ॿ฀-๿]/.test(t)) return false;
+    if (TR.lang === 'ja') return !/[぀-ヿ]/.test(t);
+    if (TR.lang === 'en') return /[^\x00-\x7FÀ-ɏ -⯿\uD800-\uDFFF️]/.test(t) || /[぀-鿿]/.test(t);
+    return true;
+  }
+  function trAsk(t, cb) {
+    var k = TR.lang + '|' + t; if (k in TR.mem) { cb(TR.mem[k]); return; }
+    TR.pend = TR.pend || {}; if (TR.pend[k]) return; TR.pend[k] = 1;
+    fetch(API.replace(/opa-game$/, 'opa-tr'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: token, to: TR.lang, text: t }) })
+      .then(function (r) { return r.json(); }).then(function (j) { delete TR.pend[k]; if (j && j.ok) { TR.mem[k] = j.out || null; cb(TR.mem[k]); } }).catch(function () { delete TR.pend[k]; });
+  }
+  function trApply(t, cb) { if (!trNeed(t)) return; trAsk(t, function (out) { if (out) cb(out); }); }
+  function trSpan(out) { var e = document.createElement('span'); e.style.cssText = 'display:block;color:#9fe8ff;font-size:.94em'; e.textContent = '🌐 ' + out; return e; }
+  function trUi() {
+    var s = $('setLang'); if (!s || s.dataset.ok) return; s.dataset.ok = 1; s.innerHTML = TR_LANGS.map(function (x) { return '<option value="' + x[0] + '">' + x[1] + '</option>'; }).join(''); s.value = TR.lang;
+    var b = $('tgTr'); b.textContent = TR.on ? 'ON' : 'OFF';
+    s.addEventListener('change', function () { TR.lang = s.value; TR.mem = {}; try { localStorage.setItem('opa_lang', TR.lang); } catch (e) {} toast('翻訳する言語を変えたで'); });
+    b.addEventListener('click', function () { TR.on = !TR.on; b.textContent = TR.on ? 'ON' : 'OFF'; try { localStorage.setItem('opa_tr', TR.on ? '1' : '0'); } catch (e) {} });
+  }
   function tlogAdd(name, text) {
     var d = document.createElement('div'), b = document.createElement('b'); b.textContent = name; d.appendChild(b); d.appendChild(document.createTextNode(text));
     var l = $('tlog'); l.appendChild(d); while (l.children.length > 5) l.removeChild(l.firstChild);
-    setTimeout(function () { if (d.parentNode) d.remove(); }, 20000);
+    setTimeout(function () { if (d.parentNode) d.remove(); }, 20000); return d;
   }
   function bubble(host, text) {
     if (!host) return; var o = host.querySelector('.bub'); if (o) o.remove();
@@ -6467,7 +6564,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 187;
+  var GV = 190;
   (function () {
     var last = Date.now();
     function chk() {
@@ -7031,7 +7128,7 @@ var TB = {
   /* ---------- つなぎ・設定 ---------- */
   function closeSheets() { $('book').classList.remove('on'); $('set').classList.remove('on'); $('bag').classList.remove('on'); }
   $('bookBtn').addEventListener('click', function () { renderBook(); $('book').classList.add('on'); });
-  $('setBtn').addEventListener('click', function () { $('set').classList.add('on'); });
+  $('setBtn').addEventListener('click', function () { $('set').classList.add('on'); trUi(); });
   document.addEventListener('click', function (e) { var b = e.target.closest('[data-close]'); if (b) $(b.dataset.close).classList.remove('on'); });
   var resetArm = 0;
   $('resetAll').addEventListener('click', function () {
@@ -9951,6 +10048,7 @@ var TB = {
       else { hero.x += dx / d * step; hero.y += dy / d * step; if (Math.abs(dx) > 3) hero.dir = dx > 0 ? 1 : -1; moved = true; if (hh) hh.classList.add('walk'); updHero(); }
     }
     if (inLot) lotClamp();
+    if (inJkA) jkaClamp();
     ghostsTick(dt, moved); foesTick(dt); handUi();
     var fv = $('fview'), vw = fv.clientWidth, vh = fv.clientHeight;
     fz += (zoomT - fz) * Math.min(1, dt * 6);
