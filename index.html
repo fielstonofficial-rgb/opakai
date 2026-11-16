@@ -1144,11 +1144,10 @@ body.admin-on .tools .adminbtn{display:inline-flex}
 }
 @media (max-width: 370px) { #lineBtn span { font-size: 0 !important; } #lineBtn .lx { font-size: 9px !important; } }
 
-.trmini{display:block;margin:2px 0 0 6px;border:0;background:transparent;color:inherit;opacity:.6;font-size:11px;padding:2px 6px;border-radius:999px;cursor:pointer}
+.trmini{display:inline-block;margin:0 0 0 4px;border:0;background:transparent;color:inherit;opacity:.75;font-size:13px;line-height:1;padding:2px 3px;border-radius:999px;cursor:pointer;vertical-align:middle}
 .trmini:hover{opacity:1;background:var(--surface-2)}
 #trBtn{height:26px!important;min-width:0;padding:0 7px!important;font-size:13px}
-@media (max-width:520px){.chat-head{gap:3px!important;padding:6px 6px!important}.chat-head .fsbtn.linebtn{height:26px!important;padding:0 7px 0 4px!important;font-size:11px;gap:3px}.chat-head .chat-title{display:none}.head-actions{gap:3px!important}.head-actions .fsbtn{height:26px!important;padding:0 7px!important;font-size:11px}.head-actions .fsbtn span{display:none}.head-actions .fsbtn svg{width:13px;height:13px}}
-@media (max-width:420px){.chat-head .songbtn span{display:none}.chat-head .songbtn{padding:0 5px!important}.head-actions .fsbtn{padding:0 5px!important}.head-actions{gap:2px!important}#fsBtn{display:none!important}}
+@media (max-width:520px){#fsLabel{display:none!important}.chat-head{flex-wrap:wrap;row-gap:4px;gap:2px!important}.chat-head .linebtn,.head-actions .fsbtn{height:24px!important;padding:0 4px 0 1px!important;font-size:10px!important;gap:1px!important}.chat-head .linebtn svg,.head-actions .fsbtn svg{width:16px!important;height:16px!important;padding:2px!important}.chat-head .presence{padding:2px 4px!important;font-size:10.5px!important;gap:2px!important}#trBtn{padding:0 4px!important}#fsBtn{padding:0 4px!important}.head-actions{gap:2px!important}#shopBtn,#helpBtn{width:24px!important;height:24px!important;min-width:0!important;padding:0!important}#shopBtn svg,#helpBtn svg{width:15px!important;height:15px!important}}
 
 .uilbar{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin:0 0 10px;position:relative;z-index:3}
 .uilbar button,.uilbar select{border:1px solid var(--line);background:var(--surface-2);color:var(--fg);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer;min-height:28px}
@@ -1158,7 +1157,7 @@ body.admin-on .tools .adminbtn{display:inline-flex}
 #splash .uilbar button.on{background:rgba(255,255,255,.3)}
 #splash .uilbar select option{color:#000}
 
-.trmini{text-align:left;width:fit-content}
+.trmini{text-align:center}
 html:not([lang="ja"]) .topic .theme .q::before{content:"Topic \25BE"}
 html:not([lang="ja"]) .topic.open .theme .q::before{content:"Topic \25B4"}
 html[lang="zh-CN"] .topic .theme .q::before{content:"话题 \25BE"}html[lang="zh-CN"] .topic.open .theme .q::before{content:"话题 \25B4"}
@@ -1712,10 +1711,10 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     if (kind === 'furan' || kind === 'aron' || kind === 'me') { line.appendChild(tm); line.appendChild(bub); } else { line.appendChild(bub); line.appendChild(tm); }
     col.appendChild(line); row.appendChild(col);
     if (!m.img && m.body && trNeed(m.body)) {
-      var tb = el('button', 'trmini', '🌐 Translate'); if (kind === 'me') tb.style.marginLeft = 'auto'; tb.type = 'button'; tb.title = '翻訳 / Translate';
+      var tb = el('button', 'trmini', '🌐'); tb.type = 'button'; tb.title = 'Translate / 翻訳'; tb.setAttribute('aria-label', 'Translate');
       var tdone = function (o) { tb.remove(); col.appendChild(trSpan(o)); };
-      tb.addEventListener('click', function () { tb.textContent = '…'; trGo(m.body, tdone); setTimeout(function () { if (tb.parentNode) tb.textContent = '🌐 Translate'; }, 6000); });
-      col.appendChild(tb);
+      tb.addEventListener('click', function () { tb.textContent = '…'; trGo(m.body, tdone); setTimeout(function () { if (tb.parentNode) tb.textContent = '🌐'; }, 6000); });
+      tm.appendChild(tb);
       if (TR.on) trGo(m.body, tdone);
     }
     lastRow = row;
