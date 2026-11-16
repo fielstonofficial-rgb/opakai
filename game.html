@@ -3872,7 +3872,7 @@ var TB = {
     else if (k === 'lobout') { sfx(2); leaveCafe(); }
     else if (k === 'jk:go') { sfx(2); jkDoorOpen('go'); }
     else if (k === 'jk:rest') { sfx(2); openRest(); }
-    else if (k === 'jk:piko') { sfx(2); jkDoorOpen('piko'); }
+    else if (k === 'jk:am') { sfx(2); jkDoorOpen('am'); }
     else if (k === 'restout') { sfx(2); openLobby(); }
     else if (k === 'jkaout') { sfx(2); openLobby(); }
     else if (k === 'lotout') { sfx(2); leaveCafe(); }
@@ -4330,7 +4330,7 @@ var TB = {
     if (b) b.innerHTML = '<div class="lbBt">🎮 本日のゲーム：' + esc((JK && JK.title) || 'じゃんけんバトルロワイヤル') + (JK && JK.startAt ? '（受付 ' + (JK.count || 0) + '人）' : '') + '</div><div class="lbBs ' + st.p + '">' + st.big + '</div>';
     var dk = $('jkDesk'), dr = $('jkDoor'), s2 = jkStatus(), tx = ((JK && JK.title) || 'じゃんけんバトルロワイヤル');
     if (dk && dk.classList.contains('on') && jkView === 'desk') { if (jkFull) jkDeskRender(); else { var q = dk.querySelector('.jkS'); if (q) q.innerHTML = esc(tx) + '<br>' + s2.t; } }
-    if (dr && dr.classList.contains('on')) { if (jkFull) jkDoorRender(); else { var q2 = dr.querySelector('.jkS'); if (q2 && dr.dataset.kind !== 'piko') q2.innerHTML = s2.t; } }
+    if (dr && dr.classList.contains('on')) { if (jkFull) jkDoorRender(); else { var q2 = dr.querySelector('.jkS'); if (q2 && dr.dataset.kind !== 'am') q2.innerHTML = s2.t; } }
     jkFull = false;
   }
   function jkTimersOn() { clearInterval(jkPollT); clearInterval(jkTickT); jkPoll(); jkPollT = setInterval(jkPoll, 5000); jkTickT = setInterval(jkRefresh, 1000); }
@@ -4397,8 +4397,8 @@ var TB = {
     var em = function (t, x, y, fs, z) { html += '<div class="cfe" style="left:' + x + 'px;top:' + y + 'px;font-size:' + fs + 'px;z-index:' + Math.round(z == null ? y : z) + '">' + t + '</div>'; };
     var sign = function (t, x, y) { html += '<div class="lbSign" style="left:' + x + 'px;top:' + y + 'px">' + t + '</div>'; };
     html += '<div class="lbBoard" id="lbBoard" style="left:' + (W / 2) + 'px;top:556px"></div>';
-    sign('✊✌️✋ じゃんけん<br>バトルロワイヤル', 200, 88); sign('🛋️ 休憩室', 550, 88); sign('🔨 ピコピコハンマー<br>バトルロワイヤル', 900, 88);
-    dc(lbDoorSVG('#7d1226', '#4a0f20', '✊'), 200, 340, 150, 184, 340); dc(lbDoorSVG('#2d5a7d', '#1a3550', '🛋️'), 550, 340, 150, 184, 340); dc(lbDoorSVG('#2d7d4a', '#1a5030', '🔨'), 900, 340, 150, 184, 340);
+    sign('✊✌️✋ じゃんけん<br>バトルロワイヤル', 200, 88); sign('🛋️ 休憩室', 550, 88); sign('🎲 プレゼント<br>あみだくじ', 900, 88);
+    dc(lbDoorSVG('#7d1226', '#4a0f20', '✊'), 200, 340, 150, 184, 340); dc(lbDoorSVG('#2d5a7d', '#1a3550', '🛋️'), 550, 340, 150, 184, 340); dc(lbDoorSVG('#7a3aa8', '#40206a', '🎲'), 900, 340, 150, 184, 340);
     [[195, 270], [550, 260], [905, 270]].forEach(function (c) { dc(lbCounterSVG(), c[0], 520, c[1], 92, 520); });
     em('🪴', 60, 380, 56, 380); em('🪴', 1040, 380, 56, 380); em('🌴', 400, 380, 52, 380); em('🌴', 700, 380, 52, 380);
     [[300, 330], [800, 330]].forEach(function (p) { html += '<div class="dc lotCh" style="left:' + p[0] + 'px;top:' + (p[1] + 30) + 'px;width:130px;height:154px;z-index:90000">' + lotChandSVG() + '</div>'; });
@@ -4406,7 +4406,7 @@ var TB = {
     html += '<div class="tlbl" style="left:' + (W / 2) + 'px;top:' + (H - 70) + 'px">🚪 出口</div>';
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
-    DOORS = [{ k: 'jk:go', x: 200, y: 330, w: 170, h: 190 }, { k: 'jk:rest', x: 550, y: 330, w: 170, h: 190 }, { k: 'jk:piko', x: 900, y: 330, w: 170, h: 190 }, { k: 'lobout', x: W / 2, y: H - 20, w: 140, h: 70 }];
+    DOORS = [{ k: 'jk:go', x: 200, y: 330, w: 170, h: 190 }, { k: 'jk:rest', x: 550, y: 330, w: 170, h: 190 }, { k: 'jk:am', x: 900, y: 330, w: 170, h: 190 }, { k: 'lobout', x: W / 2, y: H - 20, w: 140, h: 70 }];
     hero.x = W / 2; hero.y = H - 120; hero.dir = 1; hero.sit = null; ftarget = null; fz = zoomT;
     $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi(); addNpcs('lobby');
   }
@@ -4508,7 +4508,7 @@ var TB = {
   });
   function jkDoorRender() {
     var kind = $('jkDoor').dataset.kind, st = jkStatus(), h;
-    if (kind === 'piko') h = '<h3>🔨 ピコピコハンマー<br>バトルロワイヤル</h3><div class="jkS">近日オープン！<br>いまは準備中です</div><button type="button" class="jkBtn s" id="jkDoorNo">もどる</button>';
+    if (kind === 'am') h = '<h3>🎲 プレゼントあみだくじ会場</h3><div class="jkS">景品が当たるあみだくじ！<br>受付中は、自分で線を入れて参加できるで<br>結果は締切のあと、公開乱数で決まる（運営も操作できへん）</div><button type="button" class="jkBtn g" id="amGo">🎲 入る</button><button type="button" class="jkBtn s" id="jkDoorNo">もどる</button>';
     else {
       h = '<h3>✊✌️✋ じゃんけん<br>バトルロワイヤル会場</h3><div class="jkS">' + st.t + '</div><p style="text-align:center;font-weight:800;color:#ffe9a8">観戦しますか？</p><p>外周の観客席から、闘技場を見られます。<br><b style="color:#ffd36a">ゲームに参加する際は、受付でゲーム参加受付をしてください。</b></p>' +
         '<button type="button" class="jkBtn g" id="jkDoorGo">👀 観戦する（観客席に入る）</button>' + ((JK && JK.isOp) || (player && player.gm) ? '<button type="button" class="jkBtn" id="jkDoorGo">🛠 運営として入る（いつでも入れる）</button>' : '') + ((JK && JK.entered) ? '<button type="button" class="jkBtn" id="jkDoorGo">⚔ 受付ずみ：闘技場に入る</button>' : '<button type="button" class="jkBtn" id="jkDoorDesk">🎟 受付はカウンターで</button>') + '<button type="button" class="jkBtn s" id="jkDoorNo">やめる</button>';
@@ -4811,6 +4811,240 @@ var TB = {
   });
   document.addEventListener('input', function (e) { if (e.target && e.target.id === 'jaQ') jkaListRender(); });
 
+
+  /* ---------- 🎲 あみだくじ会場（景品あみだ）v186。結果は締切後の公開乱数(drand)で確定し、誰でも検算できる ---------- */
+  var AM = { on: false, v: null, tk: 0, mine: [], sound: true, anim: null, raf: 0, doneEp: -1, off: 0, busy: false, sendT: 0, cap: '', ver: null, w: 0 };
+  var AM_R = 120, AM_CAPS = ['♪ あみだ あみだ どこへ行く', '♪ ぐるっとまわって まっしぐら', '♪ 当たりはだれだ ドキドキ！', '♪ 運命の線を すーっと下りて', '♪ 光るのは キミかもね！'];
+  function amSha(str) {
+    var u = unescape(encodeURIComponent(str)), n = u.length, i, j, w = [], H = [0x6a09e667, 0xbb67ae85, 0x3c6ef372, 0xa54ff53a, 0x510e527f, 0x9b05688c, 0x1f83d9ab, 0x5be0cd19];
+    var K = [0x428a2f98,0x71374491,0xb5c0fbcf,0xe9b5dba5,0x3956c25b,0x59f111f1,0x923f82a4,0xab1c5ed5,0xd807aa98,0x12835b01,0x243185be,0x550c7dc3,0x72be5d74,0x80deb1fe,0x9bdc06a7,0xc19bf174,0xe49b69c1,0xefbe4786,0x0fc19dc6,0x240ca1cc,0x2de92c6f,0x4a7484aa,0x5cb0a9dc,0x76f988da,0x983e5152,0xa831c66d,0xb00327c8,0xbf597fc7,0xc6e00bf3,0xd5a79147,0x06ca6351,0x14292967,0x27b70a85,0x2e1b2138,0x4d2c6dfc,0x53380d13,0x650a7354,0x766a0abb,0x81c2c92e,0x92722c85,0xa2bfe8a1,0xa81a664b,0xc24b8b70,0xc76c51a3,0xd192e819,0xd6990624,0xf40e3585,0x106aa070,0x19a4c116,0x1e376c08,0x2748774c,0x34b0bcb5,0x391c0cb3,0x4ed8aa4a,0x5b9cca4f,0x682e6ff3,0x748f82ee,0x78a5636f,0x84c87814,0x8cc70208,0x90befffa,0xa4506ceb,0xbef9a3f7,0xc67178f2];
+    for (i = 0; i < n; i++) w[i >> 2] |= u.charCodeAt(i) << (24 - (i % 4) * 8);
+    w[n >> 2] |= 0x80 << (24 - (n % 4) * 8); var L = (((n + 8) >> 6) + 1) * 16; w[L - 1] = n * 8;
+    for (i = 0; i < L; i++) if (w[i] === undefined) w[i] = 0;
+    for (var o = 0; o < L; o += 16) {
+      var W = w.slice(o, o + 16), a = H[0], b = H[1], c = H[2], d = H[3], e = H[4], f = H[5], g = H[6], h = H[7];
+      for (j = 16; j < 64; j++) { var s0 = ((W[j-15] >>> 7) | (W[j-15] << 25)) ^ ((W[j-15] >>> 18) | (W[j-15] << 14)) ^ (W[j-15] >>> 3), s1 = ((W[j-2] >>> 17) | (W[j-2] << 15)) ^ ((W[j-2] >>> 19) | (W[j-2] << 13)) ^ (W[j-2] >>> 10); W[j] = (W[j-16] + s0 + W[j-7] + s1) | 0; }
+      for (j = 0; j < 64; j++) {
+        var S1 = ((e >>> 6) | (e << 26)) ^ ((e >>> 11) | (e << 21)) ^ ((e >>> 25) | (e << 7)), ch = (e & f) ^ (~e & g), t1 = (h + S1 + ch + K[j] + W[j]) | 0, S0 = ((a >>> 2) | (a << 30)) ^ ((a >>> 13) | (a << 19)) ^ ((a >>> 22) | (a << 10)), mj = (a & b) ^ (a & c) ^ (b & c), t2 = (S0 + mj) | 0;
+        h = g; g = f; f = e; e = (d + t1) | 0; d = c; c = b; b = a; a = (t1 + t2) | 0;
+      }
+      H[0] = (H[0] + a) | 0; H[1] = (H[1] + b) | 0; H[2] = (H[2] + c) | 0; H[3] = (H[3] + d) | 0; H[4] = (H[4] + e) | 0; H[5] = (H[5] + f) | 0; H[6] = (H[6] + g) | 0; H[7] = (H[7] + h) | 0;
+    }
+    return H.map(function (x) { return ('00000000' + (x >>> 0).toString(16)).slice(-8); }).join('');
+  }
+  function amCompute(inp) {
+    var P = inp.players.slice().sort(function (a, b) { return a.id < b.id ? -1 : 1; }), N = P.length;
+    var seed = amSha(JSON.stringify([inp.epoch, P.map(function (p) { return [p.id, p.rungs]; }), inp.winners, inp.drand || '']));
+    var ctr = 0, buf = [];
+    function u32() { if (!buf.length) { var h = amSha(seed + ':' + (ctr++)); for (var i = 0; i < 64; i += 8) buf.push(parseInt(h.slice(i, i + 8), 16) >>> 0); } return buf.shift(); }
+    function ri(n) { return Math.floor(u32() / 4294967296 * n); }
+    function shuf(a) { a = a.slice(); for (var i = a.length - 1; i > 0; i--) { var j = ri(i + 1), t = a[i]; a[i] = a[j]; a[j] = t; } return a; }
+    var order = shuf(P.map(function (p) { return p.id; })), cand = [], gaps = Math.max(0, N - 1);
+    P.forEach(function (p) { (p.rungs || []).forEach(function (q) { if (gaps < 1) return; cand.push({ g: Math.min(gaps - 1, Math.max(0, Math.floor(+q[0] * gaps))), r: Math.min(AM_R - 1, Math.max(0, Math.floor(+q[1] * AM_R))), s: 'p', o: p.id }); }); });
+    var sysN = gaps ? N * 3 : 0; for (var k = 0; k < sysN; k++) cand.push({ g: ri(gaps), r: ri(AM_R), s: 's' });
+    cand = cand.map(function (c, i) { c.i = i; return c; }).sort(function (a, b) { return a.r - b.r || a.i - b.i; });
+    var rungs = [], used = {}, rowMap = {};
+    cand.forEach(function (c) { var u = used[c.r] || (used[c.r] = {}); if (u[c.g] || u[c.g - 1] || u[c.g + 1]) return; u[c.g] = 1; rungs.push({ g: c.g, r: c.r, s: c.s, o: c.o }); (rowMap[c.r] || (rowMap[c.r] = {}))[c.g] = 1; });
+    var end = [], s, p, r;
+    for (s = 0; s < N; s++) { p = s; for (r = 0; r < AM_R; r++) { var m = rowMap[r]; if (!m) continue; if (m[p]) p++; else if (m[p - 1]) p--; } end[s] = p; }
+    var W = Math.min(inp.winners, N), slots = shuf(order.map(function (x, i) { return i; })).slice(0, W), inv = []; end.forEach(function (b, s2) { inv[b] = s2; });
+    var winners = slots.map(function (b, i) { var line = inv[b]; return { i: i, id: order[line], line: line, slot: b }; });
+    return { seed: seed, N: N, order: order, rungs: rungs, end: end, slots: slots, winners: winners };
+  }
+  
+  function amApi(b) {
+    b.token = token;
+    return fetch(API.replace(/opa-game$/, 'opa-amida'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(b) })
+      .then(function (r) { return r.json().then(function (j) { j._s = r.status; return j; }); }).catch(function () { return { error: 'net' }; });
+  }
+  function amCss() {
+    if ($('amCss')) return; var s = document.createElement('style'); s.id = 'amCss';
+    s.textContent = '#amRoom{position:fixed;inset:0;z-index:9500;background:linear-gradient(#2a1450,#150a2e);color:#fff;overflow-y:auto;display:none;font-family:inherit;-webkit-overflow-scrolling:touch}#amRoom.on{display:block}' +
+      '#amTop{position:sticky;top:0;z-index:3;display:flex;align-items:center;gap:8px;padding:10px 12px;background:rgba(20,8,40,.94);border-bottom:2px solid #ffd36a}#amTop b{flex:1;font-size:17px;color:#ffe9a8}#amTop button{padding:7px 12px;border:0;border-radius:10px;font-weight:900;font-size:13px;background:#ffd36a;color:#3a2a08}' +
+      '#amInfo{padding:10px 14px;text-align:center;font-size:15px;line-height:1.6}#amInfo .big{font-size:22px;font-weight:900;color:#ffe45a}#amInfo .pz{display:inline-block;margin:3px;padding:3px 10px;border-radius:999px;background:#7a1a4a;border:1.5px solid #ffd36a;font-weight:800;font-size:13px}' +
+      '#amWrap{margin:0 6px;overflow-x:auto;border-radius:12px;background:rgba(0,0,0,.35);border:2px solid #6a3aa0}#amCv{display:block}#amCap{text-align:center;font-size:19px;font-weight:900;color:#ffe45a;min-height:30px;padding:6px;text-shadow:0 2px 0 #7a1a4a}' +
+      '#amBar{padding:8px 12px;text-align:center}#amBar button,#amOp button,#amRes button{margin:3px;padding:9px 14px;border:0;border-radius:12px;font-weight:900;font-size:14px;color:#241;background:linear-gradient(#ffe08a,#e3b341);box-shadow:0 2px 0 #8a6a1a}#amBar button.g,#amOp button.g,#amRes button.g{background:linear-gradient(#7dff9a,#2fbf5c);box-shadow:0 2px 0 #1a7a3a}#amBar button.s,#amOp button.s{background:#e7dff5;box-shadow:0 2px 0 #8a7aa8}' +
+      '#amRes{padding:6px 14px 10px}#amRes .w{margin:6px 0;padding:10px;border-radius:12px;background:rgba(255,211,106,.16);border:2px solid #ffd36a;font-size:16px;font-weight:800}#amRes .w.me{background:rgba(255,90,120,.3);border-color:#ff8aa5}#amRes small{display:block;color:#cbb8ee;word-break:break-all;font-size:11px;font-weight:600;margin-top:4px}' +
+      '#amOp{margin:8px 12px 30px;padding:12px;border-radius:12px;background:rgba(255,255,255,.08);border:1.5px dashed #ffd36a}#amOp input,#amOp select{width:100%;box-sizing:border-box;margin:3px 0;padding:9px;border-radius:8px;border:0;font-size:15px}#amOp h4{margin:4px 0;color:#ffd36a}' +
+      '#amConf{position:fixed;left:0;right:0;top:20%;text-align:center;font-size:44px;font-weight:900;color:#ffe45a;text-shadow:0 4px 0 #8a1020,0 0 20px #000;pointer-events:none;z-index:9600;display:none;line-height:1.3}';
+    document.head.appendChild(s);
+  }
+  function amBuild() {
+    amCss(); if ($('amRoom')) return; var d = document.createElement('div'); d.id = 'amRoom';
+    d.innerHTML = '<div id="amTop"><b id="amTtl">🎲 あみだくじ会場</b><button type="button" id="amSnd">🔊</button><button type="button" id="amX">✕ 出る</button></div><div id="amInfo"></div><div id="amCap"></div><div id="amWrap"><canvas id="amCv"></canvas></div><div id="amBar"></div><div id="amRes"></div><div id="amOp"></div><div id="amConf"></div>';
+    document.body.appendChild(d);
+  }
+  function amOpen() {
+    amBuild(); AM.on = true; AM.v = null; AM.mine = []; AM.anim = null; AM.doneEp = -1; AM.ver = null; $('amRoom').classList.add('on'); $('amRes').innerHTML = ''; $('amInfo').textContent = 'つないでるで…'; $('amSnd').textContent = AM.sound ? '🔊' : '🔇';
+    amSync(); clearInterval(AM.tk); AM.tk = setInterval(amTick, 1000);
+  }
+  function amClose() { AM.on = false; clearInterval(AM.tk); clearTimeout(AM.sendT); cancelAnimationFrame(AM.raf); amSongStop(); var r = $('amRoom'); if (r) r.classList.remove('on'); }
+  function amNow() { return Date.now() + AM.off; }
+  function amSync() {
+    if (!AM.on || AM.busy) return; AM.busy = true;
+    amApi({ action: 'am_get' }).then(function (j) { AM.busy = false; if (!AM.on) return; if (j && j.ok) { AM.off = j.now - Date.now(); amApply(j); } else if (j && j.error === 'net') toast('つながらへんかった'); });
+  }
+  function amTick() {
+    if (!AM.on) return; var v = AM.v; if (!v) return;
+    var every = v.phase === 'wait' ? 1 : v.phase === 'open' ? (v.closeAt - amNow() < 30000 ? 2 : 4) : 6; AM.n = (AM.n || 0) + 1; if (AM.n % every === 0) amSync(); amInfo();
+  }
+  function amApply(v) {
+    var ep = AM.v && AM.v.epoch; AM.v = v; if (ep !== v.epoch) { AM.mine = []; AM.doneEp = -1; AM.anim = null; $('amRes').innerHTML = ''; AM.ver = null; }
+    if (v.me && v.me.entered && !AM.sendT && !AM.sending) AM.mine = (v.me.rungs || []).map(function (q) { return [+q[0], +q[1]]; });
+    if (v.phase === 'done' && v.result && AM.doneEp !== v.epoch) {
+      AM.doneEp = v.epoch; var t0 = v.result.at + 1800, el = amNow() - t0;
+      if (el > 28000) amFinal(); else { AM.anim = { t0: t0 - AM.off, dur: 24000 }; amSongStart(); cancelAnimationFrame(AM.raf); amLoop(); }
+    }
+    amInfo(); amBar(); amOpPanel(); if (!AM.anim) amDraw(1, true);
+  }
+  function amInfo() {
+    var v = AM.v, e = $('amInfo'); if (!v || !e) return; var h = '', pz = (v.prizes || []).map(function (p, i) { return '<span class="pz">🎁 ' + esc(p) + '</span>'; }).join('');
+    $('amTtl').textContent = '🎲 ' + (v.title || 'あみだくじ');
+    if (v.phase === 'idle') h = '<div class="big">まだ準備中やで</div>運営がくじを作るまで、ちょっと待っててな';
+    else if (v.phase === 'open') { var s = Math.max(0, Math.ceil((v.closeAt - amNow()) / 1000)); h = '<div class="big">🟢 受付中　あと ' + Math.floor(s / 60) + '分' + ('0' + s % 60).slice(-2) + '秒</div>' + pz + '<br>参加者 <b>' + v.count + '</b> / ' + v.cap + '人　当たり <b>' + v.winners + '</b> 人'; }
+    else if (v.phase === 'wait') h = '<div class="big">🔒 締切！ 公開乱数を待ってるで…</div>' + pz + '<br>参加者 ' + v.count + '人（もう誰も変えられへん）';
+    else h = '<div class="big">' + (AM.anim ? '🎶 あみだ、まっしぐら！' : '🏆 結果発表') + '</div>' + pz;
+    e.innerHTML = h; var c = $('amCap'); if (AM.anim) { var k = Math.floor((amNow() - (v.result.at + 1800)) / 3500) % AM_CAPS.length; c.textContent = AM_CAPS[Math.max(0, k)]; } else c.textContent = '';
+  }
+  function amMe() { return AM.v && AM.v.me ? AM.v.me.id : ''; }
+  function amBar() {
+    var v = AM.v, e = $('amBar'); if (!v || !e) return; var h = '';
+    if (v.phase === 'open') {
+      if (!v.me.entered) h = '<button type="button" class="g" id="amEnter">🎟 参加する</button><div style="font-size:13px;color:#cbb8ee;margin-top:4px">参加すると、自分の好きな場所に線を最大3本入れられるで</div>';
+      else h = '<div style="font-size:14px;margin-bottom:4px">✅ 参加ずみ。線をタップで追加！（あと <b>' + (3 - AM.mine.length) + '</b> 本）<br><span style="font-size:12px;color:#cbb8ee">どの線に誰が乗るか・当たりの場所は、締切のあとに公開乱数で決まる</span></div><button type="button" class="s" id="amUndo">↩ 1本戻す</button><button type="button" class="s" id="amClr">🗑 線を全部消す</button><button type="button" class="s" id="amLeave">参加をやめる</button>';
+    } else if (v.phase === 'done' && v.result) h = '<button type="button" class="s" id="amVer">🔍 結果を検算する（やらせ無しの確認）</button>' + (AM.anim ? '<button type="button" id="amSkip">⏩ 結果まで飛ばす</button>' : '');
+    if (e.dataset.h !== h) { e.dataset.h = h; e.innerHTML = h; }
+  }
+  function amOpPanel() {
+    var v = AM.v, e = $('amOp'); if (!e) return; if (!(v && (v.isOp || (player && player.gm)))) { e.style.display = 'none'; return; } e.style.display = '';
+    var key = v.phase + '|' + v.epoch; if (e.dataset.k === key && v.phase === 'idle') return; if (e.dataset.k === key && v.phase !== 'done') return; e.dataset.k = key;
+    var h = '<h4>🛠 運営パネル</h4>';
+    if (v.phase === 'open' || v.phase === 'wait') h += '<div style="font-size:13px;margin-bottom:6px">開催中：' + esc(v.title) + '</div><button type="button" class="g" id="amBots">🤖 ダミー30人を入れる（テスト）</button><button type="button" class="s" id="amClear">取りやめる（くじを消す）</button>';
+    else {
+      var dv = new Date(Date.now() + 10 * 60000 - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 16);
+      h += '<div style="font-size:13px">くじの名前</div><input id="amTi" value="プレゼントあみだくじ" maxlength="30"><div style="font-size:13px">当たり人数（1〜5人・景品ごとに1人）</div><select id="amWn"><option>1</option><option>2</option><option>3</option><option>4</option><option>5</option></select><div id="amPzs"></div>' +
+        '<div style="font-size:13px">受付の締切</div><input id="amDt" type="datetime-local" value="' + dv + '"><div><button type="button" class="s" data-amq="1">+3分</button><button type="button" class="s" data-amq="10">+10分</button><button type="button" class="s" data-amq="60">+1時間</button><button type="button" class="s" data-amq="0.7">テスト(40秒後)</button></div>' +
+        '<div style="font-size:13px">定員（最大150）</div><input id="amCapIn" type="number" value="100" min="2" max="150"><button type="button" class="g" id="amSet">🚀 受付をはじめる</button>';
+      if (v.phase === 'done') h += '<button type="button" class="s" id="amClear">結果を消して、最初に戻す</button>';
+    }
+    e.innerHTML = h; amPzRender();
+  }
+  function amPzRender() {
+    var n = $('amWn'), b = $('amPzs'); if (!n || !b) return; var k = +n.value, keep = [].map.call(b.querySelectorAll('input'), function (x) { return x.value; }), h = '';
+    for (var i = 0; i < k; i++) h += '<input class="amPz" placeholder="商品名 ' + (i + 1) + '（例：オパールのルース 1ct）" maxlength="30" value="' + esc(keep[i] || '') + '">'; b.innerHTML = h;
+  }
+  /* ---- 描画 ---- */
+  function amGeom() {
+    var v = AM.v, R = v && v.result, N = R ? R.N : Math.max(2, (v && v.count) || 2); if (N < 2) N = 2;
+    var sp = N <= 8 ? 58 : N <= 20 ? 42 : 32, pad = 30, vw = Math.max(260, (window.innerWidth || 400) - 24), W = Math.max(vw, pad * 2 + (N - 1) * sp); if (W > vw) sp = Math.max(sp, (W - pad * 2) / (N - 1)); else sp = (W - pad * 2) / (N - 1);
+    return { N: N, sp: sp, pad: pad, W: W, y0: 92, H: 300, Hc: 92 + 300 + 96 };
+  }
+  function amPaths(R, G) {
+    var rowMap = {}, rows = []; R.rungs.forEach(function (c) { (rowMap[c.r] = rowMap[c.r] || []).push(c.g); }); rows = Object.keys(rowMap).map(Number).sort(function (a, b) { return a - b; });
+    var P = []; for (var s = 0; s < G.N; s++) { var p = s, pts = [[G.pad + p * G.sp, G.y0]]; rows.forEach(function (r) { var y = G.y0 + (r + .5) / AM_R * G.H, m = rowMap[r], np = p; if (m.indexOf(p) >= 0) np = p + 1; else if (m.indexOf(p - 1) >= 0) np = p - 1; if (np !== p) { pts.push([G.pad + p * G.sp, y], [G.pad + np * G.sp, y]); p = np; } }); pts.push([G.pad + p * G.sp, G.y0 + G.H]); P.push(pts); }
+    return P;
+  }
+  function amDraw(P, still) {
+    var cv = $('amCv'); if (!cv || !AM.v) return; var v = AM.v, R = v.result, G = amGeom(), dpr = Math.min(2, window.devicePixelRatio || 1);
+    if (cv.width !== Math.round(G.W * dpr) || cv.height !== Math.round(G.Hc * dpr)) { cv.width = Math.round(G.W * dpr); cv.height = Math.round(G.Hc * dpr); cv.style.width = G.W + 'px'; cv.style.height = G.Hc + 'px'; }
+    var c = cv.getContext('2d'); c.setTransform(dpr, 0, 0, dpr, 0, 0); c.clearRect(0, 0, G.W, G.Hc); c.lineCap = 'round'; c.lineJoin = 'round';
+    var X = function (i) { return G.pad + i * G.sp; }, me = amMe(), done = !!R, myLine = -1;
+    if (done) myLine = R.order.indexOf(me);
+    // 縦線
+    for (var i = 0; i < G.N; i++) { c.strokeStyle = 'rgba(200,180,255,.45)'; c.lineWidth = 2; c.beginPath(); c.moveTo(X(i), G.y0); c.lineTo(X(i), G.y0 + G.H); c.stroke(); }
+    // 横線
+    if (done) R.rungs.forEach(function (q) { var y = G.y0 + (q.r + .5) / AM_R * G.H, mine = q.o && q.o === me; c.strokeStyle = mine ? '#6af0ff' : q.s === 'p' ? 'rgba(255,200,90,.75)' : 'rgba(150,170,255,.5)'; c.lineWidth = mine ? 4 : 2.4; c.beginPath(); c.moveTo(X(q.g), y); c.lineTo(X(q.g + 1), y); c.stroke(); });
+    else (v.players || []).forEach(function (pl) { (pl.rungs || []).forEach(function (q) { var g = Math.min(G.N - 2, Math.floor(+q[0] * (G.N - 1))), y = G.y0 + (+q[1]) * G.H, mine = pl.id === me; if (mine) return; c.strokeStyle = 'rgba(255,200,90,.6)'; c.lineWidth = 2.4; c.beginPath(); c.moveTo(X(g), y); c.lineTo(X(g + 1), y); c.stroke(); }); });
+    if (!done) AM.mine.forEach(function (q, k) { var g = Math.min(G.N - 2, Math.floor(q[0] * (G.N - 1))), y = G.y0 + q[1] * G.H; c.strokeStyle = '#6af0ff'; c.lineWidth = 4.5; c.shadowColor = '#6af0ff'; c.shadowBlur = 8; c.beginPath(); c.moveTo(X(g), y); c.lineTo(X(g + 1), y); c.stroke(); c.shadowBlur = 0; c.fillStyle = '#fff'; c.font = '700 11px sans-serif'; c.textAlign = 'center'; c.fillText(String(k + 1), (X(g) + X(g + 1)) / 2, y - 6); });
+    // 上の名前
+    c.font = '700 11px sans-serif'; c.textAlign = 'left';
+    for (i = 0; i < G.N; i++) { var nm = done ? ((R.names[R.order[i]] || '?')) : '？'; c.save(); c.translate(X(i) + 4, G.y0 - 8); c.rotate(-Math.PI / 2); c.fillStyle = (done && i === myLine) ? '#6af0ff' : '#ffe9a8'; c.fillText(nm.slice(0, 7), 0, 0); c.restore(); }
+    // アニメ
+    if (done && !still && P != null) {
+      var paths = AM.paths || (AM.paths = amPaths(R, G)), yc = G.y0 + P * G.H;
+      for (var s = 0; s < G.N; s++) { if (s === myLine) continue; amPart(c, paths[s], yc, 'hsla(' + Math.round(360 * s / G.N) + ',90%,65%,.75)', 2.6, 0); }
+      if (myLine >= 0) amPart(c, paths[myLine], yc, '#ffffff', 5, 12);
+    } else if (done && P === 1) {
+      var ps = AM.paths || (AM.paths = amPaths(R, G)), win = {}; R.winners.forEach(function (w) { win[w.line] = 1; });
+      for (var s2 = 0; s2 < G.N; s2++) { if (win[s2] || s2 === myLine) continue; amPart(c, ps[s2], 1e9, 'rgba(180,170,220,.18)', 1.6, 0); }
+      if (myLine >= 0 && !win[myLine]) amPart(c, ps[myLine], 1e9, '#ffffff', 4, 8);
+      R.winners.forEach(function (w) { amPart(c, ps[w.line], 1e9, '#ffd84a', 5, 14); });
+    }
+    // 下の景品
+    var reveal = done && (P == null || P >= 0.97 || still); for (i = 0; i < G.N; i++) {
+      var wi = done ? R.slots.indexOf(i) : -1, x = X(i), y = G.y0 + G.H + 6; c.fillStyle = (reveal && wi >= 0) ? '#ffd84a' : 'rgba(255,255,255,.12)'; c.fillRect(x - 12, y, 24, 82);
+      c.save(); c.translate(x + 4, y + 78); c.rotate(-Math.PI / 2); c.font = '800 11px sans-serif'; c.fillStyle = (reveal && wi >= 0) ? '#5a1030' : '#aaa'; c.textAlign = 'left'; c.fillText(reveal ? (wi >= 0 ? '🎁' + (R.prizes[wi] || '').slice(0, 7) : 'はずれ') : '？', 0, 0); c.restore();
+    }
+  }
+  function amPart(c, pts, yc, col, w, blur) {
+    c.strokeStyle = col; c.lineWidth = w; if (blur) { c.shadowColor = col; c.shadowBlur = blur; } c.beginPath(); c.moveTo(pts[0][0], pts[0][1]);
+    for (var i = 1; i < pts.length; i++) { var a = pts[i - 1], b = pts[i]; if (b[1] <= yc) c.lineTo(b[0], b[1]); else { var t = (yc - a[1]) / ((b[1] - a[1]) || 1); if (t > 0) c.lineTo(a[0] + (b[0] - a[0]) * t, yc); break; } }
+    c.stroke(); c.shadowBlur = 0;
+  }
+  function amLoop() {
+    if (!AM.on || !AM.anim) return; var a = AM.anim, P = Math.max(0, Math.min(1, (Date.now() - a.t0) / a.dur)); AM.paths = AM.paths || null; amDraw(P, false);
+    var G = amGeom(), R = AM.v.result, ml = R.order.indexOf(amMe()), w = $('amWrap'); if (ml >= 0 && w) { var tx = G.pad + ml * G.sp - w.clientWidth / 2; w.scrollLeft += (tx - w.scrollLeft) * .08; }
+    amInfo(); if (P >= 1) { amFinal(); return; } AM.raf = requestAnimationFrame(amLoop);
+  }
+  function amFinal() {
+    AM.anim = null; amSongStop(); cancelAnimationFrame(AM.raf); var v = AM.v, R = v.result; AM.paths = null; amDraw(1, true); amInfo(); amBar();
+    var me = amMe(), mine = null, h = '<h3 style="text-align:center;color:#ffe45a">🏆 当選者</h3>';
+    R.winners.forEach(function (w) { var m = w.id === me; if (m) mine = w; h += '<div class="w' + (m ? ' me' : '') + '">🎁 ' + esc(w.prize || '') + '<br>→ <b>' + esc(w.n || '') + '</b> さん' + (m ? '　🎉 あなた！' : '') + '</div>'; });
+    if (!R.winners.length) h += '<div class="w">参加者がいなかったで</div>';
+    h += '<div style="text-align:center;margin-top:6px;font-size:14px">' + (mine ? '🎉🎉 おめでとう！ 当選や！ 運営から連絡があるで' : (R.order.indexOf(me) >= 0 ? '残念…またの機会に！' : '')) + '</div><div id="amVerOut"></div>';
+    $('amRes').innerHTML = h; amFan(mine); if (mine) { var cf = $('amConf'); cf.textContent = '🎉 当選！ 🎉'; cf.style.display = 'block'; setTimeout(function () { cf.style.display = 'none'; }, 3500); vib(); }
+    var w = $('amWrap'); if (w && R.order.indexOf(me) >= 0) w.scrollLeft = Math.max(0, amGeom().pad + R.order.indexOf(me) * amGeom().sp - w.clientWidth / 2);
+  }
+  function amVerify() {
+    var R = AM.v.result, o = $('amVerOut') || $('amRes'), out = '<div class="w" style="font-size:13px;font-weight:600">🔍 検算中…</div>'; if (!$('amVerOut')) $('amRes').insertAdjacentHTML('beforeend', '<div id="amVerOut"></div>'); o = $('amVerOut'); o.innerHTML = out;
+    var re = amCompute({ epoch: R.inp.epoch, players: R.inp.players.map(function (p) { return { id: p.id, rungs: p.rungs }; }), winners: R.inp.winners, drand: R.inp.drand }), ok = re.seed === R.seed && JSON.stringify(re.winners.map(function (w) { return w.id; })) === JSON.stringify(R.winners.map(function (w) { return w.id; })) && re.rungs.length === R.rungs.length;
+    var url = R.drand ? 'https://api.drand.sh/52db9ba70e0cc0f6eaf7803dd07447a1f5477735fd3f661792ba94600c84e971/public/' + R.drand.round : '';
+    function show(dok) {
+      o.innerHTML = '<div class="w" style="font-size:13px;font-weight:600">' + (ok ? '✅ あなたの端末で計算し直しても、同じ当選者になったで<br>' : '⚠️ 計算結果が合わへん！運営に伝えてな<br>') +
+        (R.drand ? (dok === true ? '✅ 公開乱数（drand 第' + R.drand.round + '回）も、外部サイトの値と一致<br>' : dok === false ? '⚠️ 公開乱数が外部サイトと違う<br>' : '（公開乱数の外部照合は、つながらんかった）<br>') : '⚠️ 公開乱数が取れず、予備の乱数を使った（運営に確認を）<br>') +
+        '<small>方式：締切で参加者と線を固定 → その後に出る公開乱数(drand)と合わせて SHA-256 で並び順・当たり位置・システム線を決定。締切前は誰も結果を知れへん。<br>seed: ' + R.seed + (R.drand ? '<br>drand: ' + R.drand.randomness + '<br>' + url : '') + '</small></div>';
+    }
+    if (!R.drand) { show(null); return; } fetch(url).then(function (r) { return r.json(); }).then(function (j) { show(j && j.randomness === R.drand.randomness); }).catch(function () { show(null); });
+  }
+  /* ---- 音：あみだくじの歌（WebAudio） ---- */
+  var amAC = null, amST = 0;
+  function amCtx() { try { if (!amAC) amAC = new (window.AudioContext || window.webkitAudioContext)(); if (amAC.state === 'suspended') amAC.resume(); } catch (e) { return null; } return amAC; }
+  function amNote(f, t, d, ty, v) { var c = amAC, o = c.createOscillator(), g = c.createGain(); o.type = ty || 'triangle'; o.frequency.value = f; g.gain.setValueAtTime(0, t); g.gain.linearRampToValueAtTime(v || .1, t + .01); g.gain.exponentialRampToValueAtTime(.0001, t + d); o.connect(g); g.connect(c.destination); o.start(t); o.stop(t + d + .03); }
+  var AM_MEL = [0, 2, 4, 7, 9, 7, 4, 2, 0, 4, 7, 12, 9, 7, 4, 2, 5, 7, 9, 12, 9, 7, 5, 4, 2, 4, 7, 9, 7, 4, 2, 0];
+  function amSongStart() {
+    amSongStop(); if (!AM.sound || !amCtx()) return; var step = 0, dt = 60 / 150 / 2, nx = amAC.currentTime + .05;
+    amST = setInterval(function () { while (nx < amAC.currentTime + .4) { var s = step % AM_MEL.length, f = 261.63 * Math.pow(2, AM_MEL[s] / 12); amNote(f, nx, dt * .9, 'triangle', .1); if (s % 2 === 0) amNote(f / 2, nx, dt * 1.7, 'sine', .08); if (s % 4 === 0) amNote(90, nx, .1, 'square', .04); if (s % 8 === 7) amNote(f * 2, nx, dt * .5, 'sine', .05); nx += dt; step++; } }, 100);
+  }
+  function amSongStop() { clearInterval(amST); amST = 0; }
+  function amFan(win) { if (!AM.sound || !amCtx()) return; var t = amAC.currentTime + .05; [0, 4, 7, 12, 16, 19].forEach(function (n, i) { amNote(261.63 * Math.pow(2, n / 12), t + i * .11, .5, 'triangle', win ? .16 : .09); }); }
+  function amSendRungs() { clearTimeout(AM.sendT); AM.sendT = setTimeout(function () { AM.sendT = 0; AM.sending = 1; amApi({ action: 'am_rungs', rungs: AM.mine }).then(function (j) { AM.sending = 0; if (AM.sendT) return; if (j && j.ok) amApply(j); else if (j && j.message) toast(j.message); }); }, 500); }
+  document.addEventListener('click', function (e) {
+    var t = e.target; if (!t) return; if (t.id === 'amGo') { $('jkDoor').classList.remove('on'); sfx(2); amOpen(); return; }
+    if (!AM.on) return; var b = t.closest ? t.closest('button') : null, v = AM.v;
+    if (t.id === 'amCv' && v && v.phase === 'open' && v.me && v.me.entered && !AM.anim) {
+      if (AM.mine.length >= 3) { toast('線は3本まで。「1本戻す」で直せるで'); return; }
+      var G = amGeom(), r = t.getBoundingClientRect(), x = e.clientX - r.left, y = e.clientY - r.top;
+      if (y < G.y0 || y > G.y0 + G.H) { toast('縦線のあいだ（ラダーの中）をタップしてな'); return; }
+      var f = Math.min(.9999, Math.max(0, (x - G.pad) / ((G.N - 1) * G.sp))); AM.mine.push([Math.round(f * 10000) / 10000, Math.round((y - G.y0) / G.H * 10000) / 10000]); sfx(2); amDraw(1, true); amBar(); amSendRungs(); return;
+    }
+    if (!b) return; var id = b.id;
+    if (id === 'amX') amClose();
+    else if (id === 'amSnd') { AM.sound = !AM.sound; b.textContent = AM.sound ? '🔊' : '🔇'; if (!AM.sound) amSongStop(); else if (AM.anim) amSongStart(); }
+    else if (id === 'amEnter') { b.disabled = true; amCtx(); amApi({ action: 'am_enter', n: (player.avatar && player.avatar.name) || '' }).then(function (j) { if (j && j.ok) { sfx(3); amApply(j); } else toast((j && j.message) || 'つながらへんかった'); }); }
+    else if (id === 'amLeave') amApi({ action: 'am_leave' }).then(function (j) { if (j && j.ok) { AM.mine = []; amApply(j); } else toast((j && j.message) || 'できへんかった'); });
+    else if (id === 'amUndo') { AM.mine.pop(); amDraw(1, true); amBar(); amSendRungs(); }
+    else if (id === 'amClr') { AM.mine = []; amDraw(1, true); amBar(); amSendRungs(); }
+    else if (id === 'amVer') amVerify();
+    else if (id === 'amSkip') amFinal();
+    else if (id === 'amSet') {
+      var pz = [].map.call(document.querySelectorAll('#amPzs .amPz'), function (x) { return x.value.trim(); }).filter(function (x) { return x; }), tm = new Date($('amDt').value).getTime(); if (!pz.length) { toast('商品名を入れてな'); return; } if (!(tm > Date.now())) { toast('締切の日時を入れてな'); return; }
+      b.disabled = true; amApi({ action: 'am_set', title: $('amTi').value, prizes: pz, close_at: tm + AM.off, cap: +$('amCapIn').value }).then(function (j) { b.disabled = false; if (j && j.ok) { toast('受付をはじめたで'); sfx(3); $('amOp').dataset.k = ''; amApply(j); } else toast((j && j.message) || 'できへんかった'); });
+    }
+    else if (id === 'amBots') { b.disabled = true; amApi({ action: 'am_bots', n: 30 }).then(function (j) { b.disabled = false; if (j && j.ok) { toast('ダミーを入れたで（いま ' + j.count + '人）'); amApply(j); } else toast((j && j.message) || 'できへんかった'); }); }
+    else if (id === 'amClear') { if (confirm('このくじを消して、最初に戻す？')) amApi({ action: 'am_clear' }).then(function (j) { if (j && j.ok) { $('amOp').dataset.k = ''; amApply(j); } }); }
+    else if (b.dataset && b.dataset.amq) { $('amDt').value = new Date(Date.now() + (+b.dataset.amq) * 60000 - new Date().getTimezoneOffset() * 60000).toISOString().slice(0, 19); }
+  });
+  document.addEventListener('change', function (e) { if (e.target && e.target.id === 'amWn') amPzRender(); });
 
   /* ----- ピコピコハンマー対戦場（ゲームセンター内・最大10人）v182 ----- */
   var inPiko = false, PK_W = 1000, PK_H = 800, PH = { on: false, live: false, lives: 3, down: false, helmUntil: 0, stunUntil: 0, dashUntil: 0, cd: { sw: 0, dash: 0, warp: 0, helm: 0 }, alive: {}, lv: {}, over: false, seen: false, tk: 0, cnt: 0, can: false, cans: {}, holds: {}, hv: 0, prac: false, lvl: 2, nb: 3, bt: 0, lastSw: 0 };
@@ -6233,7 +6467,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 186;
+  var GV = 187;
   (function () {
     var last = Date.now();
     function chk() {
