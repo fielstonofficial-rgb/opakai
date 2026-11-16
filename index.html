@@ -1224,7 +1224,7 @@ body.admin-on .tools .adminbtn{display:inline-flex}
         <button class="presence" type="button" id="presenceBtn" aria-expanded="false" aria-controls="pop"><span class="pdot" aria-hidden="true"></span><span><b id="pCount">0</b>人</span><span class="more">詳細</span></button>
         <button class="fsbtn linebtn" type="button" id="lineBtn" aria-label="公式LINE（友だち追加）" title="公式LINE（友だち追加）"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M12 4.5c-4.4 0-8 2.8-8 6.3 0 2.2 1.4 4.1 3.6 5.3-.1.7-.4 1.9-.7 2.6 0 0 1.9-.5 3.1-1.6.6.1 1.3.2 2 .2 4.4 0 8-2.8 8-6.3S16.4 4.5 12 4.5z" fill="currentColor"/></svg><span><i class="lx">公式</i>LINE</span></button><a class="fsbtn linebtn songbtn ytbtn" id="ytBtn" href="https://www.youtube.com/@AMONOPAL?sub_confirmation=1" target="_blank" rel="noopener" aria-label="YouTubeチャンネル登録" title="YouTubeチャンネル登録"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M10 8.6v6.8l5.8-3.4z" fill="currentColor"/></svg></a><button class="fsbtn linebtn songbtn" type="button" id="songBtn" aria-label="オパールの歌（音楽）" title="オパールの歌（音楽）"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M9 17V6l9-2v11" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round"/><circle cx="7" cy="17" r="2.6" fill="currentColor"/><circle cx="16" cy="15" r="2.6" fill="currentColor"/></svg><span>音楽</span></button><button class="fsbtn linebtn songbtn" type="button" id="gameBtn" aria-label="オパール採掘ゲーム" title="オパール採掘ゲーム"><svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4.5 19.5L15 9" fill="none" stroke="currentColor" stroke-width="2.4" stroke-linecap="round"/><path d="M10 4.2c5.2-.6 9.4 2.6 9.8 7.6-1.6-3-4.6-5.4-9.8-7.6z" fill="currentColor"/></svg><span>ゲーム</span></button>
         <span class="chat-title">AMON オパ会</span>
-        <div class="head-actions"><button class="fsbtn" type="button" id="shopBtn" aria-label="新作のご案内" title="新作のご案内"><svg viewBox="0 0 24 24" aria-hidden="true"><text x="12" y="17.5" text-anchor="middle" font-size="17" font-weight="700" fill="currentColor">!</text></svg><span class="sdot" id="shopDot" hidden></span></button><button class="fsbtn" type="button" id="setBtn"><svg aria-hidden="true"><use href="#gear"/></svg><span>設定</span></button><button class="fsbtn" type="button" id="helpBtn" aria-label="使い方" title="使い方"><svg viewBox="0 0 24 24" aria-hidden="true"><text x="12" y="17.5" text-anchor="middle" font-size="17" font-weight="700" fill="currentColor">?</text></svg></button><button class="fsbtn" type="button" id="fsBtn" aria-pressed="false"><svg aria-hidden="true"><use href="#expand" id="fsIcon"/></svg><span id="fsLabel">全画面</span></button></div>
+        <div class="head-actions"><button class="fsbtn" type="button" id="trBtn" aria-label="翻訳・Language" title="翻訳・Language">🌐</button><button class="fsbtn" type="button" id="shopBtn" aria-label="新作のご案内" title="新作のご案内"><svg viewBox="0 0 24 24" aria-hidden="true"><text x="12" y="17.5" text-anchor="middle" font-size="17" font-weight="700" fill="currentColor">!</text></svg><span class="sdot" id="shopDot" hidden></span></button><button class="fsbtn" type="button" id="setBtn"><svg aria-hidden="true"><use href="#gear"/></svg><span>設定</span></button><button class="fsbtn" type="button" id="helpBtn" aria-label="使い方" title="使い方"><svg viewBox="0 0 24 24" aria-hidden="true"><text x="12" y="17.5" text-anchor="middle" font-size="17" font-weight="700" fill="currentColor">?</text></svg></button><button class="fsbtn" type="button" id="fsBtn" aria-pressed="false"><svg aria-hidden="true"><use href="#expand" id="fsIcon"/></svg><span id="fsLabel">全画面</span></button></div>
         <div class="pop frame unkpop" id="unkPop" role="dialog" aria-label="わからん質問" hidden>
           <h3>猫が答えられんかった質問</h3>
           <ul class="unk-list" id="unkList"></ul>
@@ -1273,6 +1273,12 @@ body.admin-on .tools .adminbtn{display:inline-flex}
   </div>
   <div class="sp-credit" aria-hidden="true">Image: NASA, ESA, CSA, STScI</div>
   <button type="button" class="sp-go" id="splashGo">会議室ログイン画面へ <span aria-hidden="true">▸</span></button>
+</div>
+<div id="trPop" hidden style="position:fixed;top:56px;right:10px;z-index:60;background:var(--surface);color:var(--fg);border:1px solid var(--line);border-radius:14px;padding:12px 14px;box-shadow:0 8px 28px rgba(0,0,0,.25);max-width:270px;font-size:13px">
+  <div style="font-weight:700;margin-bottom:8px">🌐 翻訳 / Translation</div>
+  <select id="trLang" style="width:100%;padding:7px;border-radius:8px;font-size:14px"></select>
+  <button class="chip" type="button" id="trTg" style="margin-top:8px">自動翻訳：ON</button>
+  <p class="fine" style="margin-top:8px">他の人の発言を、選んだ言語に訳して下に出します。Messages are translated into the language you pick. Text is sent to Google Gemini for translation.</p>
 </div>
 <div class="overlay" id="welcome" role="dialog" aria-modal="true" aria-labelledby="wTitle" hidden>
   <form class="welcome frame-vivid" id="welcomeForm" autocomplete="off">
@@ -1494,6 +1500,38 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     return fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
       .then(function (r) { return r.json().then(function (j) { j._s = r.status; return j; }); });
   }
+  /* ---- 🌐 自動翻訳（v2026-11-16）：他の人の発言を、自分の言語に訳して下に出す ---- */
+  var TR = { lang: 'ja', on: true, mem: {}, pend: {} };
+  var TR_LANGS = [['ja', '日本語'], ['en', 'English'], ['zh-CN', '中文（简体）'], ['zh-TW', '中文（繁體）'], ['ko', '한국어'], ['de', 'Deutsch'], ['fr', 'Français'], ['it', 'Italiano'], ['es', 'Español'], ['pt', 'Português'], ['hi', 'हिन्दी'], ['ar', 'العربية'], ['ms', 'Bahasa Melayu'], ['ta', 'தமிழ்'], ['th', 'ไทย'], ['vi', 'Tiếng Việt'], ['id', 'Bahasa Indonesia'], ['tl', 'Filipino']];
+  (function () {
+    var sv = LS.get('opa_lang'); TR.on = LS.get('opa_tr') !== '0';
+    if (sv) TR.lang = sv; else { var lo = String(navigator.language || 'ja').toLowerCase(), g = 'ja'; if (lo.indexOf('zh-tw') === 0 || lo.indexOf('zh-hk') === 0) g = 'zh-TW'; else if (lo.indexOf('zh') === 0) g = 'zh-CN'; else TR_LANGS.forEach(function (x) { if (lo.slice(0, 2) === x[0].slice(0, 2)) g = x[0]; }); TR.lang = g; }
+  })();
+  function trNeed(t) {
+    t = String(t || ''); if (!TR.on || !token || t.length < 2) return false;
+    if (!/[A-Za-z\u00C0-\u024F\u0370-\u1FFF\u3040-\u30FF\u3400-\u9FFF\uAC00-\uD7AF\u0600-\u06FF\u0900-\u097F\u0E00-\u0E7F]/.test(t)) return false;
+    if (TR.lang === 'ja') return !/[\u3040-\u30FF]/.test(t);
+    if (TR.lang === 'en') return /[^\x00-\x7F\u00C0-\u024F\u2000-\u2BFF\uD800-\uDFFF\uFE0F]/.test(t);
+    return true;
+  }
+  function trApply(t, cb) {
+    if (!trNeed(t)) return; var k = TR.lang + '|' + t;
+    if (k in TR.mem) { if (TR.mem[k]) cb(TR.mem[k]); return; }
+    if (TR.pend[k]) return; TR.pend[k] = 1;
+    fetch(API.replace(/opa-room$/, 'opa-tr'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: token, to: TR.lang, text: t }) })
+      .then(function (r) { return r.json(); }).then(function (j) { delete TR.pend[k]; if (j && j.ok) { TR.mem[k] = j.out || null; if (j.out) cb(j.out); } }).catch(function () { delete TR.pend[k]; });
+  }
+  function trSpan(out) { var e = el('div', 'trx', '\ud83c\udf10 ' + out); e.style.cssText = 'margin-top:4px;padding-top:4px;border-top:1px dashed currentColor;opacity:.85;font-size:.94em'; return e; }
+  (function () {
+    var sel = $('trLang'), tg = $('trTg'), pop = $('trPop');
+    sel.innerHTML = TR_LANGS.map(function (x) { return '<option value="' + x[0] + '">' + x[1] + '</option>'; }).join(''); sel.value = TR.lang;
+    function lab() { tg.textContent = TR.on ? '自動翻訳：ON' : '自動翻訳：OFF'; } lab();
+    $('trBtn').addEventListener('click', function (e) { e.stopPropagation(); pop.hidden = !pop.hidden; });
+    pop.addEventListener('click', function (e) { e.stopPropagation(); });
+    document.addEventListener('click', function () { pop.hidden = true; });
+    sel.addEventListener('change', function () { TR.lang = sel.value; TR.mem = {}; LS.set('opa_lang', TR.lang); toast('Language: ' + sel.options[sel.selectedIndex].text); });
+    tg.addEventListener('click', function () { TR.on = !TR.on; LS.set('opa_tr', TR.on ? '1' : '0'); lab(); });
+  })();
   function isAdmin() { return !!(me && me.isAdmin); }
   /* ---- 店主のステルス：ログインしてない間は、みんなには見えへん ---- */
   var online = false;
@@ -1581,6 +1619,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     tm.appendChild(el('span', 'nm', who)); tm.appendChild(el('time', null, fmt(m.t)));
     if (kind === 'furan' || kind === 'aron' || kind === 'me') { line.appendChild(tm); line.appendChild(bub); } else { line.appendChild(bub); line.appendChild(tm); }
     col.appendChild(line); row.appendChild(col);
+    if (kind !== 'me' && !m.img && m.body) trApply(m.body, function (o) { col.appendChild(trSpan(o)); });
     lastRow = row;
     return row;
   }
@@ -1792,16 +1831,6 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
   document.addEventListener('keydown', function (e) { if (e.key === 'Escape') closePick(); });
 
   /* ---- 取得（画面が見えている間だけ、3.5秒ごと。猫を待つ間は1.5秒） ---- */
-  var authFail = 0;
-  function showRestore() {
-    var bak = LS.get('opa_token_bak'), old = document.getElementById('restoreBak');
-    if (old) old.remove();
-    if (!bak) return;
-    var b = document.createElement('button'); b.type = 'button'; b.id = 'restoreBak'; b.className = 'chip'; b.textContent = '↩ さっきの入室にもどす';
-    b.style.margin = '8px 0';
-    b.addEventListener('click', function () { token = bak; LS.set('opa_token', token); LS.del('opa_token_bak'); LS.del('opa_token_bak'); authFail = 0; b.remove(); begin(); });
-    var e = $('wErr'); if (e && e.parentNode) e.parentNode.insertBefore(b, e.nextSibling);
-  }
   function poll() {
     if (!token || busy) return Promise.resolve();
     busy = true;
@@ -1809,19 +1838,11 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       busy = false;
       if (j.kicked) { stop(); if ($('kicked').hidden) $('kMsg').textContent = 'いまは、この部屋に入れません😺'; mode('kick'); return; }
       if (j._s === 401) {
-        /* 一時的な通信・サーバーの不調でも401になることがある。1回で鍵を捨てず、3回続けて401のときだけ入り直しにする（鍵は控えに残す） */
-        authFail = (authFail || 0) + 1;
-        if (authFail < 3) { setTimeout(function () { poll(); }, 3000); return; }
-        authFail = 0;
         var wasGuest = LS.get('opa_guest') === '1';
-        if (token) LS.set('opa_token_bak', token);
         stop(); LS.del('opa_token'); token = null; mode('join'); openJoin();
         if (wasGuest) { LS.set('opa_guest', '0'); $('wErr').textContent = 'ゲストの時間（6時間）が終わりました。ゲスト入場が開いていれば、もう一度入れます。'; }
-        else { $('wErr').textContent = '退場になったわけやないで。つながりがうまくいかなかっただけかも。下のボタンで、さっきの入室にもどれるで。'; }
-        showRestore();
         return;
       }
-      authFail = 0;
       if (!j.msgs) return;
       var wasAdmin = isAdmin();
       me = j.me;
@@ -2111,7 +2132,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     $('wTitle').innerHTML = '<span class="amon">AMON</span>オパール会議室へ、ようこそ';
     $('wLead').textContent = '招待コードとニックネームを入れたら、すぐ入れます。LINEの名前は出ません。';
     $('codeRow').hidden = false; nickInput.disabled = false; nickInput.value = ''; codeInput.value = '';
-    $('wGo').textContent = '入室する'; $('wBack').hidden = true; $('xfer').hidden = false; $('ownerRow').hidden = false; $('wErr').textContent = ''; showRestore();
+    $('wGo').textContent = '入室する'; $('wBack').hidden = true; $('xfer').hidden = false; $('ownerRow').hidden = false; $('wErr').textContent = '';
     draft = { icon: ICONS[1], color: COLORS[0][0] }; bioInput.value = ''; paintPrev(); mode('join');
     // ゲスト入場：店主が開放している間だけ、ボタンを出す
     $('guestRow').hidden = true;
@@ -2141,7 +2162,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     $('wGo').disabled = true;
     api({ action: 'join', code: code, nickname: nickInput.value.trim(), icon: draft.icon, color: draft.color, bio: bioInput.value.trim() }).then(function (j) {
       $('wGo').disabled = false;
-      if (j.token) { token = j.token; LS.set('opa_token', token); LS.del('opa_token_bak'); LS.set('opa_adm', j.isAdmin ? '1' : '0'); LS.set('opa_guest', '0'); begin(); }
+      if (j.token) { token = j.token; LS.set('opa_token', token); LS.set('opa_adm', j.isAdmin ? '1' : '0'); LS.set('opa_guest', '0'); begin(); }
       else $('wErr').textContent = j.message || '入室できませんでした';
     }).catch(function () { $('wGo').disabled = false; $('wErr').textContent = 'つながらへんかった。電波を確認してもう一回な'; });
   });
@@ -2153,7 +2174,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     $('wErr').textContent = ''; $('guestBtn').disabled = true;
     api({ action: 'join_guest', nickname: nick, icon: draft.icon, color: draft.color, bio: bioInput.value.trim() }).then(function (j) {
       $('guestBtn').disabled = false;
-      if (j.token) { token = j.token; LS.set('opa_token', token); LS.del('opa_token_bak'); LS.set('opa_adm', '0'); LS.set('opa_guest', '1'); begin(); toast('ゲストで入ったで。6時間、楽しんでな'); }
+      if (j.token) { token = j.token; LS.set('opa_token', token); LS.set('opa_adm', '0'); LS.set('opa_guest', '1'); begin(); toast('ゲストで入ったで。6時間、楽しんでな'); }
       else { $('wErr').textContent = j.message || '入れませんでした'; if (j.error === 'guest_closed') $('guestRow').hidden = true; }
     }).catch(function () { $('guestBtn').disabled = false; $('wErr').textContent = 'つながらへんかった。電波を確認してもう一回な'; });
   });
@@ -2170,7 +2191,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     $('pinGo').disabled = true; $('pinErr').textContent = '';
     api({ action: 'owner_login', pin: pin }).then(function (j) {
       $('pinGo').disabled = false; $('pinInput').value = '';
-      if (j.token) { token = j.token; LS.set('opa_token', token); LS.del('opa_token_bak'); LS.set('opa_adm', '1'); setOnline(false); $('ownerLogin').hidden = true; begin(); }
+      if (j.token) { token = j.token; LS.set('opa_token', token); LS.set('opa_adm', '1'); setOnline(false); $('ownerLogin').hidden = true; begin(); }
       else $('pinErr').textContent = j.message || '入れませんでした';
     }).catch(function () { $('pinGo').disabled = false; $('pinErr').textContent = 'つながらへんかった。電波を確認してもう一回な'; });
   });
