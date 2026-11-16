@@ -1147,7 +1147,7 @@ body.admin-on .tools .adminbtn{display:inline-flex}
 .trmini{display:inline-block;margin:0 0 0 4px;border:0;background:transparent;color:inherit;opacity:.75;font-size:13px;line-height:1;padding:2px 3px;border-radius:999px;cursor:pointer;vertical-align:middle}
 .trmini:hover{opacity:1;background:var(--surface-2)}
 #trBtn{height:26px!important;min-width:0;padding:0 7px!important;font-size:13px}
-@media (max-width:520px){#fsLabel{display:none!important}.chat-head{flex-wrap:wrap;row-gap:4px;gap:2px!important}.chat-head .linebtn,.head-actions .fsbtn{height:24px!important;padding:0 4px 0 1px!important;font-size:10px!important;gap:1px!important}.chat-head .linebtn svg,.head-actions .fsbtn svg{width:16px!important;height:16px!important;padding:2px!important}.chat-head .presence{padding:2px 4px!important;font-size:10.5px!important;gap:2px!important}#trBtn{padding:0 4px!important}#fsBtn{padding:0 4px!important}.head-actions{gap:2px!important}#shopBtn,#helpBtn{width:24px!important;height:24px!important;min-width:0!important;padding:0!important}#shopBtn svg,#helpBtn svg{width:15px!important;height:15px!important}}
+@media (max-width:520px){#fsLabel{display:none!important}.chat-head{flex-wrap:wrap;row-gap:4px;gap:2px!important}.chat-head .linebtn,.head-actions .fsbtn{height:24px!important;padding:0 4px 0 1px!important;font-size:10px!important;gap:1px!important}.chat-head .linebtn svg,.head-actions .fsbtn svg{width:16px!important;height:16px!important;padding:2px!important}.chat-head .presence{padding:2px 4px!important;font-size:10.5px!important;gap:2px!important}#trBtn{padding:0 4px!important}#fsBtn{padding:0 4px!important}.chat-head.tight #songBtn span{display:none}.chat-head.tight2 #lineBtn span{font-size:0!important}.chat-head.tight2 #lineBtn .lx{font-size:10px!important}.chat-head.tight #songBtn{padding:0 4px 0 1px!important}.head-actions{gap:2px!important}#shopBtn,#helpBtn{width:24px!important;height:24px!important;min-width:0!important;padding:0!important}#shopBtn svg,#helpBtn svg{width:15px!important;height:15px!important}}
 
 .uilbar{display:flex;flex-wrap:wrap;gap:5px;justify-content:center;margin:0 0 10px;position:relative;z-index:3}
 .uilbar button,.uilbar select{border:1px solid var(--line);background:var(--surface-2);color:var(--fg);border-radius:999px;padding:4px 10px;font-size:12px;cursor:pointer;min-height:28px}
@@ -2854,6 +2854,14 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
   $('unkClear').hidden = true;
   document.addEventListener('click', function (ev) { var p = $('unkPop'); if (!p.hidden && !p.contains(ev.target)) p.hidden = true; });
 
+  /* ---- 上のボタンが2段に割れたら、「音楽」の文字だけ消して1列に収める ---- */
+  function fitHead() {
+    var h = document.querySelector('.chat-head'), fs = $('fsBtn'), pr = h && h.querySelector('.presence'); if (!h || !fs || !pr || !h.offsetParent) return;
+    var wr = function () { return fs.offsetParent && fs.getBoundingClientRect().top > pr.getBoundingClientRect().top + 8; };
+    h.classList.remove('tight', 'tight2'); if (wr()) { h.classList.add('tight'); if (wr()) h.classList.add('tight2'); }
+  }
+  window.addEventListener('resize', fitHead); window.addEventListener('orientationchange', fitHead);
+  setInterval(fitHead, 1500);
   /* ---- 言語バー（入口の画面・ログイン画面） ---- */
   (function () {
     var sp = $('splash'), wf = $('welcomeForm');
