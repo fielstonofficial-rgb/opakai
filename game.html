@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:197-->
+<!--GV:198-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -1140,6 +1140,8 @@ body.inPk .gh.dn::after{content:"💫 ダウン";background:rgba(90,90,110,.9)}
 .hb .far{position:absolute;left:14px;top:48px;width:36px;height:36px;pointer-events:none}
 .hb .fsh{position:absolute;left:-2px;top:62px;width:19px;height:23px;pointer-events:none}
 #hero2.down .hb .far,#hero2.down .hb .fsh,.gh.dn .hb .far,.gh.dn .hb .fsh{display:none}
+body.inPk #hero2 .hb .fpk,body.inPk .gh .hb .fpk,body.inPk .hb .far,body.inPk .hb .fsh{display:none!important}
+.phOw{animation:phOw .38s ease-out}@keyframes phOw{0%{filter:brightness(2.2) saturate(2) drop-shadow(0 0 8px #f33)}25%{transform:translateX(-5px)}50%{transform:translateX(5px)}100%{filter:none;transform:none}}.phFx.ow{font-size:44px;color:#fff;-webkit-text-stroke:2px #e0243a;text-shadow:0 3px 0 #8a1020,0 0 14px #ff5a5a}.phFx.hit{font-size:30px;color:#ffe45a;text-shadow:0 3px 0 #8a1020}
 .hb .far svg,.hb .fsh svg{width:100%;height:100%}
  #eqPicker{position:sticky;bottom:0;margin:8px -16px -24px;padding:6px 16px 18px;max-height:30vh;overflow:auto;background:#0b161c;border-top:1px solid var(--gold);border-radius:16px 16px 0 0;box-shadow:0 -8px 20px rgba(0,0,0,.55);z-index:3}
 #eqPicker .sec{margin-top:6px}
@@ -5210,7 +5212,7 @@ var TB = {
   function phHitMe(from) {
     if (!(PH.live && !PH.down && !PH.over)) return; var a = peers[from]; if (!a || Math.hypot(a.x - hero.x, a.y - hero.y) > 170) return;
     if (Date.now() < PH.helmUntil) { phBeep(220, 180, 120, 'triangle', .3); phFx(myMid, 'ガキン！'); rtSend({ t: 'ph', k: 'blk', to: myMid }); return; }
-    PH.lives--; PH.stunUntil = Date.now() + 350; phPico(); phFx(myMid, 'ピコ！'); vib();
+    PH.lives--; PH.stunUntil = Date.now() + 350; phOuch(myMid, true); vib();
     if (PH.lives <= 0) { PH.down = true; PH.lives = 0; delete PH.alive[myMid]; var h = $('hero2'); if (h) h.classList.add('dn'); ftarget = null; bubble($('hero2'), 'やられた…'); }
     rtSend({ t: 'ph', k: 'hit', to: myMid, l: PH.lives }); rtLast = 0; phHud(); phCheckEnd();
   }
@@ -5235,7 +5237,7 @@ var TB = {
   function phBotHit(id, fromId) {
     var p = peers[id]; if (!p || !PH.alive[id]) return; var b = p.bt;
     if (Date.now() < b.helmUntil) { phBeep(220, 180, 120, 'triangle', .3); phFx(id, 'ガキン！'); return; }
-    b.lives--; b.stunUntil = Date.now() + 350; PH.lv[id] = b.lives; p.h = Math.round(b.lives / PH_LV * 100); phPico(); phFx(id, 'ピコ！');
+    b.lives--; b.stunUntil = Date.now() + 350; PH.lv[id] = b.lives; p.h = Math.round(b.lives / PH_LV * 100); phOuch(id, false); if (fromId === myMid) phHitMark();
     if (b.lives <= 0) { p.dn = 1; p.h = 0; delete PH.alive[id]; phHud(); phCheckEnd(); } phHud();
   }
   function phBotSwing(id, tid) {
@@ -5322,6 +5324,15 @@ var TB = {
   function phBeep(f1, f2, ms, type, vol) {
     try { var A = window.AudioContext || window.webkitAudioContext; if (!A) return; PH.ac = PH.ac || new A(); var c = PH.ac, o = c.createOscillator(), g = c.createGain(); o.type = type || 'square'; o.frequency.setValueAtTime(f1, c.currentTime); o.frequency.exponentialRampToValueAtTime(f2, c.currentTime + ms / 1000); g.gain.setValueAtTime(vol || .22, c.currentTime); g.gain.exponentialRampToValueAtTime(.001, c.currentTime + ms / 1000 + .02); o.connect(g); g.connect(c.destination); o.start(); o.stop(c.currentTime + ms / 1000 + .05); } catch (e) {}
   }
+  var PH_OW = ['痛った！', 'いてっ！', 'ぎゃっ！', '痛いっ！', 'うわっ！'], PH_OWS = ['いたっ！', 'いてっ！', 'ぎゃっ！', 'いたいっ！'];
+  function phOuch(id, mine) {
+    var now = Date.now(); phPico(); var k = Math.floor(Math.random() * PH_OW.length), p = phPosOf(id);
+    if (p) { var e = document.createElement('div'); e.className = 'phFx ow'; e.textContent = PH_OW[k]; e.style.left = p.x + 'px'; e.style.top = (p.y - 78) + 'px'; $('world').appendChild(e); setTimeout(function () { e.remove(); }, 950); }
+    var el = phElOf(id); if (el) { el.classList.remove('phOw'); void el.offsetWidth; el.classList.add('phOw'); setTimeout(function () { el.classList.remove('phOw'); }, 420); }
+    phBeep(900, 300, 140, 'sawtooth', .22);
+    if (now - (PH.owT || 0) > 500) { PH.owT = now; try { var ss = window.speechSynthesis; if (ss && !ss.speaking) { var u = new SpeechSynthesisUtterance(PH_OWS[k]); u.lang = 'ja-JP'; u.rate = 1.35; u.pitch = mine ? 1.2 : (id.indexOf('bot') === 0 ? 1.5 + (parseInt(id.slice(3), 10) || 0) * .08 : 1.7); u.volume = 1; ss.speak(u); } } catch (e1) {} }
+  }
+  function phHitMark() { var p = phPosOf(myMid); if (!p) return; var e = document.createElement('div'); e.className = 'phFx hit'; e.textContent = '💥 ヒット！'; e.style.left = p.x + 'px'; e.style.top = (p.y - 128) + 'px'; $('world').appendChild(e); setTimeout(function () { e.remove(); }, 950); phBeep(1500, 2200, 90, 'square', .16); vib(); }
   function phPico() { phBeep(1300, 520, 90, 'square', .26); }
   function phElOf(id) { return id === myMid ? $('hero2') : (peers[id] && peers[id].el); }
   function phPosOf(id) { return id === myMid ? { x: hero.x, y: hero.y } : (peers[id] ? { x: peers[id].x, y: peers[id].y } : null); }
@@ -5378,7 +5389,7 @@ var TB = {
       if (m.to === myMid) phHitMe(m.f);
       return;
     }
-    if (m.k === 'hit') { PH.lv[m.to] = m.l; phPico(); phFx(m.to, 'ピコ！'); if (m.l <= 0) { delete PH.alive[m.to]; phCheckEnd(); } phHud(); return; }
+    if (m.k === 'hit') { PH.lv[m.to] = m.l; phOuch(m.to, m.to === myMid); if (m.to !== myMid && Date.now() - PH.lastSw < 900) { var hp0 = phPosOf(m.to); if (hp0 && Math.hypot(hp0.x - hero.x, hp0.y - hero.y) < 170) phHitMark(); } if (m.l <= 0) { delete PH.alive[m.to]; phCheckEnd(); } phHud(); return; }
     if (m.k === 'blk') { phBeep(220, 180, 120, 'triangle', .3); phFx(m.to, 'ガキン！'); return; }
     if (m.k === 'hm') { phHelmShow(m.f, 2000); return; }
   }
@@ -6596,7 +6607,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 197;
+  var GV = 198;
   (function () {
     var last = Date.now();
     function chk() {
