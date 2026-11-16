@@ -4549,7 +4549,7 @@ var TB = {
     if ($('jaCss')) return; var s = document.createElement('style'); s.id = 'jaCss';
     s.textContent = '#jkaHud{position:fixed;top:84px;left:8px;right:8px;z-index:8000;display:none;pointer-events:none;text-align:center}' +
       '#jkaHud .jaR1{display:inline-block;max-width:100%;padding:6px 14px;border-radius:14px;background:rgba(20,8,14,.82);border:2px solid #d9b24c;color:#fff;font-size:15px;font-weight:900;box-shadow:0 3px 10px rgba(0,0,0,.4)}' +
-      '#jkaHud .jaR2{margin-top:6px;display:flex;gap:6px;justify-content:center;pointer-events:auto}#jkaHud .jaR2 button{padding:8px 12px;border:0;border-radius:12px;font-weight:900;font-size:14px;color:#241;background:linear-gradient(#ffe08a,#e3b341);box-shadow:0 2px 0 #8a6a1a}#jkaHud .jaR2 button.y{background:linear-gradient(#9fc2ff,#4a7fe0);color:#fff;box-shadow:0 2px 0 #1f3fa0}#jkaHud .jaR2 button.g{background:linear-gradient(#7dff9a,#2fbf5c);box-shadow:0 2px 0 #1a7a3a}' +
+      '#jkaHud .jaR2{position:fixed;left:8px;bottom:8px;width:112px;display:flex;flex-wrap:wrap;gap:4px;justify-content:flex-start;pointer-events:auto;z-index:8001}body:has(#field.chat) #jkaHud .jaR2{display:none}#jkaHud .jaR2 button{flex:0 0 54px;padding:6px 0;border:0;border-radius:10px;font-weight:900;font-size:11px;color:#241;background:linear-gradient(#ffe08a,#e3b341);box-shadow:0 2px 0 #8a6a1a}#jkaHud .jaR2 button.y{background:linear-gradient(#9fc2ff,#4a7fe0);color:#fff;box-shadow:0 2px 0 #1f3fa0}#jkaHud .jaR2 button.g{background:linear-gradient(#7dff9a,#2fbf5c);box-shadow:0 2px 0 #1a7a3a}' +
       '.jaB{width:600px;min-width:0!important;padding:8px 18px!important}.jaB .lbBt{font-size:20px}.jaB .lbBs{font-size:26px}.jaCols{display:flex;gap:14px;text-align:left;margin-top:4px}.jaCols>div{flex:1;font-size:17px;line-height:1.4;color:#e8f6ff}.jaCols h4{margin:0 0 2px;font-size:15px;color:#ffd36a}.jaCols .nm{white-space:nowrap;overflow:hidden;text-overflow:ellipsis}' +
       '.jkChip{position:absolute;width:56px;height:34px;box-sizing:border-box;border-radius:8px;background:#fff8e6;border:2px solid #d9b24c;text-align:center;overflow:hidden;pointer-events:auto;z-index:2;cursor:pointer;line-height:1.15}.jkChip b{display:block;font-size:11px;color:#3a0f20;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;padding:2px 2px 0}.jkChip i{font-style:normal;font-size:10px;color:#7d1226;font-weight:800}.jkChip.me{background:#ffe08a;border-color:#ff6b6b}.jkChip.dead{opacity:.45}' +
       '#jkaRing{position:absolute;left:0;top:0;width:100%;height:100%;pointer-events:none;z-index:2}' +
@@ -4557,7 +4557,7 @@ var TB = {
       '.jkB input[type=text].jaQ{width:100%;padding:9px;border-radius:10px;border:2px solid #d9b24c;font-size:16px;box-sizing:border-box;margin:6px 0}';
     document.head.appendChild(s);
     var d = document.createElement('div');
-    d.innerHTML = '<div id="jkaHud"><div class="jaR1" id="jaR1"></div><div class="jaR2"><button type="button" class="g" id="jaCh">⚔ 挑戦する</button><button type="button" id="jaPr" class="y">🎮 練習する</button><button type="button" id="jaLs">📋 順位</button><button type="button" id="jaOp" style="display:none">🛠 運営</button></div></div>' +
+    d.innerHTML = '<div id="jkaHud"><div class="jaR1" id="jaR1"></div><div class="jaR2"><button type="button" class="g" id="jaCh">⚔ 挑戦</button><button type="button" id="jaPr" class="y">🎮 練習</button><button type="button" id="jaLs">📋 順位</button><button type="button" id="jaOp" style="display:none">🛠 運営</button></div></div>' +
       '<div class="jkM" id="jkaDuel"><div class="jkB" id="jkaDuelB"></div></div><div class="jkM" id="jkaList"><div class="jkB" id="jkaListB"></div></div>';
     while (d.firstChild) document.body.appendChild(d.firstChild);
     $('jkaList').addEventListener('click', function (e) { if (e.target === this) this.classList.remove('on'); });
@@ -4750,18 +4750,18 @@ var TB = {
 
 
   /* ----- ピコピコハンマー対戦場（ゲームセンター内・最大10人）v182 ----- */
-  var inPiko = false, PK_W = 1000, PK_H = 800, PH = { on: false, live: false, lives: 3, down: false, helmUntil: 0, stunUntil: 0, dashUntil: 0, cd: { sw: 0, dash: 0, warp: 0, helm: 0 }, alive: {}, lv: {}, over: false, seen: false, tk: 0, cnt: 0, can: false, cans: {}, holds: {}, hv: 0, prac: false, lvl: 2, bt: 0, lastSw: 0 };
+  var inPiko = false, PK_W = 1000, PK_H = 800, PH = { on: false, live: false, lives: 3, down: false, helmUntil: 0, stunUntil: 0, dashUntil: 0, cd: { sw: 0, dash: 0, warp: 0, helm: 0 }, alive: {}, lv: {}, over: false, seen: false, tk: 0, cnt: 0, can: false, cans: {}, holds: {}, hv: 0, prac: false, lvl: 2, nb: 3, bt: 0, lastSw: 0 };
   var PH_CD = { sw: 600, dash: 4000, warp: 7000, helm: 5000 };
   function phCss() {
     if ($('phCss')) return; var s = document.createElement('style'); s.id = 'phCss';
     s.textContent = '#phHud{position:fixed;top:84px;left:8px;right:8px;z-index:8000;display:none;pointer-events:none;text-align:center}#phHud .p1{display:inline-block;padding:6px 14px;border-radius:14px;background:rgba(20,8,14,.84);border:2px solid #ffd84a;color:#fff;font-size:16px;font-weight:900}#phHud button{pointer-events:auto;margin-top:6px;padding:9px 16px;border:0;border-radius:12px;font-weight:900;font-size:15px;color:#241;background:linear-gradient(#7dff9a,#2fbf5c);box-shadow:0 2px 0 #1a7a3a}' +
-      '#phPrBox{pointer-events:none}#phPrBox button{pointer-events:auto}#phHud button.y{background:linear-gradient(#ffe08a,#e3b341);box-shadow:0 2px 0 #8a6a1a}#phHud button.b{background:linear-gradient(#9fc2ff,#4a7fe0);box-shadow:0 2px 0 #1f3fa0}.phLvs{margin-top:6px}#phHud .phLv{margin:0 3px;padding:7px 14px;background:#fff;color:#333;box-shadow:0 2px 0 #aaa}#phHud .phLv.on{background:linear-gradient(#ff9f9f,#e0444a);color:#fff;box-shadow:0 2px 0 #8a1020}#phBtns{position:fixed;right:8px;bottom:96px;z-index:8000;display:none;flex-direction:column;gap:8px}#phBtns button{width:66px;height:66px;border-radius:50%;border:3px solid #ffd84a;font-size:28px;background:radial-gradient(#e2434f,#8a1020);color:#fff;font-weight:900;box-shadow:0 3px 8px rgba(0,0,0,.5);position:relative;line-height:1}#phBtns button small{display:block;font-size:10px;margin-top:2px}#phBtns button.cd{opacity:.4}#phBtns button.sw{width:84px;height:84px;font-size:38px;align-self:flex-end;background:radial-gradient(#ffe45a,#e08a00);color:#5a2a00}' +
+      '#phPrBox{pointer-events:none}#phPrBox button{pointer-events:auto}#phHud button.y{background:linear-gradient(#ffe08a,#e3b341);box-shadow:0 2px 0 #8a6a1a}#phHud button.b{background:linear-gradient(#9fc2ff,#4a7fe0);box-shadow:0 2px 0 #1f3fa0}.phLvs{margin-top:6px}#phHud .phNb{margin:0 3px;padding:6px 12px;background:#fff;color:#333;box-shadow:0 2px 0 #aaa}#phHud .phNb.on{background:linear-gradient(#ffd98a,#e3a321);color:#4a2a00;box-shadow:0 2px 0 #8a5a10}#phHud .phLv{margin:0 3px;padding:7px 14px;background:#fff;color:#333;box-shadow:0 2px 0 #aaa}#phHud .phLv.on{background:linear-gradient(#ff9f9f,#e0444a);color:#fff;box-shadow:0 2px 0 #8a1020}#phBtns{position:fixed;right:8px;bottom:96px;z-index:8000;display:none;flex-direction:column;gap:8px}#phBtns button{width:66px;height:66px;border-radius:50%;border:3px solid #ffd84a;font-size:28px;background:radial-gradient(#e2434f,#8a1020);color:#fff;font-weight:900;box-shadow:0 3px 8px rgba(0,0,0,.5);position:relative;line-height:1}#phBtns button small{display:block;font-size:10px;margin-top:2px}#phBtns button.cd{opacity:.4}#phBtns button.sw{width:84px;height:84px;font-size:38px;align-self:flex-end;background:radial-gradient(#ffe45a,#e08a00);color:#5a2a00}' +
       '#phBig{position:fixed;left:0;right:0;top:34%;text-align:center;z-index:9000;font-size:84px;font-weight:900;color:#ffe45a;text-shadow:0 4px 0 #8a1020,0 0 20px #000;pointer-events:none;display:none}' +
       '.phHm{position:absolute;transform:translate(-50%,-100%);z-index:99999;pointer-events:none;transform-origin:50% 100%;animation:phSw .3s ease-in forwards}@keyframes phSw{0%{transform:translate(-50%,-100%) rotate(-80deg)}60%{transform:translate(-50%,-100%) rotate(35deg)}100%{transform:translate(-50%,-100%) rotate(28deg);opacity:.0}}' +
       '.phFx{position:absolute;transform:translate(-50%,-100%);z-index:99999;pointer-events:none;font-size:34px;font-weight:900;animation:phUp .9s ease-out forwards}@keyframes phUp{0%{opacity:1;margin-top:0}100%{opacity:0;margin-top:-50px}}.phCan{position:absolute;transform:translate(-50%,-100%);font-size:30px;z-index:50;pointer-events:none}.phHold{position:absolute;pointer-events:none;transform-origin:50% 100%}#phBtns2{position:fixed;left:8px;bottom:96px;z-index:8000;display:none;flex-direction:column;gap:8px}#phBtns2 button{width:58px;height:58px;border-radius:50%;border:3px solid #fff;font-size:24px;background:radial-gradient(#5a8cff,#1f3fa0);color:#fff;font-weight:900;box-shadow:0 3px 8px rgba(0,0,0,.5);line-height:1}#phBtns2 button small{display:block;font-size:9px;margin-top:2px}#phQ{position:fixed;left:76px;bottom:96px;z-index:8001;display:none;grid-template-columns:1fr 1fr;gap:6px;width:200px}#phQ button{padding:10px 6px;border:0;border-radius:10px;font-weight:900;font-size:14px;background:#fff;color:#1f3fa0;box-shadow:0 2px 0 #7a8fd0}.phHelmet{position:absolute;transform:translate(-50%,-100%);z-index:99998;font-size:34px;pointer-events:none}';
     document.head.appendChild(s);
     var d = document.createElement('div');
-    d.innerHTML = '<div id="phHud"><div class="p1" id="phT"></div><br><button type="button" id="phGo">🎮 みんなで対戦スタート</button><div id="phPrBox"><div class="phLvs"><button type="button" class="phLv" data-lv="1">弱い</button><button type="button" class="phLv on" data-lv="2">普通</button><button type="button" class="phLv" data-lv="3">強い</button></div><button type="button" id="phPrGo" class="y">🤖 NPC9人と練習</button><button type="button" id="phBack" class="b">👥 みんなの部屋にもどる</button></div></div><div id="phBig"></div><div id="phBtns2"><button type="button" id="phTa">🎭<small>挑発</small></button><button type="button" id="phQc">💬<small>ひとこと</small></button></div><div id="phQ"><button type="button" data-q="いくぞ！">いくぞ！</button><button type="button" data-q="覚悟！">覚悟！</button><button type="button" data-q="ナイス！">ナイス！</button><button type="button" data-q="待って〜">待って〜</button><button type="button" data-q="まいった！">まいった！</button><button type="button" data-q="ドンマイ">ドンマイ</button></div><div id="phBtns"><button type="button" id="phTh" style="display:none">🥫<small>投げる</small></button><button type="button" class="sw" id="phSw">🔨<small>たたく</small></button><button type="button" id="phHe">🛡<small>ヘルメット</small></button><button type="button" id="phDa">⚡<small>ダッシュ</small></button><button type="button" id="phWa">🌀<small>ワープ</small></button></div>';
+    d.innerHTML = '<div id="phHud"><div class="p1" id="phT"></div><br><button type="button" id="phGo">🎮 みんなで対戦スタート</button><div id="phPrBox"><div class="phLvs"><button type="button" class="phLv" data-lv="1">弱い</button><button type="button" class="phLv on" data-lv="2">普通</button><button type="button" class="phLv" data-lv="3">強い</button></div><div class="phLvs"><button type="button" class="phNb" data-nb="3">NPC 3人</button><button type="button" class="phNb" data-nb="9">NPC 9人</button></div><button type="button" id="phPrGo" class="y">🤖 NPCと練習</button><button type="button" id="phBack" class="b">👥 みんなの部屋にもどる</button></div></div><div id="phBig"></div><div id="phBtns2"><button type="button" id="phTa">🎭<small>挑発</small></button><button type="button" id="phQc">💬<small>ひとこと</small></button></div><div id="phQ"><button type="button" data-q="いくぞ！">いくぞ！</button><button type="button" data-q="覚悟！">覚悟！</button><button type="button" data-q="ナイス！">ナイス！</button><button type="button" data-q="待って〜">待って〜</button><button type="button" data-q="まいった！">まいった！</button><button type="button" data-q="ドンマイ">ドンマイ</button></div><div id="phBtns"><button type="button" id="phTh" style="display:none">🥫<small>投げる</small></button><button type="button" class="sw" id="phSw">🔨<small>たたく</small></button><button type="button" id="phHe">🛡<small>ヘルメット</small></button><button type="button" id="phDa">⚡<small>ダッシュ</small></button><button type="button" id="phWa">🌀<small>ワープ</small></button></div>';
     while (d.firstChild) document.body.appendChild(d.firstChild);
   }
   function phHammerSVG(w) {
@@ -4796,7 +4796,7 @@ var TB = {
     PH.on = true; PH.live = false; PH.over = false; PH.seen = false; PH.lives = 3; PH.down = false; PH.alive = {}; PH.lv = {};
     $('phHud').style.display = 'block'; $('phBtns').style.display = 'none'; $('phBtns2').style.display = 'flex'; phHud();
     document.body.classList.add('inPk'); PH.prac = false; phJoin();
-    clearInterval(PH.tk); PH.tk = setInterval(phTick, 200); toast('NPCと練習するなら「🤖 NPC9人と練習」を押してな（' + GV + '）');
+    clearInterval(PH.tk); PH.tk = setInterval(phTick, 200); toast('NPCと練習するなら「🤖 NPCと練習」を押してな');
   }
   function phStop() { document.body.classList.remove('inPk'); PH.on = false; PH.live = false; clearInterval(PH.tk); clearInterval(PH.bt); PH.prac = false; inPiko = false; phCansClear(); var q0 = $('phBtns2'); if (q0) q0.style.display = 'none'; q0 = $('phQ'); if (q0) q0.style.display = 'none'; var a = $('phHud'); if (a) a.style.display = 'none'; a = $('phBtns'); if (a) a.style.display = 'none'; a = $('phBig'); if (a) a.style.display = 'none'; var h = $('hero2'); if (h) h.classList.remove('dn'); }
   function phPeers(list) {
@@ -4822,7 +4822,7 @@ var TB = {
   var PH_NM = ['タロウ', 'ハナ', 'ケン', 'ミキ', 'ソウ', 'リナ', 'ダイ', 'ユキ', 'レン'];
   function phPracStart() {
     var lv = PH.lvl; PH.prac = true; clearInterval(PH.bt); rtStop(); rtOn = true;
-    for (var i = 0; i < 9; i++) {
+    for (var i = 0; i < PH.nb; i++) {
       var id = 'bot' + i, av = lbRecepAv(PH_NM[i], 1 + (i % 3), 1 + ((i * 3) % 7), 1 + ((i * 2) % 7), 1 + ((i * 5) % 7), 1 + ((i * 4) % 7));
       var pr = peers[id] = { id: id, n: PH_NM[i], av: av, x: 500, y: 520, tx: 500, ty: 520, dir: 1, got: true, h: 100, dn: 0, st: 0, bot: true, bt: { lives: 3, cd: { sw: 0, dash: 0, warp: 0, helm: 0 }, helmUntil: 0, stunUntil: 0, dashUntil: 0, can: false, nextAt: 0 } };
       ghostEl(pr);
@@ -4913,11 +4913,12 @@ var TB = {
   function phCount() { return Object.keys(peers).length + 1; }
   function phHud() {
     var t = $('phT'), g = $('phGo'); if (!t) return; var box = $('phPrBox'), nm = ['', '弱い', '普通', '強い'][PH.lvl];
-    if (PH.live) { var h = ''; for (var i = 0; i < 3; i++) h += i < PH.lives ? '❤️' : '🖤'; t.textContent = h + '　残り ' + Object.keys(PH.alive).length + '人' + (PH.prac ? '（NPC練習・' + nm + '）' : '') + (PH.down ? '　（倒れた。チャットはできるで）' : ''); g.style.display = 'none'; box.style.display = PH.down && PH.prac ? 'block' : 'none'; if (PH.down && PH.prac) { box.querySelector('.phLvs').style.display = 'none'; $('phPrGo').style.display = 'none'; $('phBack').style.display = ''; } }
+    if (PH.live) { var h = ''; for (var i = 0; i < 3; i++) h += i < PH.lives ? '❤️' : '🖤'; t.textContent = h + '　残り ' + Object.keys(PH.alive).length + '人' + (PH.prac ? '（NPC練習・' + nm + '）' : '') + (PH.down ? '　（倒れた。チャットはできるで）' : ''); g.style.display = 'none'; box.style.display = PH.down && PH.prac ? 'block' : 'none'; if (PH.down && PH.prac) { box.querySelectorAll('.phLvs').forEach(function (e) { e.style.display = 'none'; }); $('phPrGo').style.display = 'none'; $('phBack').style.display = ''; } }
     else {
       var busy = !!PH.cnt; t.textContent = PH.prac ? ('🤖 NPC練習　レベル：' + nm) : ('待機中　' + phCount() + '/10人'); g.style.display = (!PH.prac && phCount() >= 2 && !busy) ? '' : 'none';
-      box.style.display = busy ? 'none' : 'block'; box.querySelector('.phLvs').style.display = ''; $('phPrGo').style.display = ''; $('phPrGo').textContent = PH.prac ? '🤖 もう一回（NPC9人）' : '🤖 NPC9人と練習'; $('phBack').style.display = PH.prac ? '' : 'none';
-      [].forEach.call(box.querySelectorAll('.phLv'), function (b) { b.classList.toggle('on', +b.dataset.lv === PH.lvl); });
+      box.style.display = busy ? 'none' : 'block'; box.querySelector('.phLvs').style.display = ''; $('phPrGo').style.display = ''; $('phPrGo').textContent = PH.prac ? '🤖 もう一回（NPC' + PH.nb + '人）' : '🤖 NPC' + PH.nb + '人と練習';
+      box.querySelectorAll('.phLvs').forEach(function (e) { e.style.display = ''; }); $('phBack').style.display = PH.prac ? '' : 'none';
+      [].forEach.call(box.querySelectorAll('.phLv'), function (b) { b.classList.toggle('on', +b.dataset.lv === PH.lvl); }); [].forEach.call(box.querySelectorAll('.phNb'), function (b) { b.classList.toggle('on', +b.dataset.nb === PH.nb); });
     }
   }
   function phBig(txt, ms) { var e = $('phBig'); e.textContent = txt; e.style.display = 'block'; clearTimeout(e._t); e._t = setTimeout(function () { e.style.display = 'none'; }, ms || 900); }
@@ -4992,7 +4993,7 @@ var TB = {
   document.addEventListener('click', function (e) {
     var t = e.target && e.target.closest ? e.target.closest('button') : null; if (!t || !inPiko) return;
     if (t.id === 'phGo') { if (phCount() < 2) { toast('2人以上で、はじめられるで'); return; } var sd = Date.now() % 100000; rtSend({ t: 'ph', k: 'go', s: sd }); phStart(sd); }
-    else if (t.id === 'phPrGo') phPracStart(); else if (t.id === 'phBack') phPracStop(); else if (t.dataset && t.dataset.lv) { PH.lvl = +t.dataset.lv; phHud(); }
+    else if (t.id === 'phPrGo') phPracStart(); else if (t.id === 'phBack') phPracStop(); else if (t.dataset && t.dataset.lv) { PH.lvl = +t.dataset.lv; phHud(); } else if (t.dataset && t.dataset.nb) { PH.nb = +t.dataset.nb; phHud(); }
     else if (t.id === 'phTh') phThrow(); else if (t.id === 'phTa') phTaunt(); else if (t.id === 'phQc') { var qq = $('phQ'); qq.style.display = qq.style.display === 'grid' ? 'none' : 'grid'; }
     else if (t.dataset && t.dataset.q) { var tx = t.dataset.q; $('phQ').style.display = 'none'; bubble($('hero2'), tx); tlogAdd((player.avatar && player.avatar.name) || '', tx); rtSend({ t: 'chat', x: tx }); }
     else if (t.id === 'phSw') phSwing(); else if (t.id === 'phHe') phHelmet(); else if (t.id === 'phDa') phDash(); else if (t.id === 'phWa') phWarp();
@@ -5725,7 +5726,7 @@ var TB = {
       '<linearGradient id="acG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a6410"/><stop offset=".5" stop-color="#ffe27a"/><stop offset="1" stop-color="#8a6410"/></linearGradient>' +
       '<radialGradient id="acL" cx=".5" cy=".5" r=".5"><stop offset="0" stop-color="#ffd98a" stop-opacity=".28"/><stop offset="1" stop-color="#ffd98a" stop-opacity="0"/></radialGradient></defs>';
     o += '<rect width="' + W + '" height="' + H + '" fill="url(#acP)"/><rect width="' + W + '" height="250" fill="url(#acW)"/>';
-    for (var i = 0; i < 9; i++) { var px = 20 + i * 120; o += '<rect x="' + px + '" y="36" width="90" height="190" rx="3" fill="none" stroke="#7a5a1c" stroke-width="2" opacity=".7"/><rect x="' + (px + 8) + '" y="44" width="74" height="174" rx="2" fill="#000" opacity=".12"/>'; }
+    for (var i = 0; i < Math.ceil(W / 120); i++) { var px = 20 + i * 120; o += '<rect x="' + px + '" y="36" width="90" height="190" rx="3" fill="none" stroke="#7a5a1c" stroke-width="2" opacity=".7"/><rect x="' + (px + 8) + '" y="44" width="74" height="174" rx="2" fill="#000" opacity=".12"/>'; }
     o += '<rect width="' + W + '" height="20" fill="#120a0c"/><rect y="20" width="' + W + '" height="5" fill="url(#acG)"/><rect y="236" width="' + W + '" height="16" fill="#120a0c"/><rect y="236" width="' + W + '" height="4" fill="url(#acG)"/><rect y="250" width="' + W + '" height="6" fill="#000" opacity=".35"/>';
     for (i = 0; i < 5; i++) o += '<circle cx="' + (100 + i * 200) + '" cy="200" r="150" fill="url(#acL)"/>';
     o += '<rect x="' + (W / 2 - 170) + '" y="86" width="340" height="86" rx="6" fill="#0e0608" stroke="url(#acG)" stroke-width="3"/><text x="' + (W / 2) + '" y="138" font-size="34" font-weight="800" fill="url(#acG)" text-anchor="middle" letter-spacing="7" font-family="Georgia,serif">OPAL SALON</text><text x="' + (W / 2) + '" y="160" font-size="12" fill="#c9a24a" text-anchor="middle" letter-spacing="6">PRIVATE  GAMING  ROOM</text>';
@@ -5756,6 +5757,9 @@ var TB = {
   }
   function arcDoorSVG() {
     return '<svg viewBox="0 0 220 170"><defs><linearGradient id="dG" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a6410"/><stop offset=".5" stop-color="#ffe27a"/><stop offset="1" stop-color="#8a6410"/></linearGradient></defs><rect x="14" y="12" width="192" height="156" rx="8" fill="#150c0a" stroke="url(#dG)" stroke-width="3.5"/><rect x="44" y="46" width="132" height="122" rx="64 64 3 3" fill="#2d160f" stroke="url(#dG)" stroke-width="2.6"/><path d="M110 56V168" stroke="#ffe27a" stroke-width="1.4"/><circle cx="100" cy="116" r="3.4" fill="#ffe27a"/><circle cx="120" cy="116" r="3.4" fill="#ffe27a"/><rect x="40" y="16" width="140" height="24" rx="4" fill="#0e0608" stroke="url(#dG)" stroke-width="2"/><text x="110" y="33" font-size="13" font-weight="800" fill="#ffe27a" text-anchor="middle" letter-spacing="1">FPS会場入口</text></svg>';
+  }
+  function arcPikoDoorSVG() {
+    return '<svg viewBox="0 0 220 170"><defs><linearGradient id="dP" x1="0" y1="0" x2="1" y2="0"><stop offset="0" stop-color="#8a6410"/><stop offset=".5" stop-color="#ffe27a"/><stop offset="1" stop-color="#8a6410"/></linearGradient></defs><rect x="14" y="12" width="192" height="156" rx="8" fill="#2a0c18" stroke="url(#dP)" stroke-width="3.5"/><rect x="44" y="46" width="132" height="122" rx="64 64 3 3" fill="#d8344f" stroke="url(#dP)" stroke-width="2.6"/><path d="M110 56V168" stroke="#ffe27a" stroke-width="1.4"/><circle cx="100" cy="116" r="3.4" fill="#ffe27a"/><circle cx="120" cy="116" r="3.4" fill="#ffe27a"/><text x="110" y="100" font-size="34" text-anchor="middle">🔨</text><rect x="30" y="16" width="160" height="24" rx="4" fill="#0e0608" stroke="url(#dP)" stroke-width="2"/><text x="110" y="33" font-size="12" font-weight="800" fill="#ffe27a" text-anchor="middle" letter-spacing="1">ピコピコ会場入口</text></svg>';
   }
   var LGT = [[500, 500], [500, 660]];
   function arcLoungeSeats() {
@@ -5806,7 +5810,7 @@ var TB = {
     return '<svg viewBox="0 0 160 110"><rect x="4" y="4" width="152" height="98" rx="8" fill="#1a2233" stroke="#d8b04a" stroke-width="4"/><rect x="10" y="10" width="140" height="86" rx="5" fill="#0f1624"/><text x="80" y="24" font-size="11" fill="#ffe27a" text-anchor="middle" font-weight="800">🏆 コイン ランキング</text>' + rows + '<rect x="70" y="102" width="20" height="8" fill="#6a4a22"/></svg>';
   }
   function buildArcRoom() {
-    var w = $('world'), html = '', W = CAFE_W, H = CAFE_H; setWorld(W, H); w.classList.remove('cave'); w.style.background = '#1d1518'; SEATS = arcLoungeSeats();
+    var w = $('world'), html = '', W = CAFE_W + 340, H = CAFE_H; setWorld(W, H); w.classList.remove('cave'); w.style.background = '#1d1518'; SEATS = arcLoungeSeats();
     html += arcGround(W, H);
     var dc = function (svg, x, y, wd, ht, z) { html += '<div class="dc" style="left:' + x + 'px;top:' + y + 'px;width:' + wd + 'px;height:' + ht + 'px;z-index:' + Math.round(z == null ? y : z) + '">' + svg + '</div>'; };
     var lb = function (t, x, y) { html += '<div class="tlbl" style="left:' + x + 'px;top:' + y + 'px;white-space:nowrap">' + t + '</div>'; };
@@ -5816,7 +5820,9 @@ var TB = {
     SEATS.forEach(function (sa) { if (sa.stool) dc(arcStoolSVG(), sa.x, sa.y + 8, 40, 52, sa.y - 1); else { dc(arcChairSVG(), sa.x, sa.y - 2, 31, 28, sa.y - 1); dc(arcSeatSVG(), sa.x, sa.y + 5, 34, 17, sa.y + 1); } });
     lb("🛋️ ラウンジ", 500, 436);
     dc(arcMoleSVG(), 200, 846, 200, 190, 846);
-    dc(phCabSVG(), 640, 846, 130, 140, 846); lb('🔨 ピコピコハンマー', 640, 716);
+    html += '<div style="position:absolute;left:1070px;top:340px;width:160px;height:300px;background:repeating-linear-gradient(0deg,#d83a5a 0 22px,#ff8aa5 22px 44px);opacity:.55;border-radius:6px;z-index:2;pointer-events:none;border-left:4px solid #ffe27a;border-right:4px solid #ffe27a"></div>';
+    dc(arcPikoDoorSVG(), 1150, 330, 220, 170, 330); lb('ピコピコハンマー対戦会場', 1150, 360); lb('👉 ピコピコハンマーはこっち！', 1150, 668);
+    dc(phCabSVG(), 1060, 520, 90, 98, 520); dc(phCabSVG(), 1240, 520, 90, 98, 520);
 
     dc(arcTableSVG('ph'), 186, 616, 265, 133, 545); lb('♠ テキサスオパールホールデム', 186, 436);
     dc(arcTableSVG('bi'), 828, 607, 234, 117, 545); lb('🎱 オパールビンゴ', 828, 462);
@@ -5824,7 +5830,7 @@ var TB = {
     html += '<div class="tlbl" style="left:500px;top:766px">🚪 出口</div>';
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
-    DOORS = [{ k: 'arc:fps', x: 500, y: 330, w: 200, h: 160 }, { k: 'arc:holdem', x: 186, y: 616, w: 250, h: 105 }, { k: 'arc:bi', x: 828, y: 607, w: 210, h: 92 }, { k: 'arc:un', x: 828, y: 797, w: 210, h: 92 }, { k: 'arcout', x: 500, y: 800, w: 120, h: 70 }, { k: 'arc:rank', x: 800, y: 215, w: 160, h: 110 }, { k: 'arc:dis', x: 880, y: 352, w: 74, h: 80 }, { k: 'arc:prize', x: 700, y: 352, w: 74, h: 80 }, { k: 'arc:mole', x: 200, y: 846, w: 200, h: 170 }, { k: 'arc:piko', x: 640, y: 846, w: 130, h: 130 }];
+    DOORS = [{ k: 'arc:fps', x: 500, y: 330, w: 200, h: 160 }, { k: 'arc:holdem', x: 186, y: 616, w: 250, h: 105 }, { k: 'arc:bi', x: 828, y: 607, w: 210, h: 92 }, { k: 'arc:un', x: 828, y: 797, w: 210, h: 92 }, { k: 'arcout', x: 500, y: 800, w: 120, h: 70 }, { k: 'arc:rank', x: 800, y: 215, w: 160, h: 110 }, { k: 'arc:dis', x: 880, y: 352, w: 74, h: 80 }, { k: 'arc:prize', x: 700, y: 352, w: 74, h: 80 }, { k: 'arc:mole', x: 200, y: 846, w: 200, h: 170 }, { k: 'arc:piko', x: 1150, y: 330, w: 200, h: 160 }];
     hero.x = 500; hero.y = 760; hero.dir = 1; hero.sit = null; ftarget = null; fz = zoomT;
     $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi(); addNpcs('arcade');
   }
@@ -6164,7 +6170,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 184;
+  var GV = 185;
   (function () {
     var last = Date.now();
     function chk() {
