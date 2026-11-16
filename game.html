@@ -5131,7 +5131,7 @@ var TB = {
   document.addEventListener('change', function (e) { if (e.target && e.target.id === 'amWn') amPzRender(); });
 
   /* ----- ピコピコハンマー対戦場（ゲームセンター内・最大10人）v182 ----- */
-  var inPiko = false, PK_W = 1000, PK_H = 800, PH = { on: false, live: false, lives: 3, down: false, helmUntil: 0, stunUntil: 0, dashUntil: 0, cd: { sw: 0, dash: 0, warp: 0, helm: 0 }, alive: {}, lv: {}, over: false, seen: false, tk: 0, cnt: 0, can: false, cans: {}, holds: {}, hv: 0, prac: false, lvl: 2, nb: 3, bt: 0, lastSw: 0 };
+  var PH_LV = 7, inPiko = false, PK_W = 1000, PK_H = 800, PH = { on: false, live: false, lives: 3, down: false, helmUntil: 0, stunUntil: 0, dashUntil: 0, cd: { sw: 0, dash: 0, warp: 0, helm: 0 }, alive: {}, lv: {}, over: false, seen: false, tk: 0, cnt: 0, can: false, cans: {}, holds: {}, hv: 0, prac: false, lvl: 2, nb: 3, bt: 0, lastSw: 0 };
   var PH_CD = { sw: 600, dash: 4000, warp: 7000, helm: 5000 };
   function phCss() {
     if ($('phCss')) return; var s = document.createElement('style'); s.id = 'phCss';
@@ -5160,7 +5160,7 @@ var TB = {
   function buildPiko() {
     var w = $('world'), html = '', W = PK_W, H = PK_H; setWorld(W, H); w.classList.remove('cave'); w.style.background = '#ffe9a8'; SEATS = [];
     html += phGround(W, H);
-    html += '<div class="lbSign" style="left:' + (W / 2) + 'px;top:60px;font-size:30px">🔨 ピコピコハンマー 対戦場</div><div class="lbSign" style="left:' + (W / 2) + 'px;top:128px;font-size:16px">最大10人 ／ 3回叩かれたら負け ／ 最後の1人が勝ち</div>';
+    html += '<div class="lbSign" style="left:' + (W / 2) + 'px;top:60px;font-size:30px">🔨 ピコピコハンマー 対戦場</div><div class="lbSign" style="left:' + (W / 2) + 'px;top:128px;font-size:16px">最大10人 ／ 7回叩かれたら負け ／ 最後の1人が勝ち</div>';
     html += '<div class="tlbl" style="left:' + (W / 2) + 'px;top:' + (H - 70) + 'px">🚪 ゲームセンターへ</div>';
     html += '<div id="hero2"><div class="hs"></div><div class="hhp"><i></i></div><div class="hb" id="hb"></div></div>';
     w.innerHTML = html; spots = []; spotSeq = 0; foes = []; fgen++;
@@ -5174,7 +5174,7 @@ var TB = {
     rtStop(); $('field').classList.remove('chat'); $('field').classList.add('town'); $('fTtl').textContent = 'ピコピコハンマー'; fz = zoomT = .8; $('fTtl').textContent = 'ピコピコハンマー v' + GV;
     buildPiko(); show('field'); closeSheets(); digUI(false); BGM.set('town'); gearUi();
     $('fhud').innerHTML = ''; $('tlog').innerHTML = '';
-    PH.on = true; PH.live = false; PH.over = false; PH.seen = false; PH.lives = 3; PH.down = false; PH.alive = {}; PH.lv = {};
+    PH.on = true; PH.live = false; PH.over = false; PH.seen = false; PH.lives = PH_LV; PH.down = false; PH.alive = {}; PH.lv = {};
     $('phHud').style.display = 'block'; $('phBtns').style.display = 'none'; $('phBtns2').style.display = 'flex'; phHud();
     document.body.classList.add('inPk'); PH.prac = false; phJoin();
     clearInterval(PH.tk); PH.tk = setInterval(phTick, 200); toast('NPCと練習するなら「🤖 NPCと練習」を押してな');
@@ -5205,7 +5205,7 @@ var TB = {
     var lv = PH.lvl; PH.prac = true; clearInterval(PH.bt); rtStop(); rtOn = true;
     for (var i = 0; i < PH.nb; i++) {
       var id = 'bot' + i, av = lbRecepAv(PH_NM[i], 1 + (i % 3), 1 + ((i * 3) % 7), 1 + ((i * 2) % 7), 1 + ((i * 5) % 7), 1 + ((i * 4) % 7));
-      var pr = peers[id] = { id: id, n: PH_NM[i], av: av, x: 500, y: 520, tx: 500, ty: 520, dir: 1, got: true, h: 100, dn: 0, st: 0, bot: true, bt: { lives: 3, cd: { sw: 0, dash: 0, warp: 0, helm: 0 }, helmUntil: 0, stunUntil: 0, dashUntil: 0, can: false, nextAt: 0 } };
+      var pr = peers[id] = { id: id, n: PH_NM[i], av: av, x: 500, y: 520, tx: 500, ty: 520, dir: 1, got: true, h: 100, dn: 0, st: 0, bot: true, bt: { lives: PH_LV, cd: { sw: 0, dash: 0, warp: 0, helm: 0 }, helmUntil: 0, stunUntil: 0, dashUntil: 0, can: false, nextAt: 0 } };
       ghostEl(pr);
     }
     phStart(Date.now() % 100000);
@@ -5219,7 +5219,7 @@ var TB = {
   function phBotHit(id, fromId) {
     var p = peers[id]; if (!p || !PH.alive[id]) return; var b = p.bt;
     if (Date.now() < b.helmUntil) { phBeep(220, 180, 120, 'triangle', .3); phFx(id, 'ガキン！'); return; }
-    b.lives--; b.stunUntil = Date.now() + 350; PH.lv[id] = b.lives; p.h = Math.round(b.lives / 3 * 100); phPico(); phFx(id, 'ピコ！');
+    b.lives--; b.stunUntil = Date.now() + 350; PH.lv[id] = b.lives; p.h = Math.round(b.lives / PH_LV * 100); phPico(); phFx(id, 'ピコ！');
     if (b.lives <= 0) { p.dn = 1; p.h = 0; delete PH.alive[id]; phHud(); phCheckEnd(); } phHud();
   }
   function phBotSwing(id, tid) {
@@ -5283,18 +5283,18 @@ var TB = {
     setTimeout(function () { e.style.left = x1 + 'px'; e.style.top = y1 + 'px'; }, 20); setTimeout(function () { e.remove(); if (PH.on) phCanAdd(id, x1, y1); }, 440);
   }
   function phThrow() {
-    if (!phCanAct() || !PH.can) return; PH.can = false; $('phTh').style.display = 'none'; var to = phNearest(150), x1, y1;
-    if (to) { x1 = peers[to].x; y1 = peers[to].y; } else { x1 = hero.x + hero.dir * 150; y1 = hero.y; }
-    var dx = x1 - hero.x, dy = y1 - hero.y, L = Math.hypot(dx, dy) || 1; if (L > 150) { x1 = hero.x + dx / L * 150; y1 = hero.y + dy / L * 150; }
+    if (!phCanAct() || !PH.can) return; PH.can = false; $('phTh').style.display = 'none'; var to = phNearest(1e9), x1, y1, R = 320;
+    if (to) { x1 = peers[to].x; y1 = peers[to].y; hero.dir = x1 >= hero.x ? 1 : -1; updHero(); } else { x1 = hero.x + hero.dir * 150; y1 = hero.y; }
+    var dx = x1 - hero.x, dy = y1 - hero.y, L = Math.hypot(dx, dy) || 1; if (L > R) { x1 = hero.x + dx / L * R; y1 = hero.y + dy / L * R; }
     x1 = clamp(x1, 40, WW - 40); y1 = clamp(y1, 230, WH - 40); var id = 't' + myMid + Date.now();
-    if (PH.prac) setTimeout(function () { Object.keys(peers).forEach(function (k) { var q = peers[k]; if (q.bot && PH.alive[k] && Math.hypot(q.x - x1, q.y - y1) < 50) { q.bt.stunUntil = Date.now() + 1500; phFx(k, 'ゴン！'); phBeep(180, 90, 160, 'sawtooth', .3); } }); }, 430);
+    if (PH.prac) setTimeout(function () { Object.keys(peers).forEach(function (k) { var q = peers[k]; if (q.bot && PH.alive[k] && Math.hypot(q.x - x1, q.y - y1) < (k === to ? 90 : 70)) { q.bt.stunUntil = Date.now() + 1500; phFx(k, 'ゴン！'); phBeep(180, 90, 160, 'sawtooth', .3); } }); }, 430);
     phThrowFx(hero.x, hero.y, x1, y1, id); rtSend({ t: 'ph', k: 'th', x0: Math.round(hero.x), y0: Math.round(hero.y), x1: Math.round(x1), y1: Math.round(y1), i: id });
   }
   function phTaunt() { var em = ['😎', '🤪', '👋', '💃', '🙌', '😜'][Math.floor(Math.random() * 6)]; phFx(myMid, em + ' かかってこい！'); rtSend({ t: 'ph', k: 'ta', e: em }); phBeep(500, 900, 120, 'triangle', .15); }
   function phCount() { return Object.keys(peers).length + 1; }
   function phHud() {
     var t = $('phT'), g = $('phGo'); if (!t) return; var box = $('phPrBox'), nm = ['', '弱い', '普通', '強い'][PH.lvl];
-    if (PH.live) { var h = ''; for (var i = 0; i < 3; i++) h += i < PH.lives ? '❤️' : '🖤'; t.textContent = h + '　残り ' + Object.keys(PH.alive).length + '人' + (PH.prac ? '（NPC練習・' + nm + '）' : '') + (PH.down ? '　（倒れた。チャットはできるで）' : ''); g.style.display = 'none'; box.style.display = PH.down && PH.prac ? 'block' : 'none'; if (PH.down && PH.prac) { box.querySelectorAll('.phLvs').forEach(function (e) { e.style.display = 'none'; }); $('phPrGo').style.display = 'none'; $('phBack').style.display = ''; } }
+    if (PH.live) { var h = ''; for (var i = 0; i < PH_LV; i++) h += i < PH.lives ? '❤️' : '🖤'; t.textContent = h + '　残り ' + Object.keys(PH.alive).length + '人' + (PH.prac ? '（NPC練習・' + nm + '）' : '') + (PH.down ? '　（倒れた。チャットはできるで）' : ''); g.style.display = 'none'; box.style.display = PH.down && PH.prac ? 'block' : 'none'; if (PH.down && PH.prac) { box.querySelectorAll('.phLvs').forEach(function (e) { e.style.display = 'none'; }); $('phPrGo').style.display = 'none'; $('phBack').style.display = ''; } }
     else {
       var busy = !!PH.cnt; t.textContent = PH.prac ? ('🤖 NPC練習　レベル：' + nm) : ('待機中　' + phCount() + '/10人'); g.style.display = (!PH.prac && phCount() >= 2 && !busy) ? '' : 'none';
       box.style.display = busy ? 'none' : 'block'; box.querySelector('.phLvs').style.display = ''; $('phPrGo').style.display = ''; $('phPrGo').textContent = PH.prac ? '🤖 もう一回（NPC' + PH.nb + '人）' : '🤖 NPC' + PH.nb + '人と練習';
@@ -5338,7 +5338,7 @@ var TB = {
   function phStart(seed) {
     var ids = Object.keys(peers).concat([myMid]).sort(), n = ids.length, i = ids.indexOf(myMid), ang = (i / n) * Math.PI * 2 - Math.PI / 2;
     PH.alive = {}; PH.lv = {}; ids.forEach(function (id) { PH.alive[id] = 1; PH.lv[id] = 3; });
-    PH.lives = 3; PH.down = false; PH.over = false; PH.stunUntil = 0; PH.helmUntil = 0; PH.cd = { sw: 0, dash: 0, warp: 0, helm: 0 };
+    PH.lives = PH_LV; PH.down = false; PH.over = false; PH.stunUntil = 0; PH.helmUntil = 0; PH.cd = { sw: 0, dash: 0, warp: 0, helm: 0 };
     hero.x = Math.round(500 + Math.cos(ang) * 300); hero.y = Math.round(520 + Math.sin(ang) * 170); ftarget = null; updHero(); rtLast = 0; var h = $('hero2'); if (h) h.classList.remove('dn');
     phCansClear(); var rnd = phRng(seed || 1); for (var q = 0; q < 6; q++) phCanAdd('c' + q, Math.round(120 + rnd() * 760), Math.round(300 + rnd() * 380)); phHoldsStart();
     PH.cnt = 3; phHud(); phBig('3', 900); phBeep(600, 600, 120, 'square', .2);
@@ -5354,7 +5354,7 @@ var TB = {
     if (!PH.on) return;
     if (m.k === 'go') { if (!PH.live && !PH.cnt) phStart(m.s); return; }
     if (m.k === 'cp') { phCanDel(m.i); return; }
-    if (m.k === 'th') { phThrowFx(m.x0, m.y0, m.x1, m.y1, m.i); setTimeout(function () { if (PH.live && !PH.down && Math.hypot(hero.x - m.x1, hero.y - m.y1) < 50) { PH.stunUntil = Date.now() + 1500; ftarget = null; phBeep(180, 90, 160, 'sawtooth', .3); phFx(myMid, 'ゴン！'); rtSend({ t: 'ph', k: 'st', to: myMid }); } }, 430); return; }
+    if (m.k === 'th') { phThrowFx(m.x0, m.y0, m.x1, m.y1, m.i); setTimeout(function () { if (PH.live && !PH.down && Math.hypot(hero.x - m.x1, hero.y - m.y1) < 70) { PH.stunUntil = Date.now() + 1500; ftarget = null; phBeep(180, 90, 160, 'sawtooth', .3); phFx(myMid, 'ゴン！'); rtSend({ t: 'ph', k: 'st', to: myMid }); } }, 430); return; }
     if (m.k === 'st') { phBeep(180, 90, 160, 'sawtooth', .3); phFx(m.to, 'ゴン！'); return; }
     if (m.k === 'ta') { phFx(m.f, m.e + ' かかってこい！'); return; }
     if (m.k === 'sw') {
@@ -5369,7 +5369,7 @@ var TB = {
   function phTick() {
     if (!PH.on) return; var now = Date.now(); phPickCheck();
     [['phSw', 'sw'], ['phHe', 'helm'], ['phDa', 'dash'], ['phWa', 'warp']].forEach(function (a) { var b = $(a[0]); if (!b) return; var left = PH.cd[a[1]] - now, on = left > 0; b.classList.toggle('cd', on); var sm = b.querySelector('small'); if (sm && a[0] !== 'phSw') sm.textContent = on ? Math.ceil(left / 1000) + '秒' : { phHe: 'ヘルメット', phDa: 'ダッシュ', phWa: 'ワープ' }[a[0]]; });
-    Object.keys(peers).forEach(function (id) { var pr = peers[id]; if (!pr.el) return; var g = pr.el.querySelector('.gname'); if (!g) return; var l = PH.live ? (PH.lv[id] == null ? 3 : PH.lv[id]) : -1; var tx = (pr.n || '') + (l >= 0 ? ' ' + '❤'.repeat(Math.max(0, l)) : ''); if (g.textContent !== tx) g.textContent = tx; });
+    Object.keys(peers).forEach(function (id) { var pr = peers[id]; if (!pr.el) return; var g = pr.el.querySelector('.gname'); if (!g) return; var l = PH.live ? (PH.lv[id] == null ? PH_LV : PH.lv[id]) : -1; var tx = (pr.n || '') + (l >= 0 ? ' ' + '❤'.repeat(Math.max(0, l)) : ''); if (g.textContent !== tx) g.textContent = tx; });
   }
   document.addEventListener('click', function (e) {
     var t = e.target && e.target.closest ? e.target.closest('button') : null; if (!t || !inPiko) return;
@@ -6434,7 +6434,7 @@ var TB = {
     var nk = npcAt(wx, wy); if (nk) { var nn = NPCS[nk]; ftarget = { x: nn.x, y: nn.y + 44, spot: null, door: 'npc:' + nk }; return; }
     if (bot && !bot.dn && hero.y >= FLOOR_Y && Math.hypot(wx - bot.x, wy - (bot.y - 32)) < 60) { botTap(); return; }
     Object.keys(peers).forEach(function (id) { var q = peers[id]; if (!q.el || q.el.style.display === 'none') return; var d = Math.hypot(wx - q.x, wy - (q.y - 32)); if (d < bd) { bd = d; tg = q; } });
-    if (tg) { if (hero.y >= FLOOR_Y && plInFloor(tg)) { if (!tg.dn) plAttack(tg); return; } openProfile(tg); return; }
+    if (tg) { if (hero.y >= FLOOR_Y && plInFloor(tg)) { if (!tg.dn) plAttack(tg); return; } if (!phBusy()) { openProfile(tg); return; } }
     var pg = document.createElement('i'); pg.className = 'ping'; pg.style.left = wx + 'px'; pg.style.top = wy + 'px'; $('world').appendChild(pg); setTimeout(function () { pg.remove(); }, 520);
     ftarget = { x: clamp(wx, 40, WW - 40), y: clamp(wy, 70, WH - 50), spot: null };
   }
@@ -6580,7 +6580,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 195;
+  var GV = 196;
   (function () {
     var last = Date.now();
     function chk() {
@@ -7621,7 +7621,7 @@ var TB = {
     var hh = $('hero2'); if (hh) { var b = hh.querySelector('.hhp'); if (b) { b.classList.toggle('on', r < 1); b.firstChild.style.width = (r * 100) + '%'; b.firstChild.style.background = r <= .3 ? '#ff5a5a' : '#4fd68a'; } hh.classList.toggle('down', hp.down); }
   }
   function floatTxt(x, y, t, c) { var e = document.createElement('div'); e.className = 'ftxt' + (c ? ' ' + c : ''); e.textContent = t; e.style.left = x + 'px'; e.style.top = y + 'px'; $('world').appendChild(e); setTimeout(function () { e.remove(); }, 850); }
-  function posMsg() { return { t: 'pos', x: Math.round(hero.x), y: Math.round(hero.y), d: hero.dir, h: (inPiko && PH.live) ? Math.round(PH.lives / 3 * 100) : Math.round(hp.cur / Math.max(1, hp.max) * 100), dn: (inPiko && PH.live) ? (PH.down ? 1 : 0) : (hp.down ? 1 : 0), md: (arena && arena.m && !arena.m.over) ? arena.m.mid : 0, gm: isGM() ? 1 : 0, st: (hero.sit != null && hero.sit >= 0) ? hero.sit + 1 : 0, dk: hero.cup || '', ds: hero.cup ? hero.cupS : -1, lv: (player && player.lv) || 1, eq: EQSL.map(function (sl) { var q = eqItem(sl); return q ? q.id : ''; }).join(',') }; }
+  function posMsg() { return { t: 'pos', x: Math.round(hero.x), y: Math.round(hero.y), d: hero.dir, h: (inPiko && PH.live) ? Math.round(PH.lives / PH_LV * 100) : Math.round(hp.cur / Math.max(1, hp.max) * 100), dn: (inPiko && PH.live) ? (PH.down ? 1 : 0) : (hp.down ? 1 : 0), md: (arena && arena.m && !arena.m.over) ? arena.m.mid : 0, gm: isGM() ? 1 : 0, st: (hero.sit != null && hero.sit >= 0) ? hero.sit + 1 : 0, dk: hero.cup || '', ds: hero.cup ? hero.cupS : -1, lv: (player && player.lv) || 1, eq: EQSL.map(function (sl) { var q = eqItem(sl); return q ? q.id : ''; }).join(',') }; }
   var EQSL = ['weapon', 'shield', 'armor', 'outfit', 'tool', 'helm'];
   function rtHp() { if (rtOn) { rtLast = 0; } }
 
@@ -9922,6 +9922,7 @@ var TB = {
     raf = requestAnimationFrame(loop);
   }
   function fpStop() { if (FP) { FP.stop(); FP = null; } }
+  function phBusy() { return inPiko && PH.on && (PH.live || !!PH.cnt); }
   function openProfile(pr) {
     var ids = String(pr.eq || '').split(','), eqh = '';
     EQSL.forEach(function (sl, i) { if (sl === 'helm' && !pr.gm) return; var q = ids[i] ? (IBY[ids[i]] || GMBY[ids[i]]) : null; eqh += '<div><span>' + EQN[sl] + '</span><br><b>' + (q ? q.ic + ' ' + esc(q.nm) : (pr.eq == null ? '？' : '— なし —')) + '</b>' + (q ? '<br><span style="font-size:11px">' + effRank(q) + '<span style="color:#ffd36a">' + esc(effTxt(q)) + '</span></span>' : '') + '</div>'; });
@@ -10101,14 +10102,14 @@ var TB = {
     if (curSpot) {
       var r0 = this.getBoundingClientRect(), wx0 = (e.clientX - r0.left) / fz + camX, wy0 = (e.clientY - r0.top) / fz + camY;
       if (hitFoeAt(wx0, wy0)) return;
-      var tp0 = peerAt(wx0, wy0); if (tp0 && !tp0.dn) { openProfile(tp0); return; }
+      var tp0 = peerAt(wx0, wy0); if (tp0 && !tp0.dn && !phBusy()) { openProfile(tp0); return; }
       if (Math.hypot(wx0 - curSpot.x, wy0 - (curSpot.y - 12)) < 90) holdBegin(e);
       return;
     }
     var r = this.getBoundingClientRect(), wx = (e.clientX - r.left) / fz + camX, wy = (e.clientY - r.top) / fz + camY, hit = null, best = 58;
     if (hitFoeAt(wx, wy)) return;
     if (inTown) { var nk = npcAt(wx, wy); if (nk) { var pg1 = document.createElement('i'); pg1.className = 'ping'; pg1.style.left = wx + 'px'; pg1.style.top = wy + 'px'; $('world').appendChild(pg1); setTimeout(function () { pg1.remove(); }, 520); ftarget = { x: NPCS[nk].x, y: NPCS[nk].y + 44, spot: null, door: 'npc:' + nk }; $('ftip').style.opacity = 0; return; } }
-    var tpr = peerAt(wx, wy); if (tpr && !tpr.dn) { openProfile(tpr); return; }
+    var tpr = peerAt(wx, wy); if (tpr && !tpr.dn && !phBusy()) { openProfile(tpr); return; }
     var gpr = null; Object.keys(peers).forEach(function (id) { var q = peers[id]; if (q.dn && Math.hypot(wx - q.x, wy - (q.y - 32)) < 70) gpr = q; });
     if (gpr) { doRevive(gpr.id); return; }
     if (inCafe) { var sk = seatAt(wx, wy); if (sk != null) { var pg2 = document.createElement('i'); pg2.className = 'ping'; pg2.style.left = wx + 'px'; pg2.style.top = wy + 'px'; $('world').appendChild(pg2); setTimeout(function () { pg2.remove(); }, 520); ftarget = { x: SEATS[sk].x, y: SEATS[sk].y, spot: null, door: 'seat:' + sk }; $('ftip').style.opacity = 0; return; } }
