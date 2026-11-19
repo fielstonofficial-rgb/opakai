@@ -1759,14 +1759,34 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     msgs.forEach(function (m) { ids[m.id] = 1; });
     Object.keys(rows).forEach(function (id) { if (!ids[id]) { rows[id].remove(); delete rows[id]; added = true; } });
     var first = Object.keys(rows).length === 0;
+    var newMine = [];
     msgs.forEach(function (m) {
       if (rows[m.id]) return;
+      if (m.mine && !m.img) newMine.push(m);
       var r = makeRow(m); rows[m.id] = r; added = true;
       if (typingNode) stream.insertBefore(r, typingNode); else stream.appendChild(r);
       if (m.kind === 'cat') gotCat = true;
     });
     if (gotCat && typingNode) { typingNode.remove(); typingNode = null; }
+    pendDrop(msgs, newMine);
     if (added && (near || first)) toBottom();
+  }
+  /* ---- 自分の発言は、送った瞬間に画面へ出す（サーバーの返事を待たない）。本物が届いたら入れ替える ---- */
+  var pend = [], pendN = 0;
+  function pendAdd(text) {
+    var mm = me || {}, m = { id: 'pend' + (++pendN), mine: true, nick: mm.nickname || '', body: text.slice(0, 200), t: new Date().toISOString(), color: mm.color, icon: mm.icon, adm: !!mm.isAdmin };
+    var r = makeRow(m); r.classList.add('pending'); r.style.opacity = '.72';
+    if (typingNode) stream.insertBefore(r, typingNode); else stream.appendChild(r);
+    toBottom(); var o = { row: r, body: m.body.trim(), at: Date.now() }; pend.push(o); return o;
+  }
+  function pendRemove(o) { var i = pend.indexOf(o); if (i >= 0) pend.splice(i, 1); try { o.row.remove(); } catch (e) {} }
+  function pendDrop(msgs, newMine) {
+    var left = (newMine || []).slice();
+    pend.slice().forEach(function (o) {
+      var k = -1; left.forEach(function (m, i) { if (k < 0 && String(m.body || '').trim() === o.body) k = i; });
+      if (k >= 0) { left.splice(k, 1); pendRemove(o); }
+      else if (Date.now() - o.at > 30000) pendRemove(o);
+    });
   }
   function showTyping(kind) {
     if (typingNode) return;
@@ -2139,11 +2159,12 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     if (adminOff()) { toast('ログインしたら、話せるで（上のカギのマーク）'); return; }
     var mention = /アロン|あろん|aron|フラン|ふらん|furan/i.test(text);
     if (mention) showTyping(/フラン|ふらん|furan/i.test(text) && !/アロン|あろん|aron/i.test(text) ? 'furan' : 'aron');
+    var po = pendAdd(text);
     api({ action: 'say', token: token, text: text }).then(function (j) {
-      if (j.kicked) { stop(); $('kMsg').textContent = (j.reply || '退場となりました').replace(/^【アロン】/, ''); mode('kick'); return; }
-      if (j.error === 'slow') { toast(j.message || 'ちょっと待ってな'); }
+      if (j.kicked) { pendRemove(po); stop(); $('kMsg').textContent = (j.reply || '退場となりました').replace(/^【アロン】/, ''); mode('kick'); return; }
+      if (j.error) { pendRemove(po); if (j.error === 'slow') toast(j.message || 'ちょっと待ってな'); else toast(j.message || '送れへんかった。もう一回な'); }
       fast = 4; poll().then(loop);
-    }).catch(function () { toast('送れへんかった。もう一回な'); });
+    }).catch(function () { pendRemove(po); toast('送れへんかった。もう一回な'); });
     fast = 4; setTimeout(poll, 400);
   }
   form.addEventListener('submit', function (e) { e.preventDefault(); var v = input.value; input.value = ''; say(v); input.focus(); });
