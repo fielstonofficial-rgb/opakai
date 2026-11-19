@@ -2491,7 +2491,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     body.appendChild(el('p', 'fine', 'お支払いは銀行振込のみです（振込手数料はお客様のご負担）。ご入金の確認後に、発送のご連絡をします。'));
     shopStopTick(); if (body.querySelector('.shop-cd[data-t]')) shopTimer = setInterval(shopTick, 1000);
   }
-  $('shopBtn').addEventListener('click', shopOpen);
+  $('shopBtn').addEventListener('click', function () { if (isAdmin()) shopAdmOpen(); else shopOpen(); });
   $('shopClose').addEventListener('click', shopClose);
   $('shopPanel').addEventListener('click', function (e) { if (e.target === $('shopPanel')) shopClose(); });
 
@@ -2621,6 +2621,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
   function shopAdmPaint(j) {
     var box = $('shopAdmBody'); box.textContent = '';
     // 注文
+    var vb = el('button', 'chip', 'お客さんから見た画面を見る'); vb.type = 'button'; vb.addEventListener('click', function () { $('shopAdm').hidden = true; shopOpen(); }); box.appendChild(vb);
     var newN = j.orders.filter(function (o) { return o.fresh; }).length;
     box.appendChild(el('h3', null, '注文' + (newN ? '（新着' + newN + '）' : '')));
     var shown = j.orders.filter(function (o) { return showCancelled || o.status !== 'cancelled'; });
@@ -2648,6 +2649,9 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
         });
         c.appendChild(act);
       }
+      var cpb = el('button', 'chip', '宛名・住所をコピー'); cpb.type = 'button';
+      cpb.addEventListener('click', function () { copyTo((o.zip ? '〒' + o.zip + ' ' : '') + o.address + '\n' + o.name + ' 様\nTEL ' + o.phone, '宛名と住所をコピーしたで'); });
+      c.appendChild(cpb);
       box.appendChild(c);
     });
     var tc = el('button', 'chip', showCancelled ? 'キャンセルを隠す' : 'キャンセルも見る'); tc.type = 'button';
