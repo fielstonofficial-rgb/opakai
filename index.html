@@ -2009,7 +2009,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       document.body.classList.toggle('admin-on', isAdmin());
       LS.set('opa_adm', isAdmin() ? '1' : '0'); applyStealth();
       $('whoName').textContent = me.nickname; $('whoami').hidden = false;
-      render(j.msgs); renderPresence(j.people || []); renderTheme(j.theme, j.themeBy); renderSurvey(j.poll); renderLive(j.live); setShopBadge(j.shopNew);
+      render(j.msgs); renderPresence(j.people || []); renderTheme(j.theme, j.themeBy); renderSurvey(j.poll); renderLive(j.live); setShopBadge(j.shopNew); shopAlertShow(j.shopAlert);
       if (typingNode && Date.now() > typingUntil) { typingNode.remove(); typingNode = null; }
     }).catch(function () { busy = false; });
   }
@@ -2395,9 +2395,32 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     shopImg(key, 'f').then(function (u) { if (lb.hidden) return; lbImg.src = u; lbMsg.textContent = ''; }).catch(function () { lbMsg.textContent = '見られへんかった'; });
   }
   function yen(n) { return '¥' + Number(n || 0).toLocaleString('ja-JP'); }
+  /* ---- お客さんへのお知らせ（入金確認・発送）。確認するまで！に赤い数字が残る ---- */
+  var shopAlertN = 0, shopAlertOpen = false, shopAlertDone = {};
+  function shopAlertShow(list) {
+    list = (list || []).filter(function (o) { return !shopAlertDone[o.id]; }); shopAlertN = isAdmin() ? 0 : list.length;
+    if (!isAdmin()) { var d = $('shopDot'); if (d) { if (shopAlertN) { d.textContent = String(shopAlertN); d.hidden = false; } else d.hidden = true; } }
+    if (!list.length || isAdmin() || shopAlertOpen) return;
+    if (document.querySelector('.overlay:not([hidden])')) return;
+    shopAlertOpen = true;
+    var ov = el('div', 'overlay'); ov.setAttribute('role', 'dialog'); ov.setAttribute('aria-modal', 'true');
+    var bx = el('div', 'welcome frame-vivid shopbox');
+    bx.appendChild(el('h2', null, '📦 ショップからのお知らせ'));
+    list.forEach(function (o) { var c = el('div', 'ord'); c.appendChild(el('div', 'oh', o.item + '（' + o.code + '）')); c.appendChild(el('div', null, o.msg)); bx.appendChild(c); });
+    var has = list.some(function (o) { return /発送/.test(o.msg); });
+    if (has) bx.appendChild(el('p', 'fine', '商品が届いたら、！ショップの「ご注文の状況」にある「商品を受け取りました」ボタンを押してください。'));
+    var wb = el('div', 'wbtns'), ok = el('button', 'send', '確認しました'); ok.type = 'button';
+    ok.addEventListener('click', function () {
+      list.forEach(function (o) { shopAlertDone[o.id] = 1; api({ action: 'shop_order_act', token: token, id: o.id, act: 'ack' }).catch(function () {}); });
+      shopAlertN = 0; var d = $('shopDot'); if (d) d.hidden = true;
+      ov.remove(); shopAlertOpen = false;
+    });
+    wb.appendChild(ok); bx.appendChild(wb); ov.appendChild(bx); document.body.appendChild(ov);
+  }
   function setShopBadge(n) {
     var d = $('shopDot'); n = Number(n) || 0;
     if (!d) return;
+    if (!isAdmin() && shopAlertN > 0) { d.textContent = String(shopAlertN); d.hidden = false; return; }
     if (isAdmin() && n > 0) { d.textContent = n > 9 ? '9+' : String(n); d.hidden = false; } else d.hidden = true;
   }
   function copyTo(text, msg) {
@@ -2637,12 +2660,14 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       if (o.status !== 'cancelled' && o.status !== 'received') {
         var act = el('div', 'shop-act');
         var BTN = { ordered: [['paid', '入金を確認した'], ['cancelled', 'キャンセル']], reported: [['paid', '入金を確認した'], ['cancelled', 'キャンセル']], paid: [['shipped', '発送した'], ['cancelled', 'キャンセル']], shipped: [['received', '受け取り済みにする']] };
+        var BLBL = { paid: '✅ 入金を確認した（お客さんに通知）', shipped: '📦 発送した（お客さんに「本日発送」と通知）' };
         (BTN[o.status] || []).forEach(function (p) {
-          var b = el('button', 'shop-btn' + (p[0] === 'cancelled' ? ' warn' : ''), p[1]); b.type = 'button'; var arm = false;
+          var lbl = BLBL[p[0]] || p[1]; var needArm = p[0] === 'cancelled' || p[0] === 'shipped' || p[0] === 'paid';
+          var b = el('button', 'shop-btn' + (p[0] === 'cancelled' ? ' warn' : ''), lbl); b.type = 'button'; var arm = false;
           b.addEventListener('click', function () {
-            if (p[0] === 'cancelled' && !arm) { arm = true; b.textContent = 'もう一回押すとキャンセル'; setTimeout(function () { arm = false; b.textContent = p[1]; }, 4000); return; }
+            if (needArm && !arm) { arm = true; b.textContent = p[0] === 'cancelled' ? 'もう一回押すとキャンセル' : 'もう一回押すと、お客さんに通知して確定'; setTimeout(function () { arm = false; b.textContent = lbl; }, 4000); return; }
             api({ action: 'admin_order_set', token: token, id: o.id, status: p[0] }).then(function (x) {
-              if (x && x.order) { toast('変えたで'); shopAdmOpen(); } else toast((x && x.message) || '変えられへんかった');
+              if (x && x.order) { toast(p[0] === 'shipped' ? '発送を通知したで' : p[0] === 'paid' ? '入金確認を通知したで' : '変えたで'); shopAdmOpen(); } else toast((x && x.message) || '変えられへんかった');
             }).catch(function () { toast('つながらへんかった'); });
           });
           act.appendChild(b);
