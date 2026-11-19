@@ -1,7 +1,7 @@
 <!doctype html>
 <html lang="ja">
 <head>
-<!--GV:199-->
+<!--GV:201-->
 <!-- opa-game v1 2026-10-30 段階1：ひとり採掘＋図鑑（無料・景品なし） -->
 <meta charset="utf-8">
 <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
@@ -6614,7 +6614,7 @@ var TB = {
 
 
   /* ---------- 新しい版のお知らせ（開きっぱなしの古い画面を防ぐ） ---------- */
-  var GV = 199;
+  var GV = 201;
   (function () {
     var last = Date.now();
     function chk() {
@@ -8976,11 +8976,68 @@ var TB = {
       }
     }
   }
-  function openBJ() {
+  /* ---------- 卓への持ち込み：サーバーが預かって精算する（opa-tbl）。アプリが落ちても、コインは消えない ---------- */
+  var TBL = { on: false, hbt: 0, buy: 0, g: '', busy: 0, nx: 0 };
+  function tblSrv() { return !!(player && token && !player.gm && typeof player.coins === 'number'); }
+  function tblPost(body, keep) { body.token = token; return fetch(API.replace(/opa-game$/, 'opa-tbl'), { method: 'POST', keepalive: !!keep, headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) }).then(function (r) { return r.json(); }); }
+  function tblStack() {
+    try {
+      if (PK && PK.T) { var a = PK.T.seats[pkMine()]; if (a) return a.stack; }
+      else if (BJ && BJ.T) { var b = BJ.T.seats[bjMine()]; if (b) return b.stack + (BJ.T.st === 'bet' ? b.bet : 0); }
+      else if (TG && TG.T) { var c = TG.T.seats[tgMine()]; if (c) return c.stack; }
+    } catch (e) {}
+    return TBL.buy;
+  }
+  function tblBeat(keep) { if (!TBL.on || !token) return; tblPost({ action: 'tbl_hb', stack: Math.max(0, Math.floor(tblStack())) }, keep).catch(function () {}); }
+  window.addEventListener('pagehide', function () { tblBeat(true); });
+  document.addEventListener('visibilitychange', function () { if (document.hidden) tblBeat(true); });
+  function tblAsk(g, title, go) {
     tvQuiet(true);
     try { var pend = parseInt(localStorage.getItem('opa_pk_pend') || '0', 10); if (pend > 0) { chipsSet(chipsGet() + pend); localStorage.removeItem('opa_pk_pend'); } } catch (e) {}
-    chipFree(); var buy = (player && player.gm) ? 1e9 : chipsGet(); if (buy < 20) { arcShow('<h2>🃏 ブラックジャック</h2><p>コインが足りません</p><button type="button" class="arcx" id="pkX0">とじる</button>'); $('pkX0').onclick = arcClose; return; }
-    chipsSet(chipsGet() - buy); if (!(player && player.gm)) { try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {} }
+    chipFree();
+    if (player && player.gm) { go(1e9); return; }
+    if (TBL.on) { toast('もう卓についてるよ'); return; }
+    var have = Math.floor(chipsGet());
+    if (have < 20) { arcShow('<h2>' + title + '</h2><p>コインが足りません</p><button type="button" class="arcx" id="tbX0">とじる</button>'); $('tbX0').onclick = arcClose; return; }
+    var all = g === 'pk', cap = all ? have : Math.min(have, 20000), opts = (all ? [2000, 10000, 50000, 200000] : [1000, 5000, 20000]).filter(function (v) { return v < cap; });
+    opts.push(cap);
+    var h = '<h2 style="margin:6px 0">' + title + '</h2><p style="margin:4px 0">いくら持ち込む？（財布：🪙 ' + cfmt(have) + '）</p><p style="margin:4px 0;font-size:12px;opacity:.85">' + (all ? 'この卓は、ぜんぶ持ち込んで大勝負もできるよ。' : 'この卓の持ち込みは、最大 ' + cfmt(Math.min(have, 20000)) + ' までだよ。') + '持ち込まなかった分は、財布に残るから安心してね。</p><div style="display:flex;flex-wrap:wrap;gap:8px;justify-content:center;margin:10px 0">';
+    opts.forEach(function (v, i) { h += '<button type="button" class="arcx" data-a="' + v + '" style="min-width:110px;padding:10px 12px' + (i === opts.length - 1 && all ? ';background:#d6342c;color:#fff' : '') + '">' + (i === opts.length - 1 ? (all ? '🔥 ぜんぶ ' : '最大 ') : '') + cfmt(v) + '</button>'; });
+    h += '</div><div style="margin:8px 0;padding:8px;border:1px solid rgba(255,255,255,.25);border-radius:10px"><div style="font-size:12px;margin-bottom:6px">好きな額で持ち込む（20 〜 ' + cfmt(cap) + '）</div><input type="range" id="tbRg" min="20" max="' + cap + '" step="' + (cap > 200000 ? 1000 : cap > 20000 ? 100 : 10) + '" value="' + Math.min(cap, Math.max(20, opts[0])) + '" style="width:92%"><div style="display:flex;gap:8px;justify-content:center;align-items:center;margin-top:6px"><input type="number" id="tbNum" inputmode="numeric" min="20" max="' + cap + '" value="' + Math.min(cap, Math.max(20, opts[0])) + '" style="width:130px;padding:8px;font-size:16px;text-align:right;border-radius:8px;border:1px solid #888;background:#111;color:#fff"><button type="button" class="arcx" id="tbSit" style="padding:10px 14px">この額で座る</button></div></div><button type="button" class="arcx" id="tbX0">やめる</button>';
+    arcShow(h);
+    var box = $('arcc'); $('tbX0').onclick = arcClose;
+    var rg = $('tbRg'), nm = $('tbNum'), clampA = function (v) { v = Math.floor(+v || 0); return Math.max(20, Math.min(cap, v)); };
+    rg.oninput = function () { nm.value = rg.value; }; nm.oninput = function () { var v = +nm.value; if (v >= 20 && v <= cap) rg.value = v; };
+    $('tbSit').onclick = function () { var v = clampA(nm.value); box.onclick = null; this.disabled = true; tblPick(g, v, go); };
+    box.onclick = function (e) { var b = e.target.closest && e.target.closest('button[data-a]'); if (!b) return; box.onclick = null; b.disabled = true; tblPick(g, Math.floor(+b.dataset.a), go); };
+  }
+  function tblPick(g, amt, go) {
+    if (!tblSrv()) { chipsSet(chipsGet() - amt); try { localStorage.setItem('opa_pk_pend', String(amt)); } catch (e) {} go(amt); return; }
+    cdFlush().then(function () { return tblPost({ action: 'tbl_in', amt: amt, g: g }); }).then(function (r) {
+      if (r && r.ok) { player.coins = r.coins + CD.pend; TBL.on = true; TBL.buy = r.amt; TBL.g = g; clearInterval(TBL.hbt); TBL.hbt = setInterval(tblBeat, 10000); go(r.amt); }
+      else { if (r && typeof r.coins === 'number') player.coins = r.coins + CD.pend; toast((r && r.message) || '席につけませんでした'); arcClose(); }
+    }).catch(function () { toast('つながらへんかった。もう一度ためしてね'); arcClose(); });
+  }
+  function tblBack(back) {
+    back = Math.max(0, Math.floor(back));
+    if (TBL.on) {
+      TBL.on = false; clearInterval(TBL.hbt);
+      var go = function (n) { tblPost({ action: 'tbl_out', back: back }).then(function (r) { if (r && typeof r.coins === 'number') player.coins = r.coins + CD.pend; else if (n < 3) setTimeout(function () { go(n + 1); }, 3000); }).catch(function () { if (n < 3) setTimeout(function () { go(n + 1); }, 3000); }); };
+      go(0); return;
+    }
+    chipsSet(chipsGet() + back); try { localStorage.removeItem('opa_pk_pend'); } catch (e) {}
+  }
+  setInterval(function () { /* 切れたまま残ってる卓があれば、サーバーが最後の持ち分で精算して、財布に戻す */
+    if (!token || !player || player.gm || TBL.on || TBL.busy || TBL.nx > Date.now()) return; TBL.busy = 1;
+    tblPost({ action: 'tbl_recover' }).then(function (r) {
+      TBL.busy = 0; if (!r || !r.ok) { TBL.nx = Date.now() + 30000; return; }
+      if (r.recovered) { if (typeof r.coins === 'number') player.coins = r.coins + CD.pend; toast('🪙 前の卓のコイン ' + cfmt(r.credit) + ' を、財布に戻したよ'); TBL.nx = Date.now() + 600000; }
+      else if (r.seated) TBL.nx = Date.now() + 60000; else TBL.nx = Date.now() + 600000;
+    }).catch(function () { TBL.busy = 0; TBL.nx = Date.now() + 30000; });
+  }, 5000);
+  function openBJ() { tblAsk('bj', '🃏 ブラックジャック', openBJ0); }
+  function openBJ0(buy) {
+    tvQuiet(true);
     arcShow('<div class="tvh"><b>🃏 ブラックジャック</b><span id="bjInfo" class="chipb"></span><button type="button" class="arcx" id="bjX">席を立つ</button></div><div class="tvAw"><div id="bjTbl" class="tvA tvAi"></div><div id="bjFl" class="tvFl"></div></div><div id="bjMsg" class="tvM"></div><div id="bjCtl" class="tvC"></div>' + tcHTML('bj'), 'tv');
     BJ = { T: null, me: -1, last: Date.now(), hb: 0, seen: {}, iv: 0, buy: buy, sel: 10, bub: {}, pos: {}, cl: [] }; tcInit('bj', BJ, 'bj'); BJ.iv = setInterval(bjTick, 250);
     $('bjX').onclick = bjLeave; bjRender(); bjSend({ k: 'who' });
@@ -9004,7 +9061,7 @@ var TB = {
           if (nx.length) T.hid = nx[0]; T.v++; bjSend({ k: 'st', T: T });
         } else bjSend({ k: 'leave' });
       }
-      chipsSet(chipsGet() + back); try { localStorage.removeItem('opa_pk_pend'); } catch (e) {}
+      tblBack(back);
       BJ = null; TC = null;
     }
     arcClose();
@@ -9387,10 +9444,9 @@ var TB = {
     if (sg !== TG.sg) { TG.sg = sg; var hs = A.querySelector('.unH'), sl = hs ? hs.scrollLeft : 0; A.innerHTML = G.render(T, mineS, me); hs = A.querySelector('.unH'); if (hs) hs.scrollLeft = sl; }
     tgMsgUpd(); G.ctl(T, mineS, me, $('tgCtl'));
   }
-  function tgOpen(k) {
+  function tgOpen(k) { var G0 = TGG[k]; tblAsk(k, G0 ? G0.ic + ' ' + G0.nm : 'ゲーム', function (buy) { tgOpen0(k, buy); }); }
+  function tgOpen0(k, buy) {
     var G = TGG[k]; tvQuiet(true);
-    try { var pend = parseInt(localStorage.getItem('opa_pk_pend') || '0', 10); if (pend > 0) { chipsSet(chipsGet() + pend); localStorage.removeItem('opa_pk_pend'); } } catch (e) {}
-    chipFree(); var buy = (player && player.gm) ? 1e9 : chipsGet(); chipsSet(chipsGet() - buy); if (!(player && player.gm)) { try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {} }
     arcShow('<div class="tvh"><b>' + G.ic + ' ' + G.nm + '</b><span id="tgInfo" class="chipb"></span><button type="button" class="arcx" id="tgR">📖 ルール</button><button type="button" class="arcx" id="tgX">席を立つ</button></div><div class="tvAw"><div id="tgTbl" class="tvA tvAi tgA ' + k + '"></div><div id="tgFl" class="tvFl"></div><div id="tgRl" class="tgRl"></div></div><div id="tgMsg" class="tvM"></div><div id="tgCtl" class="tvC"></div>' + tcHTML('tg'), 'tv');
     TG = { k: k, T: null, me: -1, last: Date.now(), hb: 0, seen: {}, iv: 0, buy: buy, bub: {}, pos: {}, cl: [], pickK: null }; tcInit(k, TG, 'tg'); TG.iv = setInterval(tgTick, 250); TG.mv = setInterval(tgMsgUpd, 500);
     $('tgX').onclick = tgLeave;
@@ -9421,7 +9477,7 @@ var TB = {
           if (nx.length) T.hid = nx[0]; T.v++; tgSend({ k: 'st', T: T });
         } else tgSend({ k: 'leave' });
       }
-      chipsSet(chipsGet() + back); try { localStorage.removeItem('opa_pk_pend'); } catch (e) {}
+      tblBack(back);
       TG = null; TC = null;
     }
     arcClose();
@@ -9670,11 +9726,9 @@ var TB = {
     $('pkMc').onclick = function () { m.style.display = 'none'; };
     $('pkMr').onclick = function () { PKS.h = PKS.w = PKS.net = PKS.big = 0; PKS.hist = []; pkSave(); m.style.display = 'none'; pkMenu(); };
   }
-  function openHoldem() {
+  function openHoldem() { tblAsk('pk', '♠ テキサスオパールホールデム', openHoldem0); }
+  function openHoldem0(buy) {
     tvQuiet(true);
-    try { var pend = parseInt(localStorage.getItem('opa_pk_pend') || '0', 10); if (pend > 0) { chipsSet(chipsGet() + pend); localStorage.removeItem('opa_pk_pend'); } } catch (e) {}
-    chipFree(); var buy = (player && player.gm) ? 1e9 : chipsGet(); if (buy < 20) { arcShow('<h2>♠ テキサスオパールホールデム</h2><p>コインが足りません</p><button type="button" class="arcx" id="pkX0">とじる</button>'); $('pkX0').onclick = arcClose; return; }
-    chipsSet(chipsGet() - buy); if (!(player && player.gm)) { try { localStorage.setItem('opa_pk_pend', String(buy)); } catch (e) {} }
     arcShow('<div class="tvh"><b style="white-space:nowrap;font-size:10.5px;letter-spacing:-.02em">♠ テキサスオパールホールデム</b><span id="pkInfo" class="chipb" style="white-space:nowrap;font-size:12px;padding:3px 8px"></span><button type="button" class="arcx" id="pkH" style="margin-right:4px">役</button><button type="button" class="arcx" id="pkM" style="margin-right:4px">☰</button><button type="button" class="arcx" id="pkX" style="white-space:nowrap">席を立つ</button></div><div class="tvAw"><div id="pkTbl" class="tvA tvAi"></div><div id="pkFl" class="tvFl"></div><button type="button" id="pkRest" class="pkRest">☕ 休憩</button><div id="pkHelp" style="display:none;position:absolute;left:6%;right:6%;top:8%;z-index:30;background:#101820ee;border:2px solid #ffd36a;border-radius:12px;padding:10px 12px;font-size:12px;line-height:1.55;color:#fff"><b style="color:#ffd36a">役の強さ（上ほど強い）</b><br>① ストレートフラッシュ：同じマークの連番5枚<br>② フォーカード：同じ数字4枚<br>③ フルハウス：3枚＋2枚の組み合わせ<br>④ フラッシュ：同じマーク5枚（♠♥♦♣）<br>⑤ ストレート：連番5枚（マークはバラバラでOK）<br>⑥ スリーカード：同じ数字3枚<br>⑦ ツーペア：ペアが2組<br>⑧ ワンペア：同じ数字2枚<br>⑨ ハイカード：役なし（いちばん大きい数字）<br><span style="color:#9fd0ff">手札2枚＋場の5枚から、いちばん強い5枚で勝負。自分の役は「現在：○○」で出るよ。（タップで閉じる）</span></div></div><div id="pkMsg" class="tvM"></div><div id="pkCtl" class="tvC"></div>' + tcHTML('pk'), 'tv');
     PK = { T: null, me: -1, last: Date.now(), hb: 0, seen: {}, iv: 0, buy: buy, bub: {}, pos: {}, cl: [] }; tcInit('pk', PK, 'pk'); PK.iv = setInterval(pkTick, 250);
     $('pkM').onclick = pkMenu; $('pkRest').onclick = pkRest; $('pkX').onclick = pkLeave; $('pkH').onclick = function () { var h = $('pkHelp'); h.style.display = h.style.display === 'none' ? 'block' : 'none'; }; $('pkHelp').onclick = function () { this.style.display = 'none'; }; pkRender(); pkSend({ k: 'who' });
@@ -9693,7 +9747,7 @@ var TB = {
         if (T.hid === myMid) { var nx = T.seats.filter(function (s) { return s && !s.npc && !s.gone && s.id !== myMid; }).map(function (s) { return s.id; }).sort(); T.seats[PK.me].gone = 1; if (T.st === 'wait' || T.st === 'show') T.seats[PK.me] = null; else { if (PK.me === T.turn) pkApply(T, PK.me, 'f', 0); else T.seats[PK.me].f = 1; } if (nx.length) { T.hid = nx[0]; pkPush(T); } }
         else pkSend({ k: 'leave' });
       }
-      chipsSet(chipsGet() + back); try { localStorage.removeItem('opa_pk_pend'); } catch (e) {}
+      tblBack(back);
       PK = null; TC = null;
     }
     arcClose();
