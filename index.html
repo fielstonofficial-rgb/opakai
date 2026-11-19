@@ -2512,6 +2512,8 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     field('address', 'ご住所（必須）', null, '都道府県から番地・建物名まで', 'textarea');
     field('phone', '電話番号（必須）', 'tel', '例：09012345678');
     field('email', 'メールアドレス（あれば）', 'email', '');
+    field('insta', 'Instagramで取引しているアカウント名（必須）', 'text', '例：@amon_opal（ない人は「なし」）');
+    F.insta.autocomplete = 'off'; F.insta.setAttribute('autocapitalize', 'none'); F.insta.setAttribute('autocorrect', 'off'); F.insta.maxLength = 40;
     field('note', 'ご要望など', null, '', 'textarea');
     body.appendChild(f);
     var msg = el('p', 'fine', ''); body.appendChild(msg);
@@ -2525,10 +2527,11 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       if (!v.name) { msg.textContent = 'お名前を入れてな'; return; }
       if (v.address.length < 5) { msg.textContent = 'ご住所を入れてな'; return; }
       if (!/^[0-9+\-() ]{8,20}$/.test(v.phone)) { msg.textContent = '電話番号を確かめてな（数字だけで）'; return; }
+      if (!v.insta) { msg.textContent = 'Instagramのアカウント名を入れてな（ない人は「なし」でOK）'; return; }
       orderBusy = true; go.disabled = true; msg.textContent = '送ってるで…';
-      api({ action: 'shop_order', token: token, item_id: it.id, name: v.name, zip: v.zip, address: v.address, phone: v.phone, email: v.email, note: v.note }).then(function (j) {
+      api({ action: 'shop_order', token: token, item_id: it.id, name: v.name, zip: v.zip, address: v.address, phone: v.phone, email: v.email, insta: v.insta, note: v.note }).then(function (j) {
         if (j && j.ok) {
-          LS.set('opa_shop_f', JSON.stringify({ name: v.name, zip: v.zip, address: v.address, phone: v.phone, email: v.email }));
+          LS.set('opa_shop_f', JSON.stringify({ name: v.name, zip: v.zip, address: v.address, phone: v.phone, email: v.email, insta: v.insta }));
           orderDone(j); shopOpen();
         } else { msg.textContent = (j && j.message) || '送れへんかった。もう一回やってな'; }
       }).catch(function () { msg.textContent = 'つながらへんかった。もう一回やってな'; })
@@ -2588,7 +2591,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       h.appendChild(l); h.appendChild(el('span', 'st s-' + o.status, ST[o.status] || o.status)); c.appendChild(h);
       var t = new Date(o.t);
       c.appendChild(el('div', null, o.item));
-      c.appendChild(el('div', 'om', (t.getMonth() + 1) + '/' + t.getDate() + ' ' + String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0') + '　' + (o.nick || '') + '\n' + o.name + '　' + o.phone + (o.email ? '\n' + o.email : '') + '\n' + (o.zip ? '〒' + o.zip + ' ' : '') + o.address + (o.note ? '\n💬 ' + o.note : '')));
+      c.appendChild(el('div', 'om', (t.getMonth() + 1) + '/' + t.getDate() + ' ' + String(t.getHours()).padStart(2, '0') + ':' + String(t.getMinutes()).padStart(2, '0') + '　' + (o.nick || '') + '\n' + o.name + '　' + o.phone + (o.email ? '\n' + o.email : '') + (o.insta ? '\n📷 Instagram：' + o.insta : '') + '\n' + (o.zip ? '〒' + o.zip + ' ' : '') + o.address + (o.note ? '\n💬 ' + o.note : '')));
       if (o.status !== 'cancelled') {
         var act = el('div', 'shop-act');
         [['paid', '入金済みにする'], ['shipped', '発送済みにする'], ['cancelled', 'キャンセル']].forEach(function (p) {
