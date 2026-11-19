@@ -2493,6 +2493,18 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
         cd.appendChild(el('div', 'go', 'この時間になったら、購入ボタンが押せるようになります'));
         c.appendChild(cd);
       }
+      if (it.vkey) {
+        var vw = el('div', 'shop-vid'), vb = el('button', 'chip', '▶ 動画を見る'); vb.type = 'button';
+        vb.addEventListener('click', function () {
+          vb.disabled = true; vb.textContent = '読み込み中…';
+          api({ action: 'shop_video_url', token: token, item_id: it.id }).then(function (x) {
+            if (!x || !x.url) throw new Error('x');
+            var v = document.createElement('video'); v.controls = true; v.playsInline = true; v.setAttribute('playsinline', ''); v.preload = 'metadata'; v.style.cssText = 'width:100%;max-height:60vh;border-radius:10px;background:#000';
+            v.src = x.url; vb.replaceWith(v); v.play().catch(function () {});
+          }).catch(function () { vb.disabled = false; vb.textContent = '▶ 動画を見る'; toast('動画を読み込めへんかった。もう一回押してな'); });
+        });
+        vw.appendChild(vb); c.appendChild(vw);
+      }
       if (it.video) {
         var w = el('div', 'shop-yt'), fr = document.createElement('iframe');
         fr.src = 'https://www.youtube-nocookie.com/embed/' + it.video + '?rel=0&playsinline=1';
@@ -2747,6 +2759,82 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     fld('qty', '在庫の数', 'input', 'number', it ? it.qty : 1);
     fld('desc', '説明', 'textarea', null, it && it.desc);
     fld('video', 'YouTubeのURL（なくてもOK）', 'input', 'text', it && it.video ? 'https://youtu.be/' + it.video : '', 'https://youtu.be/…');
+    // ---- スマホで撮った動画を直接つける（60秒まで。大きければ自動で軽くする） ----
+    var vNew, hasVid = !!(it && it.vkey), VMAX = 60;
+    f.appendChild(el('label', null, '🎬 動画（スマホで撮影・最大60秒。短いほど軽くて見やすいで）'));
+    var vst = el('div', 'fine', hasVid ? '動画が入ってます' : '動画はまだありません'); f.appendChild(vst);
+    var vfi = el('input'); vfi.type = 'file'; vfi.accept = 'video/*'; vfi.hidden = true; f.appendChild(vfi);
+    var vab = el('button', 'chip', '🎬 動画を撮る／選ぶ'); vab.type = 'button'; f.appendChild(vab);
+    var vrm = el('button', 'chip', '動画を外す'); vrm.type = 'button'; vrm.hidden = !hasVid; f.appendChild(vrm);
+    vab.addEventListener('click', function () { vfi.click(); });
+    vrm.addEventListener('click', function () { vNew = ''; hasVid = false; vst.textContent = '動画を外します（保存を押すと反映）'; vrm.hidden = true; });
+    function vidMeta(file) {
+      return new Promise(function (res, rej) {
+        var v = document.createElement('video'), u = URL.createObjectURL(file); v.preload = 'metadata'; v.muted = true;
+        v.onloadedmetadata = function () { var o = { dur: v.duration, w: v.videoWidth, h: v.videoHeight }; URL.revokeObjectURL(u); res(o); };
+        v.onerror = function () { URL.revokeObjectURL(u); rej(new Error('meta')); };
+        v.src = u;
+      });
+    }
+    // ブラウザ内で 720p・約1.8Mbps に軽くする（再生しながら録り直すので、動画の長さと同じ時間かかる）
+    function vidShrink(file, meta) {
+      return new Promise(function (res, rej) {
+        if (!window.MediaRecorder || !HTMLCanvasElement.prototype.captureStream) return rej(new Error('nosupport'));
+        var mime = ['video/mp4;codecs=avc1', 'video/mp4', 'video/webm;codecs=vp9,opus', 'video/webm;codecs=vp8,opus', 'video/webm'].filter(function (m) { return MediaRecorder.isTypeSupported(m); })[0];
+        if (!mime) return rej(new Error('nosupport'));
+        var v = document.createElement('video'), u = URL.createObjectURL(file); v.src = u; v.playsInline = true; v.setAttribute('playsinline', '');
+        var k = Math.min(1, 1280 / Math.max(meta.w, meta.h)), cw = Math.round(meta.w * k / 2) * 2, ch = Math.round(meta.h * k / 2) * 2;
+        var cv = document.createElement('canvas'); cv.width = cw; cv.height = ch; var cx = cv.getContext('2d');
+        var out = cv.captureStream(30), ac = null;
+        try { var AC = window.AudioContext || window.webkitAudioContext; ac = new AC(); var src = ac.createMediaElementSource(v), dst = ac.createMediaStreamDestination(); src.connect(dst); dst.stream.getAudioTracks().forEach(function (t) { out.addTrack(t); }); } catch (e) { ac = null; }
+        var rec = new MediaRecorder(out, { mimeType: mime, videoBitsPerSecond: 1800000, audioBitsPerSecond: 96000 }), chunks = [], done = false;
+        rec.ondataavailable = function (e) { if (e.data && e.data.size) chunks.push(e.data); };
+        rec.onstop = function () { clearInterval(tm); URL.revokeObjectURL(u); if (ac) try { ac.close(); } catch (e) {} res(new Blob(chunks, { type: mime.split(';')[0] })); };
+        var tm = setInterval(function () { if (!done) vst.textContent = '動画を軽くしてるで… ' + Math.round(v.currentTime) + '/' + Math.round(meta.dur) + '秒（このまま待っててな）'; }, 500);
+        function draw() { if (v.paused || v.ended) return; cx.drawImage(v, 0, 0, cw, ch); requestAnimationFrame(draw); }
+        v.onplay = function () { rec.start(1000); draw(); };
+        v.onended = function () { done = true; try { rec.stop(); } catch (e) {} };
+        v.onerror = function () { clearInterval(tm); rej(new Error('play')); };
+        if (ac && ac.state === 'suspended') ac.resume();
+        v.play().catch(function () { clearInterval(tm); rej(new Error('play')); });
+      });
+    }
+    function vidUpload(blob, ext) {
+      return api({ action: 'admin_shop_video_sign', token: token, ext: ext }).then(function (x) {
+        if (!x || !x.signedUrl) throw new Error((x && x.message) || 'sign');
+        return new Promise(function (res, rej) {
+          var fd = new FormData(); fd.append('cacheControl', '3600'); fd.append('', blob);
+          var xh = new XMLHttpRequest(); xh.open('PUT', x.signedUrl); xh.setRequestHeader('x-upsert', 'false');
+          xh.upload.onprogress = function (e) { if (e.lengthComputable) vst.textContent = '動画を送ってるで… ' + Math.round(e.loaded / e.total * 100) + '%'; };
+          xh.onload = function () { if (xh.status >= 200 && xh.status < 300) res(x.path); else rej(new Error('put' + xh.status)); };
+          xh.onerror = function () { rej(new Error('net')); };
+          xh.send(fd);
+        });
+      });
+    }
+    vfi.addEventListener('change', function () {
+      var file = vfi.files && vfi.files[0]; vfi.value = ''; if (!file) return;
+      vab.disabled = true; sv.disabled = true; vst.textContent = '動画を確かめてるで…';
+      var LIM = 40 * 1048576, SKIP = 25 * 1048576;
+      vidMeta(file).then(function (m) {
+        if (m.dur > VMAX + 1) throw new Error('long');
+        var okType = /^video\/(mp4|webm|quicktime)/.test(file.type);
+        if (okType && file.size <= SKIP) return [file, file.type];
+        return vidShrink(file, m).then(function (b) { return [b, b.type]; }).catch(function (e) {
+          if (okType && file.size <= LIM) return [file, file.type];
+          throw e;
+        });
+      }).then(function (bt) {
+        if (bt[0].size > LIM) throw new Error('big');
+        return vidUpload(bt[0], /webm/.test(bt[1]) ? 'webm' : /quicktime/.test(bt[1]) ? 'mov' : 'mp4').then(function (path) { return [path, bt[0].size]; });
+      }).then(function (pr) {
+        vNew = pr[0]; hasVid = true; vrm.hidden = false;
+        vst.textContent = '✅ 動画を入れたで（' + (pr[1] / 1048576).toFixed(1) + 'MB）。保存を押すと反映されます';
+      }).catch(function (e) {
+        var m = String(e && e.message);
+        vst.textContent = m === 'long' ? '動画が長すぎるで。' + VMAX + '秒までにしてな' : m === 'big' ? '動画が大きすぎるで（40MB超え）。もっと短く撮ってな' : m === 'nosupport' || m === 'play' ? 'この端末では動画を軽くできへんかった。カメラの画質を「HD 720p」にして短めに撮り直してみてな' : '動画を送れへんかった。もう一回やってな';
+      }).then(function () { vab.disabled = false; sv.disabled = false; });
+    });
     var stLocal = '';
     if (it && it.start) { var sd = new Date(it.start), zz = function (n) { return String(n).padStart(2, '0'); }; stLocal = sd.getFullYear() + '-' + zz(sd.getMonth() + 1) + '-' + zz(sd.getDate()) + 'T' + zz(sd.getHours()) + ':' + zz(sd.getMinutes()); }
     fld('start', '販売開始の日時（空なら、すぐ販売。あなたの端末の時刻で入れてな）', 'input', 'datetime-local', stLocal);
@@ -2783,6 +2871,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     sv.addEventListener('click', function () {
       sv.disabled = true;
       var body = { action: 'admin_shop_item', token: token, name: F.name.value, price: F.price.value, qty: F.qty.value, desc: F.desc.value, video: F.video.value, start: F.start.value ? new Date(F.start.value).toISOString() : '', sort: F.sort.value, status: ss.value, imgs: imgs };
+      if (vNew !== undefined) body.vkey = vNew;
       if (it) body.id = it.id;
       api(body).then(function (x) { if (x && x.item) { toast('保存したで'); shopAdmOpen(); } else { toast((x && x.message) || '保存できへんかった'); sv.disabled = false; } })
         .catch(function () { toast('つながらへんかった'); sv.disabled = false; });
