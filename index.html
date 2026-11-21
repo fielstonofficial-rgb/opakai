@@ -1173,6 +1173,18 @@ html[lang="zh-CN"] .topic .theme .q::before{content:"话题 \25BE"}html[lang="zh
 html[lang="zh-TW"] .topic .theme .q::before{content:"話題 \25BE"}html[lang="zh-TW"] .topic.open .theme .q::before{content:"話題 \25B4"}
 html[lang="de"] .topic .theme .q::before{content:"Thema \25BE"}html[lang="de"] .topic.open .theme .q::before{content:"Thema \25B4"}
 html[lang="ko"] .topic .theme .q::before{content:"주제 \25BE"}html[lang="ko"] .topic.open .theme .q::before{content:"주제 \25B4"}
+
+/* ログイン画面：ゲストボタンを最初の1画面に収める（言語ボタンは小さく・ヒーローも小さく） */
+#welcome.entry .hero .gem{width:84px}
+#welcome.entry .hero-en{font-size:12px;margin-top:-4px}
+#welcome.entry .hero-sub{display:none}
+#welcome.entry .uilbar{gap:3px;margin:0 0 4px}
+#welcome.entry .uilbar button,#welcome.entry .uilbar select{padding:1px 6px;font-size:10px;min-height:20px;line-height:1.2}
+#welcome.entry #guestRow{margin:2px 0 4px}
+#welcome.entry #guestRow .guestbtn{padding:8px 14px}
+#welcome.entry #guestRow .gdiv{margin:6px 0 0;font-size:11px}
+#welcome.entry h2{margin-bottom:4px}
+#welcome.entry #wLead{margin-bottom:6px}
 </style>
 </head>
 <body>
@@ -1340,6 +1352,10 @@ html[lang="ko"] .topic .theme .q::before{content:"주제 \25BE"}html[lang="ko"] 
     <img class="logo" data-cat="logo" alt="" width="44" height="44">
     <h2 id="wTitle"><span class="amon">AMON</span>オパール会議室へ、ようこそ</h2>
     <p id="wLead"></p>
+    <div id="guestRow" hidden>
+      <button class="guestbtn" type="button" id="guestBtn"><b>👤 ゲストで入る</b><small id="guestBtnS">コード不要・ニックネームだけ・6時間入れます</small></button>
+      <div class="gdiv"><span>招待コードをお持ちの方は</span></div>
+    </div>
     <div id="codeRow"><label for="codeInput">招待コード</label>
     <input type="text" id="codeInput" placeholder="OPA-XXXX-XXXX" autocapitalize="characters" autocomplete="off"></div>
     <label for="nickInput">ニックネーム</label>
@@ -1352,10 +1368,6 @@ html[lang="ko"] .topic .theme .q::before{content:"주제 \25BE"}html[lang="ko"] 
     <input type="text" id="bioInput" maxlength="20" placeholder="例：ブラックオパール集めてます">
     <p class="fine" id="wErr" role="alert"></p>
     <div class="wbtns"><button class="send go" type="submit" id="wGo">入室する</button><button class="wback" type="button" id="wBack" hidden>戻る</button></div>
-    <div id="guestRow" hidden>
-      <div class="gdiv"><span>招待コードがない方は</span></div>
-      <button class="guestbtn" type="button" id="guestBtn"><b>👤 ゲストで入る</b><small id="guestBtnS">コード不要・ニックネームだけ・6時間入れます</small></button>
-    </div>
     <p class="fine" id="xfer">機種変更のときは、「引き継ぎコード」を招待コードの欄に入れてな（ニックネームは空でOK）。</p>
     <p class="fine" id="ownerRow"><button class="chip" type="button" id="ownerLink">🔑 店主ログイン（番号）</button></p>
     <p class="note fine">お金や住所などの個人情報は、書かないでね。</p>
