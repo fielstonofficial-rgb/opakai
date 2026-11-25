@@ -1845,8 +1845,10 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     $('pCount').textContent = list.length;
     var ul = $('popList'); ul.textContent = '';
     var sum = $('popSum');
+    var hiddenN = 0;
     function addP(g) {
       var mine = me && g.nickname === me.nickname;
+      if (g.is_admin && !mine) { hiddenN++; return; }   // 運営（スッコリ石原）の名前は、お客さんの一覧に出さない。人数には数える
       var li = el('li', mine ? 'mine' : '');
       li.appendChild(avatar(g.is_admin ? 'amon' : 'guest', g.color, g.nickname, g.icon));
       var w = el('span', 'who'); w.appendChild(el('span', 'nm', g.nickname)); if (g.bio) w.appendChild(el('span', 'bio', g.bio)); li.appendChild(w);
@@ -1876,7 +1878,8 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       ul.appendChild(el('li', 'grp', GL[k] + (k === 'chat' ? '' : '（' + groups[k].length + '人）')));
       groups[k].forEach(addP);
     });
-    ul.appendChild(el('li', 'grp', '版：11/26 01:10（バッジ＝いまの人数＋猫2）'));
+    if (hiddenN) ul.appendChild(el('li', 'grp', '運営 ' + hiddenN + '人も、人数には入っています（名前は出しません）'));
+    ul.appendChild(el('li', 'grp', '版：11/26 02:00（バッジ＝いまの人数＋猫2）'));
   }
   // 「どこにいるか」：10秒ごとに別の小さな関数（opa-where）へ聞く。失敗しても、ふつうの一覧のまま
   function whereSend() {
