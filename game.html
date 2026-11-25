@@ -1229,7 +1229,7 @@ body.inPk #hero2 .hb .fpk,body.inPk .gh .hb .fpk,body.inPk .hb .far,body.inPk .h
       <svg id="mapSvg" viewBox="0 -87 720 450" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v52（カフェの配膳・店に剣／刀／斧／槍／ハンマーを追加・遠距離武器を値上げ・武器の特性）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v53（待合室にホストの「入る」ボタン・カフェの配膳・店に剣／刀／斧／槍／ハンマーを追加・遠距離武器を値上げ・武器の特性）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所です（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -3192,22 +3192,30 @@ body.inPk #hero2 .hb .fpk,body.inPk .gh .hb .fpk,body.inPk .hb .far,body.inPk .h
   /* ---------- パーティーの待合室（地図から） ---------- */
   $('toParty').addEventListener('click', function () {
     actx(); sfx(0); var sh = $('ptySheet'); $('ptyList').innerHTML = '<p class="tiny">しらべてるよ…</p>'; sh.classList.add('on');
+    var partyReq = fetch(API.replace(/opa-game$/, 'opa-party'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'list', token: token }) }).then(function (r) { return r.json(); }).catch(function () { return { rooms: [] }; });
     api({ action: 'room_my' }).then(function (j) {
-      if (j.room && j.room.status !== 'closed') { sh.classList.remove('on'); openLobby(j.room); toast('入ってる待合室に戻ったよ'); return; }
-      var h = ''; MINES.filter(function (m) { return isOpen(m); }).forEach(function (m) {
-        h += '<div class="it"><div class="ic">⛏️</div><div class="tx"><b>' + m.nm + '</b>' + m.ct + '</div><button type="button" data-pm="' + m.id + '">ここで作る</button></div>';
-      });
-      var base = h || '<p class="tiny">開いてる鉱山が、まだないよ</p>';
-      $('ptyList').innerHTML = base;
-      fetch(API.replace(/opa-game$/, 'opa-party'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'list', token: token }) }).then(function (r) { return r.json(); }).then(function (pj) {
+      var mine = (j.room && j.room.status !== 'closed') ? j.room : null;
+      if (mine && !(mine.status === 'lobby' && mine.members.length <= 1 && amHostOf(mine))) { sh.classList.remove('on'); openLobby(mine); toast('入ってる待合室に戻ったよ'); return; }
+      return partyReq.then(function (pj) {
         var rs = (pj && pj.rooms || []).filter(function (x) { var m = MBY[x.mine]; return m && isOpen(m); });
-        if (!rs.length) return;
-        var w = '<div class="sec">いま、仲間をまっている部屋</div>' + rs.map(function (x) { var m = MBY[x.mine]; return '<div class="it"><div class="ic">👑</div><div class="tx"><b>' + esc(m.nm) + '</b>' + esc(x.host) + 'さんが待ってるよ（' + x.n + '/' + x.max + '人）</div><button type="button" data-pj="' + esc(x.room) + '">入る</button></div>'; }).join('') + '<div class="sec">じぶんで部屋を作る</div>';
-        $('ptyList').innerHTML = w + base;
-      }).catch(function () {});
+        var h = '';
+        if (rs.length) {
+          h += '<div class="sec">👑 いま、仲間をまっている人（タップで入れるよ）</div>' + rs.map(function (x) { var m = MBY[x.mine]; return '<div class="it" style="border-color:#4ade80;background:rgba(74,222,128,.10)"><div class="ic">👑</div><div class="tx"><b style="font-size:17px">' + esc(x.host) + ' さん</b>' + esc(m.nm) + '　' + x.n + ' / ' + x.max + '人</div><button type="button" class="eq" data-pj="' + esc(x.room) + '" style="min-width:96px;font-size:16px">入る</button></div>'; }).join('');
+        } else { h += '<p class="tiny">いま、まっている人はいないよ。じぶんで部屋を作ってみてな。</p>'; }
+        if (mine) { var mm = MBY[mine.mine]; h += '<div class="sec">じぶんの待合室</div><div class="it"><div class="ic">⛏️</div><div class="tx"><b>' + esc(mm ? mm.nm : '') + '</b>ひとりでまっているよ</div><button type="button" data-back="1">もどる</button></div>'; }
+        var ms = MINES.filter(function (m) { return isOpen(m); });
+        if (!mine) {
+          h += '<div class="sec">じぶんで部屋を作る</div>';
+          ms.forEach(function (m) { h += '<div class="it"><div class="ic">⛏️</div><div class="tx"><b>' + m.nm + '</b>' + m.ct + '</div><button type="button" data-pm="' + m.id + '">ここで作る</button></div>'; });
+          if (!ms.length) h += '<p class="tiny">開いてる鉱山が、まだないよ</p>';
+        }
+        $('ptyList').innerHTML = h; window._ptyMine = mine;
+      });
     }).catch(function () { $('ptyList').innerHTML = '<p class="tiny">つながりませんでした。もう一度お試しください</p>'; });
   });
+  function amHostOf(r) { return r && r.host === myMid; }
   $('ptyList').addEventListener('click', function (e) {
+    var bk = e.target.closest('[data-back]'); if (bk && window._ptyMine) { $('ptySheet').classList.remove('on'); openLobby(window._ptyMine); return; }
     var pj = e.target.closest('[data-pj]');
     if (pj) { if (pj.disabled) return; pj.disabled = true;
       fetch(API.replace(/opa-game$/, 'opa-party'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'join', token: token, room: pj.dataset.pj }) }).then(function (r) { return r.json(); }).then(function (j) { pj.disabled = false; if (j.room) { $('ptySheet').classList.remove('on'); openLobby(j.room); toast('待合室に入ったよ！'); } else toast(j.message || '入れませんでした'); }).catch(function () { pj.disabled = false; toast('つながりませんでした。もう一度お試しください'); });
