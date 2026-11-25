@@ -1038,6 +1038,8 @@ body.inPk .gh.dn::after{content:"💫 ダウン";background:rgba(90,90,110,.9)}
 #tin{flex:1;min-width:0;border:0;border-radius:14px;padding:11px 13px;font-size:16px;background:rgba(255,255,255,.94);color:#222}
 #tsend{border:0;border-radius:14px;padding:0 16px;font-weight:800;background:#ffd36a;color:#3a2a08}
 #tfull{border:0;border-radius:14px;padding:0 10px;font-weight:800;font-size:13px;white-space:nowrap;background:rgba(255,255,255,.9);color:#2a2a38}
+#tchat.big #tlog{height:33vh;max-height:33vh;overflow-y:auto;-webkit-overflow-scrolling:touch;justify-content:flex-start;pointer-events:auto;background:rgba(8,10,16,.5);border-radius:12px;padding:6px}
+#tchat.big #tlog div{max-width:96%;font-size:15px;flex:none}
 #tHist{position:fixed;inset:0;z-index:100000;display:none;flex-direction:column;background:#0a0c12;color:#fff}
 #tHist.on{display:flex}
 #tHist .hh{display:flex;align-items:center;justify-content:space-between;padding:12px 14px;border-bottom:1px solid rgba(255,255,255,.18);font-weight:800;font-size:16px}
@@ -5529,11 +5531,19 @@ var TB = {
     THIST.forEach(function (h) { var c = h.d.cloneNode(true), tm = new Date(h.t), m = document.createElement('i'); m.textContent = ('0' + tm.getHours()).slice(-2) + ':' + ('0' + tm.getMinutes()).slice(-2); c.appendChild(m); l.appendChild(c); });
     o.classList.add('on'); l.scrollTop = l.scrollHeight;
   }
+  function tBigOff() { var c = $('tchat'); if (!c.classList.contains('big')) return; c.classList.remove('big'); $('tfull').textContent = '全画面'; $('tlog').innerHTML = ''; }
+  function tBigToggle() {
+    var c = $('tchat'), l = $('tlog');
+    if (c.classList.contains('big')) { tBigOff(); return; }
+    c.classList.add('big'); $('tfull').textContent = 'もどす'; l.innerHTML = '';
+    THIST.forEach(function (h) { l.appendChild(h.d.cloneNode(true)); });
+    l.scrollTop = l.scrollHeight;
+  }
   function tlogAdd(name, text) {
     var d = document.createElement('div'), b = document.createElement('b'); b.textContent = name; d.appendChild(b); d.appendChild(document.createTextNode(text));
-    var l = $('tlog'); l.appendChild(d); while (l.children.length > 5) l.removeChild(l.firstChild);
+    var l = $('tlog'), big = $('tchat').classList.contains('big'); l.appendChild(d); while (l.children.length > (big ? 150 : 5)) l.removeChild(l.firstChild);
     try { THIST.push({ d: d, t: Date.now() }); if (THIST.length > 150) THIST.shift(); } catch (e) {}
-    setTimeout(function () { if (d.parentNode) d.remove(); }, 20000); return d;
+    if (big) l.scrollTop = l.scrollHeight; else setTimeout(function () { if (d.parentNode) d.remove(); }, 20000); return d;
   }
   function bubble(host, text) {
     if (!host) return; var o = host.querySelector('.bub'); if (o) o.remove();
@@ -6318,12 +6328,12 @@ var TB = {
     var now = Date.now(); if (now - tChatAt < 1800) { toast('ちょっと待ってください'); return; } tChatAt = now;
     inp.value = ''; tlogAdd(player.avatar.name, t); bubble($('hero2'), t);
     if (rtOn) rtSend({ t: 'chat', x: t });
-    $('field').classList.remove('chat');
+    if (!$('tchat').classList.contains('big')) $('field').classList.remove('chat');
   }
-  $('plChat').addEventListener('click', function () { var f = $('field'); f.classList.toggle('chat'); if (f.classList.contains('chat')) { $('qcPanel').classList.remove('on'); setTimeout(function () { try { $('tin').focus(); } catch (e) {} }, 50); } else $('tin').blur(); });
+  $('plChat').addEventListener('click', function () { var f = $('field'); f.classList.toggle('chat'); if (f.classList.contains('chat')) { $('qcPanel').classList.remove('on'); setTimeout(function () { try { $('tin').focus(); } catch (e) {} }, 50); } else { $('tin').blur(); tBigOff(); } });
   $('toTown').addEventListener('click', function () { actx(); sfx(0); openTown(); });
   $('tsend').addEventListener('click', sendChat);
-  $('tfull').addEventListener('click', tHistOpen);
+  $('tfull').addEventListener('click', tBigToggle);
   $('tin').addEventListener('keydown', function (e) { if (e.key === 'Enter') { e.preventDefault(); sendChat(); } });
   $('tin').addEventListener('pointerdown', function (e) { e.stopPropagation(); });
 
