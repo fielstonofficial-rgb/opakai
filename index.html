@@ -2051,7 +2051,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     clearTimeout(timer);
     if (!token) return;
     // 50人対策＋速さ：会話が動いている間（直近30秒に新着あり／自分が操作した直後）は1秒、静かな間は2秒
-    var wait = (typingNode || fast > 0 || Date.now() < chatHotUntil) ? 1000 : 2000; if (fast > 0) fast--;
+    var wait = (typingNode || fast > 0 || Date.now() < chatHotUntil) ? 1500 : 3000; if (fast > 0) fast--;
     timer = setTimeout(function () { (document.hidden ? Promise.resolve() : poll()).then(loop); }, wait);
   }
   function stop() { clearTimeout(timer); timer = null; }
