@@ -8676,9 +8676,11 @@ var TB = {
   }
   function openRank() {
     arcFlush(); arcShow('<div class="tvh"><b>🏆 コインランキング</b><button type="button" class="arcx" id="rkX">とじる</button></div><div class="rkL" id="rkL">読み込み中…</div><div class="tvM" id="rkM"></div>', 'tv'); $('rkX').onclick = arcClose;
+    if (Date.now() < Date.parse('2026-11-27T00:00:00+09:00') && !(player && player.gm)) { $('rkL').innerHTML = '<p style="text-align:center;line-height:1.8;padding:18px 8px">🏆 ランキングは<br><b style="font-size:20px">11月27日</b><br>から発表やで！<br>それまで、コインをためておいてな</p>'; return; }
     setTimeout(function () {
       arcApi({ action: 'arc_rank' }).then(function (j) {
         if (!$('rkL')) return; if (j._s !== 200) { $('rkL').textContent = 'つながりませんでした。もう一回ためしてね'; return; }
+        if (j.hidden) { $('rkL').innerHTML = '<p style="text-align:center;line-height:1.8;padding:18px 8px">🏆 ランキングは<br><b style="font-size:20px">' + esc(j.from || '') + '</b><br>から発表やで！<br>それまで、コインをためておいてな</p>'; $('rkM').textContent = ''; return; }
         $('rkL').innerHTML = j.rank.map(function (x) { return '<div class="rk' + (x.me ? ' me' : '') + '"><span class="rn">' + (x.n <= 3 ? ['🥇', '🥈', '🥉'][x.n - 1] : x.n) + '</span><span class="rnm">' + esc(x.name) + '</span><span class="rt">🪙 ' + x.t.toLocaleString() + '</span></div>'; }).join('') || '<p>まだだれもいません</p>';
         $('rkM').textContent = 'あなた：' + j.mine.n + '位　🪙 ' + j.mine.t.toLocaleString();
       });
