@@ -1229,7 +1229,7 @@ body.inPk #hero2 .hb .fpk,body.inPk .gh .hb .fpk,body.inPk .hb .far,body.inPk .h
       <svg id="mapSvg" viewBox="0 -87 720 450" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
       <div id="pins"></div>
     </div>
-    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v53（待合室にホストの「入る」ボタン・カフェの配膳・店に剣／刀／斧／槍／ハンマーを追加・遠距離武器を値上げ・武器の特性）</p>
+    <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v54（合図の送信を修正・待合室にホストの「入る」ボタン・カフェの配膳・店に剣／刀／斧／槍／ハンマーを追加・遠距離武器を値上げ・武器の特性）</p>
     <p class="tiny" style="margin:6px 14px 0">ピンは実際の場所です（ヤワーだけ、コロイッドに近すぎるので少しずらした）。エリアは、レベルが上がると順番に開くよ</p>
     <div class="quest" id="quest"></div>
     <div id="mapList"></div>
@@ -10470,12 +10470,12 @@ var TB = {
     }).catch(function () { $('loadMsg').textContent = 'つながりませんでした。いったん閉じて、もう一回開いてください'; document.querySelector('#load .spin').style.display = 'none'; });
   }
   boot();
-})();
   /* ---- 居場所（ゲームを直接開いている人も、「ゲームで遊び中」に数える）。チャット画面の中で開いた時は、チャット画面が知らせるので何もしない ---- */
   (function () {
     if (window.parent !== window) return;
     function hb() { try { if (!token) return; fetch(API.replace(/opa-game$/, 'opa-where'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: token, at: 'game', touch: true }) }).catch(function () {}); } catch (e) {} }
     setInterval(hb, 20000); setTimeout(hb, 5000);
   })();
+})();
 </script>
 </body></html>
