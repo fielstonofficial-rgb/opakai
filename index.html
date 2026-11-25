@@ -1876,6 +1876,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       ul.appendChild(el('li', 'grp', GL[k] + (k === 'chat' ? '' : '（' + groups[k].length + '人）')));
       groups[k].forEach(addP);
     });
+    ul.appendChild(el('li', 'grp', '版：11/26 01:10（バッジ＝いまの人数＋猫2）'));
   }
   // 「どこにいるか」：10秒ごとに別の小さな関数（opa-where）へ聞く。失敗しても、ふつうの一覧のまま
   function whereSend() {
@@ -1884,7 +1885,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     var at = $('gamePanel') && !$('gamePanel').hidden ? 'game' : 'chat';
     fetch(API.replace(/opa-room$/, 'opa-where'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: token, at: at }) })
       .then(function (r) { return r.json(); })
-      .then(function (j) { whereBusy = false; if (j && j.where) { WHERE = j.where; if (Array.isArray(j.people)) WPEOPLE = j.people; whereOk = true; renderPresence(POLLP); } })
+      .then(function (j) { whereBusy = false; if (j && j.where) { WHERE = j.where; if (Array.isArray(j.people24)) WPEOPLE = j.people24; else if (Array.isArray(j.people)) WPEOPLE = j.people; whereOk = true; renderPresence(POLLP); } })
       .catch(function () { whereBusy = false; });
   }
   setInterval(whereSend, 10000);
