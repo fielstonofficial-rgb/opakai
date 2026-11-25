@@ -1851,11 +1851,12 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       li.appendChild(avatar(g.is_admin ? 'amon' : 'guest', g.color, g.nickname, g.icon));
       var w = el('span', 'who'); w.appendChild(el('span', 'nm', g.nickname)); if (g.bio) w.appendChild(el('span', 'bio', g.bio)); li.appendChild(w);
       if (mine) li.appendChild(el('small', null, 'あなた'));
+      if (whereOk && (g.place || WHERE[g.nickname]) === 'game') li.appendChild(el('small', null, '🎮 いま、ゲームの中'));
       ul.appendChild(li);
     }
     if (!whereOk) { sum.hidden = true; list.forEach(addP); return; }
     var groups = { chat: [], game: [], mine: [] };
-    list.forEach(function (g) { var k = g.place || WHERE[g.nickname]; if (!groups[k]) k = 'chat'; groups[k].push(g); });
+    list.forEach(function (g) { var k = g.place || WHERE[g.nickname]; if (!groups[k]) k = 'chat'; if (k === 'chat' && g.today_game) k = 'game'; groups[k].push(g); });
     sum.textContent = '';
     sum.appendChild(document.createTextNode('🟢 いま '));
     sum.appendChild(el('b', null, String(POLLP.length)));
@@ -1864,11 +1865,12 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     sum.appendChild(document.createTextNode('人'));
     var todayN = list.filter(function (g) { return g.today_game; }).length;
     if (todayN) { sum.appendChild(document.createTextNode('　🎮 今日ゲームを遊んだ人 ')); sum.appendChild(el('b', null, String(todayN))); sum.appendChild(document.createTextNode('人')); }
-    if (groups.game.length) { sum.appendChild(document.createTextNode('　🎮 いま、ゲームの中 ')); sum.appendChild(el('b', null, String(groups.game.length))); sum.appendChild(document.createTextNode('人')); }
+    var nowG = groups.game.filter(function (g) { return (g.place || WHERE[g.nickname]) === 'game'; }).length;
+    if (nowG) { sum.appendChild(document.createTextNode('　🎮 いま、ゲームの中 ')); sum.appendChild(el('b', null, String(nowG))); sum.appendChild(document.createTextNode('人')); }
     if (groups.mine.length) { sum.appendChild(document.createTextNode('　⛏ 鉱山の部屋 ')); sum.appendChild(el('b', null, String(groups.mine.length))); sum.appendChild(document.createTextNode('人')); }
     if (!groups.game.length && !groups.mine.length) { sum.appendChild(el('div', null, '🌱 できたてのお部屋です。一言からどうぞ。ゲームもあるよ🎮')); }
     sum.hidden = false;
-    var GL = { game: '🎮 いま、ゲームの中', mine: '⛏ 鉱山の部屋', chat: '💬 チャット・離席中（24時間以内）' };
+    var GL = { game: '🎮 今日ゲームを遊んだ人（24時間）', mine: '⛏ 鉱山の部屋（いま部屋の中）', chat: '💬 チャット・離席中（24時間以内）' };
     ['game', 'mine', 'chat'].forEach(function (k) {
       if (!groups[k].length) return;
       ul.appendChild(el('li', 'grp', GL[k] + (k === 'chat' ? '' : '（' + groups[k].length + '人）')));
