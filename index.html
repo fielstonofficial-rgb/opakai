@@ -2991,8 +2991,8 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       } else st.textContent = '⚪ オフ。このコードでは、いま入れません。';
       sc.appendChild(st);
       var row = el('div', 'adm-pin');
-      var hs = el('select'); [['1', '1時間'], ['6', '6時間'], ['24', '24時間']].forEach(function (o) { var op = el('option', null, o[1]); op.value = o[0]; if (o[0] === '6') op.selected = true; hs.appendChild(op); });
-      var ms = el('select'); [['10', '10人まで'], ['20', '20人まで'], ['30', '30人まで'], ['50', '50人まで']].forEach(function (o) { var op = el('option', null, o[1]); op.value = o[0]; if (o[0] === '30') op.selected = true; ms.appendChild(op); });
+      var hs = el('select'); [['6', '6時間'], ['24', '24時間'], ['48', '48時間']].forEach(function (o) { var op = el('option', null, o[1]); op.value = o[0]; if (o[0] === '6') op.selected = true; hs.appendChild(op); });
+      var ms = el('select'); [['20', '20人まで'], ['50', '50人まで'], ['100', '100人まで']].forEach(function (o) { var op = el('option', null, o[1]); op.value = o[0]; if (o[0] === '50') op.selected = true; ms.appendChild(op); });
       var tg = el('button', 'chip', j.on ? '募集をオフにする' : '募集をオンにする'); tg.type = 'button';
       tg.addEventListener('click', function () {
         api({ action: 'admin_shared_set', token: token, on: !j.on, hours: Number(hs.value), max: Number(ms.value) }).then(function (x) {
