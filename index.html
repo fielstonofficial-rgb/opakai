@@ -1831,7 +1831,6 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     renderPresence0(list);
     // 猫は部屋の住人。人数には入れず、猫マークをつけて、一覧に並べる
     var ul = $('popList');
-    ul.appendChild(el('li', 'grp', '🐱 アロンとフラン（猫）'));
     ['アロン', 'フラン'].forEach(function (n) {
       var li = el('li', 'cat-npc');
       li.appendChild(el('span', null, '🐱'));
@@ -1861,7 +1860,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     list.forEach(function (g) { var k = g.place || WHERE[g.nickname]; if (!groups[k]) k = 'chat'; if (k === 'chat' && g.today_game) k = 'game'; groups[k].push(g); });
     sum.textContent = '';
     sum.appendChild(document.createTextNode('🟢 いま '));
-    sum.appendChild(el('b', null, String(POLLP.length)));
+    sum.appendChild(el('b', null, String(POLLP.length + 2)));
     sum.appendChild(document.createTextNode('人（90秒以内）　👥 24時間以内にログイン '));
     sum.appendChild(el('b', null, String(list.length)));
     sum.appendChild(document.createTextNode('人'));
@@ -1878,8 +1877,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       ul.appendChild(el('li', 'grp', GL[k] + (k === 'chat' ? '' : '（' + groups[k].length + '人）')));
       groups[k].forEach(addP);
     });
-    if (hiddenN) ul.appendChild(el('li', 'grp', '運営 ' + hiddenN + '人も、人数には入っています（名前は出しません）'));
-    ul.appendChild(el('li', 'grp', '版：11/26 02:00（バッジ＝いまの人数＋猫2）'));
+    ul.appendChild(el('li', 'grp', '版：11/26 02:20'));
   }
   // 「どこにいるか」：10秒ごとに別の小さな関数（opa-where）へ聞く。失敗しても、ふつうの一覧のまま
   function whereSend() {
