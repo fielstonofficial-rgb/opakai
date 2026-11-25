@@ -3197,10 +3197,21 @@ body.inPk #hero2 .hb .fpk,body.inPk .gh .hb .fpk,body.inPk .hb .far,body.inPk .h
       var h = ''; MINES.filter(function (m) { return isOpen(m); }).forEach(function (m) {
         h += '<div class="it"><div class="ic">⛏️</div><div class="tx"><b>' + m.nm + '</b>' + m.ct + '</div><button type="button" data-pm="' + m.id + '">ここで作る</button></div>';
       });
-      $('ptyList').innerHTML = h || '<p class="tiny">開いてる鉱山が、まだないよ</p>';
+      var base = h || '<p class="tiny">開いてる鉱山が、まだないよ</p>';
+      $('ptyList').innerHTML = base;
+      fetch(API.replace(/opa-game$/, 'opa-party'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'list', token: token }) }).then(function (r) { return r.json(); }).then(function (pj) {
+        var rs = (pj && pj.rooms || []).filter(function (x) { var m = MBY[x.mine]; return m && isOpen(m); });
+        if (!rs.length) return;
+        var w = '<div class="sec">いま、仲間をまっている部屋</div>' + rs.map(function (x) { var m = MBY[x.mine]; return '<div class="it"><div class="ic">👑</div><div class="tx"><b>' + esc(m.nm) + '</b>' + esc(x.host) + 'さんが待ってるよ（' + x.n + '/' + x.max + '人）</div><button type="button" data-pj="' + esc(x.room) + '">入る</button></div>'; }).join('') + '<div class="sec">じぶんで部屋を作る</div>';
+        $('ptyList').innerHTML = w + base;
+      }).catch(function () {});
     }).catch(function () { $('ptyList').innerHTML = '<p class="tiny">つながりませんでした。もう一度お試しください</p>'; });
   });
   $('ptyList').addEventListener('click', function (e) {
+    var pj = e.target.closest('[data-pj]');
+    if (pj) { if (pj.disabled) return; pj.disabled = true;
+      fetch(API.replace(/opa-game$/, 'opa-party'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ action: 'join', token: token, room: pj.dataset.pj }) }).then(function (r) { return r.json(); }).then(function (j) { pj.disabled = false; if (j.room) { $('ptySheet').classList.remove('on'); openLobby(j.room); toast('待合室に入ったよ！'); } else toast(j.message || '入れませんでした'); }).catch(function () { pj.disabled = false; toast('つながりませんでした。もう一度お試しください'); });
+      return; }
     var b = e.target.closest('[data-pm]'); if (!b || b.disabled) return; b.disabled = true;
     api({ action: 'room_create', mine: b.dataset.pm }).then(function (j) { b.disabled = false; if (j.room) { $('ptySheet').classList.remove('on'); openLobby(j.room); } else toast(j.message || '待合室を作れませんでした'); }).catch(function () { b.disabled = false; toast('つながりませんでした。もう一度お試しください'); });
   });
