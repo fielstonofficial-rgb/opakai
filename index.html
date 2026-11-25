@@ -1824,7 +1824,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
 
   /* ---- 人数・テーマ ---- */
   var pop = $('pop'), presenceBtn = $('presenceBtn');
-  var POLLP = [], WHERE = {}, WPEOPLE = null, whereOk = false, whereBusy = false, whereLastList = [];
+  var POLLP = [], WHERE = {}, WTOTAL = null, WPEOPLE = null, whereOk = false, whereBusy = false, whereLastList = [];
   function renderPresence(list) {
     // opa-where から「ログイン中（24時間）」の一覧が届いていれば、そちらを使う
     if (whereOk && WPEOPLE) list = WPEOPLE;
@@ -1869,6 +1869,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     var nowG = groups.game.filter(function (g) { return (g.place || WHERE[g.nickname]) === 'game'; }).length;
     if (nowG) { sum.appendChild(document.createTextNode('　🎮 いま、ゲームの中 ')); sum.appendChild(el('b', null, String(nowG))); sum.appendChild(document.createTextNode('人')); }
     if (groups.mine.length) { sum.appendChild(document.createTextNode('　⛏ 鉱山の部屋 ')); sum.appendChild(el('b', null, String(groups.mine.length))); sum.appendChild(document.createTextNode('人')); }
+    if (WTOTAL != null) sum.appendChild(el('div', null, '📋 現在のオパ会登録者数 ' + WTOTAL + '人'));
     if (!groups.game.length && !groups.mine.length) { sum.appendChild(el('div', null, '🌱 できたてのお部屋です。一言からどうぞ。ゲームもあるよ🎮')); }
     sum.hidden = false;
     var GL = { game: '🎮 今日ゲームを遊んだ人（24時間）', mine: '⛏ 鉱山の部屋（いま部屋の中）', chat: '💬 チャット・離席中（24時間以内）' };
@@ -1877,7 +1878,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       ul.appendChild(el('li', 'grp', GL[k] + (k === 'chat' ? '' : '（' + groups[k].length + '人）')));
       groups[k].forEach(addP);
     });
-    ul.appendChild(el('li', 'grp', '版：11/26 02:20'));
+    ul.appendChild(el('li', 'grp', '版：11/26 02:40'));
   }
   // 「どこにいるか」：10秒ごとに別の小さな関数（opa-where）へ聞く。失敗しても、ふつうの一覧のまま
   function whereSend() {
@@ -1886,7 +1887,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     var at = $('gamePanel') && !$('gamePanel').hidden ? 'game' : 'chat';
     fetch(API.replace(/opa-room$/, 'opa-where'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: token, at: at }) })
       .then(function (r) { return r.json(); })
-      .then(function (j) { whereBusy = false; if (j && j.where) { WHERE = j.where; if (Array.isArray(j.people24)) WPEOPLE = j.people24; else if (Array.isArray(j.people)) WPEOPLE = j.people; whereOk = true; renderPresence(POLLP); } })
+      .then(function (j) { whereBusy = false; if (j && j.where) { WHERE = j.where; if (typeof j.members_total === 'number') WTOTAL = j.members_total; if (Array.isArray(j.people24)) WPEOPLE = j.people24; else if (Array.isArray(j.people)) WPEOPLE = j.people; whereOk = true; renderPresence(POLLP); } })
       .catch(function () { whereBusy = false; });
   }
   setInterval(whereSend, 10000);
