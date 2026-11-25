@@ -253,6 +253,11 @@ section.chat {
 .pop li .nm { min-width: 0; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
 .pop li small { margin-left: auto; font-size: 10px; border: 1px solid var(--line); border-radius: 999px; padding: 0 8px; color: var(--muted); }
 .pop li.mine small { border-color: var(--accent); color: var(--accent); }
+.pop { max-height: 70vh; overflow-y: auto; }
+.pop .psum { font-size: 12.5px; margin: 0 0 6px; line-height: 1.7; }
+.pop .psum b { font-weight: 700; }
+.pop li.grp { font-size: 11px; letter-spacing: .08em; color: var(--muted); font-weight: 700; padding: 8px 0 2px; border-top: 1px solid var(--line); }
+.pop li.grp:first-child { border-top: 0; padding-top: 2px; }
 .pop .fine { margin: 8px 0 0; font-size: 11px; color: var(--muted); }
 
 .stream { flex: 1; min-height: 0; overflow-y: auto; padding: 18px 18px 8px; display: flex; flex-direction: column; gap: 14px; scroll-behavior: smooth; background: var(--surface); }
@@ -1274,6 +1279,7 @@ html[lang="ko"] .topic .theme .q::before{content:"주제 \25BE"}html[lang="ko"] 
         </div>
         <div class="pop frame" id="pop" role="dialog" aria-label="いる人の一覧" hidden>
           <h3>いま、部屋にいる人</h3>
+          <div class="psum" id="popSum" hidden></div>
           <ul id="popList"></ul>
           <p class="fine">いま、部屋にいる人です（90秒以内に動きがあった人）。</p>
         </div>
@@ -1818,18 +1824,50 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
 
   /* ---- 人数・テーマ ---- */
   var pop = $('pop'), presenceBtn = $('presenceBtn');
+  var WHERE = {}, whereOk = false, whereBusy = false, whereLastList = [];
+  var WH_LABEL = { chat: '💬 チャット', game: '🎮 ゲーム', mine: '⛏ 鉱山の部屋' };
   function renderPresence(list) {
+    whereLastList = list;
     $('pCount').textContent = list.length;
     var ul = $('popList'); ul.textContent = '';
-    list.forEach(function (g) {
+    var sum = $('popSum');
+    function addP(g) {
       var mine = me && g.nickname === me.nickname;
       var li = el('li', mine ? 'mine' : '');
       li.appendChild(avatar(g.is_admin ? 'amon' : 'guest', g.color, g.nickname, g.icon));
       var w = el('span', 'who'); w.appendChild(el('span', 'nm', g.nickname)); if (g.bio) w.appendChild(el('span', 'bio', g.bio)); li.appendChild(w);
       if (mine) li.appendChild(el('small', null, 'あなた'));
       ul.appendChild(li);
+    }
+    if (!whereOk) { sum.hidden = true; list.forEach(addP); return; }
+    var groups = { chat: [], game: [], mine: [] };
+    list.forEach(function (g) { var k = WHERE[g.nickname]; if (!groups[k]) k = 'chat'; groups[k].push(g); });
+    sum.textContent = '';
+    ['chat', 'game', 'mine'].forEach(function (k, i) {
+      if (i) sum.appendChild(document.createTextNode('　'));
+      sum.appendChild(document.createTextNode(WH_LABEL[k] + ' '));
+      sum.appendChild(el('b', null, String(groups[k].length)));
+      sum.appendChild(document.createTextNode('人'));
+    });
+    sum.hidden = false;
+    ['chat', 'game', 'mine'].forEach(function (k) {
+      if (!groups[k].length) return;
+      ul.appendChild(el('li', 'grp', WH_LABEL[k] + '（' + groups[k].length + '人）'));
+      groups[k].forEach(addP);
     });
   }
+  // 「どこにいるか」：10秒ごとに別の小さな関数（opa-where）へ聞く。失敗しても、ふつうの一覧のまま
+  function whereSend() {
+    if (!token || whereBusy || document.hidden) return;
+    whereBusy = true;
+    var at = $('gamePanel') && !$('gamePanel').hidden ? 'game' : 'chat';
+    fetch(API.replace(/opa-room$/, 'opa-where'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: token, at: at }) })
+      .then(function (r) { return r.json(); })
+      .then(function (j) { whereBusy = false; if (j && j.where) { WHERE = j.where; whereOk = true; renderPresence(whereLastList); } })
+      .catch(function () { whereBusy = false; });
+  }
+  setInterval(whereSend, 10000);
+  setTimeout(whereSend, 2500);
   function setPop(open) { pop.hidden = !open; presenceBtn.setAttribute('aria-expanded', open ? 'true' : 'false'); }
   presenceBtn.addEventListener('click', function (e) { e.stopPropagation(); setPop(pop.hidden); });
   pop.addEventListener('click', function (e) { e.stopPropagation(); });
@@ -2185,6 +2223,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     var fr = $('gameFrame');
     if (on) { fr.src = 'game.html?v=' + Date.now(); $('gamePanel').hidden = false; }
     else { $('gamePanel').hidden = true; fr.src = 'about:blank'; }
+    setTimeout(whereSend, 300);
   }
   $('gameBtn').addEventListener('click', function () { gameOpen(true); });
   window.addEventListener('message', function (e) {
