@@ -676,7 +676,7 @@ input.nm{width:100%;padding:12px 14px;border-radius:12px;border:1px solid var(--
 .pin.ls-l .lb{left:auto;right:100%;top:50%;transform:translateY(-50%);margin:0 5px 0 0}
 .pin.ls-t .lb{top:auto;bottom:100%;margin:0 0 3px}
 @keyframes pinp{0%,100%{box-shadow:0 0 0 0 rgba(255,211,106,.8),0 2px 8px rgba(0,0,0,.5)}50%{box-shadow:0 0 0 12px rgba(255,211,106,0),0 2px 8px rgba(0,0,0,.5)}}
-#mapBack{position:absolute;left:8px;top:8px;z-index:3;display:none;padding:9px 16px;border-radius:999px;border:1px solid var(--gold);background:rgba(10,18,22,.88);font-size:14px;font-weight:800;color:var(--gold)}
+#mapBack{position:static;align-self:flex-start;margin:6px 10px 0;z-index:3;display:none;padding:9px 16px;border-radius:999px;border:1px solid var(--gold);background:rgba(10,18,22,.88);font-size:14px;font-weight:800;color:var(--gold)}
 #mapBack.on{display:block}
 .quest{margin:10px 12px 4px;padding:10px 12px;border-radius:14px;border:1px solid var(--line);background:rgba(255,255,255,.05);font-size:13px;color:var(--mut)}
 .quest b{color:var(--ink)}
@@ -1224,9 +1224,9 @@ body.inPk #hero2 .hb .fpk,body.inPk .gh .hb .fpk,body.inPk .hb .far,body.inPk .h
 
   <section class="scr" id="map">
     <div class="bar"><button class="ib" id="mapClose" type="button" aria-label="とじる">✕</button><h1>世界の鉱山</h1><button class="ib" id="mapBook" type="button" aria-label="図鑑">📖</button><button class="ib" id="mapSet" type="button" aria-label="せってい">⚙️</button></div>
+    <button id="mapBack" type="button">← マップにもどる</button>
     <div class="mapbox" id="mapbox">
       <svg id="mapSvg" viewBox="0 -87 720 450" preserveAspectRatio="xMidYMid slice" aria-hidden="true"></svg>
-      <button id="mapBack" type="button">← マップにもどる</button>
       <div id="pins"></div>
     </div>
     <button class="town-btn" id="toTown" type="button">🏘️ オパ会の町へ</button><button class="town-btn pty" id="toParty" type="button">🤝 パーティーの待合室</button><p class="tiny" style="margin:4px 14px 0;text-align:right;opacity:.6">版：v52（カフェの配膳・店に剣／刀／斧／槍／ハンマーを追加・遠距離武器を値上げ・武器の特性）</p>
