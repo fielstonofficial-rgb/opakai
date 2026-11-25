@@ -1569,6 +1569,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
   };
   var token = LS.get('opa_token'), me = null, theme = '', rows = {}, lastRow = null, lastKey = '', lastT = 0;
   var typingNode = null, typingUntil = 0, fast = 0, timer = null, busy = false, sentMention = false;
+  var chatHotUntil = 0, lastMsgId = -1;
 
   function api(body) {
     return fetch(API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(body) })
@@ -2021,6 +2022,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       document.body.classList.toggle('admin-on', isAdmin());
       LS.set('opa_adm', isAdmin() ? '1' : '0'); applyStealth();
       $('whoName').textContent = me.nickname; $('whoami').hidden = false;
+      var lm = j.msgs.length ? j.msgs[j.msgs.length - 1].id : 0; if (lastMsgId !== -1 && lm !== lastMsgId) chatHotUntil = Date.now() + 30000; lastMsgId = lm;
       render(j.msgs); renderPresence(j.people || []); renderTheme(j.theme, j.themeBy); renderSurvey(j.poll); renderLive(j.live); setShopBadge(j.shopNew); shopAlertShow(j.shopAlert);
       if (typingNode && Date.now() > typingUntil) { typingNode.remove(); typingNode = null; }
     }).catch(function () { busy = false; });
@@ -2048,7 +2050,8 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
   function loop() {
     clearTimeout(timer);
     if (!token) return;
-    var wait = typingNode ? 1500 : (fast > 0 ? 1500 : 3500); if (fast > 0) fast--;
+    // 50人対策＋速さ：会話が動いている間（直近30秒に新着あり／自分が操作した直後）は1秒、静かな間は2秒
+    var wait = (typingNode || fast > 0 || Date.now() < chatHotUntil) ? 1000 : 2000; if (fast > 0) fast--;
     timer = setTimeout(function () { (document.hidden ? Promise.resolve() : poll()).then(loop); }, wait);
   }
   function stop() { clearTimeout(timer); timer = null; }
@@ -2203,7 +2206,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       if (j.error) { pendRemove(po); if (j.error === 'slow') toast(j.message || 'ちょっと待ってな'); else toast(j.message || '送れへんかった。もう一回な'); }
       fast = 4; poll().then(loop);
     }).catch(function () { pendRemove(po); toast('送れへんかった。もう一回な'); });
-    fast = 4; setTimeout(poll, 400);
+    fast = 4; setTimeout(poll, 350);
   }
   form.addEventListener('submit', function (e) { e.preventDefault(); var v = input.value; input.value = ''; say(v); input.focus(); });
 
