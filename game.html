@@ -10452,5 +10452,11 @@ var TB = {
   }
   boot();
 })();
+  /* ---- 居場所（ゲームを直接開いている人も、「ゲームで遊び中」に数える）。チャット画面の中で開いた時は、チャット画面が知らせるので何もしない ---- */
+  (function () {
+    if (window.parent !== window) return;
+    function hb() { try { if (!token || document.hidden) return; fetch(API.replace(/opa-game$/, 'opa-where'), { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify({ token: token, at: 'game', touch: true }) }).catch(function () {}); } catch (e) {} }
+    setInterval(hb, 20000); setTimeout(hb, 5000);
+  })();
 </script>
 </body></html>
