@@ -3888,13 +3888,13 @@ var TB = {
     TUT.doors[k] = 1;
     if (k === 'shop') { sfx(2); openBag(1); }
     else if (k === 'guild') { sfx(2); openGuild(); }
-    else if (k === 'lottery') { sfx(2); openLobby(); }
+    else if (k === 'lottery') { sfx(2); openHall(); }
     else if (k === 'lobout') { sfx(2); leaveCafe(); }
     else if (k === 'jk:go') { sfx(2); jkDoorOpen('go'); }
     else if (k === 'jk:rest') { sfx(2); openRest(); }
     else if (k === 'jk:am') { sfx(2); jkDoorOpen('am'); }
-    else if (k === 'restout') { sfx(2); openLobby(); }
-    else if (k === 'jkaout') { sfx(2); openLobby(); }
+    else if (k === 'restout') { sfx(2); openHall(); }
+    else if (k === 'jkaout') { sfx(2); openHall(); }
     else if (k === 'lotout') { sfx(2); leaveCafe(); }
     else if (k === 'lot:entry') { sfx(2); lotEntryOpen(); }
     else if (/^lot:(up|dn)[LR]$/.test(k)) lotStair(k);
@@ -4431,7 +4431,7 @@ var TB = {
     hero.x = W / 2; hero.y = H - 120; hero.dir = 1; hero.sit = null; ftarget = null; fz = zoomT;
     $('hb').innerHTML = heroHTML(); applyAura(); updHero(); hpUi(); addNpcs('lobby');
   }
-  function openLobby() {
+  function openHall() {
     lbCss(); lbNpcs();
     inTown = true; inCafe = true; inPost = false; inArcRoom = false; inLib = false; inLot = false; inRest = false; inLobby = true; inJkA = false; jkaStop(); shared = false; curMine = null; hero.cup = ''; hero.cupS = -1; hero.lastSeat = null; hero.order = null; cafeBusy = false;
     rtStop(); $('field').classList.remove('chat'); $('field').classList.add('town'); $('fTtl').textContent = '受付会場'; fz = zoomT = .8;
