@@ -1852,7 +1852,12 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       li.appendChild(avatar(g.is_admin ? 'amon' : 'guest', g.color, g.nickname, g.icon));
       var w = el('span', 'who'); w.appendChild(el('span', 'nm', g.nickname)); if (g.bio) w.appendChild(el('span', 'bio', g.bio)); li.appendChild(w);
       if (mine) li.appendChild(el('small', null, 'あなた'));
-      if (whereOk && (g.place || WHERE[g.nickname]) === 'game') li.appendChild(el('small', null, '🎮 いま、ゲームの中'));
+      if (isAdmin() && typeof g.ago === 'number') {   // 運営の画面だけ：居場所と、最後に動いた時間
+        var pl = g.place || WHERE[g.nickname] || 'chat';
+        var plT = pl === 'mine' ? '⛏ 鉱山の部屋' : (pl === 'game' ? '🎮 ゲーム中' : '💬 チャット');
+        var agT = g.ago < 90 ? 'いま' : (g.ago < 3600 ? Math.floor(g.ago / 60) + '分前' : Math.floor(g.ago / 3600) + '時間前');
+        li.appendChild(el('small', null, plT + '・' + agT));
+      } else if (whereOk && (g.place || WHERE[g.nickname]) === 'game') li.appendChild(el('small', null, '🎮 いま、ゲームの中'));
       ul.appendChild(li);
     }
     if (!whereOk) { sum.hidden = true; list.forEach(addP); return; }
@@ -1884,7 +1889,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       ul.appendChild(el('li', 'grp', GL[k] + (k === 'chat' ? '' : '（' + arr.length + '人）')));
       arr.forEach(addP);
     });
-    ul.appendChild(el('li', 'grp', '版：11/26 09:45'));
+    ul.appendChild(el('li', 'grp', '版：11/26 16:40'));
   }
   // 「どこにいるか」：10秒ごとに別の小さな関数（opa-where）へ聞く。失敗しても、ふつうの一覧のまま
   function whereSend() {
