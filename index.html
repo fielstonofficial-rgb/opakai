@@ -1847,7 +1847,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     var hiddenN = 0;
     function addP(g) {
       var mine = me && g.nickname === me.nickname;
-      if (g.is_admin && !mine) { hiddenN++; return; }   // 運営（スッコリ石原）の名前は、お客さんの一覧に出さない。人数には数える
+      if (g.is_admin) { hiddenN++; return; }   // 運営（スッコリ石原）の名前は、お客さんの一覧に出さない。人数には数える
       var li = el('li', mine ? 'mine' : '');
       li.appendChild(avatar(g.is_admin ? 'amon' : 'guest', g.color, g.nickname, g.icon));
       var w = el('span', 'who'); w.appendChild(el('span', 'nm', g.nickname)); if (g.bio) w.appendChild(el('span', 'bio', g.bio)); li.appendChild(w);
@@ -1870,15 +1870,21 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     if (nowG) { sum.appendChild(document.createTextNode('　🎮 いま、ゲームの中 ')); sum.appendChild(el('b', null, String(nowG))); sum.appendChild(document.createTextNode('人')); }
     if (groups.mine.length) { sum.appendChild(document.createTextNode('　⛏ 鉱山の部屋 ')); sum.appendChild(el('b', null, String(groups.mine.length))); sum.appendChild(document.createTextNode('人')); }
     if (WTOTAL != null) sum.appendChild(el('div', null, '📋 現在のオパ会登録者数 ' + WTOTAL + '人'));
+    if (isAdmin()) {   // 運営の画面だけ：いま入っている人の名前（90秒以内）
+      var nowNames = POLLP.filter(function (g) { return !g.is_admin; }).map(function (g) { var w = (g.place || WHERE[g.nickname]) === 'game' || (g.place || WHERE[g.nickname]) === 'mine' ? '🎮' : ''; return g.nickname + w; });
+      sum.appendChild(el('div', null, '🔎 運営だけに見えます｜いま入っている人（90秒以内）：' + (nowNames.length ? nowNames.join('、') : 'だれもいません')));
+    }
     if (!groups.game.length && !groups.mine.length) { sum.appendChild(el('div', null, '🌱 できたてのお部屋です。一言からどうぞ。ゲームもあるよ🎮')); }
     sum.hidden = false;
-    var GL = { game: '🎮 今日ゲームを遊んだ人（24時間）', mine: '⛏ 鉱山の部屋（いま部屋の中）', chat: '💬 チャット・離席中（24時間以内）' };
+    var GL = { game: '🎮 いま、ゲームの中', mine: '⛏ 鉱山の部屋（いま部屋の中）', chat: '💬 チャット・離席中（24時間以内）' };
     ['game', 'mine', 'chat'].forEach(function (k) {
-      if (!groups[k].length) return;
-      ul.appendChild(el('li', 'grp', GL[k] + (k === 'chat' ? '' : '（' + groups[k].length + '人）')));
-      groups[k].forEach(addP);
+      var arr = groups[k];
+      if (k === 'game') arr = arr.filter(function (g) { return (g.place || WHERE[g.nickname]) === 'game'; });   // 「今日遊んだ人」の名前の一覧は出さない（人数だけ上に出す）
+      if (!arr.length) return;
+      ul.appendChild(el('li', 'grp', GL[k] + (k === 'chat' ? '' : '（' + arr.length + '人）')));
+      arr.forEach(addP);
     });
-    ul.appendChild(el('li', 'grp', '版：11/26 02:40'));
+    ul.appendChild(el('li', 'grp', '版：11/26 09:45'));
   }
   // 「どこにいるか」：10秒ごとに別の小さな関数（opa-where）へ聞く。失敗しても、ふつうの一覧のまま
   function whereSend() {
