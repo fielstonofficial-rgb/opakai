@@ -1907,7 +1907,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       ul.appendChild(el('li', 'grp', GL[k] + (k === 'chat' ? '' : '（' + arr.length + '人）')));
       arr.forEach(addP);
     });
-    ul.appendChild(el('li', 'grp', '版：11/28 お知らせ🔔'));
+    ul.appendChild(el('li', 'grp', '版：11/28 お知らせ🔔v2'));
   }
 
   // ===== お知らせボックス＋プッシュ通知（opa-notice） =====
@@ -1961,18 +1961,19 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
     var t = el('input'); t.type = 'text'; t.maxLength = 60; t.placeholder = '件名（例：新作オパールが入りました）';
     var bd = el('textarea'); bd.rows = 3; bd.maxLength = 400; bd.placeholder = '本文（任意）';
     var tg = el('input'); tg.type = 'text'; tg.maxLength = 40; tg.placeholder = '宛先のニックネーム（空なら全員）';
+    var pl = el('label', 'fine'); var pc = el('input'); pc.type = 'checkbox'; pl.appendChild(pc); pl.appendChild(document.createTextNode(' 📲 スマホにも通知する（大事なお知らせだけ）')); pl.style.display = 'block';
     var go = el('button', 'chip', '送る'); go.type = 'button';
     var armed = false;
     go.addEventListener('click', function () {
       if (!t.value.trim()) { toast('件名を入れてな'); return; }
-      if (!armed) { armed = true; go.textContent = tg.value.trim() ? 'もう一度押すと「' + tg.value.trim() + '」さんに送ります' : 'もう一度押すと全員に送ります'; return; }
+      if (!armed) { armed = true; go.textContent = (tg.value.trim() ? 'もう一度押すと「' + tg.value.trim() + '」さんに送ります' : 'もう一度押すと全員に送ります') + (pc.checked ? '（スマホ通知あり）' : '（🔔のみ）'); return; }
       armed = false; go.textContent = '送信中…';
-      ntCall({ action: 'send', title: t.value, body: bd.value, target: tg.value.trim() }).then(function (j) {
+      ntCall({ action: 'send', title: t.value, body: bd.value, target: tg.value.trim(), push: pc.checked }).then(function (j) {
         go.textContent = '送る';
-        if (j && j.ok) { toast('送ったで（通知オンの端末：' + (j.sent || 0) + '/' + (j.total || 0) + '）'); t.value = ''; bd.value = ''; } else toast('送れへんかった');
+        if (j && j.ok) { toast(pc.checked ? '送ったで（スマホ通知：' + (j.sent || 0) + '/' + (j.total || 0) + '台）' : '送ったで（🔔のみ）'); t.value = ''; bd.value = ''; } else toast('送れへんかった');
       }).catch(function () { go.textContent = '送る'; toast('つながらへんかった'); });
     });
-    w.appendChild(t); w.appendChild(bd); w.appendChild(tg); w.appendChild(go); box.appendChild(w);
+    w.appendChild(t); w.appendChild(bd); w.appendChild(tg); w.appendChild(pl); w.appendChild(go); box.appendChild(w);
   }
   // 「どこにいるか」：10秒ごとに別の小さな関数（opa-where）へ聞く。失敗しても、ふつうの一覧のまま
   function whereSend() {
