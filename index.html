@@ -730,7 +730,7 @@ header.top .title h1 .room { overflow: hidden; text-overflow: ellipsis; }
 /* 上の3つは管理者用：管理者モードのときだけ表示 */
 .tools .loginbtn { display: none; }
 body.admin-on .tools .loginbtn { display: inline-flex; }
-.tools { display: none; }
+.tools { display: flex; }
 body.admin-on .tools { display: flex; }
 /* 人間の発言は左、猫の発言は右 */
 .msg.me { flex-direction: row; }
@@ -1190,6 +1190,16 @@ html[lang="ko"] .topic .theme .q::before{content:"주제 \25BE"}html[lang="ko"] 
 #welcome.entry #guestRow .gdiv{margin:6px 0 0;font-size:11px}
 #welcome.entry h2{margin-bottom:4px}
 #welcome.entry #wLead{margin-bottom:6px}
+
+.tbtn.bellbtn { position: relative; }
+.tbtn.bellbtn .bdot { position: absolute; top: -5px; right: -5px; min-width: 16px; height: 16px; padding: 0 4px; border-radius: 8px; background: #d6455d; color: #fff; font: 700 10px/16px sans-serif; font-style: normal; text-align: center; }
+.nt-list { list-style: none; margin: 8px 0; padding: 0; max-height: 46vh; overflow: auto; }
+.nt-list li { border: 1px solid var(--line); border-radius: 10px; padding: 8px 10px; margin-bottom: 6px; background: var(--surface); }
+.nt-list li.un { border-color: var(--accent); }
+.nt-list li b { display: block; font-size: 14px; }
+.nt-list li span { display: block; font-size: 13px; white-space: pre-wrap; margin-top: 2px; }
+.nt-list li small { color: var(--muted); font-size: 11px; }
+#adNt input, #adNt textarea { width: 100%; box-sizing: border-box; margin: 3px 0; }
 </style>
 </head>
 <body>
@@ -1222,7 +1232,7 @@ html[lang="ko"] .topic .theme .q::before{content:"주제 \25BE"}html[lang="ko"] 
       <h1><span class="amon">AMON</span><span class="room">オパール会議室</span><span class="short">（オパ会）</span></h1>
       <p>フランとアロンのいる、おしゃべりの部屋</p>
     </div>
-    <div class="tools" id="tools"><button class="tbtn delmodebtn" type="button" id="delModeBtn" aria-pressed="false" aria-label="コメントを消すモード" title="コメントを消す"><span>🗑️</span></button><button class="tbtn loginbtn" type="button" id="loginBtn" aria-pressed="false" aria-label="ログインする" title="ログインする"><span>🔓</span></button><button class="tbtn adminbtn" type="button" id="adminBtn" aria-label="管理（招待コード・会員）" title="管理（招待コード・会員）"><span>👥</span></button><button class="tbtn unkbtn" type="button" id="unkBtn" aria-expanded="false" aria-controls="unkPop">❓<span>わからん <b id="unkCount">0</b></span></button></div>
+    <div class="tools" id="tools"><button class="tbtn bellbtn" type="button" id="bellBtn" aria-label="お知らせ" title="お知らせ"><span>🔔</span><i class="bdot" id="bellDot" hidden>0</i></button><button class="tbtn delmodebtn" type="button" id="delModeBtn" aria-pressed="false" aria-label="コメントを消すモード" title="コメントを消す"><span>🗑️</span></button><button class="tbtn loginbtn" type="button" id="loginBtn" aria-pressed="false" aria-label="ログインする" title="ログインする"><span>🔓</span></button><button class="tbtn adminbtn" type="button" id="adminBtn" aria-label="管理（招待コード・会員）" title="管理（招待コード・会員）"><span>👥</span></button><button class="tbtn unkbtn" type="button" id="unkBtn" aria-expanded="false" aria-controls="unkPop">❓<span>わからん <b id="unkCount">0</b></span></button></div>
     <div class="cats-head" aria-label="部屋にいる猫">
       <button class="cathead" type="button" data-call="フラン" title="フラン（8歳・メス・標準語）。押すと呼びかけが入るよ"><span class="ring"><span class="face"><img data-cat="furan" alt="フラン"></span></span><span class="cn furan-c">フラン</span></button>
       <button class="cathead" type="button" data-call="アロン" title="アロン（8歳・オス・関西弁）。押すと呼びかけが入るよ"><span class="ring"><span class="face"><img data-cat="aron" alt="アロン"></span></span><span class="cn aron-c">アロン</span></button>
@@ -1504,6 +1514,14 @@ html[lang="ko"] .topic .theme .q::before{content:"주제 \25BE"}html[lang="ko"] 
     <div id="songBody"></div>
     <p class="fine">うまく流れへんときは、「YouTubeで開く」を押してな。閉じると、曲は止まります。</p>
     <div class="wbtns"><button class="send" type="button" id="songClose">閉じる</button></div>
+  </div>
+</div>
+<div class="overlay" id="noticePanel" role="dialog" aria-modal="true" hidden>
+  <div class="welcome frame-vivid">
+    <h2>🔔 お知らせ</h2>
+    <ul class="nt-list" id="ntList"></ul>
+    <p class="fine" id="ntPush"></p>
+    <div class="wbtns"><button class="send" type="button" id="ntPushBtn" hidden>📲 スマホに通知を届ける</button><button class="send" type="button" id="ntClose">閉じる</button></div>
   </div>
 </div>
 <div class="overlay" id="adminPanel" role="dialog" aria-modal="true" hidden>
@@ -1889,7 +1907,72 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
       ul.appendChild(el('li', 'grp', GL[k] + (k === 'chat' ? '' : '（' + arr.length + '人）')));
       arr.forEach(addP);
     });
-    ul.appendChild(el('li', 'grp', '版：11/26 16:40'));
+    ul.appendChild(el('li', 'grp', '版：11/28 お知らせ🔔'));
+  }
+
+  // ===== お知らせボックス＋プッシュ通知（opa-notice） =====
+  var NT_API = API.replace(/opa-room$/, 'opa-notice'), NT_MAX = 0;
+  function ntCall(o) { o.token = token; return fetch(NT_API, { method: 'POST', headers: { 'content-type': 'application/json' }, body: JSON.stringify(o) }).then(function (r) { return r.json(); }); }
+  function ntBadge(n) { var d = $('bellDot'); if (!d) return; d.hidden = !(n > 0); d.textContent = n > 9 ? '9+' : String(n); }
+  function ntPoll() { if (!token || document.hidden || LS.get('opa_guest') === '1') return; ntCall({ action: 'list' }).then(function (j) { if (j && j.items) { NT_MAX = j.items.length ? j.items[0].id : 0; ntBadge(j.unread); } }).catch(function () {}); }
+  function ntFmt(t) { try { var d = new Date(t); return (d.getMonth() + 1) + '/' + d.getDate() + ' ' + ('0' + d.getHours()).slice(-2) + ':' + ('0' + d.getMinutes()).slice(-2); } catch (_) { return ''; } }
+  function ntPushState() {
+    var b = $('ntPushBtn'), p = $('ntPush'); b.hidden = true; p.textContent = '';
+    var ios = /iPhone|iPad|iPod/.test(navigator.userAgent), standalone = (window.navigator.standalone === true) || (window.matchMedia && matchMedia('(display-mode: standalone)').matches);
+    if (!('serviceWorker' in navigator) || !('PushManager' in window) || !('Notification' in window)) {
+      p.textContent = ios && !standalone ? 'iPhoneで通知を受け取るには、Safariの共有ボタン →「ホーム画面に追加」して、そのアイコンから開いてな。（LINEやインスタの中のブラウザでは使えません）' : 'このブラウザは通知に対応してへんみたい。ここの🔔には、ちゃんと届きます。';
+      return;
+    }
+    if (Notification.permission === 'denied') { p.textContent = '通知が「ブロック」になってます。スマホ／ブラウザの設定で許可してな。🔔には届きます。'; return; }
+    navigator.serviceWorker.getRegistration('./sw.js').then(function (reg) { return reg ? reg.pushManager.getSubscription() : null; }).then(function (sub) {
+      if (sub && Notification.permission === 'granted') { p.textContent = '📲 この端末への通知はオンです。'; return; }
+      b.hidden = false;
+    }).catch(function () { b.hidden = false; });
+  }
+  function ntB64(u) { var pad = '='.repeat((4 - u.length % 4) % 4), b = (u + pad).replace(/-/g, '+').replace(/_/g, '/'), r = atob(b), a = new Uint8Array(r.length); for (var i = 0; i < r.length; i++) a[i] = r.charCodeAt(i); return a; }
+  function ntEnable() {
+    Notification.requestPermission().then(function (perm) {
+      if (perm !== 'granted') { toast('通知は許可されへんかった'); ntPushState(); return null; }
+      return navigator.serviceWorker.register('sw.js').then(function () { return navigator.serviceWorker.ready; }).then(function (reg) {
+        return ntCall({ action: 'vapid' }).then(function (k) {
+          if (!k || !k.pub) throw new Error('nokey');
+          return reg.pushManager.subscribe({ userVisibleOnly: true, applicationServerKey: ntB64(k.pub) });
+        });
+      }).then(function (sub) { return ntCall({ action: 'subscribe', sub: sub.toJSON() }); }).then(function () { toast('通知をオンにしたで'); ntPushState(); });
+    }).catch(function () { toast('通知をオンにできへんかった。もう一度ためしてな'); });
+  }
+  function openNotice() {
+    var ul = $('ntList'); ul.textContent = ''; ul.appendChild(el('li', null, '読み込み中…')); $('noticePanel').hidden = false; ntPushState();
+    ntCall({ action: 'list' }).then(function (j) {
+      ul.textContent = '';
+      if (!j || !j.items) { ul.appendChild(el('li', null, '読み込めへんかった。あとでもう一度ひらいてな')); return; }
+      if (!j.items.length) ul.appendChild(el('li', null, 'まだお知らせはありません'));
+      j.items.forEach(function (x) { var li = el('li', x.unread ? 'un' : null); li.appendChild(el('b', null, x.title)); if (x.body) li.appendChild(el('span', null, x.body)); li.appendChild(el('small', null, ntFmt(x.at))); ul.appendChild(li); });
+      if (j.items.length) { NT_MAX = j.items[0].id; ntCall({ action: 'read', upto: NT_MAX }).then(function () { ntBadge(0); }); }
+    }).catch(function () { ul.textContent = ''; ul.appendChild(el('li', null, 'つながらへんかった')); });
+  }
+  $('bellBtn').addEventListener('click', openNotice);
+  $('ntClose').addEventListener('click', function () { $('noticePanel').hidden = true; });
+  $('ntPushBtn').addEventListener('click', ntEnable);
+  setInterval(ntPoll, 60000); setTimeout(ntPoll, 3000);
+  function ntAdminBox(box) {
+    box.appendChild(el('h3', null, '🔔 お知らせを送る（全員 or 1人）'));
+    var w = el('div', 'adm-shared'); w.id = 'adNt';
+    var t = el('input'); t.type = 'text'; t.maxLength = 60; t.placeholder = '件名（例：新作オパールが入りました）';
+    var bd = el('textarea'); bd.rows = 3; bd.maxLength = 400; bd.placeholder = '本文（任意）';
+    var tg = el('input'); tg.type = 'text'; tg.maxLength = 40; tg.placeholder = '宛先のニックネーム（空なら全員）';
+    var go = el('button', 'chip', '送る'); go.type = 'button';
+    var armed = false;
+    go.addEventListener('click', function () {
+      if (!t.value.trim()) { toast('件名を入れてな'); return; }
+      if (!armed) { armed = true; go.textContent = tg.value.trim() ? 'もう一度押すと「' + tg.value.trim() + '」さんに送ります' : 'もう一度押すと全員に送ります'; return; }
+      armed = false; go.textContent = '送信中…';
+      ntCall({ action: 'send', title: t.value, body: bd.value, target: tg.value.trim() }).then(function (j) {
+        go.textContent = '送る';
+        if (j && j.ok) { toast('送ったで（通知オンの端末：' + (j.sent || 0) + '/' + (j.total || 0) + '）'); t.value = ''; bd.value = ''; } else toast('送れへんかった');
+      }).catch(function () { go.textContent = '送る'; toast('つながらへんかった'); });
+    });
+    w.appendChild(t); w.appendChild(bd); w.appendChild(tg); w.appendChild(go); box.appendChild(w);
   }
   // 「どこにいるか」：10秒ごとに別の小さな関数（opa-where）へ聞く。失敗しても、ふつうの一覧のまま
   function whereSend() {
@@ -2972,6 +3055,7 @@ var CAT_IMG = {furan:'data:image/jpeg;base64,/9j/4AAQSkZJRgABAQAAAQABAAD/2wBDAAY
   $('adminBtn').addEventListener('click', openAdmin);
   function openAdmin() {
     var box = $('adminBody'); box.textContent = '';
+    ntAdminBox(box);
     // ライブ配信（YouTube）：URLを入れてオンにすると、全員のチャットの上に映像が出る
     box.appendChild(el('h3', null, '！ショップ（新作・注文）'));
     var sab = el('button', 'send', '商品・注文・振込先の管理を開く'); sab.type = 'button';
